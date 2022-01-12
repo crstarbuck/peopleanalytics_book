@@ -29,6 +29,63 @@
 ## Central Limit Theorem
 
 
+```{r, fig.cap = "Random Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
+
+# Load libraries for data wrangling and viz
+library(dplyr)
+library(ggplot2)
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Generate uniform population distribution with 1000 values ranging from 1 to 100
+rand.unif <- runif(1000, min = 1, max = 100)
+
+# Produce histogram to visualize population distribution
+ggplot() + 
+  aes(rand.unif) + 
+  labs(x = "x", y = "N") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_histogram(fill = "#262626")
+
+```
+
+
+```{r, fig.cap = "Distribution of 100 Sample Means", fig.align = 'center', message = FALSE}
+
+# Define number of samples to draw from population distribution
+samples <- 100
+
+# Populate vector with sample sizes
+sample_n <- c(1,5,10,25,50,100)
+
+# Initialize empty data frame to hold sample means
+sample_means = NULL
+
+# Set seed for reproducible random samples
+set.seed(1234)
+
+# For each n, draw random samples
+for (n in sample_n) {
+  
+  for (draw in 1:samples) {
+    
+      # Store sample means in data frame
+      sample_means <- rbind(sample_means, cbind.data.frame(
+                            n = n, 
+                            x_bar = mean(sample(rand.unif, n, replace = FALSE, prob = NULL))))
+  }
+}
+
+# Produce histograms to visualize distributions of sample means
+sample_means %>% ggplot() + 
+  aes(x = x_bar, fill = n) + 
+  labs(x = "x-bar", y = "n") + 
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_histogram(fill = "#262626") + 
+  facet_wrap(~n)
+
+```
 ## Covariance
 
 
