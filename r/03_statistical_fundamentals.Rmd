@@ -28,6 +28,23 @@
 
 ## Central Limit Theorem
 
+The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was unpopular when initially coined by a French-born mathematician named Abraham De Moivre in the 1700s, but was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
+
+The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
+
+<br />
+
+```{r, echo = FALSE, fig.cap = 'Normal Distribution Properties'}
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/Normal Distribution.png")
+```
+
+<br />
+
+Let's begin with an intuitive example of CLT, which has been inspired by Wheelan (2013). Consider a situation in which one of many buses shuttling 40 basketball players to a tournament becomes lost. You receive word that a bus of lost people is discovered, and your job is to determine whether this bus is indeed the missing bus of basketball players rather than some other bus of lost people. Consider also that a state fair is occurring the same day as the basketball tournament, and this event also has shuttles transporting groups of 40 people from their vehicles to the event. Assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6’ 5” with a standard deviation of 1”, while state fair attendees are, on average, 5’ 4” with a standard deviation of 3”. With a known population mean and standard deviation, the standard error (standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
+
+Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any bus whose members have an average height that is not within two standard errors of the population mean (i.e., between 6’ 3” and 6’ 7”) is statistically unlikely to be the bus of basketball players you are looking for; this is because in less than 5 in 100 cases could you randomly draw a reasonably sized sample of basketball players with an average height so extremely different from the population average. Furthermore, it would be virtually impossible (in less than 1 in 100 times) to draw a random sample of players from the population with an average height that is not within three standard errors of the population mean (i.e., between 6’ 2” and 6’ 8”). If we find that the lost bus of people have an average height of 5’ 11”, we should keep looking for our bus of basketball players.
+
+Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, or other distribution and observe the same behavior.
 
 ```{r, fig.cap = "Random Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
 
@@ -45,19 +62,19 @@ rand.unif <- runif(1000, min = 1, max = 100)
 ggplot() + 
   aes(rand.unif) + 
   labs(x = "x", y = "N") + 
-  theme(plot.title = element_text(hjust = 0.5)) +
   geom_histogram(fill = "#262626")
 
 ```
 
+As expected, this random distribution is uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
 
-```{r, fig.cap = "Distribution of 100 Sample Means", fig.align = 'center', message = FALSE}
+```{r, fig.cap = "Distribution of 100 Sample Means (n = 1-10)", fig.align = 'center', message = FALSE}
 
 # Define number of samples to draw from population distribution
 samples <- 100
 
 # Populate vector with sample sizes
-sample_n <- c(1,5,10,25,50,100)
+sample_n <- c(1:10)
 
 # Initialize empty data frame to hold sample means
 sample_means = NULL
@@ -81,11 +98,13 @@ for (n in sample_n) {
 sample_means %>% ggplot() + 
   aes(x = x_bar, fill = n) + 
   labs(x = "x-bar", y = "n") + 
-  theme(plot.title = element_text(hjust = 0.5)) +
   geom_histogram(fill = "#262626") + 
   facet_wrap(~n)
 
 ```
+
+Per the CLT, we can see that as n increases, the sample means become more normally distributed.
+
 ## Covariance
 
 

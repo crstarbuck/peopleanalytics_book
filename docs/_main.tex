@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-01-12}
+\date{2022-01-13}
 
 \begin{document}
 \maketitle
@@ -240,13 +240,13 @@ Academics at elite research institutions are often under immense pressure to pub
 If you participated in a science fair as a child, you are likely already familiar with the scientific method. The scientific method is the standard scheme of organized and systematic inquiry, and this duly applies to people analytics practitioners striving to promote the robustness of analyses and recommendations.
 
 \begin{figure}
-\includegraphics[width=39.53in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/Scientific Method} \caption{Figure 1: The Scientific Method}\label{fig:unnamed-chunk-2}
+\includegraphics[width=39.53in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/Scientific Method} \caption{The Scientific Method}\label{fig:unnamed-chunk-2}
 \end{figure}
 
 Over the years, I have adapted the scientific method into a curtailed four-dimensional framework which is intended to elevate the rigor applied to the end-to-end analytical process. The four dimensions are (a) Discover, (b) Design, (c) Develop, and (d) Deliver, and this book will be organized around these. A checklist with general questions and considerations across the analytics lifecycle can be found in the Appendix.
 
 \begin{figure}
-\includegraphics[width=36.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework Overview} \caption{Figure 2: 4D Framework}\label{fig:unnamed-chunk-3}
+\includegraphics[width=36.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework Overview} \caption{4D Framework}\label{fig:unnamed-chunk-3}
 \end{figure}
 
 1. Discover
@@ -303,6 +303,20 @@ The Deliver phase can take many forms depending on the solution being released. 
 \hypertarget{central-limit-theorem}{%
 \section{Central Limit Theorem}\label{central-limit-theorem}}
 
+The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was unpopular when initially coined by a French-born mathematician named Abraham De Moivre in the 1700s, but was later reintroduced and attracted new interest from theorists and academics (Daw \& Pearson, 1972).
+
+The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
+
+\begin{figure}
+\includegraphics[width=19.75in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/Normal Distribution} \caption{Normal Distribution Properties}\label{fig:unnamed-chunk-4}
+\end{figure}
+
+Let's begin with an intuitive example of CLT, which has been inspired by Wheelan (2013). Consider a situation in which one of many buses shuttling 40 basketball players to a tournament becomes lost. You receive word that a bus of lost people is discovered, and your job is to determine whether this bus is indeed the missing bus of basketball players rather than some other bus of lost people. Consider also that a state fair is occurring the same day as the basketball tournament, and this event also has shuttles transporting groups of 40 people from their vehicles to the event. Assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6' 5'' with a standard deviation of 1'', while state fair attendees are, on average, 5' 4'' with a standard deviation of 3''. With a known population mean and standard deviation, the standard error (standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
+
+Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any bus whose members have an average height that is not within two standard errors of the population mean (i.e., between 6' 3'' and 6' 7'') is statistically unlikely to be the bus of basketball players you are looking for; this is because in less than 5 in 100 cases could you randomly draw a reasonably sized sample of basketball players with an average height so extremely different from the population average. Furthermore, it would be virtually impossible (in less than 1 in 100 times) to draw a random sample of players from the population with an average height that is not within three standard errors of the population mean (i.e., between 6' 2'' and 6' 8''). If we find that the lost bus of people have an average height of 5' 11'', we should keep looking for our bus of basketball players.
+
+Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, or other distribution and observe the same behavior.
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Load libraries for data wrangling and viz}
@@ -326,12 +340,14 @@ The Deliver phase can take many forms depending on the solution being released. 
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-4-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-5-1} 
 
 }
 
-\caption{Uniform Population Distribution}\label{fig:unnamed-chunk-4}
+\caption{Random Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-5}
 \end{figure}
+
+As expected, this random distribution is uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -339,7 +355,7 @@ The Deliver phase can take many forms depending on the solution being released. 
 \NormalTok{samples <-}\StringTok{ }\DecValTok{100}
 
 \CommentTok{# Populate vector with sample sizes}
-\NormalTok{sample_n <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{25}\NormalTok{,}\DecValTok{50}\NormalTok{,}\DecValTok{100}\NormalTok{)}
+\NormalTok{sample_n <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{)}
 
 \CommentTok{# Initialize empty data frame to hold sample means}
 \NormalTok{sample_means =}\StringTok{ }\OtherTok{NULL}
@@ -371,12 +387,14 @@ The Deliver phase can take many forms depending on the solution being released. 
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-5-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-6-1} 
 
 }
 
-\caption{Distribution of Sample Means}\label{fig:unnamed-chunk-5}
+\caption{Distribution of 100 Sample Means (n = 1-10)}\label{fig:unnamed-chunk-6}
 \end{figure}
+
+Per the CLT, we can see that as n increases, the sample means become more normally distributed.
 
 \hypertarget{covariance}{%
 \section{Covariance}\label{covariance}}
@@ -549,11 +567,15 @@ Proportional Odds Logistic Regression
 \hypertarget{bibliography}{%
 \chapter{Bibliography}\label{bibliography}}
 
-Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
-
 Baron, R. M., \& Kenny, D. A. (1986). The moderator--mediator variable distinction in social psychological research: Conceptual, strategic, and statistical considerations. Journal of Personality and Social Psychology, 51(6), 1173--1182.
 
+Daw, R. H., \& Pearson, E. S. (1972). Studies in the History of Probability and Statistics. XXX. Abraham De Moivre's 1733 Derivation of the Normal Curve: A Bibliographical Note. Biometrika, 59(3), 677--680. \url{https://doi.org/10.2307/2334818}
+
 James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to Statistical Learning: With Applications in R. New York: Springer.
+
+Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
+
+Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 
 \hypertarget{appendix}{%
 \chapter{Appendix}\label{appendix}}
@@ -562,7 +584,7 @@ James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to 
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-6}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-7}
 \end{figure}
 
 1. Discover
