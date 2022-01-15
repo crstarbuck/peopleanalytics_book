@@ -6,18 +6,90 @@
 
   Mean
   
+  Perhaps the most intuitive measure of central tendency is the mean, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
+  
+  $$\bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n}$$
+
+The mean of a set of numeric values can be calculated using the mean() function in R:
+
+```{r, message = FALSE}
+
+# Fill vector x with integers
+x <- c(1,1,1,2,2,2,3,3,4,50)
+
+# Calculate average of vector x
+mean(x)
+
+```
+
   Median
+  
+  The median represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency. 
+  
+  The median() function in R can be used to handle the sorting and midpoint selection:
+  
+```{r, message = FALSE}
+
+# Calculate median of vector x
+median(x)
+
+```
+  
+  In this example, the median is only 2 compared with the mean of 6.9 (which is not really representative of any of the values in vector x). Large deltas between mean and median values are evidence of outliers.
   
   Mode
   
-  Range
+  The mode is the most frequent number in a set of values.
+  
+  While mean() and median() are standard functions in R, mode() returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):
+  
+```{r, message = FALSE}
 
+# Create function to calculate statistical mode(s)
+stat.mode <- function(x) {
+  ux <- unique(x)
+  tab <- tabulate(match(x, ux))
+  ux[tab == max(tab)]
+}
+
+# Return mode(s) of vector x
+stat.mode(x)
+
+```
+  
+  In this case, we have a bimodal distribution since both 1 and 2 occur most frequently.
+  
+  Range
+  
+  The range is the difference between the maximum and minimum values in a set of numbers. 
+  
+  The range() function in R returns the minimum and maximum numbers:
+  
+```{r, message = FALSE}
+
+# Return lowest and highest values of vector x
+range(x)
+
+```
+
+We can leverage the max() and min() functions to calculate the difference between these values:
+
+```{r, message = FALSE}
+
+# Calculate range of vector x
+max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+
+```
 
 * Measures of Spread
 
   Variance
   
+  $$s^{2} = \frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}$$
+  
   Standard Deviation
+  
+  $$s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}}$$
   
   Quartiles
   
@@ -32,7 +104,7 @@ The Central Limit Theorem (CLT) is a mainstay of statistics and probability and 
 
 The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
 
-If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are highly likely to include the true population average. This in turn enables us to make reasonable inferences about the unknown population parameters based on the random sample data available from said population.
+If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are likely to include the true population average. This is how confidence intervals are defined, which enable us to make reasonable inferences about the unknown population parameters based on the sample data available from said population.
 
 <br />
 
@@ -72,7 +144,7 @@ ggplot() +
 
 ```
 
-As expected, this random distribution is uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
+As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
 
 ```{r, fig.cap = "Distribution of 100 Sample Means (n = 1-10)", fig.align = 'center', message = FALSE}
 
@@ -111,10 +183,44 @@ sample_means %>% ggplot() +
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
 
+We can validate whether the normal distribution properties are characteristic of our simulated data:
+
+```{r, fig.cap = "95% Confidence Interval", fig.align = 'center', message = FALSE}
+
+# Store sample means with n = 10
+x_bars <- sample_means[sample_means$n == 10, "x_bar"]
+
+# Calculate 95% CI (2 standard errors above and below the mean)
+# Note: The standard deviation of sample means is known as the standard error
+ci95_upper_bound <- mean(x_bars) + sd(x_bars) * 2
+ci95_lower_bound <- mean(x_bars) - sd(x_bars) * 2
+
+# Calculate percent of sample means within 95% CI
+length(x_bars[x_bars > ci95_lower_bound & x < ci95_upper_bound]) / length(x_bars) * 100
+
+```
+
+  94% of sample means are within our 95% CI (+/- 2 standard errors), which is very close to the expected 95%. Now, let's look at a 99% CI:
+
+```{r, fig.cap = "99% Confidence Interval", fig.align = 'center', message = FALSE}
+
+# Calculate 99% CI (3 standard errors above and below the mean)
+ci99_upper_bound <- mean(x_bars) + sd(x_bars) * 3
+ci99_lower_bound <- mean(x_bars) - sd(x_bars) * 3
+
+# Calculate percent of sample means within 99% CI
+length(x_bars[x_bars > ci99_lower_bound & x_bars < ci99_upper_bound]) / length(x_bars) * 100
+
+```
+
+  All of the sample means are within the 99% CI (+/- 3 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean from the same population that falls outside this interval.
+
 ## Covariance
 
+$cov_{x,y} = \frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}$
 
 ## Correlation
 
   "Correlation is not causation."
 
+$ r = frac{Nsum{XY}-(sum{X}sum{Y})}{sqrt{ [N sum{x^2}-(sum{x})^2][N sum{y^2}-(sum{y})^2 }]} $
