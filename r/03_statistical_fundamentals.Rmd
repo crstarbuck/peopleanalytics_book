@@ -1,5 +1,10 @@
 # Statistical Fundamentals
 
+## Population Parameters
+
+## Sample Statistics
+
+
 ## Descriptive Statistics
 
 * Measures of Central Tendency
@@ -8,7 +13,7 @@
   
   Perhaps the most intuitive measure of central tendency is the mean, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
   
-  $$\bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n}$$
+  $$ \bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n} $$
 
 The mean of a set of numeric values can be calculated using the mean() function in R:
 
@@ -85,20 +90,49 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 
   Variance
   
-  $$s^{2} = \frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}$$
+  Variance is a measure of the variability around the average value. Variance is calculated using the average of squared differences from the mean.
+  
+  Variance of a population is defined by:
+  
+  $$ \sigma^{2} = \frac{\sum (X_{i}-\mu)^{2}}{N} $$
+  
+  Variance of a sample is defined by:
+  
+  $$ s^{2} = \frac{\sum (x_{i}-\bar{x})^{2}}{n-1} $$
+  
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
   
   Standard Deviation
   
-  $$s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}}$$
+  The standard deviation is simply the square root of the variance, as defined by:
+  
+  $$ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}} $$
+  
+  Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
   
   Quartiles
   
   The Interquartile Range (IQR)...
+  
+  Covariance
 
-## Introduction to Probability
+$$ cov_{x,y} = \frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
+
+  Correlation
+
+  "Correlation is not causation."
+
+$$ r = frac{Nsum{XY}-(sum{X}sum{Y})}{sqrt{ [N sum{x^2}-(sum{x})^2][N sum{y^2}-(sum{y})^2 }]} $$
 
 
-## Central Limit Theorem
+## Inferential Statistics
+
+The objective of inferential statistics is to make inferences -- with some degree of confidence -- about a population based on available sample data, and there are several concepts fundamental to this goal.
+
+* Introduction to Probability
+
+
+* Central Limit Theorem
 
 The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was unpopular when initially coined by a French-born mathematician named Abraham De Moivre in the 1700s, but was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
 
@@ -183,44 +217,41 @@ sample_means %>% ggplot() +
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
 
-We can validate whether the normal distribution properties are characteristic of our simulated data:
+* Confidence Intervals
 
-```{r, fig.cap = "95% Confidence Interval", fig.align = 'center', message = FALSE}
+  A Confidence Interval (CI) is a range of values that likely includes an unknown population value. A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
+  
+  $$ SE = \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's illustrate the relationship between CIs and standard errors by validating whether the normal distribution properties are characteristic of the data simulated for our CLT example:
+
+```{r, message = FALSE}
 
 # Store sample means with n = 10
 x_bars <- sample_means[sample_means$n == 10, "x_bar"]
 
-# Calculate 95% CI (2 standard errors above and below the mean)
-# Note: The standard deviation of sample means is known as the standard error
-ci95_upper_bound <- mean(x_bars) + sd(x_bars) * 2
-ci95_lower_bound <- mean(x_bars) - sd(x_bars) * 2
+# Calculate 95% CI (1.96 standard errors above and below the mean)
+ci95_upper_bound <- mean(x_bars) + sd(x_bars) * 1.96
+ci95_lower_bound <- mean(x_bars) - sd(x_bars) * 1.96
 
 # Calculate percent of sample means within 95% CI
-length(x_bars[x_bars > ci95_lower_bound & x < ci95_upper_bound]) / length(x_bars) * 100
+length(x_bars[x_bars > ci95_lower_bound & x_bars < ci95_upper_bound]) / length(x_bars) * 100
 
 ```
 
-  94% of sample means are within our 95% CI (+/- 2 standard errors), which is very close to the expected 95%. Now, let's look at a 99% CI:
+  94% of sample means are within our 95% CI (+/- 1.96 standard errors), which is very close to the expected 95% per the Empirical Rule covered previously. 1.96 is a z-score, which is simply the number of standard deviations (or SEs in this case) that correspond to the 95% CI.
 
-```{r, fig.cap = "99% Confidence Interval", fig.align = 'center', message = FALSE}
+  Next, let's look at a 99% CI. We will use a z-score of 2.58 for this:
 
-# Calculate 99% CI (3 standard errors above and below the mean)
-ci99_upper_bound <- mean(x_bars) + sd(x_bars) * 3
-ci99_lower_bound <- mean(x_bars) - sd(x_bars) * 3
+```{r, message = FALSE}
+
+# Calculate 99% CI (2.58 standard errors above and below the mean)
+ci99_upper_bound <- mean(x_bars) + sd(x_bars) * 2.58
+ci99_lower_bound <- mean(x_bars) - sd(x_bars) * 2.58
 
 # Calculate percent of sample means within 99% CI
 length(x_bars[x_bars > ci99_lower_bound & x_bars < ci99_upper_bound]) / length(x_bars) * 100
 
 ```
 
-  All of the sample means are within the 99% CI (+/- 3 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean from the same population that falls outside this interval.
-
-## Covariance
-
-$cov_{x,y} = \frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1}$
-
-## Correlation
-
-  "Correlation is not causation."
-
-$ r = frac{Nsum{XY}-(sum{X}sum{Y})}{sqrt{ [N sum{x^2}-(sum{x})^2][N sum{y^2}-(sum{y})^2 }]} $
+  99% of the sample means are within the 99% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
