@@ -116,41 +116,43 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   
   Covariance
 
-$$ cov_{x,y} = \frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
+$$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
   Correlation
 
   "Correlation is not causation."
 
-$$ r = frac{Nsum{XY}-(sum{X}sum{Y})}{sqrt{ [N sum{x^2}-(sum{x})^2][N sum{y^2}-(sum{y})^2 }]} $$
+$$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
 
 
 ## Inferential Statistics
 
-The objective of inferential statistics is to make inferences -- with some degree of confidence -- about a population based on available sample data, and there are several concepts fundamental to this goal.
+The objective of inferential statistics is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
 
 * Introduction to Probability
 
 
 * Central Limit Theorem
 
-The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was unpopular when initially coined by a French-born mathematician named Abraham De Moivre in the 1700s, but was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
+The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
 
 The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
 
-If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are likely to include the true population average. This is how confidence intervals are defined, which enable us to make reasonable inferences about the unknown population parameters based on the sample data available from said population.
+If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are likely to include the true population average. This is how confidence intervals are defined, which enable us to make reasonable inferences about the unknown population parameters based on sample data.
 
 <br />
 
-```{r, echo = FALSE, fig.cap = 'Normal Distribution Properties'}
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/Normal Distribution.png")
+```{r, echo = FALSE, fig.cap = 'The Empirical Rule', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/normal_distribution.png")
+
 ```
 
 <br />
 
 Let's begin with an intuitive example of CLT, which has been inspired by Wheelan (2013). Consider a situation in which one of many buses shuttling 40 basketball players to a tournament finds itself lost. You receive word that a bus of lost people is discovered, and your job is to determine whether this bus is the missing bus of basketball players rather than some other bus of lost people. Consider also that a state fair is occurring the same day as the basketball tournament, and this event also has shuttles transporting groups of 40 people from their vehicles to the event.
 
-Let's assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6’ 5” with a standard deviation of 1”, while state fair attendees are, on average, a much shorter 5’ 4” with a wider standard deviation of 3”. With a known population mean and standard deviation, the standard error (standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
+Let's assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6’ 5” with a standard deviation of 1”, while state fair attendees are, on average, a much shorter 5’ 4” with a wider standard deviation of 3”. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
 
 Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any bus whose members have an average height that is not within two standard errors of the population mean (between 6’ 3” and 6’ 7” in the case of our basketball players) is statistically unlikely to be the bus of basketball players for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of basketball players with an average height so extremely different from the population average. 
 
@@ -255,3 +257,45 @@ length(x_bars[x_bars > ci99_lower_bound & x_bars < ci99_upper_bound]) / length(x
 ```
 
   All of the sample means are within the 99% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+  
+* Hypothesis Testing
+
+Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference. The null hypothesis is defined by:
+
+$$ H_0: \mu_A = \mu_B $$
+
+The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is 'nothing' of significance; disprove me if you can! If we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
+
+An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B):
+
+$$ H_A: \mu_A \neq \mu_B $$
+
+$$ H_A: \mu_A < \mu_B $$
+
+$$ H_A: \mu_A > \mu_B $$
+
+  Alpha
+
+  The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence for the alternative hypothesis.
+  
+  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 95 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should only expect a mean outside the 99% CI less than 1 in every 100 times.
+
+  Beta
+  
+  Another key value is Beta, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$.
+  
+  Type I & II Errors
+
+  A Type I Error is a false positive, wherein we conclude that there is a significant difference or relationship when there is not. A Type II Error is a false negative, wherein we fail to capture a significant finding. $\alpha$ represents our chance of making a Type I Error, while $\beta$ represents our chance of making a Type II Error. I once had a professor who told me that committing a Type I error is a shame, while committing a Type II error is a pity, and I've found this to be a helpful way to remember what each type of error represents.
+
+```{r, echo = FALSE, fig.cap = 'Type I and II Errors', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors.png")
+
+```
+
+  P-Values
+  
+  In statistical tests, the p-value is referenced to determine whether the null hypothesis can be rejected. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if p < .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship is likely a noteworthy finding.
+  
+  While statistical significance helps us understand the probability of observing results by chance when there is actually no difference or effect in the population, it does not tell us anything about the size of the difference or effect. Analysis should never be reduced to inspecting p-values; in fact, p-values have been the subject of much controversy among researchers in recent years. This book will cover how to interpret results of statistical tests to surface the story and determine if there is anything 'practically' significant among statistically significant findings.
