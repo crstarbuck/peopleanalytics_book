@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-01-13}
+\date{2022-01-17}
 
 \begin{document}
 \maketitle
@@ -218,6 +218,8 @@ R Studio IDE: \url{https://www.rstudio.com/products/rstudio/download/\#download}
 
 Please note that while R basics are covered, this is not a book on how to code. It is assumed that you already have an understanding of programming fundamentals; if this is not the case, an introductory programming course is highly recommended. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses.
 
+The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
+
  Google Data Studio
 
 Like statistical software, there are many options for BI tools that provide interactive dashboards and robust data visualization. In fact, R has robust data visualization capabilities via packages like ggplot and Shiny -- which can be extended with CSS themes, html widgets, and JavaScript actions. In people analytics, dashboards are rarely (if ever) published publicly; we need interactive web-based dashboards with strong authentication and row-level security that have connectors to popular databases such as BigQuery, RedShift, and PostgreSQL to facilitate frequent and automated data refreshes. There are several free options that meet these criteria, and one which tends to be highly underrated is Google's Data Studio. While it is not as feature-rich as popular solutions like Tableau and Power BI, Google is continuously improving the product and the key features needed to be successful in data visualization and dashboarding are already available. It is also very intuitive and easy to use relative to building apps in a tool such as R Shiny. For this reason, Data Studio has been selected as the companion tool to R for this book.
@@ -240,13 +242,13 @@ Academics at elite research institutions are often under immense pressure to pub
 If you participated in a science fair as a child, you are likely already familiar with the scientific method. The scientific method is the standard scheme of organized and systematic inquiry, and this duly applies to people analytics practitioners striving to promote the robustness of analyses and recommendations.
 
 \begin{figure}
-\includegraphics[width=39.53in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/Scientific Method} \caption{The Scientific Method}\label{fig:unnamed-chunk-2}
+\includegraphics[width=39.53in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/Scientific Method} \caption{The Scientific Method}\label{fig:unnamed-chunk-2}
 \end{figure}
 
 Over the years, I have adapted the scientific method into a curtailed four-dimensional framework which is intended to elevate the rigor applied to the end-to-end analytical process. The four dimensions are (a) Discover, (b) Design, (c) Develop, and (d) Deliver, and this book will be organized around these. A checklist with general questions and considerations across the analytics lifecycle can be found in the Appendix.
 
 \begin{figure}
-\includegraphics[width=36.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework Overview} \caption{4D Framework}\label{fig:unnamed-chunk-3}
+\includegraphics[width=36.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4D Framework Overview} \caption{4D Framework}\label{fig:unnamed-chunk-3}
 \end{figure}
 
 1. Discover
@@ -271,6 +273,12 @@ The Deliver phase can take many forms depending on the solution being released. 
 \hypertarget{statistical-fundamentals}{%
 \chapter{Statistical Fundamentals}\label{statistical-fundamentals}}
 
+\hypertarget{population-parameters}{%
+\section{Population Parameters}\label{population-parameters}}
+
+\hypertarget{sample-statistics}{%
+\section{Sample Statistics}\label{sample-statistics}}
+
 \hypertarget{descriptive-statistics}{%
 \section{Descriptive Statistics}\label{descriptive-statistics}}
 
@@ -280,40 +288,172 @@ The Deliver phase can take many forms depending on the solution being released. 
 
   Mean
 
-  Median
+  Perhaps the most intuitive measure of central tendency is the mean, which is often referred to as the average. The mean of a sample is denoted by \(\bar{x}\) and is defined by:
 
-  Mode
+  \[ \bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n} \]
+\end{itemize}
 
-  Range
+The mean of a set of numeric values can be calculated using the mean() function in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Fill vector x with integers}
+\NormalTok{x <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{3}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{50}\NormalTok{)}
+
+\CommentTok{# Calculate average of vector x}
+\KeywordTok{mean}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 6.9
+\end{verbatim}
+
+Median
+
+The median represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency.
+
+The median() function in R can be used to handle the sorting and midpoint selection:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate median of vector x}
+\KeywordTok{median}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+In this example, the median is only 2 compared with the mean of 6.9 (which is not really representative of any of the values in vector x). Large deltas between mean and median values are evidence of outliers.
+
+Mode
+
+The mode is the most frequent number in a set of values.
+
+While mean() and median() are standard functions in R, mode() returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create function to calculate statistical mode(s)}
+\NormalTok{stat.mode <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+\NormalTok{  ux <-}\StringTok{ }\KeywordTok{unique}\NormalTok{(x)}
+\NormalTok{  tab <-}\StringTok{ }\KeywordTok{tabulate}\NormalTok{(}\KeywordTok{match}\NormalTok{(x, ux))}
+\NormalTok{  ux[tab }\OperatorTok{==}\StringTok{ }\KeywordTok{max}\NormalTok{(tab)]}
+\NormalTok{\}}
+
+\CommentTok{# Return mode(s) of vector x}
+\KeywordTok{stat.mode}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1 2
+\end{verbatim}
+
+In this case, we have a bimodal distribution since both 1 and 2 occur most frequently.
+
+Range
+
+The range is the difference between the maximum and minimum values in a set of numbers.
+
+The range() function in R returns the minimum and maximum numbers:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return lowest and highest values of vector x}
+\KeywordTok{range}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  1 50
+\end{verbatim}
+
+We can leverage the max() and min() functions to calculate the difference between these values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate range of vector x}
+\KeywordTok{max}\NormalTok{(x, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{-}\StringTok{ }\KeywordTok{min}\NormalTok{(x, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 49
+\end{verbatim}
+
+\begin{itemize}
 \item
   Measures of Spread
 
   Variance
 
+  Variance is a measure of the variability around the average value. Variance is calculated using the average of squared differences from the mean.
+
+  Variance of a population is defined by:
+
+  \[ \sigma^{2} = \frac{\sum (X_{i}-\mu)^{2}}{N} \]
+
+  Variance of a sample is defined by:
+
+  \[ s^{2} = \frac{\sum (x_{i}-\bar{x})^{2}}{n-1} \]
+
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+
   Standard Deviation
+
+  The standard deviation is simply the square root of the variance, as defined by:
+
+  \[ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}} \]
+
+  Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
 
   Quartiles
 
   The Interquartile Range (IQR)\ldots{}
+
+  Covariance
 \end{itemize}
 
-\hypertarget{introduction-to-probability}{%
-\section{Introduction to Probability}\label{introduction-to-probability}}
+\[ cov_{x,y} = \frac{\sum_{i=1}^{N}(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} \]
 
-\hypertarget{central-limit-theorem}{%
-\section{Central Limit Theorem}\label{central-limit-theorem}}
+Correlation
+
+``Correlation is not causation.''
+
+\[ r = frac{Nsum{XY}-(sum{X}sum{Y})}{sqrt{ [N sum{x^2}-(sum{x})^2][N sum{y^2}-(sum{y})^2 }]} \]
+
+\hypertarget{inferential-statistics}{%
+\section{Inferential Statistics}\label{inferential-statistics}}
+
+The objective of inferential statistics is to make inferences -- with some degree of confidence -- about a population based on available sample data, and there are several concepts fundamental to this goal.
+
+\begin{itemize}
+\item
+  Introduction to Probability
+\item
+  Central Limit Theorem
+\end{itemize}
 
 The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was unpopular when initially coined by a French-born mathematician named Abraham De Moivre in the 1700s, but was later reintroduced and attracted new interest from theorists and academics (Daw \& Pearson, 1972).
 
 The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
 
+If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are likely to include the true population average. This is how confidence intervals are defined, which enable us to make reasonable inferences about the unknown population parameters based on the sample data available from said population.
+
 \begin{figure}
-\includegraphics[width=19.75in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/Normal Distribution} \caption{Normal Distribution Properties}\label{fig:unnamed-chunk-4}
+\includegraphics[width=19.75in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/Normal Distribution} \caption{Normal Distribution Properties}\label{fig:unnamed-chunk-9}
 \end{figure}
 
-Let's begin with an intuitive example of CLT, which has been inspired by Wheelan (2013). Consider a situation in which one of many buses shuttling 40 basketball players to a tournament becomes lost. You receive word that a bus of lost people is discovered, and your job is to determine whether this bus is indeed the missing bus of basketball players rather than some other bus of lost people. Consider also that a state fair is occurring the same day as the basketball tournament, and this event also has shuttles transporting groups of 40 people from their vehicles to the event. Assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6' 5'' with a standard deviation of 1'', while state fair attendees are, on average, 5' 4'' with a standard deviation of 3''. With a known population mean and standard deviation, the standard error (standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
+Let's begin with an intuitive example of CLT, which has been inspired by Wheelan (2013). Consider a situation in which one of many buses shuttling 40 basketball players to a tournament finds itself lost. You receive word that a bus of lost people is discovered, and your job is to determine whether this bus is the missing bus of basketball players rather than some other bus of lost people. Consider also that a state fair is occurring the same day as the basketball tournament, and this event also has shuttles transporting groups of 40 people from their vehicles to the event.
 
-Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any bus whose members have an average height that is not within two standard errors of the population mean (i.e., between 6' 3'' and 6' 7'') is statistically unlikely to be the bus of basketball players you are looking for; this is because in less than 5 in 100 cases could you randomly draw a reasonably sized sample of basketball players with an average height so extremely different from the population average. Furthermore, it would be virtually impossible (in less than 1 in 100 times) to draw a random sample of players from the population with an average height that is not within three standard errors of the population mean (i.e., between 6' 2'' and 6' 8''). If we find that the lost bus of people have an average height of 5' 11'', we should keep looking for our bus of basketball players.
+Let's assume the mean and standard deviation of the height of these two groups are known; the group of basketball players are, on average, 6' 5'' with a standard deviation of 1'', while state fair attendees are, on average, a much shorter 5' 4'' with a wider standard deviation of 3''. With a known population mean and standard deviation, the standard error (standard deviation of the sample means) provides the ability to calculate the probability that the sample (the lost bus of people) belongs to the population of interest (basketball players competing in the tournament).
+
+Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any bus whose members have an average height that is not within two standard errors of the population mean (between 6' 3'' and 6' 7'' in the case of our basketball players) is statistically unlikely to be the bus of basketball players for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a `reasonably sized' sample of basketball players with an average height so extremely different from the population average.
+
+Because small samples lend to anamalies, we could -- by chance -- select a single person who happens to fall in the tails (very short or very tall relative to others); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 times) to draw a random sample of players from the population with an average height that is not within three standard errors of the population mean (between 6' 2'' and 6' 8''). Therefore, if we find that the lost bus of people have an average height of 5' 11'', we should keep looking for our bus of basketball players.
 
 Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, or other distribution and observe the same behavior.
 
@@ -333,21 +473,20 @@ Let's now see the CLT in action by simulating a random uniform population distri
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(rand.unif) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"N"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{)}
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-5-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-10-1} 
 
 }
 
-\caption{Random Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-5}
+\caption{Random Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-10}
 \end{figure}
 
-As expected, this random distribution is uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
+As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -361,7 +500,7 @@ As expected, this random distribution is uniformly distributed. Next, we will dr
 \NormalTok{sample_means =}\StringTok{ }\OtherTok{NULL}
 
 \CommentTok{# Set seed for reproducible random samples}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{456}\NormalTok{)}
 
 \CommentTok{# For each n, draw random samples}
 \ControlFlowTok{for}\NormalTok{ (n }\ControlFlowTok{in}\NormalTok{ sample_n) \{}
@@ -371,7 +510,7 @@ As expected, this random distribution is uniformly distributed. Next, we will dr
       \CommentTok{# Store sample means in data frame}
 \NormalTok{      sample_means <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(sample_means, }\KeywordTok{cbind.data.frame}\NormalTok{(}
                             \DataTypeTok{n =}\NormalTok{ n, }
-                            \DataTypeTok{x_bar =} \KeywordTok{mean}\NormalTok{(}\KeywordTok{sample}\NormalTok{(rand.unif, n, }\DataTypeTok{replace =} \OtherTok{FALSE}\NormalTok{, }\DataTypeTok{prob =} \OtherTok{NULL}\NormalTok{))))}
+                            \DataTypeTok{x_bar =} \KeywordTok{mean}\NormalTok{(}\KeywordTok{sample}\NormalTok{(rand.unif, n, }\DataTypeTok{replace =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{prob =} \OtherTok{NULL}\NormalTok{))))}
 \NormalTok{  \}}
 \NormalTok{\}}
 
@@ -379,30 +518,71 @@ As expected, this random distribution is uniformly distributed. Next, we will dr
 \NormalTok{sample_means }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x_bar, }\DataTypeTok{fill =}\NormalTok{ n) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x-bar"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-6-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-11-1} 
 
 }
 
-\caption{Distribution of 100 Sample Means (n = 1-10)}\label{fig:unnamed-chunk-6}
+\caption{Distribution of 100 Sample Means (n = 1-10)}\label{fig:unnamed-chunk-11}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
 
-\hypertarget{covariance}{%
-\section{Covariance}\label{covariance}}
+\begin{itemize}
+\item
+  Confidence Intervals
 
-\hypertarget{correlation}{%
-\section{Correlation}\label{correlation}}
+  A Confidence Interval (CI) is a range of values that likely includes an unknown population value. A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
 
-``Correlation is not causation.''
+  \[ SE = \frac{\sigma}{\sqrt{n}} \]
+
+  Let's illustrate the relationship between CIs and standard errors by validating whether the normal distribution properties are characteristic of the data simulated for our CLT example:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Store sample means with n = 10}
+\NormalTok{x_bars <-}\StringTok{ }\NormalTok{sample_means[sample_means}\OperatorTok{$}\NormalTok{n }\OperatorTok{==}\StringTok{ }\DecValTok{10}\NormalTok{, }\StringTok{"x_bar"}\NormalTok{]}
+
+\CommentTok{# Calculate 95% CI (1.96 standard errors above and below the mean)}
+\NormalTok{ci95_upper_bound <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\FloatTok{1.96}
+\NormalTok{ci95_lower_bound <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\FloatTok{1.96}
+
+\CommentTok{# Calculate percent of sample means within 95% CI}
+\KeywordTok{length}\NormalTok{(x_bars[x_bars }\OperatorTok{>}\StringTok{ }\NormalTok{ci95_lower_bound }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{<}\StringTok{ }\NormalTok{ci95_upper_bound]) }\OperatorTok{/}\StringTok{ }\KeywordTok{length}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 95
+\end{verbatim}
+
+As expected, 95\% of sample means are within our 95\% CI (+/- 1.96 standard errors). 1.96 is a z-score, which is simply the number of standard deviations (or SEs in this case) that correspond to the 95\% CI.
+
+Next, let's look at a 99\% CI. We will use a z-score of 2.58 for this:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate 99% CI (2.58 standard errors above and below the mean)}
+\NormalTok{ci99_upper_bound <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\FloatTok{2.58}
+\NormalTok{ci99_lower_bound <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\FloatTok{2.58}
+
+\CommentTok{# Calculate percent of sample means within 99% CI}
+\KeywordTok{length}\NormalTok{(x_bars[x_bars }\OperatorTok{>}\StringTok{ }\NormalTok{ci99_lower_bound }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{<}\StringTok{ }\NormalTok{ci99_upper_bound]) }\OperatorTok{/}\StringTok{ }\KeywordTok{length}\NormalTok{(x_bars) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 100
+\end{verbatim}
+
+All of the sample means are within the 99\% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean \texttt{from\ the\ same\ population} that falls outside this interval.
 
 \hypertarget{measurement-sampling}{%
 \chapter{Measurement \& Sampling}\label{measurement-sampling}}
@@ -573,6 +753,8 @@ Daw, R. H., \& Pearson, E. S. (1972). Studies in the History of Probability and 
 
 James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to Statistical Learning: With Applications in R. New York: Springer.
 
+Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Giroux.
+
 Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
@@ -584,7 +766,7 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/Graphics/4D Framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-7}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4D Framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-14}
 \end{figure}
 
 1. Discover

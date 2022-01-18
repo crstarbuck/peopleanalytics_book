@@ -174,7 +174,7 @@ rand.unif <- runif(1000, min = 1, max = 100)
 ggplot() + 
   aes(rand.unif) + 
   labs(x = "x", y = "N") + 
-  geom_histogram(fill = "#262626")
+  geom_histogram(colour = "white", size = .1, fill = "#262626")
 
 ```
 
@@ -192,7 +192,7 @@ sample_n <- c(1:10)
 sample_means = NULL
 
 # Set seed for reproducible random samples
-set.seed(1234)
+set.seed(456)
 
 # For each n, draw random samples
 for (n in sample_n) {
@@ -202,7 +202,7 @@ for (n in sample_n) {
       # Store sample means in data frame
       sample_means <- rbind(sample_means, cbind.data.frame(
                             n = n, 
-                            x_bar = mean(sample(rand.unif, n, replace = FALSE, prob = NULL))))
+                            x_bar = mean(sample(rand.unif, n, replace = TRUE, prob = NULL))))
   }
 }
 
@@ -210,7 +210,7 @@ for (n in sample_n) {
 sample_means %>% ggplot() + 
   aes(x = x_bar, fill = n) + 
   labs(x = "x-bar", y = "n") + 
-  geom_histogram(fill = "#262626") + 
+  geom_histogram(colour = "white", size = .1, fill = "#262626") + 
   facet_wrap(~n)
 
 ```
@@ -239,7 +239,7 @@ length(x_bars[x_bars > ci95_lower_bound & x_bars < ci95_upper_bound]) / length(x
 
 ```
 
-  94% of sample means are within our 95% CI (+/- 1.96 standard errors), which is very close to the expected 95% per the Empirical Rule covered previously. 1.96 is a z-score, which is simply the number of standard deviations (or SEs in this case) that correspond to the 95% CI.
+  As expected, 95% of sample means are within our 95% CI (+/- 1.96 standard errors). 1.96 is a z-score, which is simply the number of standard deviations (or SEs in this case) that correspond to the 95% CI.
 
   Next, let's look at a 99% CI. We will use a z-score of 2.58 for this:
 
@@ -254,4 +254,4 @@ length(x_bars[x_bars > ci99_lower_bound & x_bars < ci99_upper_bound]) / length(x
 
 ```
 
-  99% of the sample means are within the 99% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+  All of the sample means are within the 99% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
