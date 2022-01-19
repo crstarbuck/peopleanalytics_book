@@ -156,7 +156,7 @@ Let's assume the mean nerdiness score and standard deviation of these two groups
 
 Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average nerdiness score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average nerdiness so extremely different from the population average. 
 
-Because small samples lend to anamalies, we could -- by chance -- select a single person who happens to fall in the tails (relatively normal or extremely nerdy); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average nerdiness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average nerdiness score of 75, we should quickly head to the other room!
+Because small samples lend to anamalies, we could -- by chance -- select a single person who happens to fall in the tails (relatively normal or extremely nerdy); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average nerdiness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average nerdiness score of 75, we will likely have far more fun in the other room!
 
 Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
@@ -178,14 +178,6 @@ rand.unif <- runif(1000, min = 1, max = 100)
 
 # Calculate population mean
 mean(rand.unif)
-
-```
-
-```{r, message = FALSE}
-
-# Calculate population standard deviation
-# Note: The sd() function returns the sample standard deviation since it is less common to work with full populations than with samples
-sqrt((length(rand.unif)-1)/length(rand.unif)) * sd(rand.unif)
 
 ```
 
@@ -248,16 +240,39 @@ Per the CLT, we can see that as n increases, the sample means become more normal
   
   $$ SE = \frac{\sigma}{\sqrt{n}} $$
   
-  Let's illustrate the relationship between CIs and standard errors by validating whether the normal distribution properties are characteristic of the data simulated for our CLT example (since population parameters are known):
+  Next, let's validate that our simulated distribution of sample means adheres to the properties of normally distributed data per the Empirical Rule:
+  
+```{r, message = FALSE}
+
+# Calculate percent of sample means within +/- 2 SEs
+length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars)]) / n * 100
+
+```
+
+  97% of sample means are within 2 SEs, which is roughly what we expect per the characteristics of normally distributed data. 
+  
+```{r, message = FALSE}
+
+# Calculate percent of sample means within +/- 3 SEs
+length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars)]) / n * 100
+
+```
+
+  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+  
+  Now, let's illustrate the relationship between CIs and standard errors:
 
 ```{r, message = FALSE}
 
 # Store sample means with n = 50
 x_bars <- sample_means[sample_means$n == 50, "x_bar"]
 
+# Store sample size
+n <- length(x_bars)
+
 # Calculate 95% CI (1.96 standard errors above and below the mean)
-ci95_lower_bound <- mean(x_bars) - 1.96 * (sd(x_bars) / sqrt(length(x_bars)))
-ci95_upper_bound <- mean(x_bars) + 1.96 * (sd(x_bars) / sqrt(length(x_bars)))
+ci95_lower_bound <- mean(x_bars) - 1.96 * (sd(x_bars) / sqrt(n))
+ci95_upper_bound <- mean(x_bars) + 1.96 * (sd(x_bars) / sqrt(n))
 
 ```
 
@@ -274,15 +289,6 @@ ci95_lower_bound
 ci95_upper_bound
 
 ```
-
-```{r, message = FALSE}
-
-# Calculate percent of sample means within +/- 2 SEs
-length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars)]) / length(x_bars) * 100
-
-```
-
-  97% of sample means are within 2 SEs, which is roughly what we expect per the properties of normally distributed data. 
   
   The 95% CI corresponds to a z-score of 1.96, which is simply the number of SEs we expect to include the true population average -- at least in 95 of 100 random samples taken from said population. In this example, we know that our population mean is 51.2, which is covered by our 95% CI (50.8 - 52.3). Note that our CI narrows with larger samples since our confidence that the range includes the population mean increases with more data.
 
@@ -291,8 +297,8 @@ length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2
 ```{r, message = FALSE}
 
 # Calculate 99% CI (2.58 standard errors above and below the mean)
-ci99_lower_bound <- mean(x_bars) - 2.58 * (sd(x_bars) / sqrt(length(x_bars)))
-ci99_upper_bound <- mean(x_bars) + 2.58 * (sd(x_bars) / sqrt(length(x_bars)))
+ci99_lower_bound <- mean(x_bars) - 2.58 * (sd(x_bars) / sqrt(n))
+ci99_upper_bound <- mean(x_bars) + 2.58 * (sd(x_bars) / sqrt(n))
 
 ```
 
@@ -309,15 +315,6 @@ ci99_lower_bound
 ci99_upper_bound
 
 ```
-
-```{r, message = FALSE}
-
-# Calculate percent of sample means within +/- 3 SEs
-length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars)]) / length(x_bars) * 100
-
-```
-
-  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
   
   Like the 95% CI, this slightly wider 99% CI (50.5 - 52.5) also includes the true population mean of 51.2.
   
