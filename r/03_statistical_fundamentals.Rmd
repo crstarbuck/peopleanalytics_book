@@ -154,13 +154,13 @@ Let's begin with an intuitive example of CLT. Imagine that we have a reliable wa
 
 Let's assume the mean nerdiness score and standard deviation of these two groups are known; the group of statisticians have, on average, a nerdiness score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less nerdy with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
-Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent will lie within two standard errors of the population mean, and roughly 99 percent will lie within three standard errors of the population mean. Therefore, any room whose members have an average nerdiness score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average nerdiness so extremely different from the population average. 
+Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average nerdiness score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average nerdiness so extremely different from the population average. 
 
 Because small samples lend to anamalies, we could -- by chance -- select a single person who happens to fall in the tails (relatively normal or extremely nerdy); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average nerdiness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average nerdiness score of 75, we should quickly head to the other room!
 
 Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
-```{r, fig.cap = "Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
+```{r, message = FALSE}
 
 # Load libraries for data wrangling and viz
 library(dplyr)
@@ -172,6 +172,25 @@ set.seed(1234)
 # Generate uniform population distribution with 1000 values ranging from 1 to 100
 rand.unif <- runif(1000, min = 1, max = 100)
 
+```
+
+```{r, message = FALSE}
+
+# Calculate population mean
+mean(rand.unif)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate population standard deviation
+# Note: The sd() function returns the sample standard deviation since it is less common to work with full populations than with samples
+sqrt((length(rand.unif)-1)/length(rand.unif)) * sd(rand.unif)
+
+```
+
+```{r, fig.cap = "Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
+
 # Produce histogram to visualize population distribution
 ggplot() + 
   aes(rand.unif) + 
@@ -180,15 +199,15 @@ ggplot() +
 
 ```
 
-As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of size 1 through 10 and plot the average of each.
+As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
 
-```{r, fig.cap = "Distribution of 100 Sample Means (n = 1-10)", fig.align = 'center', message = FALSE}
+```{r, fig.cap = "Distribution of 100 Sample Means", fig.align = 'center', message = FALSE}
 
 # Define number of samples to draw from population distribution
 samples <- 100
 
 # Populate vector with sample sizes
-sample_n <- c(1:10)
+sample_n <- c(1:5,10,25,50)
 
 # Initialize empty data frame to hold sample means
 sample_means = NULL
@@ -221,46 +240,90 @@ Per the CLT, we can see that as n increases, the sample means become more normal
 
 * Confidence Intervals
 
-  A Confidence Interval (CI) is a range of values that likely includes an unknown population value. A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
+  A Confidence Interval (CI) is a range of values that likely includes an unknown population value, as defined by:
+  
+  $$ CI = \bar{X} \pm z \frac{\sigma}{\sqrt{n}} $$
+  
+  A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
   
   $$ SE = \frac{\sigma}{\sqrt{n}} $$
   
-  Let's illustrate the relationship between CIs and standard errors by validating whether the normal distribution properties are characteristic of the data simulated for our CLT example:
+  Let's illustrate the relationship between CIs and standard errors by validating whether the normal distribution properties are characteristic of the data simulated for our CLT example (since population parameters are known):
 
 ```{r, message = FALSE}
 
-# Store sample means with n = 10
-x_bars <- sample_means[sample_means$n == 10, "x_bar"]
+# Store sample means with n = 50
+x_bars <- sample_means[sample_means$n == 50, "x_bar"]
 
 # Calculate 95% CI (1.96 standard errors above and below the mean)
-ci95_upper_bound <- mean(x_bars) + sd(x_bars) * 1.96
-ci95_lower_bound <- mean(x_bars) - sd(x_bars) * 1.96
-
-# Calculate percent of sample means within 95% CI
-length(x_bars[x_bars > ci95_lower_bound & x_bars < ci95_upper_bound]) / length(x_bars) * 100
+ci95_lower_bound <- mean(x_bars) - 1.96 * (sd(x_bars) / sqrt(length(x_bars)))
+ci95_upper_bound <- mean(x_bars) + 1.96 * (sd(x_bars) / sqrt(length(x_bars)))
 
 ```
 
-  As expected, 95% of sample means are within our 95% CI (+/- 1.96 standard errors). 1.96 is a z-score, which is simply the number of standard deviations (or SEs in this case) that correspond to the 95% CI.
+```{r, message = FALSE}
+
+# Print lower bound for 95% CI
+ci95_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 95% CI
+ci95_upper_bound
+
+```
+
+```{r, message = FALSE}
+
+# Calculate percent of sample means within +/- 2 SEs
+length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars)]) / length(x_bars) * 100
+
+```
+
+  97% of sample means are within 2 SEs, which is roughly what we expect per the properties of normally distributed data. 
+  
+  The 95% CI corresponds to a z-score of 1.96, which is simply the number of SEs we expect to include the true population average -- at least in 95 of 100 random samples taken from said population. In this example, we know that our population mean is 51.2, which is covered by our 95% CI (50.8 - 52.3). Note that our CI narrows with larger samples since our confidence that the range includes the population mean increases with more data.
 
   Next, let's look at a 99% CI. We will use a z-score of 2.58 for this:
 
 ```{r, message = FALSE}
 
 # Calculate 99% CI (2.58 standard errors above and below the mean)
-ci99_upper_bound <- mean(x_bars) + sd(x_bars) * 2.58
-ci99_lower_bound <- mean(x_bars) - sd(x_bars) * 2.58
-
-# Calculate percent of sample means within 99% CI
-length(x_bars[x_bars > ci99_lower_bound & x_bars < ci99_upper_bound]) / length(x_bars) * 100
+ci99_lower_bound <- mean(x_bars) - 2.58 * (sd(x_bars) / sqrt(length(x_bars)))
+ci99_upper_bound <- mean(x_bars) + 2.58 * (sd(x_bars) / sqrt(length(x_bars)))
 
 ```
 
-  All of the sample means are within the 99% CI (+/- 2.58 standard errors), indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+```{r, message = FALSE}
+
+# Print lower bound for 99% CI
+ci99_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 99% CI
+ci99_upper_bound
+
+```
+
+```{r, message = FALSE}
+
+# Calculate percent of sample means within +/- 3 SEs
+length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars)]) / length(x_bars) * 100
+
+```
+
+  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+  
+  Like the 95% CI, this slightly wider 99% CI (50.5 - 52.5) also includes the true population mean of 51.2.
   
 * Hypothesis Testing
 
-Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference. The null hypothesis is defined by:
+Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference. The null hypothesis is defined by:
 
 $$ H_0: \mu_A = \mu_B $$
 
@@ -276,9 +339,9 @@ $$ H_A: \mu_A > \mu_B $$
 
   Alpha
 
-  The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence for the alternative hypothesis.
+  The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
   
-  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 95 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should only expect a mean outside the 99% CI less than 1 in every 100 times.
+  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 97 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should generally only expect a mean outside the 99% CI less than 1 in every 100 times.
 
   Beta
   
