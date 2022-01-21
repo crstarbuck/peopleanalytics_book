@@ -1,12 +1,16 @@
 # Statistical Fundamentals
 
+This chapter surveys a number of univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
+
 ## Populations & Samples
 
 The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so sampling enables us to calculate statistics based on a smaller sample -- such as people willing to participate in a survey -- in order to learn about the parameters of the larger population.
 
-## Descriptive Statistics
+Another important concept is the sampling frame. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
 
-Descriptive statistics represent a rudimentary type of analysis that helps describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+## Univariate Analysis
+
+Descriptive statistics are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
 There are two categories of descriptive statistics: (1) measures of central tendency and (2) measures of spread. Measures of central tendency describe the central position in a set of data, while measures of spread describe how dispersed the data are.
 
@@ -104,7 +108,31 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   $$ s^{2} = \frac{\sum (x_{i}-\bar{x})^{2}}{n-1} $$
   
   It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+ 
+ In R, the sample variance can be calculated using the var() function:
+ 
+```{r, message = FALSE}
+
+# Read data
+data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+
+# Calculate sample variance for compensation
+var(data$annual_base_compensation)
+
+```
+
+  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of `var(vector) * (n - 1) / n`, it is simple to convert output from var() to the population variance:
   
+```{r, message = FALSE}
+
+# Store number of observations
+n = nrow(data)
+
+# Calculate population variance for compensation
+var(data$annual_base_compensation) * (n - 1) / n
+
+```
+
   <b>Standard Deviation</b>
   
   The standard deviation is simply the square root of the variance, as defined by:
@@ -113,10 +141,59 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   
   Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
   
+   In R, the sample standard deviation can be calculated using the sd() function:
+
+```{r, message = FALSE}
+
+# Calculate sample standard deviation for compensation
+sd(data$annual_base_compensation)
+
+```
+
+  Since the population standard deviation differs from the sample standard deviation by a factor of `sd(vector) * sqrt((n - 1) / n)`, it is simple to convert output from sd() to the population standard deviation:
+
+```{r, message = FALSE}
+
+# Calculate population standard deviation for compensation
+sd(data$annual_base_compensation) * sqrt((n - 1) / n)
+
+```
+
   <b>Quartiles</b>
   
-  The Interquartile Range (IQR)...
+  Quartiles are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts (with regard to the number of data points in each quartile, not the range of values) after ordering the data. Quartiles also correspond to percentiles. For example, Q1 is the 25th percentile -- the value below which 25% of values exist.
   
+  The Interquartile Range (IQR) represents the difference between Q3 and Q1 cutpoint values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution. Values less than `Q1 - 1.5 * IQR` or greater than `Q3 + 1.5 * IQR` are generally considered outliers.
+  
+  In R, the quantile() function returns the values that bookend each quartile:
+
+```{r, message = FALSE}
+
+# Return quartiles for compensation
+quantile(data$annual_base_compensation)
+
+```
+
+  We can return a specific percentile value using the `probs` argument in the quantile() function:
+
+```{r, message = FALSE}
+
+# Return 80th percentile compensation value
+quantile(data$annual_base_compensation, probs = .8)
+
+```
+
+  In addition, the summary() function returns several common descriptive statistics for an object:
+
+```{r, message = FALSE}
+
+# Return common descriptives
+summary(data$annual_base_compensation)
+
+```
+
+### Bivariate Analysis  
+
   <b>Covariance</b>
 
 $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
@@ -126,7 +203,6 @@ $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
   "Correlation is not causation."
 
 $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
-
 
 ## Inferential Statistics
 
@@ -342,7 +418,9 @@ $$ H_A: \mu_A > \mu_B $$
 
   The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
   
-  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 97 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should generally only expect a mean outside the 99% CI less than 1 in every 100 times.
+  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). With non-directional alternative hypotheses, we must divide $\alpha$ by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized. 
+  
+  At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 97 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should generally only expect a mean outside the 99% CI less than 1 in every 100 times.
 
   <b>Beta</b>
   
@@ -385,11 +463,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    <br />E. Both B and C
    <br />F. Both A and D
 
-4. 1000 randomly selected households in St. Louis participated in a survey. What is the sample and what is the population sampled in this case?
-   <br />A. Sample: 1000 households in survey, Population: all St. Louis households
-   <br />B. Sample: 1000 households in survey, Population: urban Missouri
-   <br />C. Sample: all St. Louis households, Population: Missouri
-   <br />D. Sample: urban Missouri, Population: North America
+4. 100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
+   <br />A. Sample: 100 employees who completed the survey, Population: All employees in the organization
+   <br />B. Sample: 100 employees who completed the survey, Population: Marketing employees
+   <br />C. Sample: All Marketing professionals, Population: All employees in the organization
+   <br />D. Sample: All employees in the organization, Population: Employees across all companies globally
 
 5. The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
    <br />A. True
@@ -407,7 +485,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    <br />A. True
    <br />B. False
 
-9. The range represents the difference between the maximum value and the median for a set of data.
+9. The mean alone is sufficient for understanding the distribution of a set of data.
    <br />A. True
    <br />B. False
 
