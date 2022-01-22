@@ -116,11 +116,11 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 # Load library for data wrangling
 library(dplyr)
 
-# Read data
-data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Read employee demographics data
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
 
 # Calculate sample variance for compensation
-var(data$annual_base_compensation)
+var(demographics$annual_base_compensation)
 
 ```
 
@@ -132,7 +132,7 @@ var(data$annual_base_compensation)
 n = nrow(data)
 
 # Calculate population variance for compensation
-var(data$annual_base_compensation) * (n - 1) / n
+var(demographics$annual_base_compensation) * (n - 1) / n
 
 ```
 
@@ -149,7 +149,7 @@ var(data$annual_base_compensation) * (n - 1) / n
 ```{r, message = FALSE}
 
 # Calculate sample standard deviation for compensation
-sd(data$annual_base_compensation)
+sd(demographics$annual_base_compensation)
 
 ```
 
@@ -158,7 +158,7 @@ sd(data$annual_base_compensation)
 ```{r, message = FALSE}
 
 # Calculate population standard deviation for compensation
-sd(data$annual_base_compensation) * sqrt((n - 1) / n)
+sd(demographics$annual_base_compensation) * sqrt((n - 1) / n)
 
 ```
 
@@ -173,7 +173,7 @@ sd(data$annual_base_compensation) * sqrt((n - 1) / n)
 ```{r, message = FALSE}
 
 # Return quartiles for compensation
-quantile(data$annual_base_compensation)
+quantile(demographics$annual_base_compensation)
 
 ```
 
@@ -182,7 +182,7 @@ quantile(data$annual_base_compensation)
 ```{r, message = FALSE}
 
 # Return 80th percentile compensation value
-quantile(data$annual_base_compensation, probs = .8)
+quantile(demographics$annual_base_compensation, probs = .8)
 
 ```
 
@@ -191,7 +191,7 @@ quantile(data$annual_base_compensation, probs = .8)
 ```{r, message = FALSE}
 
 # Return common descriptives
-summary(data$annual_base_compensation)
+summary(demographics$annual_base_compensation)
 
 ```
 
@@ -207,13 +207,27 @@ $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
   It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the relationship since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
   
+  In R, we can compute the covariance between a pair of numeric variables using the cov() function:
+  
 ```{r, message = FALSE}
 
-# Return common descriptives
-summary(data$annual_base_compensation)
+# Read survey response data
+responses <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/survey_responses.csv")
+
+# Calculate covariance between Belonging and Culture scores using complete observations (missing values are present in the data)
+cov(responses$belonging, responses$culture, use = "complete.obs")
 
 ```
   
+  In this example, using the default Pearson method, the covariance between two variables measured on 5-point Likert scales is .35. However, given the ordinal nature of this data, we should calculate covariance using the Spearman method. The Pearson method should be used when working with continuous data (e.g., compensation, age), and the Spearman method when working with rank-ordered variables (e.g., Likert scales, numeric education levels). We can override the default method using the method() argument in the cov() function call:
+  
+```{r, message = FALSE}
+
+# Calculate covariance between Belonging and Culture scores using Spearman's method
+cov(responses$belonging, responses$culture, method = "spearman", use = "complete.obs")
+
+```
+
   <b>Correlation</b>
 
   "Correlation is not causation."
