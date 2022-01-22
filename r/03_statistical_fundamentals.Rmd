@@ -107,7 +107,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   
   $$ s^{2} = \frac{\sum (x_{i}-\bar{x})^{2}}{n-1} $$
   
-  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of total working years measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
  
  In R, the sample variance can be calculated using the var() function:
  
@@ -116,11 +116,11 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Read employee tenure data
+tenure <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_tenure.csv")
 
-# Calculate sample variance for compensation
-var(demographics$annual_base_compensation)
+# Calculate sample variance for total working years
+var(tenure$total_working_years)
 
 ```
 
@@ -131,8 +131,8 @@ var(demographics$annual_base_compensation)
 # Store number of observations
 n = nrow(data)
 
-# Calculate population variance for compensation
-var(demographics$annual_base_compensation) * (n - 1) / n
+# Calculate population variance for total working years
+var(tenure$total_working_years) * (n - 1) / n
 
 ```
 
@@ -148,8 +148,8 @@ var(demographics$annual_base_compensation) * (n - 1) / n
 
 ```{r, message = FALSE}
 
-# Calculate sample standard deviation for compensation
-sd(demographics$annual_base_compensation)
+# Calculate sample standard deviation for total working years
+sd(tenure$total_working_years)
 
 ```
 
@@ -157,8 +157,8 @@ sd(demographics$annual_base_compensation)
 
 ```{r, message = FALSE}
 
-# Calculate population standard deviation for compensation
-sd(demographics$annual_base_compensation) * sqrt((n - 1) / n)
+# Calculate population standard deviation for total working years
+sd(tenure$total_working_years) * sqrt((n - 1) / n)
 
 ```
 
@@ -172,8 +172,8 @@ sd(demographics$annual_base_compensation) * sqrt((n - 1) / n)
 
 ```{r, message = FALSE}
 
-# Return quartiles for compensation
-quantile(demographics$annual_base_compensation)
+# Return quartiles for total working years
+quantile(tenure$total_working_years)
 
 ```
 
@@ -181,8 +181,8 @@ quantile(demographics$annual_base_compensation)
 
 ```{r, message = FALSE}
 
-# Return 80th percentile compensation value
-quantile(demographics$annual_base_compensation, probs = .8)
+# Return 80th percentile total working years value
+quantile(tenure$total_working_years, probs = .8)
 
 ```
 
@@ -191,7 +191,7 @@ quantile(demographics$annual_base_compensation, probs = .8)
 ```{r, message = FALSE}
 
 # Return common descriptives
-summary(demographics$annual_base_compensation)
+summary(tenure$total_working_years)
 
 ```
 
@@ -201,7 +201,7 @@ summary(demographics$annual_base_compensation)
   
   While variance provides an understanding of how values for a single variable vary, covariance is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
   
-  Covariance is defined as:
+  Covariance is defined by:
 
 $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
@@ -211,28 +211,98 @@ $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
   
 ```{r, message = FALSE}
 
-# Read survey response data
-responses <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/survey_responses.csv")
-
-# Calculate covariance between Belonging and Culture scores using complete observations (missing values are present in the data)
-cov(responses$belonging, responses$culture, use = "complete.obs")
+# Calculate covariance between total working years and age using complete observations (missing values will cause issues if not addressed)
+cov(tenure$total_working_years, tenure$years_at_company, use = "complete.obs")
 
 ```
   
-  In this example, using the default Pearson method, the covariance between two variables measured on 5-point Likert scales is .35. However, given the ordinal nature of this data, we should calculate covariance using the Spearman method. The Pearson method should be used when working with continuous data (e.g., compensation, age), and the Spearman method when working with rank-ordered variables (e.g., Likert scales, numeric education levels). We can override the default method using the method() argument in the cov() function call:
+  In this example, using the default Pearson method, the covariance between total working years and age is 453179.1. Since the value is positive, we know that total working years is generally higher for older employees and lower for younger employees.
+  
+  Since total working years and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the `method` argument in the cov() function call:
   
 ```{r, message = FALSE}
 
-# Calculate covariance between Belonging and Culture scores using Spearman's method
-cov(responses$belonging, responses$culture, method = "spearman", use = "complete.obs")
+# Read survey response data
+responses <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_survey_responses.csv")
+
+# Calculate covariance between job satisfaction and work-life balance scores using Spearman's method
+cov(responses$job_satisfaction, responses$relationship_satisfaction, method = "spearman", use = "complete.obs")
 
 ```
 
   <b>Correlation</b>
 
-  "Correlation is not causation."
+  While covariance is an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of the relationship. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative relationship, 1 indicates a perfectly positive relationship, and 0 indicates the absence of a relationship. Pearson's correlation coefficient $r$ is defined by:
 
 $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
+
+  In R, Pearson's correlation coefficient $r$ can be calculated using the cor() function:
+
+```{r, message = FALSE}
+
+# Calculate the correlation between total working years and years at company
+cor(tenure$total_working_years, tenure$years_at_company, use = "complete.obs")
+
+```
+
+  While we knew the relationship between total working years and years at company is positive based on the positive covariance coefficient, Pearson's $r$ of .8 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive).
+  
+  As we've covered, Pearson's $r$ is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's $\rho$, which is a standardized nonparametric measure of the relationship between two rank-ordered variables. Spearman's $\rho$ is defined as:
+  
+  $$ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
+  
+  Like the cov() function, we can override the default Pearson method in the cor() function using the `method` argument:
+
+```{r, message = FALSE}
+
+# Calculate the correlation between Belonging and Culture scores using Spearman's method
+cor(responses$job_satisfaction, responses$relationship_satisfaction, method = "spearman", use = "complete.obs")
+
+```
+
+  The $\rho$ coefficient indicates that the negative relationship between job satisfaction and relationship satisfaction is quite weak relative to the relationship we observed between total working years and years at company. Nevertheless, there is some degree of negative covariance between these variables.
+  
+  Rather than looking at individual pairwise relationships, we can easily produce a correlation matrix for many variables. 
+  
+```{r, message = FALSE}
+
+# Generate a correlation matrix between response columns
+cor(responses[, 2:5], method = "spearman", use = "complete.obs")
+
+```
+
+  Based on this correlation matrix, there is little or no relationship between responses on these four survey variables. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  
+  A great library for visualizing correlation matrices is corrplot. Several arguments can be specified to surface the coefficient and various visual representations of the relationships among variables. The `hclust` argument orders variables based on similarities in the strength of relationships:
+  
+```{r, message = FALSE}
+
+# Load library for correlation visuals
+library(corrplot)
+
+# Store correlation matrix to object M
+M <- cor(tenure[, 2:6], method = "spearman", use = "complete.obs")
+
+# Visualize correlation matrix
+corrplot(M, method = 'shade', type = "upper", order = "hclust")
+
+```
+
+  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on correlations -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect associations between variables that are likely related only by chance:
+  
+```{r, echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce.png")
+
+```
+  
+<br />
+  
+```{r, echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese.png")
+
+```
 
 ## Inferential Statistics
 
