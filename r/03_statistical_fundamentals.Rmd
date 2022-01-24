@@ -203,7 +203,7 @@ summary(demographics$annual_comp)
   
   While variance provides an understanding of how values for a single variable vary, covariance is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
   
-  Covariance is defined by:
+  Covariance of a sample is defined by:
 
 $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
@@ -213,27 +213,25 @@ $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
   
 ```{r, message = FALSE}
 
-# Calculate covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
+# Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
 cov(demographics$annual_comp, demographics$age, use = "complete.obs")
 
 ```
   
   In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
-  Since annual compensation and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the `method` argument in the cov() function call:
+  Just as we multiplied the sample variance by `(n - 1) / n` to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
   
 ```{r, message = FALSE}
 
-# Calculate covariance between job level and education level
-cov(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
+# Calculate population covariance between annual compensation and age
+cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) / n
 
 ```
 
-  The positive covariance coefficient indicates that those with more education tend to achieve higher levels in the organization relative to those with less education.
-
   <b>Correlation</b>
 
-  While covariance is an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. Pearson's correlation coefficient $r$ is defined by:
+  Correlation is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. Pearson's product moment correlation coefficient $r$ is defined by:
 
 $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
 
@@ -248,11 +246,25 @@ cor(demographics$annual_comp, demographics$age, use = "complete.obs")
 
   While we knew the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive).
   
-  As we've covered, Pearson's $r$ is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's $\rho$, which is a standardized nonparametric measure of the association between two rank-ordered variables. Spearman's $\rho$ is defined as:
+  There are several correlation coefficients, and the measurement scale of `x` and `y` determine the appropriate type:
+  
+<br />
+
+```{r, echo = FALSE, fig.cap = 'Table of Correlation Coefficients', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table.png")
+
+```
+
+<br />
+  
+  Pearson's $r$ can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
+  
+  When one or both variables are ordinal, we can leverage Spearman's $\rho$ or Kendall's $\tau$, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's $\rho$, which is defined as:
   
   $$ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
   
-  Like the cov() function, we can override the default Pearson method in the cor() function using the `method` argument:
+  We can override the default Pearson method in the cor() function to implement a specific form of rank correlation using the `method` argument:
 
 ```{r, message = FALSE}
 
@@ -261,9 +273,31 @@ cor(demographics$job_level, demographics$education, method = "spearman", use = "
 
 ```
 
-  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is strong.
+  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
   
-  Rather than looking at individual pairwise relationships, we can easily produce a correlation matrix for many variables. 
+  The Phi Coefficient ($\phi$), sometimes referred to as the mean square contingency coefficient, can be used to understand the association between two dichotomous variables. For this, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs. low performance). We will leverage the `psych` library to implement this in R:
+  
+```{r, message = FALSE}
+
+# Load library for Phi Coefficient
+library(psych)
+
+# Set females to 1 and everything else to 0
+demographics$gender_code <- ifelse(demographics$gender == 'Female', 1, 0)
+# Set high performers (3 and above) to 1 and everything else to 0
+demographics$performance_code <- ifelse(demographics$performance < 3, 0, 1)
+
+# Create a 2x2 contingency table
+contingency_tbl <- table(demographics$gender_code, demographics$performance_code)
+
+# Calculate the Phi Coefficient between dichotomous variables
+phi(contingency_tbl)
+
+``` 
+  
+  $\phi$ is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
+  
+  The examples thus far have examined associations between only two variables at a time. However, rather than looking at individual pairwise relationships, we can easily produce a correlation matrix to surface associations among many variables:
   
 ```{r, message = FALSE}
 
@@ -274,9 +308,9 @@ cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "
 
   Based on this correlation matrix, there are several strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
-  A great library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
+  A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
   
-```{r, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 
 # Load library for correlation visuals
 library(corrplot)
@@ -289,7 +323,7 @@ corrplot.mixed(M, order = 'AOE')
 
 ```
 
-  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables that are likely related only by chance:
+  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is unlikely a true direct association:
   
 ```{r, echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
 
