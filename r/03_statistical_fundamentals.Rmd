@@ -117,10 +117,10 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 library(dplyr)
 
 # Read employee tenure data
-tenure <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_tenure.csv")
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
 
-# Calculate sample variance for total working years
-var(tenure$total_working_years)
+# Calculate sample variance for annual compensation
+var(demographics$annual_comp)
 
 ```
 
@@ -129,10 +129,10 @@ var(tenure$total_working_years)
 ```{r, message = FALSE}
 
 # Store number of observations
-n = nrow(data)
+n = nrow(demographics)
 
-# Calculate population variance for total working years
-var(tenure$total_working_years) * (n - 1) / n
+# Calculate population variance for annual compensation
+var(demographics$annual_comp) * (n - 1) / n
 
 ```
 
@@ -148,8 +148,8 @@ var(tenure$total_working_years) * (n - 1) / n
 
 ```{r, message = FALSE}
 
-# Calculate sample standard deviation for total working years
-sd(tenure$total_working_years)
+# Calculate sample standard deviation for annual compensation
+sd(demographics$annual_comp)
 
 ```
 
@@ -157,8 +157,8 @@ sd(tenure$total_working_years)
 
 ```{r, message = FALSE}
 
-# Calculate population standard deviation for total working years
-sd(tenure$total_working_years) * sqrt((n - 1) / n)
+# Calculate population standard deviation for annual compensation
+sd(demographics$annual_comp) * sqrt((n - 1) / n)
 
 ```
 
@@ -172,17 +172,19 @@ sd(tenure$total_working_years) * sqrt((n - 1) / n)
 
 ```{r, message = FALSE}
 
-# Return quartiles for total working years
-quantile(tenure$total_working_years)
+# Return quartiles for annual compensation
+quantile(demographics$annual_comp)
 
 ```
 
-  We can return a specific percentile value using the `probs` argument in the quantile() function:
+  Based on this output, we know that 25% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75% of people earn annual compensation of 163,263 USD or less.
+  
+  We can also return a specific percentile value using the `probs` argument in the quantile() function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
 
 ```{r, message = FALSE}
 
-# Return 80th percentile total working years value
-quantile(tenure$total_working_years, probs = .8)
+# Return 80th percentile annual compensation value
+quantile(demographics$annual_comp, probs = .8)
 
 ```
 
@@ -191,7 +193,7 @@ quantile(tenure$total_working_years, probs = .8)
 ```{r, message = FALSE}
 
 # Return common descriptives
-summary(tenure$total_working_years)
+summary(demographics$annual_comp)
 
 ```
 
@@ -205,20 +207,20 @@ summary(tenure$total_working_years)
 
 $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
-  It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the relationship since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
+  It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
   
   In R, we can compute the covariance between a pair of numeric variables using the cov() function:
   
 ```{r, message = FALSE}
 
-# Calculate covariance between total working years and age using complete observations (missing values will cause issues if not addressed)
-cov(tenure$total_working_years, tenure$years_at_company, use = "complete.obs")
+# Calculate covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
+cov(demographics$annual_comp, demographics$age, use = "complete.obs")
 
 ```
   
-  In this example, using the default Pearson method, the covariance between total working years and age is 453179.1. The positive value indicates that total working years is generally higher for older employees and lower for younger employees.
+  In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
-  Since total working years and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the `method` argument in the cov() function call:
+  Since annual compensation and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the `method` argument in the cov() function call:
   
 ```{r, message = FALSE}
 
@@ -241,7 +243,7 @@ $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x}
 ```{r, message = FALSE}
 
 # Calculate the correlation between total working years and years at company
-cor(tenure$total_working_years, tenure$years_at_company, use = "complete.obs")
+cor(demographics$total_working_years, demographics$years_at_company, use = "complete.obs")
 
 ```
 
