@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-01-22}
+\date{2022-01-24}
 
 \begin{document}
 \maketitle
@@ -235,7 +235,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpzEGdsk/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpesTRZU/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -442,15 +442,15 @@ In R, the sample variance can be calculated using the var() function:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Read employee tenure data}
-\NormalTok{tenure <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_tenure.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
 
-\CommentTok{# Calculate sample variance for total working years}
-\KeywordTok{var}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years)}
+\CommentTok{# Calculate sample variance for annual compensation}
+\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 60.54056
+## [1] 1876688425
 \end{verbatim}
 
 Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of \texttt{var(vector)\ *\ (n\ -\ 1)\ /\ n}, it is simple to convert output from var() to the population variance:
@@ -458,15 +458,15 @@ Sample statistics are the default in R. Since the population variance differs fr
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store number of observations}
-\NormalTok{n =}\StringTok{ }\KeywordTok{nrow}\NormalTok{(data)}
+\NormalTok{n =}\StringTok{ }\KeywordTok{nrow}\NormalTok{(demographics)}
 
-\CommentTok{# Calculate population variance for total working years}
-\KeywordTok{var}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
+\CommentTok{# Calculate population variance for annual compensation}
+\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## numeric(0)
+## [1] 1876303464
 \end{verbatim}
 
 Standard Deviation
@@ -481,26 +481,26 @@ In R, the sample standard deviation can be calculated using the sd() function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate sample standard deviation for total working years}
-\KeywordTok{sd}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years)}
+\CommentTok{# Calculate sample standard deviation for annual compensation}
+\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 7.780782
+## [1] 43320.76
 \end{verbatim}
 
 Since the population standard deviation differs from the sample standard deviation by a factor of \texttt{sd(vector)\ *\ sqrt((n\ -\ 1)\ /\ n)}, it is simple to convert output from sd() to the population standard deviation:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate population standard deviation for total working years}
-\KeywordTok{sd}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{((n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n)}
+\CommentTok{# Calculate population standard deviation for annual compensation}
+\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{((n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## numeric(0)
+## [1] 43316.32
 \end{verbatim}
 
 Quartiles
@@ -513,28 +513,30 @@ In R, the quantile() function returns the values that bookend each quartile:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Return quartiles for total working years}
-\KeywordTok{quantile}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years)}
+\CommentTok{# Return quartiles for annual compensation}
+\KeywordTok{quantile}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   0%  25%  50%  75% 100% 
-##    0    6   10   15   40
+##       0%      25%      50%      75%     100% 
+##  50016.0  87946.0 125522.0 163262.5 199968.0
 \end{verbatim}
 
-We can return a specific percentile value using the \texttt{probs} argument in the quantile() function:
+Based on this output, we know that 25\% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75\% of people earn annual compensation of 163,263 USD or less.
+
+We can also return a specific percentile value using the \texttt{probs} argument in the quantile() function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Return 80th percentile total working years value}
-\KeywordTok{quantile}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years, }\DataTypeTok{probs =} \FloatTok{.8}\NormalTok{)}
+\CommentTok{# Return 80th percentile annual compensation value}
+\KeywordTok{quantile}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, }\DataTypeTok{probs =} \FloatTok{.8}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## 80% 
-##  17
+##      80% 
+## 170196.4
 \end{verbatim}
 
 In addition, the summary() function returns several common descriptive statistics for an object:
@@ -542,13 +544,13 @@ In addition, the summary() function returns several common descriptive statistic
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return common descriptives}
-\KeywordTok{summary}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years)}
+\KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##    0.00    6.00   10.00   11.28   15.00   40.00
+##   50016   87946  125522  125369  163262  199968
 \end{verbatim}
 
 \hypertarget{bivariate-analysis}{%
@@ -562,42 +564,41 @@ Covariance is defined by:
 
 \[ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} \]
 
-It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the relationship since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong.
+It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong.
 
 In R, we can compute the covariance between a pair of numeric variables using the cov() function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate covariance between total working years and age using complete observations (missing values will cause issues if not addressed)}
-\KeywordTok{cov}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years, tenure}\OperatorTok{$}\NormalTok{years_at_company, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Calculate covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)}
+\KeywordTok{cov}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, demographics}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 30.62278
+## [1] 453179.1
 \end{verbatim}
 
-In this example, using the default Pearson method, the covariance between total working years and age is 453179.1. Since the value is positive, we know that total working years is generally higher for older employees and lower for younger employees.
+In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
 
-Since total working years and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the \texttt{method} argument in the cov() function call:
+Since annual compensation and age are both measured on continuous scales, the default Pearson method for evaluating the linear relationship is appropriate. However, people analytics often involves working with ordinal non-linear data (e.g., survey data measured on Likert-type scales, numerically coded education levels), and for these data the Spearman method for rank-ordered variables should be used. We can override the default method using the \texttt{method} argument in the cov() function call:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Read survey response data}
-\NormalTok{responses <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_survey_responses.csv"}\NormalTok{)}
-
-\CommentTok{# Calculate covariance between job satisfaction and work-life balance scores using Spearman's method}
-\KeywordTok{cov}\NormalTok{(responses}\OperatorTok{$}\NormalTok{job_satisfaction, responses}\OperatorTok{$}\NormalTok{relationship_satisfaction, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Calculate covariance between job level and education level}
+\KeywordTok{cov}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{job_level, demographics}\OperatorTok{$}\NormalTok{education, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] -2455.475
+## [1] 1225511
 \end{verbatim}
+
+The positive covariance coefficient indicates that those with more education tend to achieve higher levels in the organization relative to those with less education.
 
 Correlation
 
-While covariance is an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of the relationship. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative relationship, 1 indicates a perfectly positive relationship, and 0 indicates the absence of a relationship. Pearson's correlation coefficient \(r\) is defined by:
+While covariance is an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. Pearson's correlation coefficient \(r\) is defined by:
 
 \[ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} \]
 
@@ -605,18 +606,18 @@ In R, Pearson's correlation coefficient \(r\) can be calculated using the cor() 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate the correlation between total working years and years at company}
-\KeywordTok{cor}\NormalTok{(tenure}\OperatorTok{$}\NormalTok{total_working_years, tenure}\OperatorTok{$}\NormalTok{years_at_company, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Calculate the correlation between annual compensation and age}
+\KeywordTok{cor}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, demographics}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.6238746
+## [1] 0.8061577
 \end{verbatim}
 
-While we knew the relationship between total working years and years at company is positive based on the positive covariance coefficient, Pearson's \(r\) of .8 indicates that the strength of the positive association is strong (\(r\) = 1 is perfectly positive).
+While we knew the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's \(r\) of .81 indicates that the strength of the positive association is strong (\(r\) = 1 is perfectly positive).
 
-As we've covered, Pearson's \(r\) is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's \(\rho\), which is a standardized nonparametric measure of the relationship between two rank-ordered variables. Spearman's \(\rho\) is defined as:
+As we've covered, Pearson's \(r\) is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's \(\rho\), which is a standardized nonparametric measure of the association between two rank-ordered variables. Spearman's \(\rho\) is defined as:
 
 \[ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} \]
 
@@ -624,42 +625,37 @@ Like the cov() function, we can override the default Pearson method in the cor()
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate the correlation between Belonging and Culture scores using Spearman's method}
-\KeywordTok{cor}\NormalTok{(responses}\OperatorTok{$}\NormalTok{job_satisfaction, responses}\OperatorTok{$}\NormalTok{relationship_satisfaction, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Calculate the correlation between job level and education level using Spearman's method}
+\KeywordTok{cor}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{job_level, demographics}\OperatorTok{$}\NormalTok{education, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] -0.01467855
+## [1] 0.6749776
 \end{verbatim}
 
-The \(\rho\) coefficient indicates that the negative relationship between job satisfaction and relationship satisfaction is quite weak relative to the relationship we observed between total working years and years at company. Nevertheless, there is some degree of negative covariance between these variables.
+The \(\rho\) coefficient of .67 indicates that the positive association we observed between job level and education level is strong.
 
 Rather than looking at individual pairwise relationships, we can easily produce a correlation matrix for many variables.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Generate a correlation matrix between response columns}
-\KeywordTok{cor}\NormalTok{(responses[, }\DecValTok{2}\OperatorTok{:}\DecValTok{5}\NormalTok{], }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Generate a correlation matrix between continuous variables}
+\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##                           environment_satisfaction job_satisfaction
-## environment_satisfaction               1.000000000     -0.002992782
-## job_satisfaction                      -0.002992782      1.000000000
-## relationship_satisfaction              0.005353458     -0.014678554
-## worklife_balance                       0.003679113      0.006420656
-##                           relationship_satisfaction worklife_balance
-## environment_satisfaction                0.005353458      0.003679113
-## job_satisfaction                       -0.014678554      0.006420656
-## relationship_satisfaction               1.000000000      0.005766111
-## worklife_balance                        0.005766111      1.000000000
+##             annual_comp       age org_tenure job_tenure
+## annual_comp   1.0000000 0.8061577  0.6268392  0.3897584
+## age           0.8061577 1.0000000  0.6277154  0.3797042
+## org_tenure    0.6268392 0.6277154  1.0000000  0.5936211
+## job_tenure    0.3897584 0.3797042  0.5936211  1.0000000
 \end{verbatim}
 
-Based on this correlation matrix, there is little or no relationship between responses on these four survey variables. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+Based on this correlation matrix, there are several strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
 
-A great library for visualizing correlation matrices is corrplot. Several arguments can be specified to surface the coefficient and various visual representations of the relationships among variables. The \texttt{hclust} argument orders variables based on similarities in the strength of relationships:
+A great library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -667,33 +663,33 @@ A great library for visualizing correlation matrices is corrplot. Several argume
 \KeywordTok{library}\NormalTok{(corrplot)}
 
 \CommentTok{# Store correlation matrix to object M}
-\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(tenure[, }\DecValTok{2}\OperatorTok{:}\DecValTok{6}\NormalTok{], }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 
 \CommentTok{# Visualize correlation matrix}
-\KeywordTok{corrplot}\NormalTok{(M, }\DataTypeTok{method =} \StringTok{'shade'}\NormalTok{, }\DataTypeTok{type =} \StringTok{"upper"}\NormalTok{, }\DataTypeTok{order =} \StringTok{"hclust"}\NormalTok{)}
+\KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics{_main_files/figure-latex/unnamed-chunk-22-1.pdf}
 
-It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on correlations -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect associations between variables that are likely related only by chance:
+It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables that are likely related only by chance:
 
 \begin{figure}
 
-{\centering \includegraphics[width=13.33in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce} 
+{\centering \includegraphics[width=13.28in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce} 
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption}\label{fig:unnamed-chunk-23}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-23}
 \end{figure}
 
 \begin{figure}
 
-{\centering \includegraphics[width=13.33in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese} 
+{\centering \includegraphics[width=13.29in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese} 
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals}\label{fig:unnamed-chunk-24}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-24}
 \end{figure}
 
 \hypertarget{inferential-statistics}{%

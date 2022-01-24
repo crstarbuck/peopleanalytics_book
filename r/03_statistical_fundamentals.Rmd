@@ -224,13 +224,12 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs")
   
 ```{r, message = FALSE}
 
-# Read survey response data
-responses <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/tables/tbl_survey_responses.csv")
-
-# Calculate covariance between job satisfaction and work-life balance scores using Spearman's method
-cov(responses$job_satisfaction, responses$relationship_satisfaction, method = "spearman", use = "complete.obs")
+# Calculate covariance between job level and education level
+cov(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
 
 ```
+
+  The positive covariance coefficient indicates that those with more education tend to achieve higher levels in the organization relative to those with less education.
 
   <b>Correlation</b>
 
@@ -242,14 +241,14 @@ $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x}
 
 ```{r, message = FALSE}
 
-# Calculate the correlation between total working years and years at company
-cor(demographics$total_working_years, demographics$years_at_company, use = "complete.obs")
+# Calculate the correlation between annual compensation and age
+cor(demographics$annual_comp, demographics$age, use = "complete.obs")
 
 ```
 
-  While we knew the relationship between total working years and years at company is positive based on the positive covariance coefficient, Pearson's $r$ of .8 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive).
+  While we knew the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive).
   
-  As we've covered, Pearson's $r$ is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's $\rho$, which is a standardized nonparametric measure of the relationship between two rank-ordered variables. Spearman's $\rho$ is defined as:
+  As we've covered, Pearson's $r$ is not appropriate for non-linear ordinal data. For this, we can leverage Spearman's $\rho$, which is a standardized nonparametric measure of the association between two rank-ordered variables. Spearman's $\rho$ is defined as:
   
   $$ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
   
@@ -257,25 +256,25 @@ cor(demographics$total_working_years, demographics$years_at_company, use = "comp
 
 ```{r, message = FALSE}
 
-# Calculate the correlation between Belonging and Culture scores using Spearman's method
-cor(responses$job_satisfaction, responses$relationship_satisfaction, method = "spearman", use = "complete.obs")
+# Calculate the correlation between job level and education level using Spearman's method
+cor(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
 
 ```
 
-  The $\rho$ coefficient indicates that the negative relationship between job satisfaction and relationship satisfaction is quite weak relative to the relationship we observed between total working years and years at company. Nevertheless, there is some degree of negative covariance between these variables.
+  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is strong.
   
   Rather than looking at individual pairwise relationships, we can easily produce a correlation matrix for many variables. 
   
 ```{r, message = FALSE}
 
-# Generate a correlation matrix between response columns
-cor(responses[, 2:5], method = "spearman", use = "complete.obs")
+# Generate a correlation matrix between continuous variables
+cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
 
 ```
 
-  Based on this correlation matrix, there is little or no relationship between responses on these four survey variables. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  Based on this correlation matrix, there are several strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
-  A great library for visualizing correlation matrices is corrplot. Several arguments can be specified to surface the coefficient and various visual representations of the relationships among variables. The `hclust` argument orders variables based on similarities in the strength of relationships:
+  A great library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
   
 ```{r, message = FALSE}
 
@@ -283,16 +282,16 @@ cor(responses[, 2:5], method = "spearman", use = "complete.obs")
 library(corrplot)
 
 # Store correlation matrix to object M
-M <- cor(tenure[, 2:6], method = "spearman", use = "complete.obs")
+M <- cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], method = "spearman", use = "complete.obs")
 
 # Visualize correlation matrix
-corrplot(M, method = 'shade', type = "upper", order = "hclust")
+corrplot.mixed(M, order = 'AOE')
 
 ```
 
-  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on correlations -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect associations between variables that are likely related only by chance:
+  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables that are likely related only by chance:
   
-```{r, echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption', fig.align = 'center'}
+```{r, echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce.png")
 
@@ -300,7 +299,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 <br />
   
-```{r, echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals', fig.align = 'center'}
+```{r, echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese.png")
 
