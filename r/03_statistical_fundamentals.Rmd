@@ -4,9 +4,9 @@ This chapter surveys a number of univariate, bivariate, and inferential analysis
 
 ## Populations & Samples
 
-The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so sampling enables us to calculate statistics based on a smaller sample -- such as people willing to participate in a survey -- in order to learn about the parameters of the larger population.
+The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so we instead calculate **sample statistics** -- such as people who participate in a survey -- in order to estimate **population parameters**.
 
-Another important concept is the sampling frame. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
+Another important concept is the **sampling frame**. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
 
 ## Univariate Analysis
 
@@ -16,7 +16,7 @@ There are two categories of descriptive statistics: (1) measures of central tend
 
 ### Measures of Central Tendency
 
-  <b>Mean</b>
+  **Mean**
   
   Perhaps the most intuitive measure of central tendency is the mean, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
   
@@ -34,7 +34,7 @@ mean(x)
 
 ```
 
-  <b>Median</b>
+  **Median**
   
   The median represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency. 
   
@@ -49,7 +49,7 @@ median(x)
   
   In this example, the median is only 2 compared with the mean of 6.9 (which is not really representative of any of the values in vector x). Large deltas between mean and median values are evidence of outliers.
   
-  <b>Mode</b>
+  **Mode**
   
   The mode is the most frequent number in a set of values.
   
@@ -71,7 +71,7 @@ stat.mode(x)
   
   In this case, we have a bimodal distribution since both 1 and 2 occur most frequently.
   
-  <b>Range</b>
+  **Range**
   
   The range is the difference between the maximum and minimum values in a set of numbers. 
   
@@ -95,7 +95,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 
 ### Measures of Spread
 
-  <b>Variance</b>
+  **Variance**
   
   Variance is a measure of the variability around the average value. Variance is calculated using the average of squared differences from the mean.
   
@@ -111,7 +111,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
  
  In R, the sample variance can be calculated using the var() function:
  
-```{r, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 
 # Load library for data wrangling
 library(dplyr)
@@ -136,7 +136,7 @@ var(demographics$annual_comp) * (n - 1) / n
 
 ```
 
-  <b>Standard Deviation</b>
+  **Standard Deviation**
   
   The standard deviation is simply the square root of the variance, as defined by:
   
@@ -162,7 +162,7 @@ sd(demographics$annual_comp) * sqrt((n - 1) / n)
 
 ```
 
-  <b>Quartiles</b>
+  **Quartiles**
   
   Quartiles are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts (with regard to the number of data points in each quartile, not the range of values) after ordering the data. Quartiles also correspond to percentiles. For example, Q1 is the 25th percentile -- the value below which 25% of values exist.
   
@@ -199,7 +199,7 @@ summary(demographics$annual_comp)
 
 ### Bivariate Analysis  
 
-  <b>Covariance</b>
+  **Covariance**
   
   While variance provides an understanding of how values for a single variable vary, covariance is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
   
@@ -229,7 +229,7 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) 
 
 ```
 
-  <b>Correlation</b>
+  **Correlation**
 
   Correlation is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. Pearson's product moment correlation coefficient $r$ is defined by:
 
@@ -250,7 +250,7 @@ cor(demographics$annual_comp, demographics$age, use = "complete.obs")
   
 <br />
 
-```{r, echo = FALSE, fig.cap = 'Table of Correlation Coefficients', fig.align = 'center'}
+```{r, echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table.png")
 
@@ -262,7 +262,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   When one or both variables are ordinal, we can leverage Spearman's $\rho$ or Kendall's $\tau$, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's $\rho$, which is defined as:
   
-  $$ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
+  $$ \rho = 1 - {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
   
   We can override the default Pearson method in the cor() function to implement a specific form of rank correlation using the `method` argument:
 
@@ -275,15 +275,28 @@ cor(demographics$job_level, demographics$education, method = "spearman", use = "
 
   The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
   
-  The Phi Coefficient ($\phi$), sometimes referred to as the mean square contingency coefficient, can be used to understand the association between two dichotomous variables. For this, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs. low performance). We will leverage the `psych` library to implement this in R:
+  The Phi Coefficient ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
   
-```{r, message = FALSE}
+```{r, echo = FALSE, fig.cap = '2x2 Table for Random Variables x and y', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/phi_coefficient_formula.png")
+
+```
+
+  The $\phi$ coefficient is defined as:
+  
+  $$ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} $$
+  
+  To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs. low performance). We can leverage the `psych` library to calculate $\phi$ in R:
+  
+```{r, warning = FALSE, message = FALSE}
 
 # Load library for Phi Coefficient
 library(psych)
 
 # Set females to 1 and everything else to 0
 demographics$gender_code <- ifelse(demographics$gender == 'Female', 1, 0)
+
 # Set high performers (3 and above) to 1 and everything else to 0
 demographics$performance_code <- ifelse(demographics$performance < 3, 0, 1)
 
@@ -375,7 +388,7 @@ Because small samples lend to anamalies, we could -- by chance -- select a singl
 
 Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
-```{r, message = FALSE}
+```{r, warning = FALSE, message = FALSE}
 
 # Load library for data viz
 library(ggplot2)
@@ -532,7 +545,7 @@ ci99_upper_bound
   
   Like the 95% CI, this slightly wider 99% CI (50.5 - 52.5) also includes the true population mean of 51.2.
   
-  <b>Hypothesis Testing</b>
+  **Hypothesis Testing**
 
 Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference; disprove me if you can! The null hypothesis is defined by:
 
@@ -548,7 +561,7 @@ $$ H_A: \mu_A < \mu_B $$
 
 $$ H_A: \mu_A > \mu_B $$
 
-  <b>Alpha</b>
+  **Alpha**
 
   The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
   
@@ -556,11 +569,11 @@ $$ H_A: \mu_A > \mu_B $$
   
   At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 97 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should generally only expect a mean outside the 99% CI less than 1 in every 100 times.
 
-  <b>Beta</b>
+  **Beta**
   
   Another key value is Beta, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$.
   
-  <b>Type I & II Errors</b>
+  **Type I & II Errors**
 
   A Type I Error is a false positive, wherein we conclude that there is a significant difference or relationship when there is not. A Type II Error is a false negative, wherein we fail to capture a significant finding. $\alpha$ represents our chance of making a Type I Error, while $\beta$ represents our chance of making a Type II Error. I once had a professor explain that committing a Type I error is a shame, while committing a Type II error is a pity, and I've found this to be a helpful way to remember what each type of error represents.
 
@@ -570,7 +583,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  <b>P-Values</b>
+  **P-Values**
   
   In statistical tests, the p-value is referenced to determine whether the null hypothesis can be rejected. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if p < .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship was unlikely a chance observation.
 

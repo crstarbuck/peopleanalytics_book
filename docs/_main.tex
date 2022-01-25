@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpK0cu1D/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpBkE0we/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -302,9 +302,9 @@ This chapter surveys a number of univariate, bivariate, and inferential analysis
 \hypertarget{populations-samples}{%
 \section{Populations \& Samples}\label{populations-samples}}
 
-The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so sampling enables us to calculate statistics based on a smaller sample -- such as people willing to participate in a survey -- in order to learn about the parameters of the larger population.
+The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so we instead calculate \textbf{sample statistics} -- such as people who participate in a survey -- in order to estimate \textbf{population parameters}.
 
-Another important concept is the sampling frame. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
+Another important concept is the \textbf{sampling frame}. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
 
 \hypertarget{univariate-analysis}{%
 \section{Univariate Analysis}\label{univariate-analysis}}
@@ -436,15 +436,7 @@ In R, the sample variance can be calculated using the var() function:
 \begin{Highlighting}[]
 \CommentTok{# Load library for data wrangling}
 \KeywordTok{library}\NormalTok{(dplyr)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'dplyr' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Read employee tenure data}
 \NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
 
@@ -627,14 +619,14 @@ There are several correlation coefficients, and the measurement scale of \texttt
 
 }
 
-\caption{Table of Correlation Coefficients}\label{fig:unnamed-chunk-20}
+\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-20}
 \end{figure}
 
 Pearson's \(r\) can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
 
 When one or both variables are ordinal, we can leverage Spearman's \(\rho\) or Kendall's \(\tau\), which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's \(\rho\), which is defined as:
 
-\[ \rho = 1- {\frac {6 \sum d_i^2}{n(n^2 - 1)}} \]
+\[ \rho = 1 - {\frac {6 \sum d_i^2}{n(n^2 - 1)}} \]
 
 We can override the default Pearson method in the cor() function to implement a specific form of rank correlation using the \texttt{method} argument:
 
@@ -651,23 +643,31 @@ We can override the default Pearson method in the cor() function to implement a 
 
 The \(\rho\) coefficient of .67 indicates that the positive association we observed between job level and education level is strong. We could also pass \texttt{method\ =\ "kendall"} to this cor() function to implement Kendall's \(\tau\).
 
-The Phi Coefficient (\(\phi\)), sometimes referred to as the mean square contingency coefficient, can be used to understand the association between two dichotomous variables. For this, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs.~low performance). We will leverage the \texttt{psych} library to implement this in R:
+The Phi Coefficient (\(\phi\)), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables \(x\) and \(y\):
+
+\begin{figure}
+
+{\centering \includegraphics[width=10.97in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/phi_coefficient_formula} 
+
+}
+
+\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-22}
+\end{figure}
+
+The \(\phi\) coefficient is defined as:
+
+\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]
+
+To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs.~low performance). We can leverage the \texttt{psych} library to calculate \(\phi\) in R:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Load library for Phi Coefficient}
 \KeywordTok{library}\NormalTok{(psych)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'psych' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Set females to 1 and everything else to 0}
 \NormalTok{demographics}\OperatorTok{$}\NormalTok{gender_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
 \CommentTok{# Set high performers (3 and above) to 1 and everything else to 0}
 \NormalTok{demographics}\OperatorTok{$}\NormalTok{performance_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{performance }\OperatorTok{<}\StringTok{ }\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
 
@@ -719,7 +719,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-24-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-25-1.pdf}
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is unlikely a true direct association:
 
@@ -729,7 +729,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-25}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-26}
 \end{figure}
 
 \begin{figure}
@@ -738,7 +738,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-26}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-27}
 \end{figure}
 
 \hypertarget{inferential-statistics}{%
@@ -764,7 +764,7 @@ If we need to estimate the average value of a population, for example, we can le
 
 }
 
-\caption{The Empirical Rule}\label{fig:unnamed-chunk-27}
+\caption{The Empirical Rule}\label{fig:unnamed-chunk-28}
 \end{figure}
 
 Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates relative boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
@@ -781,15 +781,7 @@ Let's now see the CLT in action by simulating a random uniform population distri
 \begin{Highlighting}[]
 \CommentTok{# Load library for data viz}
 \KeywordTok{library}\NormalTok{(ggplot2)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'ggplot2' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Set seed for reproducible random distribution}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
 
@@ -821,11 +813,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-30-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-31-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-30}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-31}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -867,11 +859,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-31-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-32-1} 
 
 }
 
-\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-31}
+\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-32}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1023,11 +1015,11 @@ A Type I Error is a false positive, wherein we conclude that there is a signific
 
 \begin{figure}
 
-{\centering \includegraphics[width=9.69in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors} 
+{\centering \includegraphics[width=12.42in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors} 
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-40}
+\caption{Type I and II Errors}\label{fig:unnamed-chunk-41}
 \end{figure}
 
 P-Values
@@ -1313,7 +1305,7 @@ Statistical Fundamentals
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-41}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-42}
 \end{figure}
 
 1. Discover
