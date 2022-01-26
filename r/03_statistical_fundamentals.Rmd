@@ -107,7 +107,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
   
   $$ s^{2} = \frac{\sum (x_{i}-\bar{x})^{2}}{n-1} $$
   
-  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of total working years measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
  
  In R, the sample variance can be calculated using the var() function:
  
@@ -459,11 +459,7 @@ Per the CLT, we can see that as n increases, the sample means become more normal
 
 ### Confidence Intervals
 
-  A Confidence Interval (CI) is a range of values that likely includes an unknown population value, as defined by:
-  
-  $$ CI = \bar{X} \pm z \frac{\sigma}{\sqrt{n}} $$
-  
-  A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
+  A Confidence Interval (CI) represents a range of values likely to include a population parameter of interest (usually $\mu$). A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
   
   $$ SE = \frac{\sigma}{\sqrt{n}} $$
   
@@ -493,13 +489,25 @@ length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3
 
   All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
   
-  Now, let's illustrate the relationship between CIs and standard errors:
+  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a Z-Test to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI -- the range of values we would expect to include the population mean $\mu$ in at least 95 of 100 random samples taken from the population:
+
+  The CI in this case is defined by:
+  
+  $$ CI = \bar{X} \pm z \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's randomly take $n$ = 100 from the population, and compute sample statistics to estimate the 95% CI:
 
 ```{r, message = FALSE}
 
+# Set seed for reproducible random samples
+set.seed(456)
+
+# Sample 100 values from uniform population distribution
+x <- sample(rand.unif, 100, replace = TRUE, prob = NULL)
+
 # Calculate 95% CI
-ci95_lower_bound <- mean(x_bars) - 1.96 * (sd(x_bars) / sqrt(n))
-ci95_upper_bound <- mean(x_bars) + 1.96 * (sd(x_bars) / sqrt(n))
+ci95_lower_bound <- mean(x) - 1.96 * (sd(x) / sqrt(100))
+ci95_upper_bound <- mean(x) + 1.96 * (sd(x) / sqrt(100))
 
 ```
 
@@ -516,16 +524,16 @@ ci95_lower_bound
 ci95_upper_bound
 
 ```
-  
-  The 95% CI corresponds to a z-score of 1.96, which is simply the number of SEs we expect to include the true population average -- at least in 95 of 100 random samples taken from said population. In this example, we know that our population mean is 51.2, which is covered by our 95% CI (50.8 - 52.3). Note that our CI narrows with larger samples since our confidence that the range includes the population average increases with more data.
 
-  Next, let's look at a 99% CI. We will use a z-score of 2.58 for this:
+  Our known population mean $\mu$ is 51.2, which is covered by our 95% CI (47.9 - 59.0). Per the CLT, in less than 5% of cases would we expect to draw a random sample from the population that results in a 95% CI which does not include the population mean. Note that our CI narrows with larger samples since our confidence that the range includes the population average increases with more data.
+  
+  Next, let's look at a 99% CI. We will enter 2.576 for $z$:
 
 ```{r, message = FALSE}
 
 # Calculate 99% CI
-ci99_lower_bound <- mean(x_bars) - 2.58 * (sd(x_bars) / sqrt(n))
-ci99_upper_bound <- mean(x_bars) + 2.58 * (sd(x_bars) / sqrt(n))
+ci99_lower_bound <- mean(x) - 2.576 * (sd(x) / sqrt(100))
+ci99_upper_bound <- mean(x) + 2.576 * (sd(x) / sqrt(100))
 
 ```
 
@@ -543,8 +551,76 @@ ci99_upper_bound
 
 ```
   
-  Like the 95% CI, this slightly wider 99% CI (50.5 - 52.5) also includes the true population mean of 51.2.
+  Like the 95% CI, this slightly wider 99% CI (46.2 - 60.7) also includes the true population mean of 51.2.
   
+  If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a T-Test to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
+  
+  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline, so it is important to understand the mechanics. The $t$ distribution is wider and shorter relative to the normal distribution, and this is characteristic of the distribution of sample means for smaller samples we observed in our CLT example. As a result, we must apply a different factor to estimate the CI to reflect the more *platykurtic* distribution. The CI in this case is defined by:
+  
+  $$ CI = \bar{X} \pm t \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and *degrees of freedom (df)* ($n$ - 1). We can reference the following table to obtain the $t$ statistic for each CI level:
+  
+```{r, echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t-table.png")
+
+```
+
+  For illustrative purposes, let's draw a smaller sample of $n$ = 25 from our uniform population distribution and calculate the 95% CI using the $t$ statistic from the table ($df$ = 24):
+
+```{r, message = FALSE}
+
+# Set seed for reproducible random samples
+set.seed(456)
+
+# Sample 25 values from uniform population distribution
+x <- sample(rand.unif, 25, replace = TRUE, prob = NULL)
+
+# Calculate 95% CI
+ci95_lower_bound <- mean(x) - 2.064 * (sd(x) / sqrt(25))
+ci95_upper_bound <- mean(x) + 2.064 * (sd(x) / sqrt(25))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 95% CI
+ci95_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 95% CI
+ci95_upper_bound
+
+```
+
+  As expected, the 95% CI using the $t$ statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given this smaller sample. To increase our confidence to the 99% level, the interval widens even further (30.9 - 63.9):
+
+```{r, message = FALSE}
+
+# Calculate 99% CI
+ci99_lower_bound <- mean(x) - 2.797 * (sd(x) / sqrt(25))
+ci99_upper_bound <- mean(x) + 2.797 * (sd(x) / sqrt(25))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 99% CI
+ci99_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 99% CI
+ci99_upper_bound
+
+```
+
   **Hypothesis Testing**
 
 Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference; disprove me if you can! The null hypothesis is defined by:
@@ -636,6 +712,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    <br />A. True
    <br />B. False
 
-10. Quartiles are useful for understanding the distribution of data.
+10. A T-Test should be used when $\sigma$ is unknown and/or $n$ < 30.
    <br />A. True
    <br />B. False
