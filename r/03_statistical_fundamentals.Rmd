@@ -1,24 +1,24 @@
 # Statistical Fundamentals
 
-This chapter surveys a number of univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
+This chapter surveys essential univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
 
 ## Populations & Samples
 
-The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so we instead calculate **sample statistics** -- such as people who participate in a survey -- in order to estimate **population parameters**.
+The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so we instead calculate **sample statistics** to estimate **population parameters**.
 
 Another important concept is the **sampling frame**. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
 
 ## Univariate Analysis
 
-Descriptive statistics are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+**Descriptive statistics** are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
-There are two categories of descriptive statistics: (1) measures of central tendency and (2) measures of spread. Measures of central tendency describe the central position in a set of data, while measures of spread describe how dispersed the data are.
+There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
 
 ### Measures of Central Tendency
 
   **Mean**
   
-  Perhaps the most intuitive measure of central tendency is the mean, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
+  Perhaps the most intuitive measure of central tendency is the **mean**, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
   
   $$ \bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n} $$
 
@@ -36,7 +36,7 @@ mean(x)
 
   **Median**
   
-  The median represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency. 
+  The **median** represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency. 
   
   The median() function in R can be used to handle the sorting and midpoint selection:
   
@@ -47,11 +47,11 @@ median(x)
 
 ```
   
-  In this example, the median is only 2 compared with the mean of 6.9 (which is not really representative of any of the values in vector x). Large deltas between mean and median values are evidence of outliers.
+  In this example, the median is only 2 while the mean is 6.9 (which is not really representative of any of the values in vector $x$). Large deltas between mean and median values are evidence of outliers.
   
   **Mode**
   
-  The mode is the most frequent number in a set of values.
+  The **mode** is the most frequent number in a set of values.
   
   While mean() and median() are standard functions in R, mode() returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):
   
@@ -73,7 +73,7 @@ stat.mode(x)
   
   **Range**
   
-  The range is the difference between the maximum and minimum values in a set of numbers. 
+  The **range** is the difference between the maximum and minimum values in a set of numbers. 
   
   The range() function in R returns the minimum and maximum numbers:
   
@@ -97,7 +97,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 
   **Variance**
   
-  Variance is a measure of the variability around the average value. Variance is calculated using the average of squared differences from the mean.
+  **Variance** is a measure of variability in the data. Variance is calculated using the average of squared differences -- or deviations -- from the mean.
   
   Variance of a population is defined by:
   
@@ -116,7 +116,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee tenure data
+# Read employee demographics data
 demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
 
 # Calculate sample variance for annual compensation
@@ -124,7 +124,7 @@ var(demographics$annual_comp)
 
 ```
 
-  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of `var(vector) * (n - 1) / n`, it is simple to convert output from var() to the population variance:
+  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of `var(x) * (n - 1) / n`, it is simple to convert output from var() to the population variance:
   
 ```{r, message = FALSE}
 
@@ -138,7 +138,7 @@ var(demographics$annual_comp) * (n - 1) / n
 
   **Standard Deviation**
   
-  The standard deviation is simply the square root of the variance, as defined by:
+  The **standard deviation** is simply the square root of the variance, as defined by:
   
   $$ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}} $$
   
@@ -153,7 +153,7 @@ sd(demographics$annual_comp)
 
 ```
 
-  Since the population standard deviation differs from the sample standard deviation by a factor of `sd(vector) * sqrt((n - 1) / n)`, it is simple to convert output from sd() to the population standard deviation:
+  Since the population standard deviation differs from the sample standard deviation by a factor of `sd(x) * sqrt((n - 1) / n)`, it is simple to convert output from sd() to the population standard deviation:
 
 ```{r, message = FALSE}
 
@@ -164,9 +164,9 @@ sd(demographics$annual_comp) * sqrt((n - 1) / n)
 
   **Quartiles**
   
-  Quartiles are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts (with regard to the number of data points in each quartile, not the range of values) after ordering the data. Quartiles also correspond to percentiles. For example, Q1 is the 25th percentile -- the value below which 25% of values exist.
+  **Quartiles** are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts after ordering the data. Note that each partition is equally sized with respect to the number of data points -- not the range of values in each. Quartiles are also related to **percentiles**. For example, Q1 is the 25th percentile -- the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.
   
-  The Interquartile Range (IQR) represents the difference between Q3 and Q1 cutpoint values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution. Values less than `Q1 - 1.5 * IQR` or greater than `Q3 + 1.5 * IQR` are generally considered outliers.
+  The **Interquartile Range (IQR)** represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than `Q1 - 1.5 * IQR` or greater than `Q3 + 1.5 * IQR` are generally considered outliers.
   
   In R, the quantile() function returns the values that bookend each quartile:
 
@@ -201,7 +201,7 @@ summary(demographics$annual_comp)
 
   **Covariance**
   
-  While variance provides an understanding of how values for a single variable vary, covariance is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
+  While variance provides an understanding of how values for a single variable vary, **covariance** is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
   
   Covariance of a sample is defined by:
 
@@ -231,11 +231,11 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) 
 
   **Correlation**
 
-  Correlation is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. Pearson's product moment correlation coefficient $r$ is defined by:
+  **Correlation** is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. **Pearson's product-moment correlation coefficient** $r$ is defined by:
 
 $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
 
-  In R, Pearson's correlation coefficient $r$ can be calculated using the cor() function:
+  In R, Pearson's $r$ can be calculated using the cor() function:
 
 ```{r, message = FALSE}
 
@@ -244,9 +244,13 @@ cor(demographics$annual_comp, demographics$age, use = "complete.obs")
 
 ```
 
-  While we knew the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive).
+  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
   
-  There are several correlation coefficients, and the measurement scale of `x` and `y` determine the appropriate type:
+  * Weak = Absolute value of correlation coefficients between 0 and .3
+  * Moderate = Absolute value of correlation coefficients between .4 and .6
+  * Strong = Absolute value of correlation coefficients between .7 and 1
+  
+  There are several correlation coefficients, and the measurement scale of $x$ and $y$ determine the appropriate type:
   
 <br />
 
@@ -260,7 +264,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Pearson's $r$ can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
   
-  When one or both variables are ordinal, we can leverage Spearman's $\rho$ or Kendall's $\tau$, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's $\rho$, which is defined as:
+  When one or both variables are ordinal, we can leverage **Spearman's** $\rho$ or **Kendall's** $\tau$, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's $\rho$, which is defined as:
   
   $$ \rho = 1 - {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
   
@@ -273,9 +277,9 @@ cor(demographics$job_level, demographics$education, method = "spearman", use = "
 
 ```
 
-  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
+  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is moderate-to-strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
   
-  The Phi Coefficient ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
+  The **Phi Coefficient** ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
   
 ```{r, echo = FALSE, fig.cap = '2x2 Table for Random Variables x and y', fig.align = 'center'}
 
@@ -287,7 +291,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   $$ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} $$
   
-  To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variables (high vs. low performance). We can leverage the `psych` library to calculate $\phi$ in R:
+  To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs. low performance). We can leverage the `psych` library to calculate $\phi$ in R:
   
 ```{r, warning = FALSE, message = FALSE}
 
@@ -310,16 +314,16 @@ phi(contingency_tbl)
   
   $\phi$ is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
   
-  The examples thus far have examined associations between only two variables at a time. However, rather than looking at individual pairwise relationships, we can easily produce a correlation matrix to surface associations among many variables:
+  The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a correlation matrix to surface associations among many variables:
   
 ```{r, message = FALSE}
 
-# Generate a correlation matrix between continuous variables
+# Generate a correlation matrix among continuous variables
 cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
 
 ```
 
-  Based on this correlation matrix, there are several strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  Based on this correlation matrix, there are several moderate and strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
   A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
   
@@ -336,7 +340,7 @@ corrplot.mixed(M, order = 'AOE')
 
 ```
 
-  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially without drawing on theory -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is unlikely a true direct association:
+  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
   
 ```{r, echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
 
@@ -354,7 +358,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Inferential Statistics
 
-The objective of inferential statistics is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
+The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
 
 ### Introduction to Probability
 
@@ -362,11 +366,9 @@ The objective of inferential statistics is to make inferences -- with some degre
 
 ### Central Limit Theorem
 
-The Central Limit Theorem (CLT) is a mainstay of statistics and probability and fundamental to understanding the mechanics of inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
+The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
 
-The CLT states that the average of independent random variables, when increased in number, tend to follow a normal distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed difference or relationship in a sample is also present in the population.
-
-If we need to estimate the average value of a population, for example, we can lean on the CLT and normal distribution properties to obtain the range of values that are likely to include the true population average. This is how confidence intervals are defined, which enable us to make reasonable inferences about the unknown population parameters based on sample data.
+The CLT states that the average of independent random variables, when increased in number, tend to follow a normal (or Gaussian) distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
 
 <br />
 
@@ -378,13 +380,13 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 <br />
 
-Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates relative boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
+Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
 
 Let's assume the mean fun score and standard deviation of these two groups are known; the group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
 Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average funness so extremely different from the population average. 
 
-Because small samples lend to anamalies, we could -- by chance -- select a single person who happens to fall in the tails (relatively boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
+Because small samples lend to anomalies, we could -- by chance -- select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
 
 Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
@@ -405,6 +407,13 @@ rand.unif <- runif(1000, min = 1, max = 100)
 
 # Calculate population mean
 mean(rand.unif)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate population variance
+var(rand.unif) * (n - 1) / n
 
 ```
 
@@ -446,7 +455,7 @@ for (n in sample_n) {
   }
 }
 
-# Produce histograms to visualize distributions of sample means
+# Produce histograms to visualize distributions of sample means, grouped by n-count
 sample_means %>% ggplot() + 
   aes(x = x_bar, fill = n) + 
   labs(x = "x-bar", y = "n") + 
@@ -459,7 +468,7 @@ Per the CLT, we can see that as n increases, the sample means become more normal
 
 ### Confidence Intervals
 
-  A Confidence Interval (CI) represents a range of values likely to include a population parameter of interest (usually $\mu$). A related concept that is fundamental to estimating CIs is the standard error. The standard error (SE) is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
+  A **Confidence Interval (CI)** represents a range of values likely to include a population parameter of interest (usually $\mu$). A related concept that is fundamental to estimating CIs is the **standard error (SE)**, which is the standard deviation of sample means. While the standard deviation is a measure of variability for random variables, the variability captured by the SE reflects how representative the sample is of the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
   
   $$ SE = \frac{\sigma}{\sqrt{n}} $$
   
@@ -487,9 +496,9 @@ length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3
 
 ```
 
-  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population` that falls outside this interval.
+  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
   
-  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a Z-Test to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI -- the range of values we would expect to include the population mean $\mu$ in at least 95 of 100 random samples taken from the population:
+  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI -- the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population:
 
   The CI in this case is defined by:
   
@@ -525,7 +534,7 @@ ci95_upper_bound
 
 ```
 
-  Our known population mean $\mu$ is 51.2, which is covered by our 95% CI (47.9 - 59.0). Per the CLT, in less than 5% of cases would we expect to draw a random sample from the population that results in a 95% CI which does not include the population mean. Note that our CI narrows with larger samples since our confidence that the range includes the population average increases with more data.
+  Our known $\mu$ is 51.2, which is covered by our 95% CI (47.9 - 59.0). Per the CLT, in less than 5% of cases would we expect to draw a random sample from the population that results in a 95% CI which does not include $\mu$. Note that our CI narrows with larger samples since our confidence that the range includes $\mu$ increases with more data.
   
   Next, let's look at a 99% CI. We will enter 2.576 for $z$:
 
@@ -551,15 +560,15 @@ ci99_upper_bound
 
 ```
   
-  Like the 95% CI, this slightly wider 99% CI (46.2 - 60.7) also includes the true population mean of 51.2.
+  Like the 95% CI, this slightly wider 99% CI (46.2 - 60.7) also includes our $\mu$ of 51.2.
   
-  If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a T-Test to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
+  If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a **T-Test** to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
   
-  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline, so it is important to understand the mechanics. The $t$ distribution is wider and shorter relative to the normal distribution, and this is characteristic of the distribution of sample means for smaller samples we observed in our CLT example. As a result, we must apply a different factor to estimate the CI to reflect the more *platykurtic* distribution. The CI in this case is defined by:
+  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. The $t$ distribution is wider and shorter relative to the normal distribution, and this is characteristic of the distribution of sample means for smaller samples we observed in our CLT example. As a result, we must apply a different factor to estimate the CI to reflect the more **platykurtic** distribution. The CI in this case is defined by:
   
   $$ CI = \bar{X} \pm t \frac{\sigma}{\sqrt{n}} $$
   
-  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and *degrees of freedom (df)* ($n$ - 1). We can reference the following table to obtain the $t$ statistic for each CI level:
+  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and **degrees of freedom (df)** ($n$ - 1). We can reference the following table to obtain the $t$ statistic for each CI level:
   
 ```{r, echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
 
@@ -623,13 +632,13 @@ ci99_upper_bound
 
   **Hypothesis Testing**
 
-Hypothesis testing is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference; disprove me if you can! The null hypothesis is defined by:
+**Hypothesis testing** is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference; disprove me if you can! The null hypothesis is defined by:
 
 $$ H_0: \mu_A = \mu_B $$
 
 The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is 'nothing' of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
 
-An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B):
+An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B). Therefore, alternative hypotheses are defined by:
 
 $$ H_A: \mu_A \neq \mu_B $$
 
@@ -639,19 +648,19 @@ $$ H_A: \mu_A > \mu_B $$
 
   **Alpha**
 
-  The alpha level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
+  The **alpha** level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
   
-  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). With non-directional alternative hypotheses, we must divide $\alpha$ by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized. 
+  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01, depending upon the context and tolerance for error. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). With non-directional alternative hypotheses, we must divide $\alpha$ by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized. 
   
-  At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. In our example, we found that in 97 of 100 cases, the sample mean was within our 95% CI. While we can draw a more extreme value by chance with repeated attempts, we should only expect a mean outside the 95% CI less than 1 in every 20 times. Moreover, we should generally only expect a mean outside the 99% CI less than 1 in every 100 times.
+  At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. While we could observe more extreme values by chance with repeated attempts, in less than 1 in every 20 times would we expect a 95% CI that does not capture $\mu$. Moreover, in less than 1 in every 100 times should we expect a sample with a 99% CI that does not capture $\mu$.
 
   **Beta**
   
-  Another key value is Beta, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$.
+  Another key value is **Beta**, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$. At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the T-Test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how extremely different values of $x$ must be to observe non-overlapping CIs.
   
   **Type I & II Errors**
 
-  A Type I Error is a false positive, wherein we conclude that there is a significant difference or relationship when there is not. A Type II Error is a false negative, wherein we fail to capture a significant finding. $\alpha$ represents our chance of making a Type I Error, while $\beta$ represents our chance of making a Type II Error. I once had a professor explain that committing a Type I error is a shame, while committing a Type II error is a pity, and I've found this to be a helpful way to remember what each type of error represents.
+  A **Type I Error** is a false positive, wherein we conclude that there is a significant difference or relationship when there is not. A **Type II Error** is a false negative, wherein we fail to capture a significant finding. $\alpha$ represents our chance of making a Type I Error, while $\beta$ represents our chance of making a Type II Error. I once had a professor explain that committing a Type I error is a shame, while committing a Type II error is a pity, and I've found this to be a helpful way to remember what each type of error represents.
 
 ```{r, echo = FALSE, fig.cap = 'Type I and II Errors', fig.align = 'center'}
 
@@ -661,9 +670,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **P-Values**
   
-  In statistical tests, the p-value is referenced to determine whether the null hypothesis can be rejected. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if p < .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship was unlikely a chance observation.
+  In statistical tests, the **p-value** is referenced to determine whether the null hypothesis can be rejected. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if $p$ < .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship was unlikely a chance observation.
 
-  While statistical significance helps us understand the probability of observing results by chance when there is actually no difference or effect in the population, it does not tell us anything about the size of the difference or effect. Analysis should never be reduced to inspecting p-values; in fact, p-values have been the subject of much controversy among researchers and practitioners in recent years. This book will cover how to interpret results of statistical tests to surface the story and determine if there is anything 'practically' significant among statistically significant findings.
+  While statistical significance helps us understand the probability of observing results by chance when there is actually no difference or effect in the population, it does not tell us anything about the size of the difference or effect. Analysis should never be reduced to inspecting p-values; in fact, p-values have been the subject of much controversy among researchers and practitioners in recent years. Later chapters will cover how to interpret results of statistical tests to surface the story and determine if there is anything 'practically' significant among statistically significant findings.
   
 ## Exercises
 
