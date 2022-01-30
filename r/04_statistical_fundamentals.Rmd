@@ -227,7 +227,7 @@ $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
 
   It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
   
-  In R, we can compute the covariance between a pair of numeric variables using the cov() function:
+  In R, we can compute the covariance between a pair of numeric variables by passing the two vectors into the cov() function:
   
 ```{r, message = FALSE}
 
@@ -246,6 +246,26 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs")
 cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) / n
 
 ```
+
+  The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the cov() function:
+
+```{r, message = FALSE}
+
+# Generate a correlation matrix among continuous variables
+cov(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+
+```
+
+  Using the default Pearson method, the cov() function will return sample variances for each variable down the diagonal, since covariance is not applicable in the context of a variable with itself. We can confirm by producing the variance for age:
+
+```{r, message = FALSE}
+
+# Return sample variance for age
+var(demographics$age)
+
+```
+
+  As expected, the variance for age ($s^{2}$ = 168.39) matches the value found in the age x age cell of the covariance matrix.
 
   **Correlation**
 
@@ -332,7 +352,7 @@ phi(contingency_tbl)
   
   $\phi$ is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
   
-  The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a correlation matrix to surface associations among many variables:
+  A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the cor() function:
   
 ```{r, message = FALSE}
 
@@ -376,17 +396,27 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Inferential Statistics
 
-The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
+  The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
 
 ### Introduction to Probability
 
+  **Randomness** and uncertainty exist all around us. In **probability theory**, random phenomena refers to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50%, or $\frac{1}{2}$. 
 
+  The **Law of Large Numbers (LLN)** is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anamalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
+
+  **Conditional probability** reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than $\frac{1}{2}$ with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
+
+  Formally, **Bayes' Theorem (alternatively, Bayes' Rule)** states that for any two events A and B where the probability of A is not 0 ($P(A) \neq 0$):
+
+  $P(B \vert A) = \frac{P(A \vert B) P(B)}{P(A)}$
+
+  Bayes' Rule allows us to more accurately predict the outcome by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely based on a person's age, tenure, education, job, perceptions, relationships, and many other factors. As a result, estimates and predictions are unlikely to be accurate when not conditioned on known attributes.
 
 ### Central Limit Theorem
 
-The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
+  The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
 
-The CLT states that the average of independent random variables, when increased in number, tend to follow a normal (or Gaussian) distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
+  The CLT states that the average of independent random variables, when increased in number, tend to follow a normal (or Gaussian) distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
 
 <br />
 
@@ -398,15 +428,15 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 <br />
 
-Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
+  Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
 
-Let's assume the mean fun score and standard deviation of these two groups are known; the group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
+  Let's assume the mean fun score and standard deviation of these two groups are known; the group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
-Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average funness so extremely different from the population average. 
+  Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average funness so extremely different from the population average. 
 
-Because small samples lend to anomalies, we could -- by chance -- select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
+  Because small samples lend to anomalies, we could -- by chance -- select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
 
-Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
+  Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
 ```{r, warning = FALSE, message = FALSE}
 
@@ -445,7 +475,7 @@ ggplot() +
 
 ```
 
-As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
+  As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
 
 ```{r, fig.cap = "Distribution of 100 Sample Means of Varied Size", fig.align = 'center', message = FALSE}
 
@@ -482,7 +512,7 @@ sample_means %>% ggplot() +
 
 ```
 
-Per the CLT, we can see that as n increases, the sample means become more normally distributed.
+  Per the CLT, we can see that as n increases, the sample means become more normally distributed.
 
 ### Confidence Intervals
 
@@ -654,9 +684,9 @@ ci99_upper_bound
 
 $$ H_0: \mu_A = \mu_B $$
 
-The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is 'nothing' of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
+  The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is 'nothing' of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
 
-An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B). Therefore, alternative hypotheses are defined by:
+  An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B). Therefore, alternative hypotheses are defined by:
 
 $$ H_A: \mu_A \neq \mu_B $$
 

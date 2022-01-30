@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-01-27}
+\date{2022-01-30}
 
 \begin{document}
 \maketitle
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpdanGe4/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpgmBwTn/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -294,6 +294,9 @@ The Deliver phase can take many forms depending on the solution being released. 
 \hypertarget{research-methods}{%
 \chapter{Research Methods}\label{research-methods}}
 
+\hypertarget{measurement-sampling}{%
+\chapter{Measurement \& Sampling}\label{measurement-sampling}}
+
 \hypertarget{statistical-fundamentals}{%
 \chapter{Statistical Fundamentals}\label{statistical-fundamentals}}
 
@@ -311,7 +314,7 @@ Another important concept is the \textbf{sampling frame}. While the population r
 
 \textbf{Descriptive statistics} are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
-There are two categories of descriptive statistics: (a) \textbf{Measures of central tendency} describe the central position in a set of data; and (b) \textbf{Measures of spread} describe how dispersed the data are.
+There are two categories of descriptive statistics: (a) \textbf{measures of central tendency} describe the central position in a set of data; and (b) \textbf{measures of spread} describe how dispersed the data are.
 
 \hypertarget{measures-of-central-tendency}{%
 \subsection{Measures of Central Tendency}\label{measures-of-central-tendency}}
@@ -412,6 +415,42 @@ We can leverage the max() and min() functions to calculate the difference betwee
 \begin{verbatim}
 ## [1] 49
 \end{verbatim}
+
+In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and ratios cut by various time (month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:
+
+\begin{itemize}
+\tightlist
+\item
+  Time to Fill: average days between job requisition posting and offer acceptance
+\item
+  Offer Acceptance Rate: percent of offers extended to candidates that are accepted
+\item
+  Pass-Through Rate: percent of candidates in a particular stage of the recruiting process who passed through to the next stage
+\item
+  Progress to Goal: percent of approved positions that have been filled
+\item
+  cNPS/eNPS: candidate and employee NPS (-100 to 100)
+\item
+  Headcount: counts and percent of workforce across worker types (employee, intern, contingent)
+\item
+  Diversity: counts and percent of workforce across gender, ethnicity, and generational cohorts
+\item
+  Positions: count and percent of open, committed, and filled seats
+\item
+  Hires: counts and rates
+\item
+  Career Moves: counts and rates
+\item
+  Turnover: counts and rates (usually terms / average headcount over the period)
+\item
+  Workforce Growth: net changes over time, accounting for hires, internal transfers, and exits
+\item
+  Span of Control: ratio of people leaders to individual contributors
+\item
+  Layers/Tiers: average and median number of layers removed from CEO
+\item
+  Engagement: average score or top-box favorability score
+\end{itemize}
 
 \hypertarget{measures-of-spread}{%
 \subsection{Measures of Spread}\label{measures-of-spread}}
@@ -590,6 +629,38 @@ Just as we multiplied the sample variance by \texttt{(n\ -\ 1)\ /\ n} to obtain 
 ## [1] 453086.1
 \end{verbatim}
 
+The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Generate a correlation matrix among continuous variables}
+\KeywordTok{cov}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              annual_comp          age   org_tenure  job_tenure
+## annual_comp 1.876688e+09 453179.07281 138551.67644 61576.73603
+## age         4.531791e+05    168.38661     41.56006    17.96902
+## org_tenure  1.385517e+05     41.56006     26.03270    11.04572
+## job_tenure  6.157674e+04     17.96902     11.04572    13.29996
+\end{verbatim}
+
+Using the default Pearson method, the cov() function will return sample variances for each variable down the diagonal, since the concept of covariance in the context of a variable with itself is not applicable. We can confirm by producing the variance for age:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return sample variance for annual compensation}
+\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{age)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 168.3866
+\end{verbatim}
+
+As expected, the variance for age (\(s^{2}\) = 168.39) matches the value found in the age x age cell of the covariance matrix.
+
 \textbf{Correlation}
 
 \textbf{Correlation} is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. \textbf{Pearson's product-moment correlation coefficient} \(r\) is defined by:
@@ -629,7 +700,7 @@ There are several correlation coefficients, and the measurement scale of \(x\) a
 
 }
 
-\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-20}
+\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-22}
 \end{figure}
 
 Pearson's \(r\) can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
@@ -661,7 +732,7 @@ The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean squar
 
 }
 
-\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-22}
+\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-24}
 \end{figure}
 
 The \(\phi\) coefficient is defined as:
@@ -695,7 +766,7 @@ To illustrate, let's examine whether there is a relationship between gender and 
 
 \(\phi\) is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
 
-The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a correlation matrix to surface associations among many variables:
+A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the cor() function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -729,7 +800,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-25-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-27-1.pdf}
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
 
@@ -739,7 +810,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-26}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-28}
 \end{figure}
 
 \begin{figure}
@@ -748,7 +819,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-27}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-29}
 \end{figure}
 
 \hypertarget{inferential-statistics}{%
@@ -758,6 +829,18 @@ The objective of \textbf{inferential statistics} is to make inferences -- with s
 
 \hypertarget{introduction-to-probability}{%
 \subsection{Introduction to Probability}\label{introduction-to-probability}}
+
+\textbf{Randomness} and uncertainty exist all around us. In \textbf{probability theory}, random phenomena refers to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50\%, or \(\frac{1}{2}\).
+
+The \textbf{Law of Large Numbers (LLN)} is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anamalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
+
+\textbf{Conditional probability} reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than \(\frac{1}{2}\) with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
+
+Formally, \textbf{Bayes' Theorem (alternatively, Bayes' Rule)} states that for any two events A and B where the probability of A is not 0 (\(P(A) \neq 0\)):
+
+\(P(B \vert A) = \frac{P(A \vert B) P(B)}{P(A)}\)
+
+Bayes' Rule allows us to more accurately predict the outcome by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely based on a person's age, tenure, education, job, perceptions, relationships, and many other factors. As a result, estimates and predictions are unlikely to be accurate when not conditioned on known attributes.
 
 \hypertarget{central-limit-theorem}{%
 \subsection{Central Limit Theorem}\label{central-limit-theorem}}
@@ -772,7 +855,7 @@ The CLT states that the average of independent random variables, when increased 
 
 }
 
-\caption{The Empirical Rule}\label{fig:unnamed-chunk-28}
+\caption{The Empirical Rule}\label{fig:unnamed-chunk-30}
 \end{figure}
 
 Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
@@ -832,11 +915,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-32-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-34-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-32}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-34}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -878,11 +961,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-33-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-35-1} 
 
 }
 
-\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-33}
+\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-35}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1022,7 +1105,7 @@ Let's compare CIs calculated using a T-Test to those calculated using the Z-Test
 
 }
 
-\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-42}
+\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-44}
 \end{figure}
 
 For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our uniform population distribution and calculate the 95\% CI using the \(t\) statistic from the table (\(df\) = 24):
@@ -1133,7 +1216,7 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-49}
+\caption{Type I and II Errors}\label{fig:unnamed-chunk-51}
 \end{figure}
 
 \textbf{P-Values}
@@ -1197,9 +1280,6 @@ While statistical significance helps us understand the probability of observing 
   A. True
   B. False
 \end{enumerate}
-
-\hypertarget{measurement-sampling}{%
-\chapter{Measurement \& Sampling}\label{measurement-sampling}}
 
 \hypertarget{data-preparation}{%
 \chapter{Data Preparation}\label{data-preparation}}
@@ -1363,6 +1443,8 @@ Proportional Odds Logistic Regression
 
 Baron, R. M., \& Kenny, D. A. (1986). The moderator--mediator variable distinction in social psychological research: Conceptual, strategic, and statistical considerations. Journal of Personality and Social Psychology, 51(6), 1173--1182.
 
+Creswell, J. W., \& Creswell, J. D. (2018). Research Design: Qualitative, Quantitative, and Mixed Methods Approaches (5th ed.). Los Angeles: Sage.
+
 Daw, R. H., \& Pearson, E. S. (1972). Studies in the History of Probability and Statistics. XXX. Abraham De Moivre's 1733 Derivation of the Normal Curve: A Bibliographical Note. Biometrika, 59(3), 677--680. \url{https://doi.org/10.2307/2334818}
 
 James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to Statistical Learning: With Applications in R. New York: Springer.
@@ -1370,6 +1452,8 @@ James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to 
 Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Giroux.
 
 Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
+
+Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Processes. Blue Bell, PA: Kappa Research, LLC.
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 
@@ -1419,7 +1503,7 @@ Statistical Fundamentals
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-50}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-52}
 \end{figure}
 
 1. Discover
