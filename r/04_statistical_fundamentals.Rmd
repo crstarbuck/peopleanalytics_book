@@ -722,6 +722,20 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   While statistical significance helps us understand the probability of observing results by chance when there is actually no difference or effect in the population, it does not tell us anything about the size of the difference or effect. Analysis should never be reduced to inspecting p-values; in fact, p-values have been the subject of much controversy among researchers and practitioners in recent years. Later chapters will cover how to interpret results of statistical tests to surface the story and determine if there is anything 'practically' significant among statistically significant findings.
   
+  **Bonferroni Correction**
+  
+  One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equal to the number of tests performed. It's important to note that there is not agreement among statisticians about how (or even whether) the p-value threshold for statistical significance needs to be adjusted to account for this increased risk. Nevertheless, we will cover this conservative approach for mitigating this risk.
+  
+  Thus far, we have only discussed statistical significance in the context of a **per analysis error rate** -- that is, the probability of committing a Type I error for a single statistical test. However, when two or more tests are being conducted on the same sample, the **familywise error rate** is an important factor in determining statistical significance. The familywise error rate reflects the fact that as we conduct more and more analyses on the same sample, the probability of a Type I error across the set (or family) of analyses increases. The familywise error rate can be calculated by:
+  
+  $$ \alpha_{FW} = 1 - (1 - \alpha_{PC})^C,  $$
+
+  where $c$ is equal to the number of comparisons (or tests) performed, and $\alpha_{PC}$ is equal to the specified per analysis error rate (usually .05). For example, if $\alpha$ = .05 per analysis, the probability of a Type I error with three tests on the same data increases from 5% to 14.3%: $1 - (1 - .05)^3 = .143$.
+  
+  The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the **Bonferroni Correction**. To implement this correction, we can simply divide $\alpha$ by the number of analyses performed on the dataset -- such as $\alpha / 3 = .017$ in the case of three analyses with $\alpha = .05$. This means that for each statistical test, we must achieve $p < .017$ to report a statistically significant result. We could also multiply the unadjusted per analysis p-values for each statistical test by the number of tests, and we will achieve the same number of statistically significant results.
+  
+  The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to observe significant results, it is rare to find such a correction reported in published research.
+
 ## Exercises
 
 1. Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
