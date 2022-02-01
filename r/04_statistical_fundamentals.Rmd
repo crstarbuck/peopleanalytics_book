@@ -93,7 +93,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 
 ```
 
-In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and ratios cut by various time (month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:
+In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and ratios cut by time series (day, month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:
 
   * Time to Fill: average days between job requisition posting and offer acceptance
   * Offer Acceptance Rate: percent of offers extended to candidates that are accepted
@@ -184,7 +184,7 @@ sd(demographics$annual_comp) * sqrt((n - 1) / n)
   
   **Quartiles** are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts after ordering the data. Note that each partition is equally sized with respect to the number of data points -- not the range of values in each. Quartiles are also related to **percentiles**. For example, Q1 is the 25th percentile -- the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.
   
-  The **Interquartile Range (IQR)** represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than `Q1 - 1.5 * IQR` or greater than `Q3 + 1.5 * IQR` are generally considered outliers.
+  The **Interquartile Range (IQR)** represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than $Q1 - 1.5 * IQR$ or greater than $Q3 + 1.5 * IQR$ are generally considered outliers.
   
   In R, the quantile() function returns the values that bookend each quartile:
 
@@ -238,7 +238,7 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs")
   
   In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
-  Just as we multiplied the sample variance by `(n - 1) / n` to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
+  Just as we multiplied the sample variance by $(n - 1) / n$ to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
   
 ```{r, message = FALSE}
 
@@ -394,6 +394,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
+  In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
+
 ## Inferential Statistics
 
   The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
@@ -408,9 +410,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   Formally, **Bayes' Theorem (alternatively, Bayes' Rule)** states that for any two events A and B where the probability of A is not 0 ($P(A) \neq 0$):
 
-  $P(B \vert A) = \frac{P(A \vert B) P(B)}{P(A)}$
+  $$ P(B \vert A) = \frac{P(A \vert B) P(B)}{P(A)} $$
 
-  Bayes' Rule allows us to more accurately predict the outcome by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely based on a person's age, tenure, education, job, perceptions, relationships, and many other factors. As a result, estimates and predictions are unlikely to be accurate when not conditioned on known attributes.
+  Bayes' Rule allows us to more accurately predict the outcome by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely based on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10%, or $\frac{1}{10}$. Aside from trending this probability over time to identify if attrition is becoming more or less of a concern, this isn't too helpful at the broader company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70%, or $\frac{7}{10}$, this is far more actionable (and concerning).
 
 ### Central Limit Theorem
 
@@ -724,17 +726,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   **Bonferroni Correction**
   
-  One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equal to the number of tests performed. It's important to note that there is not agreement among statisticians about how (or even whether) the p-value threshold for statistical significance needs to be adjusted to account for this increased risk. Nevertheless, we will cover this conservative approach for mitigating this risk.
+  One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equivalent to the number of tests performed. It's important to note that there is not agreement among statisticians about how (or even whether) the p-value threshold for statistical significance needs to be adjusted to account for this increased risk. Nevertheless, we will cover this conservative approach for mitigating this risk.
   
   Thus far, we have only discussed statistical significance in the context of a **per analysis error rate** -- that is, the probability of committing a Type I error for a single statistical test. However, when two or more tests are being conducted on the same sample, the **familywise error rate** is an important factor in determining statistical significance. The familywise error rate reflects the fact that as we conduct more and more analyses on the same sample, the probability of a Type I error across the set (or family) of analyses increases. The familywise error rate can be calculated by:
   
   $$ \alpha_{FW} = 1 - (1 - \alpha_{PC})^C,  $$
 
-  where $c$ is equal to the number of comparisons (or tests) performed, and $\alpha_{PC}$ is equal to the specified per analysis error rate (usually .05). For example, if $\alpha$ = .05 per analysis, the probability of a Type I error with three tests on the same data increases from 5% to 14.3%: $1 - (1 - .05)^3 = .143$.
+  where $c$ is equal to the number of comparisons (or statistical tests) performed, and $\alpha_{PC}$ is equal to the specified per analysis error rate (usually .05). For example, if $\alpha$ = .05 per analysis, the probability of a Type I error with three tests on the same data increases from 5% to 14.3%: $1 - (1 - .05)^3 = .143$.
   
-  The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the **Bonferroni Correction**. To implement this correction, we can simply divide $\alpha$ by the number of analyses performed on the dataset -- such as $\alpha / 3 = .017$ in the case of three analyses with $\alpha = .05$. This means that for each statistical test, we must achieve $p < .017$ to report a statistically significant result. We could also multiply the unadjusted per analysis p-values for each statistical test by the number of tests, and we will achieve the same number of statistically significant results.
+  The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the **Bonferroni Correction**. To implement this correction, we can simply divide $\alpha$ by the number of analyses performed on the dataset -- such as $\alpha / 3 = .017$ in the case of three analyses with $\alpha = .05$. This means that for each statistical test, we must achieve $p < .017$ to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis p-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive $p = .014$, $p = .047$, and $p = .125$, we would achieve one significant result with the first method ($p < .017$) as well as with the alternative since the first statistical test satisfies the per analysis error rate ($p < .05$): $p = .014 * 3 = .042$.
   
-  The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to observe significant results, it is rare to find such a correction reported in published research.
+  Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these "adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference." The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
 
 ## Exercises
 
