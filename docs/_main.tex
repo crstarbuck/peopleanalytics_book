@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-02-01}
+\date{2022-02-02}
 
 \begin{document}
 \maketitle
@@ -223,7 +223,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Install required packages}
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpGtj8iH/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpzP1AWj/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -307,7 +307,7 @@ Another important concept is the \textbf{sampling frame}. While the population r
 \hypertarget{statistical-fundamentals}{%
 \chapter{Statistical Fundamentals}\label{statistical-fundamentals}}
 
-This chapter surveys essential univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
+This chapter reviews essential univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
 
 \hypertarget{univariate-analysis}{%
 \section{Univariate Analysis}\label{univariate-analysis}}
@@ -323,7 +323,7 @@ There are two categories of descriptive statistics: (a) \textbf{measures of cent
 
 Perhaps the most intuitive measure of central tendency is the \textbf{mean}, which is often referred to as the average. The mean of a sample is denoted by \(\bar{x}\) and is defined by:
 
-\[ \bar{X} = \frac{\sum_{i=1}^{n} x_{i}}{n} \]
+\[ \bar{X} = \frac{\sum x_{i}}{n} \]
 
 The mean of a set of numeric values can be calculated using the mean() function in R:
 
@@ -588,6 +588,165 @@ In addition, the summary() function returns several common descriptive statistic
 ##   50016   87946  125522  125369  163262  199968
 \end{verbatim}
 
+\textbf{Skewness}
+
+\textbf{Skewness} is a measure of the horizontal distance between the mode and mean -- a representation of symmetric distortion. In most practical settings, data are not normally distributed. That is, the data are skewed either positively (right-tailed distribution) or negatively (left-tailed distribution). The coefficient of skewness is one of many ways in which we can asertain the degree of skew in the data. The skewness of sample data is defined as:
+
+\[ Sk = \frac{1}{n} \frac{\sum(x_i-\bar{x})^3}{s^3} \]
+
+A positive skewness coefficient indicates positive skew, while a negative coefficient indicates negative skew. The order of descriptive statistics can also be leveraged to ascertain the direction of skew in the data:
+
+\begin{itemize}
+\tightlist
+\item
+  Positive skewness: mode \textless{} median \textless{} mean
+\item
+  Negative skewness: mode \textgreater{} median \textgreater{} mean
+\item
+  Symmetrical distribution: mode = median = mean
+\end{itemize}
+
+Figure \ref{fig:skewness} illustrates the placement of these descriptive statistics in each of the three types of distributions:
+
+\begin{figure}
+
+{\centering \includegraphics[width=13.62in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness} 
+
+}
+
+\caption{Skewness}\label{fig:skewness}
+\end{figure}
+
+The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable's scale. Alternatively, we can simply evaluate this using the coefficient of skewness:
+
+\begin{itemize}
+\tightlist
+\item
+  If skewness is between -0.5 - 0.5, the data are fairly symmetrical.
+\item
+  If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
+\item
+  If skewness is \textless{} -1 or \textgreater{} 1, the data are highly skewed.
+\end{itemize}
+
+Since there is not a base R function for skewness, we can leverage the moments library to calculate skewness:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(moments)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'moments' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate skewness for org tenure, rounded to three significant figures}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.562
+\end{verbatim}
+
+\textbf{Statistical Moments}, after which this library was named, play an important role in specifying the appropriate probability distribution for a set of data. Moments are a set of statistical parameters used to describe the characteristics of a distribution. Skewness is the third statistical moment in the set; hence the sum of cubed differences and cubic polynomial in the denominator of the formula above. The complete set of moments comprises: (1) expected value or mean, (2) variance and standard deviation, (3) skewness, and (4) kurtosis.
+
+We can verify that the skewness() function from the moments library returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Store components of skewness calculation}
+\NormalTok{x =}\StringTok{ }\NormalTok{demographics}\OperatorTok{$}\NormalTok{org_tenure}
+\NormalTok{x_bar =}\StringTok{ }\KeywordTok{mean}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
+\NormalTok{s =}\StringTok{ }\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
+
+\CommentTok{# Calculate skewness manually, rounded to three significant figures}
+\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{3}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{3}\NormalTok{), }\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.562
+\end{verbatim}
+
+A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for data viz}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce histogram to visualize sample distribution}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{_main_files/figure-latex/org-tenure-distribution-1} 
+
+}
+
+\caption{Organization Tenure Distribution}\label{fig:org-tenure-distribution}
+\end{figure}
+
+\textbf{Kurtosis}
+
+While skewness provides information on the symmetry of a distribution, \textbf{kurtosis} provides information on the heaviness of a distribution's tails (``tailedness''). Kurtosis is the fourth statistical moment, defined by:
+
+\[ K = \frac{1}{n} \frac{\sum(x_i-\bar{x})^4}{s^4} \]
+
+Note that the quartic functions characteristic of the fourth statistical moment are the only differences from the skewness formula we reviewed in the prior section (which featured cubic functions).
+
+The terms \textbf{leptokurtic} and \textbf{platykurtic} are often used to describe distributions with light and heavy tails, respectively. ``Platy-'' in platykurtic is the same root as ``platypus'', and I've found it helpful to recall the characteristics of the flat platypus when characterizing frequency distributions as platkurtic (wide and flat) vs.~its antithesis, leptokurtic (tall and skinny). The normal (or Gaussian) distribution is referred to as a \textbf{mesokurtic} distribution in the context of kurtosis.
+
+Figure \ref{fig:kurtosis} illustrates the three kurtosis categorizations:
+
+Kurtosis is measured relative to a normal distribution. Normal distributions have a kurtosis coefficient of 3. Therefore, the kurtosis coefficient is greater than 3 for leptokurtic distributions and less than 3 for platykurtic distributions.
+
+The moments library can also be used to calculate kurtosis in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate kurtosis for org tenure, rounded to two significant figures}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.26
+\end{verbatim}
+
+We can verify that the kurtosis() function returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Calculate kurtosis manually, rounded to two significant figures}
+\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{4}\NormalTok{), }\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2.26
+\end{verbatim}
+
+As we saw in Figure \ref{fig:org-tenure-distribution}, there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is \textless{} 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the full set of statistical moments to understand the distribution of data.
+
 \hypertarget{bivariate-analysis}{%
 \subsection{Bivariate Analysis}\label{bivariate-analysis}}
 
@@ -700,7 +859,7 @@ There are several correlation coefficients, and the measurement scale of \(x\) a
 
 }
 
-\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-22}
+\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-26}
 \end{figure}
 
 Pearson's \(r\) can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
@@ -732,7 +891,7 @@ The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean squar
 
 }
 
-\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-24}
+\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-28}
 \end{figure}
 
 The \(\phi\) coefficient is defined as:
@@ -800,7 +959,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-27-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-31-1.pdf}
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
 
@@ -810,7 +969,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-28}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-32}
 \end{figure}
 
 \begin{figure}
@@ -819,7 +978,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-29}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-33}
 \end{figure}
 
 In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
@@ -857,7 +1016,7 @@ The CLT states that the average of independent random variables, when increased 
 
 }
 
-\caption{The Empirical Rule}\label{fig:unnamed-chunk-30}
+\caption{The Empirical Rule}\label{fig:unnamed-chunk-34}
 \end{figure}
 
 Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
@@ -872,9 +1031,6 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for data viz}
-\KeywordTok{library}\NormalTok{(ggplot2)}
-
 \CommentTok{# Set seed for reproducible random distribution}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
 
@@ -917,11 +1073,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-34-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-34}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-38}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -963,11 +1119,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-35-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-39-1} 
 
 }
 
-\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-35}
+\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-39}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1107,7 +1263,7 @@ Let's compare CIs calculated using a T-Test to those calculated using the Z-Test
 
 }
 
-\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-44}
+\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-48}
 \end{figure}
 
 For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our uniform population distribution and calculate the 95\% CI using the \(t\) statistic from the table (\(df\) = 24):
@@ -1218,7 +1374,7 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-51}
+\caption{Type I and II Errors}\label{fig:unnamed-chunk-55}
 \end{figure}
 
 \textbf{P-Values}
@@ -1288,7 +1444,7 @@ Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, 
   A. True
   B. False
 \item
-  The mean alone is sufficient for understanding the distribution of a set of data.
+  Large covariance coefficients always indicate strong bivariate associations.
   A. True
   B. False
 \item
@@ -1510,7 +1666,7 @@ Statistical Fundamentals
   A positively skewed distribution has its largest allocation to the left and a negative distribution to the right.
   A. True
 \item
-  The mean alone is sufficient for understanding the distribution of a set of data.
+  Large covariance coefficients always indicate strong bivariate associations.
   B. False
 \item
   A T-Test should be used when \(\sigma\) is unknown and/or \(n\) \textless{} 30.
@@ -1521,7 +1677,7 @@ Statistical Fundamentals
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-52}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-56}
 \end{figure}
 
 1. Discover

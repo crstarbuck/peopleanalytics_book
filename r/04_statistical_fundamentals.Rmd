@@ -209,6 +209,119 @@ summary(demographics$annual_comp)
 
 ```
 
+  **Skewness**
+  
+  **Skewness** is a measure of the horizontal distance between the mode and mean -- a representation of symmetric distortion. In most practical settings, data are not normally distributed. That is, the data are skewed either positively (right-tailed distribution) or negatively (left-tailed distribution). The coefficient of skewness is one of many ways in which we can asertain the degree of skew in the data. The skewness of sample data is defined as:
+  
+  $$ Sk = \frac{1}{n} \frac{\sum(x_i-\bar{x})^3}{s^3} $$
+
+  A positive skewness coefficient indicates positive skew, while a negative coefficient indicates negative skew. The order of descriptive statistics can also be leveraged to ascertain the direction of skew in the data:
+  
+  * Positive skewness: mode < median < mean
+  * Negative skewness: mode > median > mean
+  * Symmetrical distribution: mode = median = mean
+  
+  Figure \@ref(fig:skewness) illustrates the placement of these descriptive statistics in each of the three types of distributions:
+  
+<br />
+
+```{r skewness, echo = FALSE, fig.cap = 'Skewness', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness.png")
+
+```
+
+<br />
+
+  The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable's scale. Alternatively, we can simply evaluate this using the coefficient of skewness:
+  
+  * If skewness is between -0.5 - 0.5, the data are fairly symmetrical.
+  * If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
+  * If skewness is < -1 or > 1, the data are highly skewed.
+  
+  Since there is not a base R function for skewness, we can leverage the moments library to calculate skewness:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Load library
+library(moments)
+
+# Calculate skewness for org tenure, rounded to three significant figures
+round(skewness(demographics$org_tenure), 3)
+
+```
+
+  **Statistical Moments**, after which this library was named, play an important role in specifying the appropriate probability distribution for a set of data. Moments are a set of statistical parameters used to describe the characteristics of a distribution. Skewness is the third statistical moment in the set; hence the sum of cubed differences and cubic polynomial in the denominator of the formula above. The complete set of moments comprises: (1) expected value or mean, (2) variance and standard deviation, (3) skewness, and (4) kurtosis.
+
+  We can verify that the skewness() function from the moments library returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+```{r, message = FALSE}
+
+# Store components of skewness calculation
+x = demographics$org_tenure
+x_bar = mean(demographics$org_tenure)
+s = sd(demographics$org_tenure)
+
+# Calculate skewness manually, rounded to three significant figures
+round(1/n * (sum((x - x_bar)^3) / s^3), 3)
+
+```
+
+  A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+
+```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', message = FALSE}
+
+# Load library for data viz
+library(ggplot2)
+
+# Produce histogram to visualize sample distribution
+ggplot() + 
+  aes(demographics$org_tenure) + 
+  labs(x = "Organization Tenure", y = "n") + 
+  geom_histogram(colour = "white", size = .1, fill = "#262626")
+
+```
+
+  **Kurtosis**
+  
+  While skewness provides information on the symmetry of a distribution, **kurtosis** provides information on the heaviness of a distribution's tails ("tailedness"). Kurtosis is the fourth statistical moment, defined by:
+  
+  $$ K = \frac{1}{n} \frac{\sum(x_i-\bar{x})^4}{s^4} $$
+
+  Note that the quartic functions characteristic of the fourth statistical moment are the only differences from the skewness formula we reviewed in the prior section (which featured cubic functions).
+  
+  The terms **leptokurtic** and **platykurtic** are often used to describe distributions with light and heavy tails, respectively. "Platy-" in platykurtic is the same root as "platypus", and I've found it helpful to recall the characteristics of the flat platypus when characterizing frequency distributions as platkurtic (wide and flat) vs. its antithesis, leptokurtic (tall and skinny). The normal (or Gaussian) distribution is referred to as a **mesokurtic** distribution in the context of kurtosis.
+  
+  Figure \@ref(fig:kurtosis) illustrates the three kurtosis categorizations:
+
+```{r kurtosis, echo = FALSE, fig.cap = 'Kurtosis', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis.jpg")
+
+```
+
+  Kurtosis is measured relative to a normal distribution. Normal distributions have a kurtosis coefficient of 3. Therefore, the kurtosis coefficient is greater than 3 for leptokurtic distributions and less than 3 for platykurtic distributions.
+
+  The moments library can also be used to calculate kurtosis in R:
+
+```{r, message = FALSE}
+
+# Calculate kurtosis for org tenure, rounded to two significant figures
+round(kurtosis(demographics$org_tenure), 2)
+
+```
+
+  We can verify that the kurtosis() function returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+```{r, message = FALSE}
+
+# Calculate kurtosis manually, rounded to two significant figures
+round(1/n * (sum((x - x_bar)^4) / s^4), 2)
+
+```
+
+  As we saw in Figure \@ref(fig:org-tenure-distribution), there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is < 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
+  
 ### Bivariate Analysis  
 
   **Covariance**
@@ -435,9 +548,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
 
 ```{r, warning = FALSE, message = FALSE}
-
-# Load library for data viz
-library(ggplot2)
 
 # Set seed for reproducible random distribution
 set.seed(1234)
