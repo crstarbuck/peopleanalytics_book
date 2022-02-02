@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpzP1AWj/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpqBXjgz/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -493,7 +493,7 @@ Sample statistics are the default in R. Since the population variance differs fr
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store number of observations}
-\NormalTok{n =}\StringTok{ }\KeywordTok{nrow}\NormalTok{(demographics)}
+\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
 
 \CommentTok{# Calculate population variance for annual compensation}
 \KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
@@ -635,15 +635,7 @@ Since there is not a base R function for skewness, we can leverage the moments l
 \begin{Highlighting}[]
 \CommentTok{# Load library}
 \KeywordTok{library}\NormalTok{(moments)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'moments' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Calculate skewness for org tenure, rounded to three significant figures}
 \KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{3}\NormalTok{)}
 \end{Highlighting}
@@ -660,6 +652,7 @@ We can verify that the skewness() function from the moments library returns the 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store components of skewness calculation}
+\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
 \NormalTok{x =}\StringTok{ }\NormalTok{demographics}\OperatorTok{$}\NormalTok{org_tenure}
 \NormalTok{x_bar =}\StringTok{ }\KeywordTok{mean}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
 \NormalTok{s =}\StringTok{ }\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
@@ -717,6 +710,15 @@ The terms \textbf{leptokurtic} and \textbf{platykurtic} are often used to descri
 
 Figure \ref{fig:kurtosis} illustrates the three kurtosis categorizations:
 
+\begin{figure}
+
+{\centering \includegraphics[width=19.69in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis} 
+
+}
+
+\caption{Kurtosis}\label{fig:kurtosis}
+\end{figure}
+
 Kurtosis is measured relative to a normal distribution. Normal distributions have a kurtosis coefficient of 3. Therefore, the kurtosis coefficient is greater than 3 for leptokurtic distributions and less than 3 for platykurtic distributions.
 
 The moments library can also be used to calculate kurtosis in R:
@@ -745,7 +747,7 @@ We can verify that the kurtosis() function returns the expected value (per the a
 ## [1] 2.26
 \end{verbatim}
 
-As we saw in Figure \ref{fig:org-tenure-distribution}, there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is \textless{} 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the full set of statistical moments to understand the distribution of data.
+As we saw in Figure \ref{fig:org-tenure-distribution}, there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is \textless{} 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
 
 \hypertarget{bivariate-analysis}{%
 \subsection{Bivariate Analysis}\label{bivariate-analysis}}
