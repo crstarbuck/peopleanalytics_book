@@ -14,8 +14,12 @@ There are two categories of descriptive statistics: (a) **measures of central te
   
   Perhaps the most intuitive measure of central tendency is the **mean**, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
   
-  $$ \bar{X} = \frac{\sum x_{i}}{n} $$
+  $$ \bar{x} = \frac{\sum x_{i}}{n} $$
 
+  The population mean is denoted by $\mu$ and is defined by:
+
+  $$ \mu = \frac{\sum x_{i}}{N} $$
+  
 The mean of a set of numeric values can be calculated using the mean() function in R:
 
 ```{r, message = FALSE}
@@ -136,7 +140,7 @@ var(demographics$annual_comp)
 
 ```
 
-  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of `var(x) * (n - 1) / n`, it is simple to convert output from var() to the population variance:
+  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of $s^2 * (\frac{n - 1}{n})$, it is simple to convert output from var() to the population variance:
   
 ```{r, message = FALSE}
 
@@ -152,7 +156,7 @@ var(demographics$annual_comp) * (n - 1) / n
   
   The **standard deviation** is simply the square root of the variance, as defined by:
   
-  $$ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}} $$
+  $$ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{n - 1}} $$
   
   Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
   
@@ -165,7 +169,7 @@ sd(demographics$annual_comp)
 
 ```
 
-  Since the population standard deviation differs from the sample standard deviation by a factor of `sd(x) * sqrt((n - 1) / n)`, it is simple to convert output from sd() to the population standard deviation:
+  Since the population standard deviation differs from the sample standard deviation by a factor of $s * \sqrt (\frac{n - 1}{n})$, it is simple to convert output from sd() to the population standard deviation:
 
 ```{r, message = FALSE}
 
@@ -331,7 +335,7 @@ round(1/n * (sum((x - x_bar)^4) / s^4), 2)
   
   Covariance of a sample is defined by:
 
-$$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} $$
+  $$ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{n-1} $$
 
   It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
   
@@ -373,13 +377,13 @@ var(demographics$age)
 
 ```
 
-  As expected, the variance for age ($s^{2}$ = 168.39) matches the value found in the age x age cell of the covariance matrix.
+  As expected, the variance for age ($s^{2} = 168.39$) matches the value found in the age x age cell of the covariance matrix.
 
   **Correlation**
 
   **Correlation** is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. **Pearson's product-moment correlation coefficient** $r$ is defined by:
 
-$$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
+  $$ r_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\sum_(x_{i}-\bar{x})^2\sum_(y_{i}-\bar{y})^2}} $$
 
   In R, Pearson's $r$ can be calculated using the cor() function:
 
@@ -653,11 +657,11 @@ length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3
 
   All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
   
-  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI -- the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population:
+  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI for a two-tailed distribution (i.e., we are looking for significantly different values in either the larger or smaller direction) -- the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population:
 
   The CI in this case is defined by:
   
-  $$ CI = \bar{X} \pm z \frac{\sigma}{\sqrt{n}} $$
+  $$ CI = \bar{x} \pm z_{\alpha/_2} \frac{\sigma}{\sqrt{n}} $$
   
   Let's randomly take $n$ = 100 from the population, and compute sample statistics to estimate the 95% CI:
 
@@ -719,11 +723,19 @@ ci99_upper_bound
   
   If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a **T-Test** to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
   
-  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. The $t$ distribution is wider and shorter relative to the normal distribution, and this is characteristic of the distribution of sample means for smaller samples we observed in our CLT example. As a result, we must apply a different factor to estimate the CI to reflect the more **platykurtic** distribution. The CI in this case is defined by:
+  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \@ref(fig:t-distribution), the $t$ distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the distribution of sample means for smaller samples we observed in our CLT example. **Degrees of freedom (df)** represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size ($n - 1$).
   
-  $$ CI = \bar{X} \pm t \frac{\sigma}{\sqrt{n}} $$
+```{r t-distribution, echo = FALSE, fig.cap = paste("t Distribution Shape by Degrees of Freedom"), fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution.png")
+
+```
   
-  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and **degrees of freedom (df)** ($n$ - 1). We can reference the following table to obtain the $t$ statistic for each CI level:
+  When estimating the CI for smaller samples, we need to leverage the wider, more platykurtic $t$ distribution to achieve greater accuracy. Therefore, the CI for a two-tailed test in this case is defined by:
+  
+  $$ CI = \bar{x} \pm t_{\alpha/_2} \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and $df$. We can reference the following table to obtain the $t$ statistic for each CI level:
   
 ```{r, echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
 

@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R and Data Studio}
 \author{Craig Starbuck}
-\date{2022-02-02}
+\date{2022-02-03}
 
 \begin{document}
 \maketitle
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpqBXjgz/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpenmk1M/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -323,7 +323,11 @@ There are two categories of descriptive statistics: (a) \textbf{measures of cent
 
 Perhaps the most intuitive measure of central tendency is the \textbf{mean}, which is often referred to as the average. The mean of a sample is denoted by \(\bar{x}\) and is defined by:
 
-\[ \bar{X} = \frac{\sum x_{i}}{n} \]
+\[ \bar{x} = \frac{\sum x_{i}}{n} \]
+
+The population mean is denoted by \(\mu\) and is defined by:
+
+\[ \mu = \frac{\sum x_{i}}{N} \]
 
 The mean of a set of numeric values can be calculated using the mean() function in R:
 
@@ -488,7 +492,7 @@ In R, the sample variance can be calculated using the var() function:
 ## [1] 1876688425
 \end{verbatim}
 
-Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of \texttt{var(x)\ *\ (n\ -\ 1)\ /\ n}, it is simple to convert output from var() to the population variance:
+Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of \(s^2 * (\frac{n - 1}{n})\), it is simple to convert output from var() to the population variance:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -508,7 +512,7 @@ Sample statistics are the default in R. Since the population variance differs fr
 
 The \textbf{standard deviation} is simply the square root of the variance, as defined by:
 
-\[ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{N - 1}} \]
+\[ s = \sqrt{\frac{\sum (x_{i} - \bar{x})^{2}}{n - 1}} \]
 
 Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
 
@@ -525,7 +529,7 @@ In R, the sample standard deviation can be calculated using the sd() function:
 ## [1] 43320.76
 \end{verbatim}
 
-Since the population standard deviation differs from the sample standard deviation by a factor of \texttt{sd(x)\ *\ sqrt((n\ -\ 1)\ /\ n)}, it is simple to convert output from sd() to the population standard deviation:
+Since the population standard deviation differs from the sample standard deviation by a factor of \(s * \sqrt (\frac{n - 1}{n})\), it is simple to convert output from sd() to the population standard deviation:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -758,7 +762,7 @@ While variance provides an understanding of how values for a single variable var
 
 Covariance of a sample is defined by:
 
-\[ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{N-1} \]
+\[ cov_{x,y} = \frac{\sum(x_{i}-\bar{x})(y_{i}-\bar{y})}{n-1} \]
 
 It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong.
 
@@ -820,7 +824,7 @@ Using the default Pearson method, the cov() function will return sample variance
 ## [1] 168.3866
 \end{verbatim}
 
-As expected, the variance for age (\(s^{2}\) = 168.39) matches the value found in the age x age cell of the covariance matrix.
+As expected, the variance for age (\(s^{2} = 168.39\)) matches the value found in the age x age cell of the covariance matrix.
 
 \textbf{Correlation}
 
@@ -1171,11 +1175,11 @@ Next, let's validate that our simulated distribution of sample means adheres to 
 
 All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population' that falls outside this interval.
 
-Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-Test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI -- the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population:
+Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-Test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI for a two-tailed distribution (i.e., we are looking for significantly different values in either the larger or smaller direction) -- the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population:
 
 The CI in this case is defined by:
 
-\[ CI = \bar{X} \pm z \frac{\sigma}{\sqrt{n}} \]
+\[ CI = \bar{X} \pm z_{\alpha/_2} \frac{\sigma}{\sqrt{n}} \]
 
 Let's randomly take \(n\) = 100 from the population, and compute sample statistics to estimate the 95\% CI:
 
@@ -1253,11 +1257,22 @@ Like the 95\% CI, this slightly wider 99\% CI (46.2 - 60.7) also includes our \(
 
 If \(\sigma\) is not known, and/or we have a small sample (\(n\) \textless{} 30), we need to use a \textbf{T-Test} to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
 
-As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. The \(t\) distribution is wider and shorter relative to the normal distribution, and this is characteristic of the distribution of sample means for smaller samples we observed in our CLT example. As a result, we must apply a different factor to estimate the CI to reflect the more \textbf{platykurtic} distribution. The CI in this case is defined by:
+As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \ref{fig:t-distribution}, the \(t\) distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the distribution of sample means for smaller samples we observed in our CLT example. \textbf{Degrees of freedom (df)} represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size (\(n - 1\)).
 
-\[ CI = \bar{X} \pm t \frac{\sigma}{\sqrt{n}} \]
+\begin{figure}
 
-Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed \(z\) score can be used for each CI level when \(n\) \textgreater{} 30, the \(t\) statistic varies based on both the CI level and \textbf{degrees of freedom (df)} (\(n\) - 1). We can reference the following table to obtain the \(t\) statistic for each CI level:
+{\centering \includegraphics[width=23.89in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution} 
+
+}
+
+\caption{t Distribution Shape by Degrees of Freedom}\label{fig:t-distribution}
+\end{figure}
+
+When estimating the CI for smaller samples, we need to leverage the wider, more platykurtic \(t\) distribution to achieve greater accuracy. Therefore, the CI for a two-tailed test in this case is defined by:
+
+\[ CI = \bar{X} \pm t_{\alpha/_2} \frac{\sigma}{\sqrt{n}} \]
+
+Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed \(z\) score can be used for each CI level when \(n\) \textgreater{} 30, the \(t\) statistic varies based on both the CI level and \(df\). We can reference the following table to obtain the \(t\) statistic for each CI level:
 
 \begin{figure}
 
