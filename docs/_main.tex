@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-03}
+\date{2022-02-04}
 
 \begin{document}
 \maketitle
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpCEfKAO/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpaC8piz/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -304,8 +304,8 @@ The goal of research is to understand a population based on data from a subset o
 
 Another important concept is the \textbf{sampling frame}. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
 
-\hypertarget{statistical-fundamentals}{%
-\chapter{Statistical Fundamentals}\label{statistical-fundamentals}}
+\hypertarget{stats}{%
+\chapter{Statistical Fundamentals}\label{stats}}
 
 This chapter reviews essential univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
 
@@ -688,8 +688,10 @@ A skewness coefficient of .562 indicates that organization tenure is moderately 
 \CommentTok{# Produce histogram to visualize sample distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{)}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -897,7 +899,7 @@ The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean squar
 
 }
 
-\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-28}
+\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-27}
 \end{figure}
 
 The \(\phi\) coefficient is defined as:
@@ -958,14 +960,14 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \KeywordTok{library}\NormalTok{(corrplot)}
 
 \CommentTok{# Store correlation matrix to object M}
-\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 
 \CommentTok{# Visualize correlation matrix}
 \KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-31-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-30-1.pdf}
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
 
@@ -975,7 +977,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-32}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-31}
 \end{figure}
 
 \begin{figure}
@@ -984,7 +986,7 @@ It's important to remember that correlation is not causation. Correlations can b
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-33}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-32}
 \end{figure}
 
 In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
@@ -1022,12 +1024,12 @@ The CLT states that the average of independent random variables, when increased 
 
 }
 
-\caption{The Empirical Rule}\label{fig:unnamed-chunk-34}
+\caption{The Empirical Rule}\label{fig:unnamed-chunk-33}
 \end{figure}
 
 Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
 
-Let's assume the mean fun score and standard deviation of these two groups are known; the group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
+Instinctively, we already know the statisticians will be more fun than the other group. However, let's assume we need the mean fun score and standard deviation of these two groups for this example. The group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
 Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a `reasonably sized' sample of statisticians with average funness so extremely different from the population average.
 
@@ -1059,12 +1061,13 @@ Let's now see the CLT in action by simulating a random uniform population distri
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate population variance}
-\KeywordTok{var}\NormalTok{(rand.unif) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
+\NormalTok{N =}\StringTok{ }\KeywordTok{length}\NormalTok{(rand.unif)}
+\KeywordTok{var}\NormalTok{(rand.unif) }\OperatorTok{*}\StringTok{ }\NormalTok{(N }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{N}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 830.9762
+## [1] 830.3155
 \end{verbatim}
 
 \begin{Shaded}
@@ -1072,18 +1075,20 @@ Let's now see the CLT in action by simulating a random uniform population distri
 \CommentTok{# Produce histogram to visualize population distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(rand.unif) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"N"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{)}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-37-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-38}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-37}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -1091,7 +1096,7 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Define number of samples to draw from population distribution}
-\NormalTok{samples <-}\StringTok{ }\DecValTok{100}
+\NormalTok{samples <-}\StringTok{ }\DecValTok{10000}
 
 \CommentTok{# Populate vector with sample sizes}
 \NormalTok{sample_n <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{10}\NormalTok{,}\DecValTok{25}\NormalTok{,}\DecValTok{50}\NormalTok{)}
@@ -1117,19 +1122,21 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 \CommentTok{# Produce histograms to visualize distributions of sample means, grouped by n-count}
 \NormalTok{sample_means }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x_bar, }\DataTypeTok{fill =}\NormalTok{ n) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x-bar"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{colour =} \StringTok{"white"}\NormalTok{, }\DataTypeTok{size =} \FloatTok{.1}\NormalTok{, }\DataTypeTok{fill =} \StringTok{"#262626"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x-bar"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
 \StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-39-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
 
 }
 
-\caption{Distribution of 100 Sample Means of Varied Size}\label{fig:unnamed-chunk-39}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-38}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1157,7 +1164,7 @@ Next, let's validate that our simulated distribution of sample means adheres to 
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 97
+## [1] 95.35
 \end{verbatim}
 
 97\% of sample means are within 2 SEs, which is roughly what we expect per the characteristics of the normal distribution.
@@ -1170,7 +1177,7 @@ Next, let's validate that our simulated distribution of sample means adheres to 
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 100
+## [1] 99.79
 \end{verbatim}
 
 All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population' that falls outside this interval.
@@ -1257,7 +1264,7 @@ Like the 95\% CI, this slightly wider 99\% CI (46.2 - 60.7) also includes our \(
 
 If \(\sigma\) is not known, and/or we have a small sample (\(n\) \textless{} 30), we need to use a \textbf{T-Test} to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
 
-As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \ref{fig:t-distribution}, the \(t\) distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the distribution of sample means for smaller samples we observed in our CLT example. \textbf{Degrees of freedom (df)} represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size (\(n - 1\)).
+As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \ref{fig:t-distribution}, the \(t\) distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the sampling distribution of means for smaller samples we observed in our CLT example. Specifically, \textbf{degrees of freedom (df)} is used to determine the shape of the probability distribution. Degrees of freedom represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size (\(n - 1\)). For example, if we could choose 1 of 5 projects to work on each day between Monday and Friday, we would only be able to \emph{choose} 4 out of the 5 days; on Friday, only 1 project would remain to be selected, so our degrees of freedom (the number of days in which we have a choice between projects) would be 4.
 
 \begin{figure}
 
@@ -1280,7 +1287,7 @@ Let's compare CIs calculated using a T-Test to those calculated using the Z-Test
 
 }
 
-\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-48}
+\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-47}
 \end{figure}
 
 For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our uniform population distribution and calculate the 95\% CI using the \(t\) statistic from the table (\(df\) = 24):
@@ -1391,7 +1398,7 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-55}
+\caption{Type I and II Errors}\label{fig:unnamed-chunk-54}
 \end{figure}
 
 \textbf{P-Values}
@@ -1413,6 +1420,19 @@ where \(c\) is equal to the number of comparisons (or statistical tests) perform
 The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the \textbf{Bonferroni Correction}. To implement this correction, we can simply divide \(\alpha\) by the number of analyses performed on the dataset -- such as \(\alpha / 3 = .017\) in the case of three analyses with \(\alpha = .05\). This means that for each statistical test, we must achieve \(p < .017\) to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis p-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive \(p = .014\), \(p = .047\), and \(p = .125\), we would achieve one significant result with the first method (\(p < .017\)) as well as with the alternative since the first statistical test satisfies the per analysis error rate (\(p < .05\)): \(p = .014 * 3 = .042\).
 
 Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these ``adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference.'' The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
+
+\hypertarget{parametric-vs.nonparametric-tests}{%
+\section{Parametric vs.~Nonparametric Tests}\label{parametric-vs.nonparametric-tests}}
+
+\textbf{Parametric statistics} assume the population is normally distributed. \textbf{Nonparametric statistics} do not assume anything about the population parameters or distribution and are, therefore, often referred to as distribution free tests. Assuming the normality assumption holds, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations.
+
+Since the mean is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that \(\mu\) and \(\sigma\) are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate.
+
+In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume \textbf{homogeneity of variance} and \textbf{independence}. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
+
+Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in \ref{corr-lvl-ed}, is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in \ref{aod}.
+
+It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
 
 \hypertarget{exercises}{%
 \section{Exercises}\label{exercises}}
@@ -1516,8 +1536,8 @@ Level one people analytics tends to utilize only the delivered fields from the H
 
 Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.
 
-\hypertarget{analysis-of-differences}{%
-\chapter{Analysis of Differences}\label{analysis-of-differences}}
+\hypertarget{aod}{%
+\chapter{Analysis of Differences}\label{aod}}
 
 \hypertarget{comparing-2-distributions}{%
 \section{Comparing 2 Distributions}\label{comparing-2-distributions}}
@@ -1694,7 +1714,7 @@ Statistical Fundamentals
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-56}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-55}
 \end{figure}
 
 1. Discover

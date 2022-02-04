@@ -1,4 +1,4 @@
-# Statistical Fundamentals
+# Statistical Fundamentals {#stats}
 
 This chapter reviews essential univariate, bivariate, and inferential analysis concepts that underpin the more complex multivariate approaches in subsequent chapters of this book.
 
@@ -282,8 +282,10 @@ library(ggplot2)
 # Produce histogram to visualize sample distribution
 ggplot() + 
   aes(demographics$org_tenure) + 
-  labs(x = "Organization Tenure", y = "n") + 
-  geom_histogram(colour = "white", size = .1, fill = "#262626")
+  labs(x = "Organization Tenure", y = "Density") + 
+  geom_histogram(aes(y = ..density..), fill = "#414141") +
+  geom_density(fill = "#ADD8E6", alpha = 0.6) +
+  theme_bw()
 
 ```
 
@@ -420,7 +422,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   We can override the default Pearson method in the cor() function to implement a specific form of rank correlation using the `method` argument:
 
-```{r, message = FALSE}
+```{r corr-lvl-ed, message = FALSE}
 
 # Calculate the correlation between job level and education level using Spearman's method
 cor(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
@@ -483,7 +485,7 @@ cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "
 library(corrplot)
 
 # Store correlation matrix to object M
-M <- cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], method = "spearman", use = "complete.obs")
+M <- cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
 
 # Visualize correlation matrix
 corrplot.mixed(M, order = 'AOE')
@@ -528,7 +530,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### Central Limit Theorem
 
-  The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972). 
+  The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972).
 
   The CLT states that the average of independent random variables, when increased in number, tend to follow a normal (or Gaussian) distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
 
@@ -544,7 +546,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
 
-  Let's assume the mean fun score and standard deviation of these two groups are known; the group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
+  Instinctively, we already know the statisticians will be more fun than the other group. However, let's assume we need the mean fun score and standard deviation of these two groups for this example. The group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
   Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average funness so extremely different from the population average. 
 
@@ -572,7 +574,8 @@ mean(rand.unif)
 ```{r, message = FALSE}
 
 # Calculate population variance
-var(rand.unif) * (n - 1) / n
+N = length(rand.unif)
+var(rand.unif) * (N - 1) / N
 
 ```
 
@@ -581,17 +584,19 @@ var(rand.unif) * (n - 1) / n
 # Produce histogram to visualize population distribution
 ggplot() + 
   aes(rand.unif) + 
-  labs(x = "x", y = "N") + 
-  geom_histogram(colour = "white", size = .1, fill = "#262626")
+  labs(x = "x", y = "Density") + 
+  geom_histogram(aes(y = ..density..), fill = "#414141") +
+  geom_density(fill = "#ADD8E6", alpha = 0.6) +
+  theme_bw()
 
 ```
 
   As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
 
-```{r, fig.cap = "Distribution of 100 Sample Means of Varied Size", fig.align = 'center', message = FALSE}
+```{r, fig.cap = "Distribution of 10,000 Sample Means of Varied Size", fig.align = 'center', message = FALSE}
 
 # Define number of samples to draw from population distribution
-samples <- 100
+samples <- 10000
 
 # Populate vector with sample sizes
 sample_n <- c(1:5,10,25,50)
@@ -617,8 +622,10 @@ for (n in sample_n) {
 # Produce histograms to visualize distributions of sample means, grouped by n-count
 sample_means %>% ggplot() + 
   aes(x = x_bar, fill = n) + 
-  labs(x = "x-bar", y = "n") + 
-  geom_histogram(colour = "white", size = .1, fill = "#262626") + 
+  labs(x = "x-bar", y = "Density") + 
+  geom_histogram(aes(y = ..density..), fill = "#414141") +
+  geom_density(fill = "#ADD8E6", alpha = 0.6) +
+  theme_bw() +
   facet_wrap(~n)
 
 ```
@@ -723,7 +730,7 @@ ci99_upper_bound
   
   If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a **T-Test** to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
   
-  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \@ref(fig:t-distribution), the $t$ distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the distribution of sample means for smaller samples we observed in our CLT example. **Degrees of freedom (df)** represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size ($n - 1$).
+  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \@ref(fig:t-distribution), the $t$ distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the sampling distribution of means for smaller samples we observed in our CLT example. Specifically, **degrees of freedom (df)** is used to determine the shape of the probability distribution. Degrees of freedom represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size ($n - 1$). For example, if we could choose 1 of 5 projects to work on each day between Monday and Friday, we would only be able to *choose* 4 out of the 5 days; on Friday, only 1 project would remain to be selected, so our degrees of freedom (the number of days in which we have a choice between projects) would be 4.
   
 ```{r t-distribution, echo = FALSE, fig.cap = paste("t Distribution Shape by Degrees of Freedom"), fig.align = 'center'}
 
@@ -854,6 +861,18 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the **Bonferroni Correction**. To implement this correction, we can simply divide $\alpha$ by the number of analyses performed on the dataset -- such as $\alpha / 3 = .017$ in the case of three analyses with $\alpha = .05$. This means that for each statistical test, we must achieve $p < .017$ to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis p-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive $p = .014$, $p = .047$, and $p = .125$, we would achieve one significant result with the first method ($p < .017$) as well as with the alternative since the first statistical test satisfies the per analysis error rate ($p < .05$): $p = .014 * 3 = .042$.
   
   Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these "adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference." The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
+
+## Parametric vs. Nonparametric Tests
+
+  **Parametric statistics** assume the population is normally distributed. **Nonparametric statistics** do not assume anything about the population parameters or distribution and are, therefore, often referred to as distribution free tests. Assuming the normality assumption holds, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations.
+
+  Since the mean is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate.
+  
+  In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
+
+Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in \@ref(corr-lvl-ed), is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in \@ref(aod).
+
+It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
 
 ## Exercises
 
