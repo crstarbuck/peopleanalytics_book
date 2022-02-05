@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-04}
+\date{2022-02-05}
 
 \begin{document}
 \maketitle
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpaC8piz/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpRFKUM2/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -676,15 +676,7 @@ A skewness coefficient of .562 indicates that organization tenure is moderately 
 \begin{Highlighting}[]
 \CommentTok{# Load library for data viz}
 \KeywordTok{library}\NormalTok{(ggplot2)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'ggplot2' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Produce histogram to visualize sample distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
@@ -1182,7 +1174,7 @@ Next, let's validate that our simulated distribution of sample means adheres to 
 
 All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population' that falls outside this interval.
 
-Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-Test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI for a two-tailed distribution (i.e., we are looking for significantly different values in either the larger or smaller direction) -- the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population:
+Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-Test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95\% CI represents the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population.
 
 The CI in this case is defined by:
 
@@ -1279,7 +1271,7 @@ When estimating the CI for smaller samples, we need to leverage the wider, more 
 
 \[ CI = \bar{x} \pm t_{\alpha/_2} \frac{\sigma}{\sqrt{n}} \]
 
-Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed \(z\) score can be used for each CI level when \(n\) \textgreater{} 30, the \(t\) statistic varies based on both the CI level and \(df\). We can reference the following table to obtain the \(t\) statistic for each CI level:
+Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed \(z\) score can be used for each CI level when \(n\) \textgreater{} 30, the \(t\) statistic varies based on both the CI level and \(df\). Though R will determine the correct \(t\) statistic for us, let's reference the table shown in Figure \ref{t-crit} to manually lookup the \(t\) statistic:
 
 \begin{figure}
 
@@ -1287,10 +1279,10 @@ Let's compare CIs calculated using a T-Test to those calculated using the Z-Test
 
 }
 
-\caption{Critical Values of Student's t Distribution}\label{fig:unnamed-chunk-47}
+\caption{Critical Values of Student's t Distribution}\label{fig:t-crit}
 \end{figure}
 
-For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our uniform population distribution and calculate the 95\% CI using the \(t\) statistic from the table (\(df\) = 24):
+For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our uniform population distribution and calculate the 95\% CI using the \(t\) statistic from the table (\(df\) = 24). The \(t\) statistic for this CI and \(df\) is 2.064:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1328,7 +1320,7 @@ For illustrative purposes, let's draw a smaller sample of \(n\) = 25 from our un
 ## [1] 59.60959
 \end{verbatim}
 
-As expected, the 95\% CI using the \(t\) statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given this smaller sample. To increase our confidence to the 99\% level, the interval widens even further (30.9 - 63.9):
+As expected, the 95\% CI using the \(t\) statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given the limited information in this smaller sample. To increase our confidence to the 99\% level, the interval widens even further (30.9 - 63.9):
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1398,7 +1390,7 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-54}
+\caption{Type I and II Errors}\label{fig:unnamed-chunk-53}
 \end{figure}
 
 \textbf{P-Values}
@@ -1434,8 +1426,77 @@ Spearman's correlation coefficient, which we used to evaluate the relationship b
 
 It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
 
-\hypertarget{exercises}{%
-\section{Exercises}\label{exercises}}
+\hypertarget{the-monty-hall-problem}{%
+\section{The Monty Hall Problem}\label{the-monty-hall-problem}}
+
+This chapter concludes with an example that highlights the importance of statistical assumptions by integrating concepts of conditional probability, randomness, and independence.
+
+In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
+
+It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection to the other closed door double their chances of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; in order for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.
+
+When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize's location and opens a door he knows does not contain the prize. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prizes's location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).
+
+Let's prove this with a simulation in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Set seed for reproducible simulations}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{# Set number of simulations}
+\NormalTok{trials =}\StringTok{ }\DecValTok{10000}
+
+\CommentTok{# Store switch/keep decisions}
+\NormalTok{decisions =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"switch"}\NormalTok{, }\StringTok{"keep"}\NormalTok{)}
+
+\CommentTok{# Store integer for each door}
+\NormalTok{doors =}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{3}
+
+\CommentTok{# Initialize empty data frame for results}
+\NormalTok{results =}\StringTok{ }\OtherTok{NULL}
+
+\ControlFlowTok{for}\NormalTok{ (n }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{trials)\{}
+  
+  \ControlFlowTok{for}\NormalTok{ (decision }\ControlFlowTok{in}\NormalTok{ decisions)\{}
+    
+    \CommentTok{# Select correct door}
+\NormalTok{    correct_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
+
+    \CommentTok{# Contestant chooses a door at random}
+\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
+  
+    \CommentTok{# Open door that was neither selected by the contestant nor contains the prize}
+    \CommentTok{# Choose one door to open if multiple remain without the prize (i.e., the contestant didn't initially select the door containing the prize)}
+\NormalTok{    remaining_doors <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{correct_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door)}
+\NormalTok{    open_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(remaining_doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T) }
+  
+    \CommentTok{# Contestant makes decision to switch doors or keep with the originally selected door}
+\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(decision }\OperatorTok{==}\StringTok{ "switch"}\NormalTok{, }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{open_door), selected_door)}
+    
+    \CommentTok{# Store results in data frame}
+\NormalTok{    results <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(results, }\KeywordTok{cbind.data.frame}\NormalTok{(}
+                     \DataTypeTok{trial =}\NormalTok{ n,}
+                     \DataTypeTok{decision =}\NormalTok{ decision,}
+                     \DataTypeTok{result =} \KeywordTok{ifelse}\NormalTok{(correct_door }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door, }\StringTok{"win"}\NormalTok{, }\StringTok{"lose"}\NormalTok{)))}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\CommentTok{# Calculate percent of wins for switch vs. keep decisions}
+\NormalTok{switch_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "switch"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\NormalTok{keep_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "keep"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+
+\KeywordTok{round}\NormalTok{((switch_wins }\OperatorTok{-}\StringTok{ }\NormalTok{keep_wins) }\OperatorTok{/}\StringTok{ }\NormalTok{switch_wins }\OperatorTok{*}\StringTok{ }\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 33
+\end{verbatim}
+
+As we can see, wins occur 33\% more often when contestants switch doors. If ever you find yourself playing Let's Make a Deal, switch doors.
+s
+\#\# Exercises
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}

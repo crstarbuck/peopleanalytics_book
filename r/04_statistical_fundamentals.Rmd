@@ -274,7 +274,7 @@ round(1/n * (sum((x - x_bar)^3) / s^3), 3)
 
   A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
 
-```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', message = FALSE}
+```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Load library for data viz
 library(ggplot2)
@@ -664,7 +664,7 @@ length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3
 
   All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
   
-  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI for a two-tailed distribution (i.e., we are looking for significantly different values in either the larger or smaller direction) -- the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population:
+  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95% CI represents the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population.
 
   The CI in this case is defined by:
   
@@ -742,15 +742,15 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   $$ CI = \bar{x} \pm t_{\alpha/_2} \frac{\sigma}{\sqrt{n}} $$
   
-  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and $df$. We can reference the following table to obtain the $t$ statistic for each CI level:
+  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and $df$. Though R will determine the correct $t$ statistic for us, let's reference the table shown in Figure \@ref(t-crit) to manually lookup the $t$ statistic:
   
-```{r, echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
+```{r t-crit, echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t-table.png")
 
 ```
 
-  For illustrative purposes, let's draw a smaller sample of $n$ = 25 from our uniform population distribution and calculate the 95% CI using the $t$ statistic from the table ($df$ = 24):
+  For illustrative purposes, let's draw a smaller sample of $n$ = 25 from our uniform population distribution and calculate the 95% CI using the $t$ statistic from the table ($df$ = 24). The $t$ statistic for this CI and $df$ is 2.064:
 
 ```{r, message = FALSE}
 
@@ -780,7 +780,7 @@ ci95_upper_bound
 
 ```
 
-  As expected, the 95% CI using the $t$ statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given this smaller sample. To increase our confidence to the 99% level, the interval widens even further (30.9 - 63.9):
+  As expected, the 95% CI using the $t$ statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given the limited information in this smaller sample. To increase our confidence to the 99% level, the interval widens even further (30.9 - 63.9):
 
 ```{r, message = FALSE}
 
@@ -866,14 +866,78 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Parametric statistics** assume the population is normally distributed. **Nonparametric statistics** do not assume anything about the population parameters or distribution and are, therefore, often referred to as distribution free tests. Assuming the normality assumption holds, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations.
 
-  Since the mean is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate.
+  Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate.
   
   In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
 
-Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in \@ref(corr-lvl-ed), is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in \@ref(aod).
+  Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in \@ref(corr-lvl-ed), is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in \@ref(aod).
 
-It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
+  It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
 
+## The Monty Hall Problem
+
+  This chapter concludes with an example that highlights the importance of statistical assumptions by integrating concepts of conditional probability, randomness, and independence.
+  
+  In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
+  
+  It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection have a 66% chance (rather than 50%) of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; in order for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.
+  
+  When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. Monty's knowledge of the door containing the prize does not impact the probability of selecting the winning door. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize's location and opens a door he knows does not contain the prize. The probabilities change. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prizes's location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).
+  
+  Seeing is believing, so let's prove this with a simulation in R:
+  
+```{r, message = FALSE}
+
+# Set seed for reproducible simulations
+set.seed(12345)
+
+# Set number of simulations
+trials = 10000
+
+# Store switch/keep decisions
+decisions = c("switch", "keep")
+
+# Store integer for each door
+doors = 1:3
+
+# Initialize empty data frame for results
+results = NULL
+
+for (n in 1:trials){
+  
+  for (decision in decisions){
+    
+    # Select correct door
+    correct_door <- sample(doors, 1, replace = T)
+
+    # Contestant chooses a door at random
+    selected_door <- sample(doors, 1, replace = T)
+  
+    # Open door that was neither selected by the contestant nor contains the prize
+    # Choose one door to open if multiple remain without the prize (i.e., the contestant didn't initially select the door containing the prize)
+    remaining_doors <- which(!doors == correct_door & !doors == selected_door)
+    open_door <- sample(remaining_doors, 1, replace = T) 
+  
+    # Contestant makes decision to switch doors or keep with the originally selected door
+    selected_door <- ifelse(decision == "switch", which(!doors == selected_door & !doors == open_door), selected_door)
+    
+    # Store results in data frame
+    results <- rbind(results, cbind.data.frame(
+                     trial = n,
+                     decision = decision,
+                     result = ifelse(correct_door == selected_door, "win", "lose")))
+  }
+}
+
+# Calculate percentage difference in wins for switch vs. keep decisions
+switch_wins <- nrow(results[results$decision == "switch" & results$result == "win", ]) / nrow(results) * 100
+keep_wins <- nrow(results[results$decision == "keep" & results$result == "win", ]) / nrow(results) * 100
+round((switch_wins - keep_wins) / keep_wins * 100, 0)
+
+```  
+
+  As we can see, wins occur nearly 50% more often when contestants switch doors. This exercise hopefully demonstrates the importance of statistical assumptions. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
+  
 ## Exercises
 
 1. Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
