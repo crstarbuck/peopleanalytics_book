@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-06}
+\date{2022-02-07}
 
 \begin{document}
 \maketitle
@@ -239,7 +239,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpMwvM8t/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpxQMuyX/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -266,13 +266,23 @@ Academics at elite research institutions are often under immense pressure to pub
 If you participated in a science fair as a child, you are likely already familiar with the scientific method. The scientific method is the standard scheme of organized and systematic inquiry, and this duly applies to people analytics practitioners striving to promote the robustness of analyses and recommendations.
 
 \begin{figure}
-\includegraphics[width=0.5\linewidth,height=0.5\textheight]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/scientific_method} \caption{The Scientific Method}\label{fig:unnamed-chunk-3}
+
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/scientific_method} 
+
+}
+
+\caption{The Scientific Method}\label{fig:sci-method}
 \end{figure}
 
 Over the years, I have adapted the scientific method into a curtailed four-dimensional framework which is intended to elevate the rigor applied to the end-to-end analytical process. The four dimensions are (a) Discover, (b) Design, (c) Develop, and (d) Deliver, and this book will be organized around these. A checklist with general questions and considerations across the analytics lifecycle can be found in the Appendix.
 
 \begin{figure}
-\includegraphics[width=36.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework_overview} \caption{4D Framework}\label{fig:unnamed-chunk-4}
+
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework_overview} 
+
+}
+
+\caption{4D Framework}\label{fig:4d-framework}
 \end{figure}
 
 1. Discover
@@ -303,6 +313,23 @@ The Deliver phase can take many forms depending on the solution being released. 
 The goal of research is to understand a population based on data from a subset of population members. In practice, it is often not feasible to collect data from every member of a population, so we instead calculate \textbf{sample statistics} to estimate \textbf{population parameters}.
 
 Another important concept is the \textbf{sampling frame}. While the population represents the entire group of interest, the sampling frame represents the subset of the population to which the researcher has access. In an ideal setting, the population and sampling frame are the same, but they are often different in practice. For example, a professor may be interested in understanding student sentiment about a new school policy but only has access to collect data from students in the courses she teaches. In this case, the entire student body is the population but the students she has access to (those in the courses she teaches) represent the sampling frame. The sample is the subset of the sampling frame that ultimately participates in the research (e.g,. those who complete a survey or participate in a focus group).
+
+\hypertarget{exercises}{%
+\section{Exercises}\label{exercises}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
+  A. True
+  B. False
+\item
+  100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
+  A. Sample: 100 employees who completed the survey, Population: All employees in the organization
+  B. Sample: 100 employees who completed the survey, Population: Marketing employees
+  C. Sample: All Marketing professionals, Population: All employees in the organization
+  D. Sample: All employees in the organization, Population: Employees across all companies globally
+\end{enumerate}
 
 \hypertarget{uni-bi-stats}{%
 \chapter{Univariate \& Bivariate Analysis}\label{uni-bi-stats}}
@@ -564,6 +591,38 @@ In R, the quantile() function returns the values that bookend each quartile:
 
 Based on this output, we know that 25\% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75\% of people earn annual compensation of 163,263 USD or less.
 
+\textbf{Boxplots} are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the \texttt{ggplot2} library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the ggplot() function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for data viz}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggplot2' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce boxplots to visualize compensation distribution by education and gender}
+\KeywordTok{ggplot}\NormalTok{(demographics, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(education), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{_main_files/figure-latex/unnamed-chunk-13-1.pdf}
+
+Boxplots can be interpreted as follows:
+* Horizontal lines represent median compensation values.
+* The box in the middle of each distribution represents the IQR.
+* The end of the line above the IQR represents the threshold for outliers in the upper range: \(Q3 + 1.5 * IQR\).
+* The end of the line below the IQR represents the threshold for outliers in the lower range: \(Q1 - 1.5 * IQR\).
+* Data points represent outliers: \(x > Q3 + 1.5 * IQR\) or \(x < Q1 - 1.5 * IQR\).
+
 We can also return a specific percentile value using the \texttt{probs} argument in the quantile() function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
 
 \begin{Shaded}
@@ -614,7 +673,7 @@ Figure \ref{fig:skewness} illustrates the placement of these descriptive statist
 
 \begin{figure}
 
-{\centering \includegraphics[width=13.62in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness} 
 
 }
 
@@ -674,9 +733,6 @@ A skewness coefficient of .562 indicates that organization tenure is moderately 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for data viz}
-\KeywordTok{library}\NormalTok{(ggplot2)}
-
 \CommentTok{# Produce histogram to visualize sample distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
@@ -710,7 +766,7 @@ Figure \ref{fig:kurtosis} illustrates the three kurtosis categorizations:
 
 \begin{figure}
 
-{\centering \includegraphics[width=19.69in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis} 
 
 }
 
@@ -748,9 +804,10 @@ We can verify that the kurtosis() function returns the expected value (per the a
 As we saw in Figure \ref{fig:org-tenure-distribution}, there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is \textless{} 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
 
 \hypertarget{bivariate-analysis}{%
-\subsection{Bivariate Analysis}\label{bivariate-analysis}}
+\section{Bivariate Analysis}\label{bivariate-analysis}}
 
-\textbf{Covariance}
+\hypertarget{covariance}{%
+\subsection{Covariance}\label{covariance}}
 
 While variance provides an understanding of how values for a single variable vary, \textbf{covariance} is an unstandardized measure of how two variables vary together. Values can range from \(-\infty\) to \(+\infty\), and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
 
@@ -820,7 +877,8 @@ Using the default Pearson method, the cov() function will return sample variance
 
 As expected, the variance for age (\(s^{2} = 168.39\)) matches the value found in the age x age cell of the covariance matrix.
 
-\textbf{Correlation}
+\hypertarget{correlation}{%
+\subsection{Correlation}\label{correlation}}
 
 \textbf{Correlation} is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. \textbf{Pearson's product-moment correlation coefficient} \(r\) is defined by:
 
@@ -855,11 +913,11 @@ There are several correlation coefficients, and the measurement scale of \(x\) a
 
 \begin{figure}
 
-{\centering \includegraphics[width=19.56in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table} 
 
 }
 
-\caption{Proper Applications of Correlation Coefficients}\label{fig:unnamed-chunk-26}
+\caption{Proper Applications of Correlation Coefficients}\label{fig:corr-table}
 \end{figure}
 
 Pearson's \(r\) can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
@@ -887,11 +945,11 @@ The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean squar
 
 \begin{figure}
 
-{\centering \includegraphics[width=10.97in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/phi_coefficient_formula} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/phi_coefficient_formula} 
 
 }
 
-\caption{2x2 Table for Random Variables x and y}\label{fig:unnamed-chunk-27}
+\caption{2x2 Table for Random Variables x and y}\label{fig:phi-tbl}
 \end{figure}
 
 The \(\phi\) coefficient is defined as:
@@ -959,70 +1017,42 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{_main_files/figure-latex/unnamed-chunk-30-1.pdf}
+\includegraphics{_main_files/figure-latex/unnamed-chunk-27-1.pdf}
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
 
 \begin{figure}
 
-{\centering \includegraphics[width=13.28in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce} 
 
 }
 
-\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:unnamed-chunk-31}
+\caption{Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)}\label{fig:spur-corr-1}
 \end{figure}
 
 \begin{figure}
 
-{\centering \includegraphics[width=13.29in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese} 
 
 }
 
-\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:unnamed-chunk-32}
+\caption{Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)}\label{fig:spur-corr-2}
 \end{figure}
 
 In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
 
-\hypertarget{exercises}{%
-\section{Exercises}\label{exercises}}
+\hypertarget{exercises-1}{%
+\section{Exercises}\label{exercises-1}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
-  A. True
-  B. False
+  Which of the following measures of central tendency is least sensitive to extreme values (outliers)?
+  A. Median
+  B. Mean
+  C. Range
 \item
-  Which of the following is an example of a null hypothesis, where ``µ'' reflects the mean of a population?
-  A. µA = µB
-  B. µA ≠ µB
-  C. µA \textless{} µB
-  D. µA \textgreater{} µB
-  E. None of the above; all are examples of alternative hypotheses.
-\item
-  Which of the following describes a Type I Error?
-  A. Failing to reject the null hypothesis when it is false
-  B. Rejecting the null hypothesis when it is true
-  C. Reporting something as significant when nothing of significance is present (a shame)
-  D. Failing to detect something of significance (a pity)
-  E. Both B and C
-  F. Both A and D
-\item
-  100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
-  A. Sample: 100 employees who completed the survey, Population: All employees in the organization
-  B. Sample: 100 employees who completed the survey, Population: Marketing employees
-  C. Sample: All Marketing professionals, Population: All employees in the organization
-  D. Sample: All employees in the organization, Population: Employees across all companies globally
-\item
-  The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
-  A. True
-  B. False
-\item
-  The median tends to be a better measure of central tendency since the mean is more sensitive to extreme values (outliers)?
-  A. True
-  B. False
-\item
-  The standard deviation represents the `average' amount by which individual values for a variable deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
+  The standard deviation represents the `average' amount by which \(x\) values deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
   A. True
   B. False
 \item
@@ -1034,7 +1064,36 @@ In addition, covariance and correlation alone are not sufficient for determining
   A. True
   B. False
 \item
-  A T-Test should be used when \(\sigma\) is unknown and/or \(n\) \textless{} 30.
+  Which of the following can be found in boxplots?
+  A. Quartiles
+  B. Median
+  C. Mean
+  D. IQR
+  E. Outliers
+\item
+  The 3rd quartile (Q3) is equivalent to the 75th percentile.
+  A. True
+  B. False
+\item
+  Which of the following correlation coefficients can be used when evaluating the relationship between a pair of rank-ordered variables?
+  A. Pearson's Product Moment
+  B. Spearman's Rank
+  C. Phi
+  D. Point-Biserial
+  E. Kendall's Rank
+\item
+  Which of the following correlation coefficients can be used when evaluating the relationship between a pair of dichotomous variables?
+  A. Pearson's Product Moment
+  B. Spearman's Rank
+  C. Phi
+  D. Point-Biserial
+  E. Kendall's Rank
+\item
+  Platykurtic distributions are flat relative to mesokurtic distributions.
+  A. True
+  B. False
+\item
+  When using the Pearson method, values down the diagonal of a covariance matrix represent each variable's variance.
   A. True
   B. False
 \end{enumerate}
@@ -1068,11 +1127,11 @@ The CLT states that the average of independent random variables, when increased 
 
 \begin{figure}
 
-{\centering \includegraphics[width=19.07in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/normal_distribution} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/normal_distribution} 
 
 }
 
-\caption{The Empirical Rule}\label{fig:unnamed-chunk-33}
+\caption{The Empirical Rule}\label{fig:emp-rule}
 \end{figure}
 
 Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- on the basis of the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
@@ -1132,11 +1191,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-37-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-31-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-37}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-31}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -1180,11 +1239,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-32-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-38}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-32}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1316,7 +1375,7 @@ As we will see, the T-Test underpins many statistical tests and models germane t
 
 \begin{figure}
 
-{\centering \includegraphics[width=23.89in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution} 
 
 }
 
@@ -1331,7 +1390,7 @@ Let's compare CIs calculated using a T-Test to those calculated using the Z-Test
 
 \begin{figure}
 
-{\centering \includegraphics[width=9.17in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t-table} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t-table} 
 
 }
 
@@ -1442,11 +1501,11 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 
 \begin{figure}
 
-{\centering \includegraphics[width=12.42in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors} 
+{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors} 
 
 }
 
-\caption{Type I and II Errors}\label{fig:unnamed-chunk-53}
+\caption{Type I and II Errors}\label{fig:hyp-errs}
 \end{figure}
 
 \textbf{P-Values}
@@ -1551,21 +1610,17 @@ Seeing is believing, so let's prove this with a simulation in R:
 
 As we can see, wins occur nearly 50\% more often when contestants switch doors. This exercise hopefully demonstrates the importance of statistical assumptions. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
 
-\hypertarget{exercises-1}{%
-\section{Exercises}\label{exercises-1}}
+\hypertarget{exercises-2}{%
+\section{Exercises}\label{exercises-2}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
-  A. True
-  B. False
-\item
-  Which of the following is an example of a null hypothesis, where ``µ'' reflects the mean of a population?
-  A. µA = µB
-  B. µA ≠ µB
-  C. µA \textless{} µB
-  D. µA \textgreater{} µB
+  Which of the following is an example of a null hypothesis, where \(\mu\) reflects the mean of a population?
+  A. \(\mu_A = \mu_B\)
+  B. \(\mu_A \neq \mu_B\)
+  C. \(\mu_A < \mu_B\)
+  D. \(\mu_A > \mu_B\)
   E. None of the above; all are examples of alternative hypotheses.
 \item
   Which of the following describes a Type I Error?
@@ -1576,35 +1631,42 @@ As we can see, wins occur nearly 50\% more often when contestants switch doors. 
   E. Both B and C
   F. Both A and D
 \item
-  100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
-  A. Sample: 100 employees who completed the survey, Population: All employees in the organization
-  B. Sample: 100 employees who completed the survey, Population: Marketing employees
-  C. Sample: All Marketing professionals, Population: All employees in the organization
-  D. Sample: All employees in the organization, Population: Employees across all companies globally
-\item
   The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
-  A. True
-  B. False
-\item
-  The median tends to be a better measure of central tendency since the mean is more sensitive to extreme values (outliers)?
-  A. True
-  B. False
-\item
-  The standard deviation represents the `average' amount by which individual values for a variable deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
-  A. True
-  B. False
-\item
-  A positively skewed distribution has its largest allocation to the left and a negative distribution to the right.
-  A. True
-  B. False
-\item
-  Large covariance coefficients always indicate strong bivariate associations.
   A. True
   B. False
 \item
   A T-Test should be used when \(\sigma\) is unknown and/or \(n\) \textless{} 30.
   A. True
   B. False
+\item
+  Randomness is essential to probabilistic methods.
+  A. True
+  B. False
+\item
+  Which of the following is characteristic of the Bonferroni Correction?
+  A. Reducing the risk of a Type I Error
+  B. Increasing the risk of a Type II Error
+  C. Reducing the familywise error rate
+\item
+  Tolerance for a wider interval is an important tradeoff decision when increasing the level of confidence that a range of values contains an unknown population parameter.
+  A. True
+  B. False
+\item
+  A \(CI\) represents the range of values we expect to include an unknown population parameter (often the mean) for a specified degree of confidence.
+  A. True
+  B. False
+\item
+  When population parameters are unknown, which of the following tests is most appropriate for testing \(\mu_A = \mu_B\)?
+  A. Z-Test
+  B. T-Test
+  C. Bayes' Theorem
+  D. P-Test
+\item
+  According to the Empirical Rule, 95\% of normally distributed data lie within how many standard deviations of the mean?
+  A. 1
+  B. 2
+  C. 3
+  D. 4
 \end{enumerate}
 
 \hypertarget{data-preparation}{%
@@ -1747,7 +1809,7 @@ Proportional Odds Logistic Regression
 \section{Model Performance}\label{model-performance}}
 
 \hypertarget{automated-machine-learning-automl}{%
-\chapter{Automated Machine Learning (AutoML)}\label{automated-machine-learning-automl}}
+\section{Automated Machine Learning (AutoML)}\label{automated-machine-learning-automl}}
 
 \hypertarget{unsupervised-learning-models}{%
 \chapter{Unsupervised Learning Models}\label{unsupervised-learning-models}}
@@ -1791,47 +1853,92 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 \hypertarget{exercise-solutions}{%
 \section{Exercise Solutions}\label{exercise-solutions}}
 
-Statistical Fundamentals
+\hypertarget{univariate-bivariate-analysis}{%
+\subsection{Univariate \& Bivariate Analysis}\label{univariate-bivariate-analysis}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
-  B. False
+  Which of the following measures of central tendency is least sensitive to extreme values (outliers)?
+  A. Median
 \item
-  Which of the following is an example of a null hypothesis, where ``µ'' reflects the mean of a population?
-  A. µA = µB
-\item
-  Which of the following describes a Type I Error?
-  E. Both B and C
-\item
-  100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
-  B. Sample: 100 employees who completed the survey, Population: Marketing employees
-\item
-  The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
-  A. True
-\item
-  The median tends to be a better measure of central tendency since the mean is more sensitive to extreme values (outliers)?
-  A. True
-\item
-  The standard deviation represents the `average' amount by which individual values for a variable deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
+  The standard deviation represents the `average' amount by which \(x\) values deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
   A. True
 \item
   A positively skewed distribution has its largest allocation to the left and a negative distribution to the right.
-  A. True
+  B. False
 \item
   Large covariance coefficients always indicate strong bivariate associations.
   B. False
 \item
+  Which of the following can be found in boxplots?
+  A. Quartiles
+  B. Median
+  D. IQR
+  E. Outliers
+\item
+  The 3rd quartile (Q3) is equivalent to the 75th percentile.
+  A. True
+\item
+  Which of the following correlation coefficients can be used when evaluating the relationship between a pair of rank-ordered variables?
+  B. Spearman's Rank
+  E. Kendall's Rank
+\item
+  Which of the following correlation coefficients can be used when evaluating the relationship between a pair of dichotomous variables?
+  C. Phi
+\item
+  Platykurtic distributions are flat relative to mesokurtic distributions.
+  A. True
+\item
+  When using the Pearson method, values down the diagonal of a covariance matrix represent the variance for each variable.
+  A. True
+\end{enumerate}
+
+\hypertarget{inferential-statistics}{%
+\subsection{Inferential Statistics}\label{inferential-statistics}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Which of the following is an example of a null hypothesis, where \(\mu\) reflects the mean of a population?
+  A. \(\mu_A = \mu_B\)
+\item
+  Which of the following describes a Type I Error?
+  E. Both B and C
+\item
+  The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
+  A. True
+\item
   A T-Test should be used when \(\sigma\) is unknown and/or \(n\) \textless{} 30.
   A. True
+\item
+  Randomness is essential to probabilistic methods.
+  A. True
+\item
+  Which of the following is characteristic of the Bonferroni Correction?
+  A. Reducing the risk of a Type I Error
+  B. Increasing the risk of a Type II Error
+  C. Reducing the familywise error rate
+\item
+  Tolerance for a wider interval is an important tradeoff decision when increasing the level of confidence that a range of values contains an unknown population parameter.
+  A. True
+\item
+  A \(CI\) represents the range of values we expect to include an unknown population parameter (often the mean) for a specified degree of confidence.
+  A. True
+  B. False
+\item
+  When population parameters are unknown, which of the following tests is most appropriate for testing \(\mu_A = \mu_B\)?
+  B. T-Test
+\item
+  According to the Empirical Rule, 95\% of normally distributed data lie within how many standard deviations of the mean?
+  B. 2
 \end{enumerate}
 
 \hypertarget{d-framework-1}{%
 \section{4D Framework}\label{d-framework-1}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-55}
+\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-48}
 \end{figure}
 
 1. Discover

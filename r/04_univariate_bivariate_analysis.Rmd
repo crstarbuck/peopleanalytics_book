@@ -195,6 +195,28 @@ quantile(demographics$annual_comp)
 
   Based on this output, we know that 25% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75% of people earn annual compensation of 163,263 USD or less.
   
+  **Boxplots** are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the `ggplot2` library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the ggplot() function:
+  
+```{r, message = FALSE}
+
+# Load library for data viz
+library(ggplot2)
+
+# Produce boxplots to visualize compensation distribution by education and gender
+ggplot(demographics, aes(x = as.factor(education), y = annual_comp, color = gender)) +
+  labs(x = "Education", y = "Annual Compensation") + 
+  theme_bw() +
+  geom_boxplot()
+
+```  
+  
+  Boxplots can be interpreted as follows:
+  * Horizontal lines represent median compensation values.
+  * The box in the middle of each distribution represents the IQR.
+  * The end of the line above the IQR represents the threshold for outliers in the upper range: $Q3 + 1.5 * IQR$.
+  * The end of the line below the IQR represents the threshold for outliers in the lower range: $Q1 - 1.5 * IQR$.
+  * Data points represent outliers: $x > Q3 + 1.5 * IQR$ or $x < Q1 - 1.5 * IQR$.
+  
   We can also return a specific percentile value using the `probs` argument in the quantile() function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
 
 ```{r, message = FALSE}
@@ -229,7 +251,7 @@ summary(demographics$annual_comp)
   
 <br />
 
-```{r skewness, out.width="50%", echo = FALSE, fig.cap = 'Skewness', fig.align = 'center'}
+```{r skewness, out.width = "100%", echo = FALSE, fig.cap = 'Skewness', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness.png")
 
@@ -276,9 +298,6 @@ round(1/n * (sum((x - x_bar)^3) / s^3), 3)
 
 ```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
 
-# Load library for data viz
-library(ggplot2)
-
 # Produce histogram to visualize sample distribution
 ggplot() + 
   aes(demographics$org_tenure) + 
@@ -301,7 +320,7 @@ ggplot() +
   
   Figure \@ref(fig:kurtosis) illustrates the three kurtosis categorizations:
 
-```{r kurtosis, out.width="50%", echo = FALSE, fig.cap = 'Kurtosis', fig.align = 'center'}
+```{r kurtosis, out.width = "50%", echo = FALSE, fig.cap = 'Kurtosis', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis.jpg")
 
@@ -406,7 +425,7 @@ cor(demographics$annual_comp, demographics$age, use = "complete.obs")
   
 <br />
 
-```{r corr-table, out.width="50%", echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
+```{r corr-table, out.width = "75%", echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table.png")
 
@@ -494,7 +513,7 @@ corrplot.mixed(M, order = 'AOE')
 
   It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
   
-```{r spur-corr-1, out.width="50%", echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
+```{r spur-corr-1, out.width = "100%", echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce.png")
 
@@ -502,63 +521,62 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 <br />
   
-```{r spur-corr-2, out.width="50%", echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)', fig.align = 'center'}
+```{r spur-corr-2, out.width = "100%", echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese.png")
 
 ```
 
   In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
-
-
   
 ## Exercises
+   
+1. Which of the following measures of central tendency is least sensitive to extreme values (outliers)?
+   <br />A. Median
+   <br />B. Mean
+   <br />C. Range
 
-1. Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
+2. The standard deviation represents the 'average' amount by which $x$ values deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
    <br />A. True
    <br />B. False
    
-2. Which of the following is an example of a null hypothesis, where “µ” reflects the mean of a population?
-   <br />A. µA = µB
-   <br />B. µA ≠ µB
-   <br />C. µA < µB
-   <br />D. µA  > µB
-   <br />E. None of the above; all are examples of alternative hypotheses.
-   
-3. Which of the following describes a Type I Error?
-   <br />A. Failing to reject the null hypothesis when it is false
-   <br />B. Rejecting the null hypothesis when it is true
-   <br />C. Reporting something as significant when nothing of significance is present (a shame)
-   <br />D. Failing to detect something of significance (a pity)
-   <br />E. Both B and C
-   <br />F. Both A and D
+3. A positively skewed distribution has its largest allocation to the left and a negative distribution to the right.
+   <br />A. True
+   <br />B. False
 
-4. 100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
-   <br />A. Sample: 100 employees who completed the survey, Population: All employees in the organization
-   <br />B. Sample: 100 employees who completed the survey, Population: Marketing employees
-   <br />C. Sample: All Marketing professionals, Population: All employees in the organization
-   <br />D. Sample: All employees in the organization, Population: Employees across all companies globally
-
-5. The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
+4. Large covariance coefficients always indicate strong bivariate associations.
    <br />A. True
    <br />B. False
    
-6. The median tends to be a better measure of central tendency since the mean is more sensitive to extreme values (outliers)?
-   <br />A. True
-   <br />B. False
-
-7. The standard deviation represents the 'average' amount by which individual values for a variable deviate (or vary) from the mean. A large standard deviation indicates there is considerable spread in the data, whereas a small standard deviation indicates the mean is fairly representative of the data.
+5. Which of the following can be found in boxplots?
+   <br />A. Quartiles
+   <br />B. Median
+   <br />C. Mean
+   <br />D. IQR
+   <br />E. Outliers
+   
+6. The 3rd quartile (Q3) is equivalent to the 75th percentile.
    <br />A. True
    <br />B. False
    
-8. A positively skewed distribution has its largest allocation to the left and a negative distribution to the right.
+7. Which of the following correlation coefficients can be used when evaluating the relationship between a pair of rank-ordered variables?
+   <br />A. Pearson's Product Moment
+   <br />B. Spearman's Rank
+   <br />C. Phi
+   <br />D. Point-Biserial
+   <br />E. Kendall's Rank
+   
+8. Which of the following correlation coefficients can be used when evaluating the relationship between a pair of dichotomous variables?
+   <br />A. Pearson's Product Moment
+   <br />B. Spearman's Rank
+   <br />C. Phi
+   <br />D. Point-Biserial
+   <br />E. Kendall's Rank
+   
+9. Platykurtic distributions are flat relative to mesokurtic distributions.
    <br />A. True
    <br />B. False
-
-9. Large covariance coefficients always indicate strong bivariate associations.
-   <br />A. True
-   <br />B. False
-
-10. A T-Test should be used when $\sigma$ is unknown and/or $n$ < 30.
+   
+10. When using the Pearson method, values down the diagonal of a covariance matrix represent each variable's variance.
    <br />A. True
    <br />B. False
