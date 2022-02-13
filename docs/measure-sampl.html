@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-02-11" />
+<meta name="date" content="2022-02-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -190,7 +190,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="7.3" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#exercises-1"><i class="fa fa-check"></i><b>7.3</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="8" data-path="inf-stats.html"><a href="inf-stats.html"><i class="fa fa-check"></i><b>8</b> Inferential Statistics</a><ul>
-<li class="chapter" data-level="8.1" data-path="inf-stats.html"><a href="inf-stats.html#introduction-to-probability"><i class="fa fa-check"></i><b>8.1</b> Introduction to Probability</a></li>
+<li class="chapter" data-level="8.1" data-path="inf-stats.html"><a href="inf-stats.html#introduction-to-probability"><i class="fa fa-check"></i><b>8.1</b> Introduction to Probability</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="inf-stats.html"><a href="inf-stats.html#the-monty-hall-problem"><i class="fa fa-check"></i><b>8.1.1</b> The Monty Hall Problem</a></li>
+</ul></li>
 <li class="chapter" data-level="8.2" data-path="inf-stats.html"><a href="inf-stats.html#central-limit-theorem"><i class="fa fa-check"></i><b>8.2</b> Central Limit Theorem</a></li>
 <li class="chapter" data-level="8.3" data-path="inf-stats.html"><a href="inf-stats.html#confidence-intervals"><i class="fa fa-check"></i><b>8.3</b> Confidence Intervals</a><ul>
 <li class="chapter" data-level="8.3.1" data-path="inf-stats.html"><a href="inf-stats.html#hypothesis-testing"><i class="fa fa-check"></i><b>8.3.1</b> Hypothesis Testing</a></li>
@@ -201,8 +203,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8.3.6" data-path="inf-stats.html"><a href="inf-stats.html#bonferroni-correction"><i class="fa fa-check"></i><b>8.3.6</b> Bonferroni Correction</a></li>
 </ul></li>
 <li class="chapter" data-level="8.4" data-path="inf-stats.html"><a href="inf-stats.html#parametric-vs.nonparametric-tests"><i class="fa fa-check"></i><b>8.4</b> Parametric vs. Nonparametric Tests</a></li>
-<li class="chapter" data-level="8.5" data-path="inf-stats.html"><a href="inf-stats.html#the-monty-hall-problem"><i class="fa fa-check"></i><b>8.5</b> The Monty Hall Problem</a></li>
-<li class="chapter" data-level="8.6" data-path="inf-stats.html"><a href="inf-stats.html#exercises-2"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+<li class="chapter" data-level="8.5" data-path="inf-stats.html"><a href="inf-stats.html#exercises-2"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="9" data-path="data-prep.html"><a href="data-prep.html"><i class="fa fa-check"></i><b>9</b> Data Preparation</a><ul>
 <li class="chapter" data-level="9.1" data-path="data-prep.html"><a href="data-prep.html#data-wrangling"><i class="fa fa-check"></i><b>9.1</b> Data Wrangling</a></li>
@@ -351,6 +352,7 @@ Figure 6.1: Conceptual Model of Hypothesized Relationships among Variables
 <p><strong>Nonresponse Bias</strong></p>
 <p>Surveys are a staple in the set of data sources germane to people analytics. While survey data provide unique attitudinal and perceptive signals that can be highly predictive of future behavior and events, surveys tend to be far more susceptible to nonsampling error than other data sources.</p>
 <p>As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as <strong>nonresponse bias</strong>. For example, if we administer an employee experience survey to the entire organization and recieve a 60% response rate, the reality is that we do not know how the 40% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that the nonrespondents were really busy, away on vacation, cynical to the confidentiality langage in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.</p>
+<p>Nonresponse bias is not limited to surveys. For example, self-reported demographics such as gender and ethnicity may not be disclosed by all employees in the HR information system (HRIS). This can bias segmentations based on these categorical dimensions. While there are strategies to address this, such as visual ID or applying models trained to infer missing values (which may be necessary to fulfill EEOC reporting requirements), there may still be error in the imputed values.</p>
 <p><strong>Nontruthful Responses</strong></p>
 <p>While high response rates may reduce nonresponse bias, this isn’t always something to celebrate. Organizations that incentivize participation in surveys often do so at the risk of people responding in socially desirable ways and providing <strong>nontruthful responses</strong> in order to achieve some defined target. For example, if an employee has an unhealthy relationship with his manager but does not trust that managers will not have access to individual-level responses, the employee may decide to indicate on the survey that everything is highly favorable in order to help the team win the month of casual days leadership promised. This can of course skew and invalidate results.</p>
 <p>While survey participation should be strongly encouraged since higher response rates can mitigate the risk of certain types of bias and increase confidence that the survey is representative of the collective organization’s sentiments, incentivizing participation can be dangerous.</p>
@@ -367,23 +369,34 @@ Figure 6.2: Reliability and Validity
 <p><br /></p>
 <p><strong>Reliability</strong> describes the quality of measurement (i.e., the consistency or repeatability of measures). Types of reliability include:</p>
 <ul>
-<li>Inter-Rater or Inter-Observer Reliability: assesses the degree to which different raters/observers give consistent estimates of the same phenomenon.</li>
-<li>Test-Retest Reliability: assesses the consistency of a measure from one time to another.</li>
-<li>Parallel-Forms Reliability: assesses the consistency of the results of two tests constructed in the same way from the same content domain.</li>
-<li>Internal Consistency Reliability: assesses the consistency of results across items within a test.</li>
+<li><strong>Inter-Rater or Inter-Observer Reliability</strong>: the degree to which different raters/observers give consistent estimates of the same phenomenon.</li>
+<li><strong>Test-Retest Reliability</strong>: the consistency of a measure from one time to another.</li>
+<li><strong>Parallel-Forms Reliability</strong>: the consistency of the results of two tests constructed in the same way from the same content domain.</li>
+<li><strong>Internal Consistency Reliability</strong>: the consistency of results across items within a test.</li>
 </ul>
 <p><strong>Validity</strong> describes how well a concept was translated into a functioning and operating reality (operationalization). Types of validity include:</p>
 <ul>
-<li>Face validity: evaluates if the operationalization “on its face” a good translation of the construct.</li>
-<li>Content validity: evaluates the operationalization against the relevant content domain for the construct.</li>
-<li>Predictive validity: evaluates the operationalization’s ability to predict something it should theoretically be able to predict.</li>
-<li>Concurrent validity: evaluates the operationalization’s ability to distinguish between groups that it should theoretically be able to distinguish between.</li>
-<li>Convergent validity: examines the degree to which the operationalization is similar to (converges on) other operationalizations to which it theoretically should be similar.</li>
-<li>Discriminant validity: examines the degree to which the operationalization is not similar to (diverges from) other operationalizations to which it theoretically should be not be similar.</li>
+<li><strong>Face validity</strong>: whether the operationalization “on its face” a good translation of the construct.</li>
+<li><strong>Content validity</strong>: the operationalization against the relevant content domain for the construct.</li>
+<li><strong>Predictive validity</strong>: the operationalization’s ability to predict something it should theoretically be able to predict.</li>
+<li><strong>Concurrent validity</strong>: the operationalization’s ability to distinguish between groups that it should theoretically be able to distinguish between.</li>
+<li><strong>Convergent validity</strong>: the degree to which the operationalization is similar to (converges on) other operationalizations to which it theoretically should be similar.</li>
+<li><strong>Discriminant validity</strong>: the degree to which the operationalization is not similar to (diverges from) other operationalizations to which it theoretically should be not be similar.</li>
 </ul>
 </div>
 <div id="sampling-methods" class="section level3">
 <h3><span class="header-section-number">6.3.2</span> Sampling Methods</h3>
+<p>It is important to understand the centrality of <strong>randomness</strong> in sampling. Randomization protects against subjective biases, self-validates the data, and is the key ingredient that defines the representative means of extracting information (Kahneman, 2011). Sample data that are not representative of the population of interest can lend to anomalies – mere coincidences. While non-random data can be leveraged for directionally accurate insights, randomness is required to make inferences about a broader population with a reasonable degree of confidence.</p>
+<p>Let’s consider an example from Kahneman (2011) in which six babies are born in sequence at a hospital. The gender of these babies is of course random and independent; the gender of one does not influence the gender of another. Consider the three possible sequences of girls (G) and boys (B) below:</p>
+<ul>
+<li>BBBGGG</li>
+<li>GGGGGG</li>
+<li>BGBBGB</li>
+</ul>
+<p>Are these sequences equally likely? Though it may initially be counter-intuitive, since the events are independent and the outcomes (B and G) are (approximately) equally likely, any possible sequence of births is as likely as any other.</p>
+<p>Sample size (colloquially referred to as the <span class="math inline">\(n\)</span>-count) is also important as this can have a material influence on the representativeness of sample data – and consequently, the veracity of results and conclusions based on them. As we will explore in Chapter <a href="inf-stats.html#inf-stats">8</a>, as the sample size increases, so too does our confidence that estimates based on sample data reflect population parameters.</p>
+<p>To illustrate the effects of sample sizes, let’s consider a hypothetical study in which the promotion rate in an organization is found to be lowest in divisions that are primarily software engineers, low diversity, small, and geographically dispersed. Which of these characteristics might offer an explanation? Let’s consider that this study also found that the divisions with highest promotion rates have identicial characteristics: software engineers, low diversity, small, and geographically dispersed.
+Small samples yield extreme results more often than large samples. Small samples neither cause nor prevent outcomes; they merely allow the incidence of the outcome to be much higher (or much lower) than it is in the larger population (Kahneman, 2011).</p>
 <p><strong>Non-Probability Sampling</strong></p>
 <p><strong>Non-probability sampling</strong> can help us gain insight into the <em>possible</em>. However, we cannot make inferences based on data collected through non-probability sampling methods since the sample is unlikely to be representative of the population.</p>
 <p><strong>Convenience (Accidental) Sampling</strong></p>

@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-11}
+\date{2022-02-13}
 
 \begin{document}
 \maketitle
@@ -248,7 +248,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpnbCgC2/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpyKwH1t/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -457,6 +457,8 @@ Surveys are a staple in the set of data sources germane to people analytics. Whi
 
 As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as \textbf{nonresponse bias}. For example, if we administer an employee experience survey to the entire organization and recieve a 60\% response rate, the reality is that we do not know how the 40\% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that the nonrespondents were really busy, away on vacation, cynical to the confidentiality langage in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.
 
+Nonresponse bias is not limited to surveys. For example, self-reported demographics such as gender and ethnicity may not be disclosed by all employees in the HR information system (HRIS). This can bias segmentations based on these categorical dimensions. While there are strategies to address this, such as visual ID or applying models trained to infer missing values (which may be necessary to fulfill EEOC reporting requirements), there may still be error in the imputed values.
+
 \textbf{Nontruthful Responses}
 
 While high response rates may reduce nonresponse bias, this isn't always something to celebrate. Organizations that incentivize participation in surveys often do so at the risk of people responding in socially desirable ways and providing \textbf{nontruthful responses} in order to achieve some defined target. For example, if an employee has an unhealthy relationship with his manager but does not trust that managers will not have access to individual-level responses, the employee may decide to indicate on the survey that everything is highly favorable in order to help the team win the month of casual days leadership promised. This can of course skew and invalidate results.
@@ -483,13 +485,13 @@ The reduction of measurement error is a principal concern to psychometricians. W
 \begin{itemize}
 \tightlist
 \item
-  Inter-Rater or Inter-Observer Reliability: assesses the degree to which different raters/observers give consistent estimates of the same phenomenon.
+  \textbf{Inter-Rater or Inter-Observer Reliability}: the degree to which different raters/observers give consistent estimates of the same phenomenon.
 \item
-  Test-Retest Reliability: assesses the consistency of a measure from one time to another.
+  \textbf{Test-Retest Reliability}: the consistency of a measure from one time to another.
 \item
-  Parallel-Forms Reliability: assesses the consistency of the results of two tests constructed in the same way from the same content domain.
+  \textbf{Parallel-Forms Reliability}: the consistency of the results of two tests constructed in the same way from the same content domain.
 \item
-  Internal Consistency Reliability: assesses the consistency of results across items within a test.
+  \textbf{Internal Consistency Reliability}: the consistency of results across items within a test.
 \end{itemize}
 
 \textbf{Validity} describes how well a concept was translated into a functioning and operating reality (operationalization). Types of validity include:
@@ -497,21 +499,42 @@ The reduction of measurement error is a principal concern to psychometricians. W
 \begin{itemize}
 \tightlist
 \item
-  Face validity: evaluates if the operationalization ``on its face'' a good translation of the construct.
+  \textbf{Face validity}: whether the operationalization ``on its face'' a good translation of the construct.
 \item
-  Content validity: evaluates the operationalization against the relevant content domain for the construct.
+  \textbf{Content validity}: the operationalization against the relevant content domain for the construct.
 \item
-  Predictive validity: evaluates the operationalization's ability to predict something it should theoretically be able to predict.
+  \textbf{Predictive validity}: the operationalization's ability to predict something it should theoretically be able to predict.
 \item
-  Concurrent validity: evaluates the operationalization's ability to distinguish between groups that it should theoretically be able to distinguish between.
+  \textbf{Concurrent validity}: the operationalization's ability to distinguish between groups that it should theoretically be able to distinguish between.
 \item
-  Convergent validity: examines the degree to which the operationalization is similar to (converges on) other operationalizations to which it theoretically should be similar.
+  \textbf{Convergent validity}: the degree to which the operationalization is similar to (converges on) other operationalizations to which it theoretically should be similar.
 \item
-  Discriminant validity: examines the degree to which the operationalization is not similar to (diverges from) other operationalizations to which it theoretically should be not be similar.
+  \textbf{Discriminant validity}: the degree to which the operationalization is not similar to (diverges from) other operationalizations to which it theoretically should be not be similar.
 \end{itemize}
 
 \hypertarget{sampling-methods}{%
 \subsection{Sampling Methods}\label{sampling-methods}}
+
+It is important to understand the centrality of \textbf{randomness} in sampling. Randomization protects against subjective biases, self-validates the data, and is the key ingredient that defines the representative means of extracting information (Kahneman, 2011). Sample data that are not representative of the population of interest can lend to anomalies -- mere coincidences. While non-random data can be leveraged for directionally accurate insights, randomness is required to make inferences about a broader population with a reasonable degree of confidence.
+
+Let's consider an example from Kahneman (2011) in which six babies are born in sequence at a hospital. The gender of these babies is of course random and independent; the gender of one does not influence the gender of another. Consider the three possible sequences of girls (G) and boys (B) below:
+
+\begin{itemize}
+\tightlist
+\item
+  BBBGGG
+\item
+  GGGGGG
+\item
+  BGBBGB
+\end{itemize}
+
+Are these sequences equally likely? Though it may initially be counter-intuitive, since the events are independent and the outcomes (B and G) are (approximately) equally likely, any possible sequence of births is as likely as any other.
+
+Sample size (colloquially referred to as the \(n\)-count) is also important as this can have a material influence on the representativeness of sample data -- and consequently, the veracity of results and conclusions based on them. As we will explore in Chapter \ref{inf-stats}, as the sample size increases, so too does our confidence that estimates based on sample data reflect population parameters.
+
+To illustrate the effects of sample sizes, let's consider a hypothetical study in which the promotion rate in an organization is found to be lowest in divisions that are primarily software engineers, low diversity, small, and geographically dispersed. Which of these characteristics might offer an explanation? Let's consider that this study also found that the divisions with highest promotion rates have identicial characteristics: software engineers, low diversity, small, and geographically dispersed.
+Small samples yield extreme results more often than large samples. Small samples neither cause nor prevent outcomes; they merely allow the incidence of the outcome to be much higher (or much lower) than it is in the larger population (Kahneman, 2011).
 
 \textbf{Non-Probability Sampling}
 
@@ -713,7 +736,7 @@ In people analytics, there are many conventional descriptive metrics -- largely 
 
 Variance of a population is defined by:
 
-\[ \sigma^{2} = \frac{\displaystyle\sum_{i=1}^{n} (X_{i}-\mu)^{2}}{N} \]
+\[ \sigma^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\mu)^{2}}{N} \]
 
 Variance of a sample is defined by:
 
@@ -758,7 +781,13 @@ Sample statistics are the default in R. Since the population variance differs fr
 
 \textbf{Standard Deviation}
 
-The \textbf{standard deviation} is simply the square root of the variance, as defined by:
+The \textbf{standard deviation} is simply the square root of the variance.
+
+The standard deviation of a population is defined by:
+
+\[ \sigma = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \mu)^{2}}{N}} \]
+
+The standard deviation of a sample is defined by:
 
 \[ s = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \bar{x})^{2}}{n - 1}} \]
 
@@ -1327,7 +1356,7 @@ The objective of \textbf{inferential statistics} is to make inferences -- with s
 \hypertarget{introduction-to-probability}{%
 \section{Introduction to Probability}\label{introduction-to-probability}}
 
-\textbf{Randomness} and uncertainty exist all around us. In \textbf{probability theory}, random phenomena refer to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50\%, or \(\frac{1}{2}\).
+Randomness and uncertainty exist all around us. In \textbf{probability theory}, random phenomena refer to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50\%, or \(\frac{1}{2}\).
 
 The \textbf{Law of Large Numbers (LLN)} is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anomalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
 
@@ -1335,9 +1364,96 @@ The \textbf{Law of Large Numbers (LLN)} is an important theorem for building an 
 
 Formally, \textbf{Bayes' Theorem (alternatively, Bayes' Rule)} states that for any two events A and B where the probability of A is not 0 (\(P(A) \neq 0\)):
 
-\[ P(B \vert A) = \frac{P(A \vert B) P(B)}{P(A)} \]
+\[ P(A \vert B) = \frac{P(B \vert A) P(A)}{P(B)}, \]
 
-Bayes' Rule allows us to predict the outcome more accurately by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely based on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10\%, or \(\frac{1}{10}\). Aside from trending this probability over time to identify if attrition is becoming more or less of a concern, this isn't too helpful at the broader company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70\%, or \(\frac{7}{10}\), this is far more actionable (and concerning).
+where:
+
+\begin{itemize}
+\tightlist
+\item
+  \(A\) = an event
+\item
+  \(B\) = another event
+\item
+  \(P(A|B)\) = conditional probability that event A occurs, given event B occurs (posterior)
+\item
+  \(P(B|A)\) = conditional probability that event B occurs, given event A occurs (likelihood)
+\item
+  \(P(B)\) = normalizing constant, constraining the probability distribution to sum to 1 (evidence)
+\item
+  \(P(A)\) = probability event A occurs before knowing if event B occurs (prior)
+\end{itemize}
+
+Bayes' Rule allows us to predict the outcome more accurately by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely when conditioned on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10\%, or \(\frac{1}{10}\). Aside from trending this probability over time to identify if overall attrition is becoming more or less of a concern, this isn't too helpful at the company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70\%, or \(\frac{7}{10}\), this is far more actionable (and concerning).
+
+\hypertarget{the-monty-hall-problem}{%
+\subsection{The Monty Hall Problem}\label{the-monty-hall-problem}}
+
+The \textbf{Monty Hall Problem} is an excellent example of how our intuition is often at odds with the laws of probability.
+
+In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
+
+It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection have a 66\% chance (rather than 50\%) of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.
+
+When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. Monty's knowledge of the door containing the prize does not impact the probability of selecting the winning door. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize's location and opens a door he knows does not contain the prize. The probabilities change. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prize's location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).
+
+Seeing is believing, so let's prove this with a simulation in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Set seed for reproducible simulations}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{12345}\NormalTok{)}
+
+\CommentTok{# Set number of simulations}
+\NormalTok{trials =}\StringTok{ }\DecValTok{10000}
+
+\CommentTok{# Store switch/keep decisions}
+\NormalTok{decisions =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"switch"}\NormalTok{, }\StringTok{"keep"}\NormalTok{)}
+
+\CommentTok{# Store integer for each door}
+\NormalTok{doors =}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{3}
+
+\CommentTok{# Initialize empty data frame for results}
+\NormalTok{results =}\StringTok{ }\OtherTok{NULL}
+
+\ControlFlowTok{for}\NormalTok{ (n }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{trials)\{}
+  
+  \ControlFlowTok{for}\NormalTok{ (decision }\ControlFlowTok{in}\NormalTok{ decisions)\{}
+    
+    \CommentTok{# Select correct door}
+\NormalTok{    correct_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
+
+    \CommentTok{# Contestant chooses a door at random}
+\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
+  
+    \CommentTok{# Open door that was neither selected by the contestant nor contains the prize}
+    \CommentTok{# Choose one door to open if multiple remain without the prize (i.e., the contestant didn't initially select the door containing the prize)}
+\NormalTok{    remaining_doors <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{correct_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door)}
+\NormalTok{    open_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(remaining_doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T) }
+  
+    \CommentTok{# Contestant makes decision to switch doors or keep with the originally selected door}
+\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(decision }\OperatorTok{==}\StringTok{ "switch"}\NormalTok{, }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{open_door), selected_door)}
+    
+    \CommentTok{# Store results in data frame}
+\NormalTok{    results <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(results, }\KeywordTok{cbind.data.frame}\NormalTok{(}
+                     \DataTypeTok{trial =}\NormalTok{ n,}
+                     \DataTypeTok{decision =}\NormalTok{ decision,}
+                     \DataTypeTok{result =} \KeywordTok{ifelse}\NormalTok{(correct_door }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door, }\StringTok{"win"}\NormalTok{, }\StringTok{"lose"}\NormalTok{)))}
+\NormalTok{  \}}
+\NormalTok{\}}
+
+\CommentTok{# Calculate percentage difference in wins for switch vs. keep decisions}
+\NormalTok{switch_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "switch"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\NormalTok{keep_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "keep"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\KeywordTok{round}\NormalTok{((switch_wins }\OperatorTok{-}\StringTok{ }\NormalTok{keep_wins) }\OperatorTok{/}\StringTok{ }\NormalTok{keep_wins }\OperatorTok{*}\StringTok{ }\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 45
+\end{verbatim}
+
+As we can see, wins occur nearly 50\% more often when contestants switch doors. This exercise hopefully demonstrates the importance of conditional probability and statistical assumptions like randomness. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
 
 \hypertarget{central-limit-theorem}{%
 \section{Central Limit Theorem}\label{central-limit-theorem}}
@@ -1412,11 +1528,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-31-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-32-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-31}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-32}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -1460,11 +1576,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-32-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-33-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-32}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-33}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -1782,75 +1898,6 @@ In addition to normally distributed data in the population, and ensuring outlier
 Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in \ref{fig:corr-lvl-ed}, is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in Chapter \ref{aod}.
 
 It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
-
-\hypertarget{the-monty-hall-problem}{%
-\section{The Monty Hall Problem}\label{the-monty-hall-problem}}
-
-This chapter concludes with an example that highlights the importance of statistical assumptions by integrating concepts of conditional probability, randomness, and independence.
-
-In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
-
-It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection have a 66\% chance (rather than 50\%) of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.
-
-When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. Monty's knowledge of the door containing the prize does not impact the probability of selecting the winning door. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize's location and opens a door he knows does not contain the prize. The probabilities change. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prize's location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).
-
-Seeing is believing, so let's prove this with a simulation in R:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Set seed for reproducible simulations}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{12345}\NormalTok{)}
-
-\CommentTok{# Set number of simulations}
-\NormalTok{trials =}\StringTok{ }\DecValTok{10000}
-
-\CommentTok{# Store switch/keep decisions}
-\NormalTok{decisions =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"switch"}\NormalTok{, }\StringTok{"keep"}\NormalTok{)}
-
-\CommentTok{# Store integer for each door}
-\NormalTok{doors =}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{3}
-
-\CommentTok{# Initialize empty data frame for results}
-\NormalTok{results =}\StringTok{ }\OtherTok{NULL}
-
-\ControlFlowTok{for}\NormalTok{ (n }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{trials)\{}
-  
-  \ControlFlowTok{for}\NormalTok{ (decision }\ControlFlowTok{in}\NormalTok{ decisions)\{}
-    
-    \CommentTok{# Select correct door}
-\NormalTok{    correct_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
-
-    \CommentTok{# Contestant chooses a door at random}
-\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T)}
-  
-    \CommentTok{# Open door that was neither selected by the contestant nor contains the prize}
-    \CommentTok{# Choose one door to open if multiple remain without the prize (i.e., the contestant didn't initially select the door containing the prize)}
-\NormalTok{    remaining_doors <-}\StringTok{ }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{correct_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door)}
-\NormalTok{    open_door <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(remaining_doors, }\DecValTok{1}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ T) }
-  
-    \CommentTok{# Contestant makes decision to switch doors or keep with the originally selected door}
-\NormalTok{    selected_door <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(decision }\OperatorTok{==}\StringTok{ "switch"}\NormalTok{, }\KeywordTok{which}\NormalTok{(}\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door }\OperatorTok{&}\StringTok{ }\OperatorTok{!}\NormalTok{doors }\OperatorTok{==}\StringTok{ }\NormalTok{open_door), selected_door)}
-    
-    \CommentTok{# Store results in data frame}
-\NormalTok{    results <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(results, }\KeywordTok{cbind.data.frame}\NormalTok{(}
-                     \DataTypeTok{trial =}\NormalTok{ n,}
-                     \DataTypeTok{decision =}\NormalTok{ decision,}
-                     \DataTypeTok{result =} \KeywordTok{ifelse}\NormalTok{(correct_door }\OperatorTok{==}\StringTok{ }\NormalTok{selected_door, }\StringTok{"win"}\NormalTok{, }\StringTok{"lose"}\NormalTok{)))}
-\NormalTok{  \}}
-\NormalTok{\}}
-
-\CommentTok{# Calculate percentage difference in wins for switch vs. keep decisions}
-\NormalTok{switch_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "switch"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
-\NormalTok{keep_wins <-}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results[results}\OperatorTok{$}\NormalTok{decision }\OperatorTok{==}\StringTok{ "keep"} \OperatorTok{&}\StringTok{ }\NormalTok{results}\OperatorTok{$}\NormalTok{result }\OperatorTok{==}\StringTok{ "win"}\NormalTok{, ]) }\OperatorTok{/}\StringTok{ }\KeywordTok{nrow}\NormalTok{(results) }\OperatorTok{*}\StringTok{ }\DecValTok{100}
-\KeywordTok{round}\NormalTok{((switch_wins }\OperatorTok{-}\StringTok{ }\NormalTok{keep_wins) }\OperatorTok{/}\StringTok{ }\NormalTok{keep_wins }\OperatorTok{*}\StringTok{ }\DecValTok{100}\NormalTok{, }\DecValTok{0}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] 45
-\end{verbatim}
-
-As we can see, wins occur nearly 50\% more often when contestants switch doors. This exercise hopefully demonstrates the importance of statistical assumptions. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
 
 \hypertarget{exercises-2}{%
 \section{Exercises}\label{exercises-2}}
@@ -2192,7 +2239,7 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 \section{4D Framework \{\#4d-chklst\}}\label{d-framework-4d-chklst}}
 
 \begin{figure}
-\includegraphics[width=25.81in]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:unnamed-chunk-48}
+\includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/4d_framework} \caption{Figure 1: 4D Framework}\label{fig:4d-overview}
 \end{figure}
 
 1. Discover
