@@ -8,7 +8,7 @@
 
   An **Independent Variable (IV)** is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as *predictors*, *factors*, *features*, *antecedents*, or *explanatory* variables.
   
-  For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging favorability. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
+  For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
   
   IVs are also present in non-experimental designs. For example, we may survey employees and ask them to rate their leader's inclusiveness and also provide self-reported belonging ratings. In this context, leader inclusiveness (rather than an inclusion training) is the IV. If we find that average team-level belonging scores tend to be higher when leader inclusiveness scores are higher, this *may* indicate that leader inclusion has some degree of influence on team-level belonging. Of course, there could be alternative explanations for any observed differences in team-level belonging, which is why experimental designs tend to provide stronger evidence for an IV's effect.
 
@@ -189,32 +189,152 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   **Simple random sampling** is a method in which each member of the population has the same probability of being selected for a sample. An example of simple random sampling is randomly selecting a specified number or percent of employees from the workforce to participate in a survey without regard for tenure, department, level, or other characteristics.
   
+  We can use the sample() function in R to randomly select from a vector of elements:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Load library for data wrangling
+library(dplyr)
+
+# Read employee demographics data
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+
+# Set seed for reproducible results
+set.seed(1234)
+
+# Sample 10 employees randomly
+n = 10
+sample(demographics$employee_id, n, replace = F)
+
+```
+  
+  The `replace = F` argument in the sample() function indicates that we want to sample *without* replacement (i.e., we do not want an employee to be selected twice in the sample). For example, if we draw multiple names from a hat without replacement, we would not put names back into the hat once they are drawn; each has a chance of being selected only once.
+  
+  While sampling *with* replacement would not make sense for applications such as pulse survey participation, as we would not want a given employee to take a survey multiple times, `replace = T` can be applied if the application requires it (e.g., a lottery in which employees can win more than once).
+  
   **Stratified Random Sampling**
   
   **Stratified random sampling** is a sampling method in which the population is first divided into *strata*. Then, a simple random sample is taken from each *stratum* -- a homogeneous subset of the population with similar characteristics with regard to the variable of interest. The combined results constitute the sample.
   
   To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30% of all employees are in the Engineering department, the researcher could *randomly* select a calculated number of employees from the Engineering department such that 30% of employees in the sample come from this department.
-  
+
+  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each location. First, we can review counts of employees for each division using the group_by() and summarise() functions from the `dplyr` library:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return employee counts by location
+demographics %>%
+group_by(location) %>%
+summarise(n = n())
+
+```
+
+  Next, we will randomly select $\frac{1}{2}$ of employees within each location using the group_by() and sample_frac() functions from the `dplyr` library. We will store the selected employees' records to a data frame and then query it to validate that the counts are roughly $\frac{1}{2}$ the total count observed for each location.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Obtain and store stratified random sample
+strat_sample <- demographics %>%
+                group_by(location) %>%
+                sample_frac(size = .5)
+
+# Return sample counts by location
+strat_sample %>%
+group_by(location) %>%
+summarise(n = n())
+
+```
+
   **Cluster Sampling**
   
   **Cluster sampling** is a sampling method often used in market research in which the population is first divided into clusters. Then, a simple random sample of clusters is taken. All the members of the selected clusters together constitute the sample. Unlike stratified random sampling, it is the clusters that are selected at random – not the individuals. It is hoped that each cluster by itself is representative of the population (i.e., each cluster is heterogeneous).
 
   For example, employees could be partitioned into clusters based only on their geographic region. Since there is not further partitioning on other variables, each cluster is expected to be heterogeneous on the basis of variables other than geographic region -- that is, unless geography is related to other variables (e.g., call center employees are all located in a company's Pacific Northwest region). By selecting a random set of clusters, the combination of employees across the selected clusters is expected to be representative of the population.
-  
+
+  Let's demonstrate how to implement cluster sampling in R:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Randomly assign each employee to 1 of 10 clusters (groups)
+demographics$cluster <- sample(1:10, size = nrow(demographics), replace = T)
+
+# Randomly select 5 clusters
+clusters <- sample(unique(demographics$cluster), size = 5, replace = F)
+
+# Store cluster sample
+clust_sample <- demographics %>%
+                filter(cluster %in% clusters)
+
+```
+
   **Systematic Sampling**
   
   **Systematic sampling** involves selecting sample members from a population according to a random starting point and a fixed, periodic interval known as a sampling interval. The sampling interval is computed by taking the population size and dividing it by the desired sample size. The resulting number is the interval at which population members are selected for the sample.
   
   For example, if there are 10,000 employees and our desired sample size is 500, the sampling interval is 20. Therefore, we would select every 20th employee for our sample. It is important that the sequence does not represent a standardized pattern that would bias the data; this process needs to be random. For example, if the employee id generated by the HRIS increases with time, we would expect employees with longer tenure to have lower employee ids while new joiners would have higher employee ids. Ordering employees by employee id prior to selection could bias the sample on the basis of variables related to tenure (e.g., aggressive periods of Engineering hiring).
 
+  Let's walk through the step-by-step process for implementing the systematic sampling procedure in R:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Specify desired sample size
+n = 100
+
+# Determine population size
+N = nrow(demographics)
+
+# Compute sampling interval, rounding up to nearest whole number via the ceiling() function
+si = ceiling(N/n)
+
+# Randomly select value between 1 and the sampling interval for starting value
+strt = sample(1:si, 1)
+
+# Increment starting value by the sampling interval until the desired sample size is achieved, and hydrate index vector with the selected indices
+index = seq(strt, strt + si * (n - 1), si)
+
+# Store systematic sample
+syst_sample <- demographics[index, ]
+
+```
+
 ## Exercises
 
 1. Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
    <br />A. True
    <br />B. False
+
+2. How does a sampling frame differ from a sample?
+
+3. How does cluster sampling differ from stratified random sampling?
+
+4. What is the primary benefit of probabilistic sampling methods over non-probabilistic sampling?
+
+5. Nonresponse bias is only applicable in the context of surveys.
+   <br />A. True
+   <br />B. False
+
+6. Which of the following variable types influences the strength of the effect one variable has on another?
+   <br />A. Dependent Variable
+   <br />B. Independent Variable
+   <br />C. Moderating Variable
+   <br />D. Mediating Variable
    
-2. 100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
+7. 100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
    <br />A. Sample: 100 employees who completed the survey, Population: All employees in the organization
    <br />B. Sample: 100 employees who completed the survey, Population: Marketing employees
    <br />C. Sample: All Marketing professionals, Population: All employees in the organization
    <br />D. Sample: All employees in the organization, Population: Employees across all companies globally
+   
+8. Zero represents the absence of something for inveral scaled variables, whereas this is not the case for ratio scaled variables.
+   <br />A. True
+   <br />B. False
+   
+9. Discrete variables can have more than 2 values.
+   <br />A. True
+   <br />B. False
+   
+10. Which of the following are NOT probabilistic sampling methods?
+   <br />A. Simple random sampling
+   <br />B. Quota sampling
+   <br />C. Systematic sampling
+   <br />D. Purposive sampling
