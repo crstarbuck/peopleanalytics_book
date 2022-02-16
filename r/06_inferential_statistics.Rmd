@@ -7,6 +7,163 @@
   Randomness and uncertainty exist all around us. In **probability theory**, random phenomena refer to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50%, or $\frac{1}{2}$. 
 
   The **Law of Large Numbers (LLN)** is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anomalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
+  
+### Probability Distributions
+
+  **Probability distributions** are statistical functions that yield the probability of obtaining possible values for a random variable. In other words, the underlying distribution describes how the values of a random variable vary. Probabilities range from 0 to 1, and the sum of all probabilities for all possible values must equal 1.
+
+  For example, let's look at how org tenure is distributed across employees. We can understand the general shape of the distribution using descriptive statistics:
+  
+```{r, fig.align = 'center', message = FALSE}
+
+# Load library for data wrangling
+library(dplyr)
+
+# Read employee demographics data
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+
+# Produce descriptive stats for org tenure
+summary(demographics$org_tenure)
+
+```
+
+  Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
+  
+  Beyond descriptives, visuals are often helpful in understanding a variable's distribution. As shown in Figure \@ref(fig:org-tenure-dist), it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:
+
+```{r org-tenure-dist, fig.cap = "Org Tenure Distribution", fig.align = 'center', message = FALSE}
+
+# Load library for data visualization
+library(ggplot2)
+
+# Visualize org tenure distribution
+ggplot() + 
+  aes(demographics$org_tenure) + 
+  labs(x = "Org Tenure", y = "Density") + 
+  geom_histogram(aes(y = ..density..), fill = "#414141") +
+  geom_density(fill = "#ADD8E6", alpha = 0.6) +
+  theme_bw()
+
+```
+
+  Just as we grouped variables into disrete and continuous categories in Chapter \@ref(measure-sampl), this is also how probability distributions are categorized. If you read Chapter \@ref(measure-sampl), you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
+  
+  The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread).
+  
+  **Discrete Probability Distributions**
+  
+  **Discrete probability distributions**, also known as **Probability Mass Functions (PMF)**, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:
+  
+  * Bernoulli: probability of success or failure for a *single* trial with two outcomes
+  * Binomial: number of successes and failures in a *sequence* of independent trials with two outcomes (collection of Bernoulli trials)
+  * Multinomial: generalization of the binomial distribution for experiements with more than two outcomes
+  * Negative Binomial (Pascal): a version of the binomial distribution for a *fixed* number of trials (this is positively skewed despite what the name might suggest)
+  * Poisson: probability of a given number of events occurring over a specified period
+  * Geometric: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
+  
+  A number of functions are available in R to simulate discrete random probability distributions. Let's simulate and visualize six common discrete distributions:
+  
+```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', message = FALSE}
+
+# Load library for arranging visuals
+library(ggpubr)
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Simulate bernoulli distribution
+bernoulli_dist <- rbinom(1000, 1, prob = .5)
+
+# Simulate binomial distribution
+# Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)
+binomial_dist <- rbinom(1000, 100, prob = .5) 
+
+# Simulate multinomial distribution with varying probabilities per level
+multinomial_dist <- rmultinom(1000, 4, prob = c(.4, .3, .2, .6))
+
+# Simulate negative binomial distribution
+nbinomial_dist <- rnbinom(1000, 100, prob = .5) 
+
+# Simulate poisson distribution
+poisson_dist <- rpois(1000, 10) 
+
+# Simulate geometric distribution
+geometric_dist <- rgeom(1000, prob = .2) 
+
+# Store visualizations to objects
+p_bernoulli <- 
+  
+      ggplot() + 
+      aes(bernoulli_dist) + 
+      labs(title = "Bernoulli", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+p_binomial <- 
+  
+      ggplot() + 
+      aes(binomial_dist) + 
+      labs(title = "Binomial", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+p_multinomial <- 
+  
+      ggplot() + 
+      aes(multinomial_dist) + 
+      labs(title = "Multinomial", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+p_nbinomial <- 
+  
+      ggplot() + 
+      aes(nbinomial_dist) + 
+      labs(title = "Negative Binomial", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+p_poisson <- 
+  
+      ggplot() + 
+      aes(poisson_dist) + 
+      labs(title = "Poisson", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+p_geometric <- 
+  
+      ggplot() + 
+      aes(geometric_dist) + 
+      labs(title = "Geometric", x = "x", y = "count") + 
+      theme(plot.title = element_text(hjust = 0.5)) + 
+      geom_histogram(fill = "#414141") +
+      theme_bw()
+
+# Display distribution visualizations
+ggarrange(p_bernoulli, p_binomial, p_multinomial, p_nbinomial, p_poisson, p_geometric,
+                             ncol = 3, nrow = 2)
+
+```
+  
+  **Continuous Probability Distributions**
+  
+  **Continuous probability distributions**, also known as **Probability Density Functions (PDF)**, can be leveraged to model different types of interval and ratio variables. Some common continuous distributions include:
+  
+  * Normal (Gaussian)
+  * Beta
+  * Cauchy
+  * Exponential
+  * Gamma
+  * Logistic
+  * Weibull
+
+### Conditional Probability
 
   **Conditional probability** reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than $\frac{1}{2}$ with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
 
@@ -25,9 +182,7 @@
  
   Bayes' Rule allows us to predict the outcome more accurately by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely when conditioned on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10%, or $\frac{1}{10}$. Aside from trending this probability over time to identify if overall attrition is becoming more or less of a concern, this isn't too helpful at the company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70%, or $\frac{7}{10}$, this is far more actionable (and concerning).
   
-### The Monty Hall Problem
-
-  The **Monty Hall Problem** is an excellent example of how our intuition is often at odds with the laws of probability.
+  The **Monty Hall Problem** is an excellent example of how our intuition is often at odds with the laws of conditional probability.
   
   In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
   

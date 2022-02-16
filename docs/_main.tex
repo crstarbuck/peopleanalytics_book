@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-15}
+\date{2022-02-16}
 
 \begin{document}
 \maketitle
@@ -236,7 +236,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Install required packages}
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -248,7 +248,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp6hQgkE/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpfy2xQo/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -355,7 +355,7 @@ The framing of variables in research hypotheses guides the treatment of each in 
 
 An \textbf{Independent Variable (IV)} is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as \emph{predictors}, \emph{factors}, \emph{features}, \emph{antecedents}, or \emph{explanatory} variables.
 
-For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging favorability. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
+For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
 
 IVs are also present in non-experimental designs. For example, we may survey employees and ask them to rate their leader's inclusiveness and also provide self-reported belonging ratings. In this context, leader inclusiveness (rather than an inclusion training) is the IV. If we find that average team-level belonging scores tend to be higher when leader inclusiveness scores are higher, this \emph{may} indicate that leader inclusion has some degree of influence on team-level belonging. Of course, there could be alternative explanations for any observed differences in team-level belonging, which is why experimental designs tend to provide stronger evidence for an IV's effect.
 
@@ -708,11 +708,41 @@ Let's walk through the step-by-step process for implementing the systematic samp
   A. True
   B. False
 \item
+  How does a sampling frame differ from a sample?
+\item
+  How does cluster sampling differ from stratified random sampling?
+\item
+  What is the primary benefit of probabilistic sampling methods over non-probabilistic sampling?
+\item
+  Nonresponse bias is only applicable in the context of surveys.
+  A. True
+  B. False
+\item
+  Which of the following variable types influences the strength of the effect one variable has on another?
+  A. Dependent Variable
+  B. Independent Variable
+  C. Moderating Variable
+  D. Mediating Variable
+\item
   100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
   A. Sample: 100 employees who completed the survey, Population: All employees in the organization
   B. Sample: 100 employees who completed the survey, Population: Marketing employees
   C. Sample: All Marketing professionals, Population: All employees in the organization
   D. Sample: All employees in the organization, Population: Employees across all companies globally
+\item
+  Zero represents the absence of something for inveral scaled variables, whereas this is not the case for ratio scaled variables.
+  A. True
+  B. False
+\item
+  Discrete variables can have more than 2 values.
+  A. True
+  B. False
+\item
+  Which of the following are NOT probabilistic sampling methods?
+  A. Simple random sampling
+  B. Quota sampling
+  C. Systematic sampling
+  D. Purposive sampling
 \end{enumerate}
 
 \hypertarget{uni-bi-stats}{%
@@ -1156,7 +1186,7 @@ Figure \ref{fig:kurtosis} illustrates the three kurtosis categorizations:
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.5\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis} 
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis} 
 
 }
 
@@ -1500,6 +1530,202 @@ Randomness and uncertainty exist all around us. In \textbf{probability theory}, 
 
 The \textbf{Law of Large Numbers (LLN)} is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anomalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
 
+\hypertarget{probability-distributions}{%
+\subsection{Probability Distributions}\label{probability-distributions}}
+
+\textbf{Probability distributions} are statistical functions that yield the probability of obtaining possible values for a random variable. In other words, the underlying distribution describes how the values of a random variable vary. Probabilities range from 0 to 1, and the sum of all probabilities for all possible values must equal 1.
+
+For example, let's look at how org tenure is distributed across employees. We can understand the general shape of the distribution using descriptive statistics:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce descriptive stats for org tenure}
+\KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   1.000   5.000   8.000   9.193  13.000  20.000
+\end{verbatim}
+
+Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
+
+Beyond descriptives, visuals are often helpful in understanding a variable's distribution. As shown in Figure \ref{fig:org-tenure-dist}, it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for data wrangling}
+\KeywordTok{library}\NormalTok{(dplyr)}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+
+\CommentTok{# Read employee demographics data}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+
+\CommentTok{# Visualize org tenure distribution}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Org Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{_main_files/figure-latex/org-tenure-dist-1} 
+
+}
+
+\caption{Org Tenure Distribution}\label{fig:org-tenure-dist}
+\end{figure}
+
+Just as we grouped variables into disrete and continuous categories in Chapter \ref{measure-sampl}, this is also how probability distributions are categorized. If you read Chapter \ref{measure-sampl}, you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
+
+The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread).
+
+\textbf{Discrete Probability Distributions}
+
+\textbf{Discrete probability distributions}, also known as \textbf{Probability Mass Functions (PMF)}, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:
+
+\begin{itemize}
+\tightlist
+\item
+  Bernoulli: probability of success or failure for a \emph{single} trial with two outcomes
+\item
+  Binomial: number of successes and failures in a \emph{sequence} of independent trials with two outcomes (collection of Bernoulli trials)
+\item
+  Multinomial: generalization of the binomial distribution for experiements with more than two outcomes
+\item
+  Negative Binomial (Pascal): a version of the binomial distribution for a \emph{fixed} number of trials
+\item
+  Poisson: probability of a given number of events occurring over a specified period
+\item
+  Geometric: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
+\end{itemize}
+
+A number of functions are available in R to simulate discrete random probability distributions. Let's simulate and visualize six common discrete distributions:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for arranging visuals}
+\KeywordTok{library}\NormalTok{(ggpubr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'ggpubr' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Set seed for reproducible random distribution}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{# Simulate bernoulli distribution}
+\NormalTok{bernoulli_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{)}
+
+\CommentTok{# Simulate binomial distribution}
+\CommentTok{# Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)}
+\NormalTok{binomial_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
+
+\CommentTok{# Simulate multinomial distribution with varying probabilities per level}
+\NormalTok{multinomial_dist <-}\StringTok{ }\KeywordTok{rmultinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DataTypeTok{prob =} \KeywordTok{c}\NormalTok{(.}\DecValTok{4}\NormalTok{, }\FloatTok{.3}\NormalTok{, }\FloatTok{.2}\NormalTok{, }\FloatTok{.6}\NormalTok{))}
+
+\CommentTok{# Simulate negative binomial distribution}
+\NormalTok{nbinomial_dist <-}\StringTok{ }\KeywordTok{rnbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
+
+\CommentTok{# Simulate poisson distribution}
+\NormalTok{poisson_dist <-}\StringTok{ }\KeywordTok{rpois}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{10}\NormalTok{) }
+
+\CommentTok{# Simulate geometric distribution}
+\NormalTok{geometric_dist <-}\StringTok{ }\KeywordTok{rgeom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.2}\NormalTok{) }
+
+\CommentTok{# Store visualizations to objects}
+\NormalTok{p_bernoulli <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{aes}\NormalTok{(bernoulli_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Bernoulli"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
+
+\NormalTok{p_binomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{              }\KeywordTok{aes}\NormalTok{(binomial_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{              }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Binomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{              }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{              }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{              }\KeywordTok{theme_bw}\NormalTok{()}
+
+\NormalTok{p_multinomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\KeywordTok{aes}\NormalTok{(multinomial_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Multinomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{                 }\KeywordTok{theme_bw}\NormalTok{()}
+
+\NormalTok{p_nbinomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{aes}\NormalTok{(nbinomial_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Negative Binomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
+
+\NormalTok{p_poisson <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{             }\KeywordTok{aes}\NormalTok{(poisson_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{             }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Poisson"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{             }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{             }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{             }\KeywordTok{theme_bw}\NormalTok{()}
+
+\NormalTok{p_geometric <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{aes}\NormalTok{(geometric_dist) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Geometric"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
+
+\CommentTok{# Display distribution visualizations}
+\NormalTok{p_distributions <-}\StringTok{ }\KeywordTok{ggarrange}\NormalTok{(p_bernoulli, p_binomial, p_multinomial, p_nbinomial, p_poisson, p_geometric,}
+                             \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\NormalTok{p_distributions}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{_main_files/figure-latex/discrete-dist-1} 
+
+}
+
+\caption{Discrete Probability Distributions}\label{fig:discrete-dist}
+\end{figure}
+
+\textbf{Continuous Probability Distributions}
+
+\textbf{Continuous probability distributions}, also known as \textbf{Probability Density Functions (PDF)}, can be leveraged to model different types of interval and ratio variables. Some common continuous distributions include:
+
+\begin{itemize}
+\tightlist
+\item
+  Normal (Gaussian)
+\item
+  Beta
+\item
+  Cauchy
+\item
+  Exponential
+\item
+  Gamma
+\item
+  Logistic
+\item
+  Weibull
+\end{itemize}
+
+\hypertarget{conditional-probability}{%
+\subsection{Conditional Probability}\label{conditional-probability}}
+
 \textbf{Conditional probability} reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than \(\frac{1}{2}\) with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
 
 Formally, \textbf{Bayes' Theorem (alternatively, Bayes' Rule)} states that for any two events A and B where the probability of A is not 0 (\(P(A) \neq 0\)):
@@ -1526,10 +1752,7 @@ where:
 
 Bayes' Rule allows us to predict the outcome more accurately by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely when conditioned on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10\%, or \(\frac{1}{10}\). Aside from trending this probability over time to identify if overall attrition is becoming more or less of a concern, this isn't too helpful at the company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70\%, or \(\frac{7}{10}\), this is far more actionable (and concerning).
 
-\hypertarget{the-monty-hall-problem}{%
-\subsection{The Monty Hall Problem}\label{the-monty-hall-problem}}
-
-The \textbf{Monty Hall Problem} is an excellent example of how our intuition is often at odds with the laws of probability.
+The \textbf{Monty Hall Problem} is an excellent example of how our intuition is often at odds with the laws of conditional probability.
 
 In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
 
@@ -1668,11 +1891,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-37-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-37}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-38}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -1716,11 +1939,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-39-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-38}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-39}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -2295,6 +2518,47 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 
 \hypertarget{solutions}{%
 \section{Exercise Solutions}\label{solutions}}
+
+\hypertarget{measurement-sampling}{%
+\subsection{Measurement \& Sampling}\label{measurement-sampling}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Parameters are descriptions or characteristics of a sample, while statistics are descriptions or characteristics of a population.
+  B. False
+\item
+  How does a sampling frame differ from a sample?
+
+  A sampling frame represents the subset of the population to which the researcher has access, while the sample is the subset of the sampling frame that ultimately participates in the research.
+\item
+  How does cluster sampling differ from stratified random sampling?
+
+  It is the \emph{clusters} that are selected at random with cluster sampling rather than the \emph{individuals} with stratified random sampling.
+\item
+  What is the primary benefit of probabilistic sampling methods over non-probabilistic sampling?
+
+  Probability sampling allows us to make inferences about a larger population based on sample data, while this is not the case for non-probability sampling methods since the sample is unlikely to be representative of the population.
+\item
+  Nonresponse bias is only applicable in the context of surveys.
+  B. False
+\item
+  Which of the following variable types influences the strength of the effect one variable has on another?
+  C. Moderating Variable
+\item
+  100 randomly selected employees in the Marketing department of an organization participated in a survey on career pathing for marketing professionals. What is the sample and what is the population sampled in this case?
+  B. Sample: 100 employees who completed the survey, Population: Marketing employees
+\item
+  Zero represents the absence of something for inveral scaled variables, whereas this is not the case for ratio scaled variables.
+  B. False
+\item
+  Discrete variables can have more than 2 values.
+  A. True
+\item
+  Which of the following are NOT probabilistic sampling methods?
+  B. Quota sampling
+  D. Purposive sampling
+\end{enumerate}
 
 \hypertarget{univariate-bivariate-analysis}{%
 \subsection{Univariate \& Bivariate Analysis}\label{univariate-bivariate-analysis}}
