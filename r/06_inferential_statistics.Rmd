@@ -27,6 +27,8 @@ summary(demographics$org_tenure)
 
 ```
 
+  <br />
+  
   Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
   
   Beyond descriptives, visuals are often helpful in understanding a variable's distribution. As shown in Figure \@ref(fig:org-tenure-dist), it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:
@@ -46,6 +48,8 @@ ggplot() +
 
 ```
 
+  <br />
+  
   Just as we grouped variables into disrete and continuous categories in Chapter \@ref(measure-sampl), this is also how probability distributions are categorized. If you read Chapter \@ref(measure-sampl), you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
   
   The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread). These probability distributions underpin the many types of statistical tests covered in this book.
@@ -54,16 +58,16 @@ ggplot() +
   
   **Discrete probability distributions**, also known as **Probability Mass Functions (PMF)**, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:
   
-  * Bernoulli: probability of success or failure for a *single* trial with two outcomes
-  * Binomial: number of successes and failures in a *sequence* of independent trials with two outcomes (collection of Bernoulli trials)
-  * Multinomial: generalization of the binomial distribution for experiements with more than two outcomes
-  * Negative Binomial (Pascal): a version of the binomial distribution for a *fixed* number of trials (this is positively skewed despite what the name might suggest)
-  * Poisson: probability of a given number of events occurring over a specified period
-  * Geometric: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
+  * **Bernoulli**: probability of success or failure for a *single* trial with two outcomes
+  * **Binomial**: number of successes and failures in a *sequence* of independent trials with two outcomes (collection of Bernoulli trials)
+  * **Multinomial**: generalization of the binomial distribution for experiements with more than two outcomes
+  * **Negative Binomial (Pascal)**: a version of the binomial distribution for a *fixed* number of trials (this is positively skewed despite what the name might suggest)
+  * **Poisson**: probability of a given number of events occurring over a specified period
+  * **Geometric**: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
   
-  A number of functions are available in R to simulate discrete random probability distributions. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate the general shape of each:
+  A number of functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate the general shape of each. First, let's simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:
   
-```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', message = FALSE}
+```{r, fig.align = 'center', message = FALSE}
 
 # Set seed for reproducible random distribution
 set.seed(1234)
@@ -87,12 +91,20 @@ poisson_dist <- rpois(1000, 10)
 # Simulate geometric distribution
 geometric_dist <- rgeom(1000, prob = .2) 
 
+```
+
+  <br />
+  
+  Next, we will visualize each distribution:
+
+```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Load library for arranging visuals
 library(ggpubr)
 
-# Create helper function to simplify probability distribution visualization
-build.viz <- function(data, type, title) {
+# Create user-defined function (UDF) to simplify probability distribution visualization
+# Function arguments: (1) data = object containing random distribution values; (2) type = 'discrete' or 'continuous' probability distribution; and (3) title = name of distribution
+dist.viz <- function(data, type, title) {
   
   if (type == "discrete"){
     
@@ -108,8 +120,8 @@ build.viz <- function(data, type, title) {
     
     # Continuous distribution
     viz <- ggplot() + 
-           aes(normal_dist) + 
-           labs(title = "Normal", x = "x", y = "density") + 
+           aes(data) + 
+           labs(title = paste(title), x = "x", y = "density") + 
            geom_histogram(aes(y = ..density..), fill = "#414141") +
            geom_density(fill = "#ADD8E6", alpha = 0.6) +
            theme_bw() +
@@ -119,13 +131,13 @@ build.viz <- function(data, type, title) {
   return(viz)
 }
 
-# Store visualizations to objects
-p_bernoulli <- build.viz(bernoulli_dist, "discrete", "Bernoulli")
-p_binomial <- build.viz(binomial_dist, "discrete", "Binomial")
-p_nbinomial <- build.viz(nbinomial_dist, "discrete", "Negative Binomial")
-p_multinomial <- build.viz(multinomial_dist, "discrete", "Multinomial")
-p_poisson <- build.viz(poisson_dist, "discrete", "Poisson")
-p_geometric <- build.viz(geometric_dist, "discrete", "Geometric")
+# Call UDF to build visualizations and store to objects
+p_bernoulli <- dist.viz(data = bernoulli_dist, type = "discrete", title = "Bernoulli")
+p_binomial <- dist.viz(data = binomial_dist, type = "discrete", title = "Binomial")
+p_nbinomial <- dist.viz(data = nbinomial_dist, type = "discrete", title = "Negative Binomial")
+p_multinomial <- dist.viz(data = multinomial_dist, type = "discrete", title = "Multinomial")
+p_poisson <- dist.viz(data = poisson_dist, type = "discrete", title = "Poisson")
+p_geometric <- dist.viz(data = geometric_dist, type = "discrete", title = "Geometric")
   
 # Display distribution visualizations
 ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,
@@ -133,20 +145,22 @@ ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geom
 
 ```
   
+  <br />
+    
   **Continuous Probability Distributions**
   
   **Continuous probability distributions**, also known as **Probability Density Functions (PDF)**, can be leveraged to model different types of interval and ratio variables. Some common continuous distributions include:
   
-  * Normal (Gaussian): distribution characterized by a mean and standard deviation for which the mean, median, and mode are equal
-  * Uniform: values of a random variable with equal probabilities of occurring
-  * Log-Normal: normal distribution of log-transformed values
-  * Student's T: similar to the normal distribution but with thicker tails (approaches normal as $n$ increases)
-  * Chi-Square: similar to the t distribution in that the shape approaches normal as $n$ increases
-  * F: developed to examine variances from random samples taken from two independent normal populations
+  * **Normal (Gaussian)**: distribution characterized by a mean and standard deviation for which the mean, median, and mode are equal
+  * **Uniform**: values of a random variable with equal probabilities of occurring
+  * **Log-Normal**: normal distribution of log-transformed values
+  * **Student's T**: similar to the normal distribution but with thicker tails (approaches normal as $n$ increases)
+  * **Chi-Square**: similar to the t distribution in that the shape approaches normal as $n$ increases
+  * **F**: developed to examine variances from random samples taken from two independent normal populations
 
-  A number of functions are available in R to simulate continuous random probability distributions. While the precise shape of a distribution depends on the parameters, let's simulate and visualize these common PDFs to illustrate the general shape of each:
+  A number of functions are available in R to simulate PDFs. While the precise shape of a distribution depends on the parameters, we will simulate and visualize these common PDFs to illustrate the general shape of each. Let's first draw 1,000 random values from each distribution with a specified set of parameters:
 
-```{r continous-dist, fig.cap = "Continuous Probability Distributions", fig.align = 'center', message = FALSE}
+```{r, fig.align = 'center', message = FALSE}
 
 # Set seed for reproducible random distribution
 set.seed(1234)
@@ -161,7 +175,7 @@ lnormal_dist <- rlnorm(1000, meanlog = 0, sdlog = 1)
 uniform_dist <- runif(1000, min = 1, max = 100) 
 
 # Simulate student's t distribution
-t_dist <- rt(1000, df = 3)
+t_dist <- rt(1000, df = 5)
 
 # Simulate chi-square distribution
 chisq_dist <- rchisq(1000, df = 5)
@@ -169,66 +183,22 @@ chisq_dist <- rchisq(1000, df = 5)
 # Simulate F distribution
 f_dist <- rf(1000, df1 = 5, df2 = 200)
 
-# Store visualizations to objects
-p_normal <- 
-  
-      ggplot() + 
-      aes(normal_dist) + 
-      labs(title = "Normal", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
+```
 
-p_lnormal <- 
+  <br />
   
-      ggplot() + 
-      aes(lnormal_dist) + 
-      labs(title = "Log-Normal", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
+  Next, we will visualize each distribution. Since these continuous distributions are probability *density* functions, we will superimpose density plots over each:
 
-p_uniform <- 
-  
-      ggplot() + 
-      aes(uniform_dist) + 
-      labs(title = "Uniform", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
+```{r continous-dist, fig.cap = "Continuous Probability Distributions", fig.align = 'center', message = FALSE}
 
-p_t <- 
-  
-      ggplot() + 
-      aes(t_dist) + 
-      labs(title = "Student's T", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-
-p_chisq <- 
-  
-      ggplot() + 
-      aes(chisq_dist) + 
-      labs(title = "Chi-Square", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
-
-p_f <- 
-  
-      ggplot() + 
-      aes(f_dist) + 
-      labs(title = "F", x = "x", y = "density") + 
-      geom_histogram(aes(y = ..density..), fill = "#414141") +
-      geom_density(fill = "#ADD8E6", alpha = 0.6) +
-      theme_bw() +
-      theme(plot.title = element_text(hjust = 0.5))
+# Call UDF to build visualizations and store to objects
+# Note that as long as the arguments are in the order specified in the function (see our UDF definition above), the argument names do not need to be specified. To illustrate, we will drop the argument names from these function calls:
+p_normal <- dist.viz(normal_dist, "continuous", "Normal")
+p_lnormal <- dist.viz(lnormal_dist, "continuous", "Log-Normal")
+p_uniform <- dist.viz(uniform_dist, "continuous", "Uniform")
+p_t <- dist.viz(t_dist, "continuous", "Student's T")
+p_chisq <- dist.viz(chisq_dist, "continuous", "Chi-Square")
+p_f <- dist.viz(f_dist, "continuous", "F")
 
 # Display distribution visualizations
 ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
@@ -236,11 +206,15 @@ ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
 
 ```
 
+  <br />
+  
+  The distribution of data is critically important in statistics. The accuracy of many statistical tests is based on assumptions rooted in underlying data distributions, and violating these assumptions can result in serious errors due to misaligned probability distributions. Though there are many more discrete and continuous probability distributions, we will leverage several of these common types to assess the likelihood of differences, effects, and associations in later chapters of this book.
+
 ### Conditional Probability
 
   **Conditional probability** reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than $\frac{1}{2}$ with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
 
-  Formally, **Bayes' Theorem (alternatively, Bayes' Rule)** states that for any two events A and B where the probability of A is not 0 ($P(A) \neq 0$):
+  Formally, **Bayes' Theorem (alternatively, Bayes' Rule)** states that for any two events A and B wherein the probability of A is not 0 ($P(A) \neq 0$):
 
   $$ P(A \vert B) = \frac{P(B \vert A) P(A)}{P(B)}, $$
 
@@ -315,6 +289,8 @@ round((switch_wins - keep_wins) / keep_wins * 100, 0)
 
 ```  
 
+  <br />
+  
   As we can see, wins occur nearly 50% more often when contestants switch doors. This exercise hopefully demonstrates the importance of conditional probability and statistical assumptions like randomness. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
 
 ## Central Limit Theorem
@@ -441,7 +417,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   <br />
   
-  It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to population parameters. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exist, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!
+  It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to *population parameters*. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exist, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!
   
   A related concept that is fundamental to estimating CIs is the **standard error (SE)**, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
   
@@ -462,7 +438,7 @@ length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2
 
 ```
 
-  97% of sample means are within 2 SEs, which is roughly what we expect per the characteristics of the normal distribution. 
+  95% of sample means are within 2 SEs, which is what we expect per the characteristics of the normal distribution. 
   
 ```{r, message = FALSE}
 
@@ -471,7 +447,7 @@ length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3
 
 ```
 
-  All of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
+  Nearly all of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
   
   Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95% CI represents the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population.
 

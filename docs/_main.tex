@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-16}
+\date{2022-02-17}
 
 \begin{document}
 \maketitle
@@ -248,7 +248,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpfy2xQo/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpm2SKXB/downloaded_packages
 \end{verbatim}
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
@@ -1521,7 +1521,7 @@ In addition, covariance and correlation alone are not sufficient for determining
 \hypertarget{inf-stats}{%
 \chapter{Inferential Statistics}\label{inf-stats}}
 
-The objective of \textbf{inferential statistics} is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
+The objective of \textbf{inferential statistics} is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts are fundamental to this goal and will be covered here.
 
 \hypertarget{introduction-to-probability}{%
 \section{Introduction to Probability}\label{introduction-to-probability}}
@@ -1539,6 +1539,12 @@ For example, let's look at how org tenure is distributed across employees. We ca
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{# Load library for data wrangling}
+\KeywordTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{# Read employee demographics data}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+
 \CommentTok{# Produce descriptive stats for org tenure}
 \KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
 \end{Highlighting}
@@ -1555,12 +1561,8 @@ Beyond descriptives, visuals are often helpful in understanding a variable's dis
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for data wrangling}
-\KeywordTok{library}\NormalTok{(dplyr)}
+\CommentTok{# Load library for data visualization}
 \KeywordTok{library}\NormalTok{(ggplot2)}
-
-\CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
 
 \CommentTok{# Visualize org tenure distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
@@ -1583,7 +1585,7 @@ Beyond descriptives, visuals are often helpful in understanding a variable's dis
 
 Just as we grouped variables into disrete and continuous categories in Chapter \ref{measure-sampl}, this is also how probability distributions are categorized. If you read Chapter \ref{measure-sampl}, you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
 
-The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread).
+The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread). These probability distributions underpin the many types of statistical tests covered in this book.
 
 \textbf{Discrete Probability Distributions}
 
@@ -1598,14 +1600,42 @@ The shape of a probability distribution is defined by parameters, which represen
 \item
   Multinomial: generalization of the binomial distribution for experiements with more than two outcomes
 \item
-  Negative Binomial (Pascal): a version of the binomial distribution for a \emph{fixed} number of trials
+  Negative Binomial (Pascal): a version of the binomial distribution for a \emph{fixed} number of trials (this is positively skewed despite what the name might suggest)
 \item
   Poisson: probability of a given number of events occurring over a specified period
 \item
   Geometric: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
 \end{itemize}
 
-A number of functions are available in R to simulate discrete random probability distributions. Let's simulate and visualize six common discrete distributions:
+A number of functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate the general shape of each. First, let's simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Set seed for reproducible random distribution}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{# Simulate bernoulli distribution}
+\NormalTok{bernoulli_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{)}
+
+\CommentTok{# Simulate binomial distribution}
+\CommentTok{# Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)}
+\NormalTok{binomial_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
+
+\CommentTok{# Simulate negative binomial distribution}
+\NormalTok{nbinomial_dist <-}\StringTok{ }\KeywordTok{rnbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
+
+\CommentTok{# Simulate multinomial distribution with varying probabilities per level}
+\NormalTok{multinomial_dist <-}\StringTok{ }\KeywordTok{rmultinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DataTypeTok{prob =} \KeywordTok{c}\NormalTok{(.}\DecValTok{4}\NormalTok{, }\FloatTok{.3}\NormalTok{, }\FloatTok{.2}\NormalTok{, }\FloatTok{.6}\NormalTok{))}
+
+\CommentTok{# Simulate poisson distribution}
+\NormalTok{poisson_dist <-}\StringTok{ }\KeywordTok{rpois}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{10}\NormalTok{) }
+
+\CommentTok{# Simulate geometric distribution}
+\NormalTok{geometric_dist <-}\StringTok{ }\KeywordTok{rgeom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.2}\NormalTok{) }
+\end{Highlighting}
+\end{Shaded}
+
+Next, we will visualize each distribution:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1620,75 +1650,46 @@ A number of functions are available in R to simulate discrete random probability
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Set seed for reproducible random distribution}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+\CommentTok{# Create user-defined function (UDF) to simplify probability distribution visualization}
+\CommentTok{# Function arguments: (1) data = object containing random distribution values; (2) type = 'discrete' or 'continuous' probability distribution; and (3) title = name of distribution}
+\NormalTok{build.viz <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(data, type, title) \{}
+  
+  \ControlFlowTok{if}\NormalTok{ (type }\OperatorTok{==}\StringTok{ "discrete"}\NormalTok{)\{}
+    
+    \CommentTok{# Discrete distribution}
+\NormalTok{    viz <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"count"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{           }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+    
+\NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
+    
+    \CommentTok{# Continuous distribution}
+\NormalTok{    viz <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{           }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\NormalTok{  \}}
 
-\CommentTok{# Simulate bernoulli distribution}
-\NormalTok{bernoulli_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{)}
+  \KeywordTok{return}\NormalTok{(viz)}
+\NormalTok{\}}
 
-\CommentTok{# Simulate binomial distribution}
-\CommentTok{# Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)}
-\NormalTok{binomial_dist <-}\StringTok{ }\KeywordTok{rbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
-
-\CommentTok{# Simulate multinomial distribution with varying probabilities per level}
-\NormalTok{multinomial_dist <-}\StringTok{ }\KeywordTok{rmultinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DataTypeTok{prob =} \KeywordTok{c}\NormalTok{(.}\DecValTok{4}\NormalTok{, }\FloatTok{.3}\NormalTok{, }\FloatTok{.2}\NormalTok{, }\FloatTok{.6}\NormalTok{))}
-
-\CommentTok{# Simulate negative binomial distribution}
-\NormalTok{nbinomial_dist <-}\StringTok{ }\KeywordTok{rnbinom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.5}\NormalTok{) }
-
-\CommentTok{# Simulate poisson distribution}
-\NormalTok{poisson_dist <-}\StringTok{ }\KeywordTok{rpois}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DecValTok{10}\NormalTok{) }
-
-\CommentTok{# Simulate geometric distribution}
-\NormalTok{geometric_dist <-}\StringTok{ }\KeywordTok{rgeom}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{prob =} \FloatTok{.2}\NormalTok{) }
-
-\CommentTok{# Store visualizations to objects}
-\NormalTok{p_bernoulli <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{aes}\NormalTok{(bernoulli_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Bernoulli"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
-
-\NormalTok{p_binomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{              }\KeywordTok{aes}\NormalTok{(binomial_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{              }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Binomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{              }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{              }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{              }\KeywordTok{theme_bw}\NormalTok{()}
-
-\NormalTok{p_multinomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{                 }\KeywordTok{aes}\NormalTok{(multinomial_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{                 }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Multinomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{                 }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{                 }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{                 }\KeywordTok{theme_bw}\NormalTok{()}
-
-\NormalTok{p_nbinomial <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{aes}\NormalTok{(nbinomial_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Negative Binomial"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
-
-\NormalTok{p_poisson <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{             }\KeywordTok{aes}\NormalTok{(poisson_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{             }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Poisson"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{             }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{             }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{             }\KeywordTok{theme_bw}\NormalTok{()}
-
-\NormalTok{p_geometric <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{aes}\NormalTok{(geometric_dist) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Geometric"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"n"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
-\StringTok{               }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{               }\KeywordTok{theme_bw}\NormalTok{()}
-
+\CommentTok{# Call UDF to build visualizations and store to objects}
+\NormalTok{p_bernoulli <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ bernoulli_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Bernoulli"}\NormalTok{)}
+\NormalTok{p_binomial <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ binomial_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Binomial"}\NormalTok{)}
+\NormalTok{p_nbinomial <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ nbinomial_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Negative Binomial"}\NormalTok{)}
+\NormalTok{p_multinomial <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ multinomial_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Multinomial"}\NormalTok{)}
+\NormalTok{p_poisson <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ poisson_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Poisson"}\NormalTok{)}
+\NormalTok{p_geometric <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ geometric_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Geometric"}\NormalTok{)}
+  
 \CommentTok{# Display distribution visualizations}
-\NormalTok{p_distributions <-}\StringTok{ }\KeywordTok{ggarrange}\NormalTok{(p_bernoulli, p_binomial, p_multinomial, p_nbinomial, p_poisson, p_geometric,}
-                             \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
-\NormalTok{p_distributions}
+\KeywordTok{ggarrange}\NormalTok{(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,}
+          \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1708,27 +1709,82 @@ A number of functions are available in R to simulate discrete random probability
 \begin{itemize}
 \tightlist
 \item
-  Normal (Gaussian)
+  Normal (Gaussian): distribution characterized by a mean and standard deviation for which the mean, median, and mode are equal
 \item
-  Beta
+  Uniform: values of a random variable with equal probabilities of occurring
 \item
-  Cauchy
+  Log-Normal: normal distribution of log-transformed values
 \item
-  Exponential
+  Student's T: similar to the normal distribution but with thicker tails (approaches normal as \(n\) increases)
 \item
-  Gamma
+  Chi-Square: similar to the t distribution in that the shape approaches normal as \(n\) increases
 \item
-  Logistic
-\item
-  Weibull
+  F: developed to examine variances from random samples taken from two independent normal populations
 \end{itemize}
+
+A number of functions are available in R to simulate PDFs. While the precise shape of a distribution depends on the parameters, we will simulate and visualize these common PDFs to illustrate the general shape of each. Let's first draw 1,000 random values from each distribution with a specified set of parameters:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Set seed for reproducible random distribution}
+\KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{# Simulate normal distribution}
+\NormalTok{normal_dist <-}\StringTok{ }\KeywordTok{rnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{mean =} \DecValTok{50}\NormalTok{, }\DataTypeTok{sd =} \DecValTok{5}\NormalTok{)}
+
+\CommentTok{# Simulate log-normal distribution}
+\NormalTok{lnormal_dist <-}\StringTok{ }\KeywordTok{rlnorm}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{meanlog =} \DecValTok{0}\NormalTok{, }\DataTypeTok{sdlog =} \DecValTok{1}\NormalTok{)}
+
+\CommentTok{# Simulate uniform distribution}
+\NormalTok{uniform_dist <-}\StringTok{ }\KeywordTok{runif}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{min =} \DecValTok{1}\NormalTok{, }\DataTypeTok{max =} \DecValTok{100}\NormalTok{) }
+
+\CommentTok{# Simulate student's t distribution}
+\NormalTok{t_dist <-}\StringTok{ }\KeywordTok{rt}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{df =} \DecValTok{5}\NormalTok{)}
+
+\CommentTok{# Simulate chi-square distribution}
+\NormalTok{chisq_dist <-}\StringTok{ }\KeywordTok{rchisq}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{df =} \DecValTok{5}\NormalTok{)}
+
+\CommentTok{# Simulate F distribution}
+\NormalTok{f_dist <-}\StringTok{ }\KeywordTok{rf}\NormalTok{(}\DecValTok{1000}\NormalTok{, }\DataTypeTok{df1 =} \DecValTok{5}\NormalTok{, }\DataTypeTok{df2 =} \DecValTok{200}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we will visualize each distribution. Since these continuous distributions are probability \emph{density} functions, we will superimpose density plots over each:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Call UDF to build visualizations and store to objects}
+\CommentTok{# Note that as long as the arguments are in the order specified in the function (see our UDF definition above), the argument names do not need to be specified. To illustrate, we will drop the argument names from these function calls:}
+\NormalTok{p_normal <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(normal_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"Normal"}\NormalTok{)}
+\NormalTok{p_lnormal <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(lnormal_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"Log-Normal"}\NormalTok{)}
+\NormalTok{p_uniform <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(uniform_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"Uniform"}\NormalTok{)}
+\NormalTok{p_t <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(t_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"Student's T"}\NormalTok{)}
+\NormalTok{p_chisq <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(chisq_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"Chi-Square"}\NormalTok{)}
+\NormalTok{p_f <-}\StringTok{ }\KeywordTok{build.viz}\NormalTok{(f_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"F"}\NormalTok{)}
+
+\CommentTok{# Display distribution visualizations}
+\KeywordTok{ggarrange}\NormalTok{(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,}
+          \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{_main_files/figure-latex/continous-dist-1} 
+
+}
+
+\caption{Continuous Probability Distributions}\label{fig:continous-dist}
+\end{figure}
+
+The distribution of data is critically important in statistics. The accuracy of many statistical tests is based on assumptions rooted in underlying data distributions, and violating these assumptions can result in serious errors due to misaligned probability distributions. Though there are many more discrete and continuous probability distributions, we will leverage several of these common types to assess the likelihood of differences, effects, and associations in later chapters of this book.
 
 \hypertarget{conditional-probability}{%
 \subsection{Conditional Probability}\label{conditional-probability}}
 
 \textbf{Conditional probability} reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than \(\frac{1}{2}\) with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
 
-Formally, \textbf{Bayes' Theorem (alternatively, Bayes' Rule)} states that for any two events A and B where the probability of A is not 0 (\(P(A) \neq 0\)):
+Formally, \textbf{Bayes' Theorem (alternatively, Bayes' Rule)} states that for any two events A and B wherein the probability of A is not 0 (\(P(A) \neq 0\)):
 
 \[ P(A \vert B) = \frac{P(B \vert A) P(A)}{P(B)}, \]
 
@@ -1891,11 +1947,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-38-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-40-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-38}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-40}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -1939,11 +1995,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-39-1} 
+{\centering \includegraphics{_main_files/figure-latex/unnamed-chunk-41-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-39}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-41}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
