@@ -1,6 +1,6 @@
 # Inferential Statistics {#inf-stats}
 
-  The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts underpin this goal and will be covered here.
+  The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts are fundamental to this goal and will be covered here.
 
 ## Introduction to Probability
 
@@ -48,7 +48,7 @@ ggplot() +
 
   Just as we grouped variables into disrete and continuous categories in Chapter \@ref(measure-sampl), this is also how probability distributions are categorized. If you read Chapter \@ref(measure-sampl), you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
   
-  The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread).
+  The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread). These probability distributions underpin the many types of statistical tests covered in this book.
   
   **Discrete Probability Distributions**
   
@@ -61,12 +61,9 @@ ggplot() +
   * Poisson: probability of a given number of events occurring over a specified period
   * Geometric: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
   
-  A number of functions are available in R to simulate discrete random probability distributions. Let's simulate and visualize six common discrete distributions:
+  A number of functions are available in R to simulate discrete random probability distributions. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate the general shape of each:
   
 ```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', message = FALSE}
-
-# Load library for arranging visuals
-library(ggpubr)
 
 # Set seed for reproducible random distribution
 set.seed(1234)
@@ -78,11 +75,11 @@ bernoulli_dist <- rbinom(1000, 1, prob = .5)
 # Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)
 binomial_dist <- rbinom(1000, 100, prob = .5) 
 
-# Simulate multinomial distribution with varying probabilities per level
-multinomial_dist <- rmultinom(1000, 4, prob = c(.4, .3, .2, .6))
-
 # Simulate negative binomial distribution
 nbinomial_dist <- rnbinom(1000, 100, prob = .5) 
+
+# Simulate multinomial distribution with varying probabilities per level
+multinomial_dist <- rmultinom(1000, 4, prob = c(.4, .3, .2, .6))
 
 # Simulate poisson distribution
 poisson_dist <- rpois(1000, 10) 
@@ -90,64 +87,49 @@ poisson_dist <- rpois(1000, 10)
 # Simulate geometric distribution
 geometric_dist <- rgeom(1000, prob = .2) 
 
+
+# Load library for arranging visuals
+library(ggpubr)
+
+# Create helper function to simplify probability distribution visualization
+build.viz <- function(data, type, title) {
+  
+  if (type == "discrete"){
+    
+    # Discrete distribution
+    viz <- ggplot() + 
+           aes(data) + 
+           labs(title = paste(title), x = "x", y = "count") + 
+           geom_histogram(fill = "#414141") +
+           theme_bw() +
+           theme(plot.title = element_text(hjust = 0.5))
+    
+  } else {
+    
+    # Continuous distribution
+    viz <- ggplot() + 
+           aes(normal_dist) + 
+           labs(title = "Normal", x = "x", y = "density") + 
+           geom_histogram(aes(y = ..density..), fill = "#414141") +
+           geom_density(fill = "#ADD8E6", alpha = 0.6) +
+           theme_bw() +
+           theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  return(viz)
+}
+
 # Store visualizations to objects
-p_bernoulli <- 
+p_bernoulli <- build.viz(bernoulli_dist, "discrete", "Bernoulli")
+p_binomial <- build.viz(binomial_dist, "discrete", "Binomial")
+p_nbinomial <- build.viz(nbinomial_dist, "discrete", "Negative Binomial")
+p_multinomial <- build.viz(multinomial_dist, "discrete", "Multinomial")
+p_poisson <- build.viz(poisson_dist, "discrete", "Poisson")
+p_geometric <- build.viz(geometric_dist, "discrete", "Geometric")
   
-      ggplot() + 
-      aes(bernoulli_dist) + 
-      labs(title = "Bernoulli", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
-p_binomial <- 
-  
-      ggplot() + 
-      aes(binomial_dist) + 
-      labs(title = "Binomial", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
-p_multinomial <- 
-  
-      ggplot() + 
-      aes(multinomial_dist) + 
-      labs(title = "Multinomial", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
-p_nbinomial <- 
-  
-      ggplot() + 
-      aes(nbinomial_dist) + 
-      labs(title = "Negative Binomial", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
-p_poisson <- 
-  
-      ggplot() + 
-      aes(poisson_dist) + 
-      labs(title = "Poisson", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
-p_geometric <- 
-  
-      ggplot() + 
-      aes(geometric_dist) + 
-      labs(title = "Geometric", x = "x", y = "count") + 
-      theme(plot.title = element_text(hjust = 0.5)) + 
-      geom_histogram(fill = "#414141") +
-      theme_bw()
-
 # Display distribution visualizations
-ggarrange(p_bernoulli, p_binomial, p_multinomial, p_nbinomial, p_poisson, p_geometric,
-                             ncol = 3, nrow = 2)
+ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,
+          ncol = 3, nrow = 2)
 
 ```
   
@@ -155,13 +137,104 @@ ggarrange(p_bernoulli, p_binomial, p_multinomial, p_nbinomial, p_poisson, p_geom
   
   **Continuous probability distributions**, also known as **Probability Density Functions (PDF)**, can be leveraged to model different types of interval and ratio variables. Some common continuous distributions include:
   
-  * Normal (Gaussian)
-  * Beta
-  * Cauchy
-  * Exponential
-  * Gamma
-  * Logistic
-  * Weibull
+  * Normal (Gaussian): distribution characterized by a mean and standard deviation for which the mean, median, and mode are equal
+  * Uniform: values of a random variable with equal probabilities of occurring
+  * Log-Normal: normal distribution of log-transformed values
+  * Student's T: similar to the normal distribution but with thicker tails (approaches normal as $n$ increases)
+  * Chi-Square: similar to the t distribution in that the shape approaches normal as $n$ increases
+  * F: developed to examine variances from random samples taken from two independent normal populations
+
+  A number of functions are available in R to simulate continuous random probability distributions. While the precise shape of a distribution depends on the parameters, let's simulate and visualize these common PDFs to illustrate the general shape of each:
+
+```{r continous-dist, fig.cap = "Continuous Probability Distributions", fig.align = 'center', message = FALSE}
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Simulate normal distribution
+normal_dist <- rnorm(1000, mean = 50, sd = 5)
+
+# Simulate log-normal distribution
+lnormal_dist <- rlnorm(1000, meanlog = 0, sdlog = 1)
+
+# Simulate uniform distribution
+uniform_dist <- runif(1000, min = 1, max = 100) 
+
+# Simulate student's t distribution
+t_dist <- rt(1000, df = 3)
+
+# Simulate chi-square distribution
+chisq_dist <- rchisq(1000, df = 5)
+
+# Simulate F distribution
+f_dist <- rf(1000, df1 = 5, df2 = 200)
+
+# Store visualizations to objects
+p_normal <- 
+  
+      ggplot() + 
+      aes(normal_dist) + 
+      labs(title = "Normal", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+p_lnormal <- 
+  
+      ggplot() + 
+      aes(lnormal_dist) + 
+      labs(title = "Log-Normal", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+p_uniform <- 
+  
+      ggplot() + 
+      aes(uniform_dist) + 
+      labs(title = "Uniform", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+p_t <- 
+  
+      ggplot() + 
+      aes(t_dist) + 
+      labs(title = "Student's T", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+p_chisq <- 
+  
+      ggplot() + 
+      aes(chisq_dist) + 
+      labs(title = "Chi-Square", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+p_f <- 
+  
+      ggplot() + 
+      aes(f_dist) + 
+      labs(title = "F", x = "x", y = "density") + 
+      geom_histogram(aes(y = ..density..), fill = "#414141") +
+      geom_density(fill = "#ADD8E6", alpha = 0.6) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5))
+
+# Display distribution visualizations
+ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
+          ncol = 3, nrow = 2)
+
+```
 
 ### Conditional Probability
 
