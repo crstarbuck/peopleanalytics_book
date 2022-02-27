@@ -1,29 +1,251 @@
 # Introduction to R {#r-intro}
 
+  This chapter covers how to install R, R Studio, and required packages for replicating examples in this book. This chapter also covers R basics such as objects, data structures, and data types that are fundamental to working in R.
 
 ## Getting Started
 
   Run and test your code frequently. Writing a significant number of lines before testing will make debugging your code far more difficult and time-intensive than it needs to be. 
 
+  **Installing R**
 
-### Installing R
+  R can be compiled and ran on a variety of platforms including UNIX, Windows, and MacOS. R can be downloaded here: https://www.r-project.org/
+  
+  When installing R, you will need to select a CRAN mirror. The **Comprehensive R Archive Network (CRAN)** is a network of servers around the world that store identical, current versions of code and documentation for R. You should select the CRAN mirror nearest you to minimize network load.
 
+  **Installing R Studio**
 
-### Installing R Studio
+  **R Studio** is an **Integrated Development Environment (IDE)** for R. R Studio provides a console with syntax editing that is helpful for debugging code as well as tools for plotting, history, and workspace management. Both open source and commercial editions are available, but the open source option is sufficient for replicating everything in this book.
+  
+  R Studio can be downloaded here: https://www.rstudio.com/products/rstudio/download/#download
 
+  **Installing Packages**
 
-### Installing Packages
+  Libraries from several R packages will be utilized in this book. The line of code below can be executed within R or R Studio to install all at once:
+  
+```{r, warning = FALSE, message = FALSE}
 
+install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
+```
+
+  **Case Sensitivity**
+
+  It's important to note that everything in R is case-sensitive. When working with functions, be sure to match the case when typing the function name. For example, `Mean()` is not the same as `mean()`; since `mean()` is the correct case for the function, capitalized characters will result in an error when executing the function.
+  
+  **Help**
+  
+  Documentation for functions is available via the `?` command. This can be inserted prior to any function to access the function's documentation. For example, `?mean` will display the documentation, including its required and optional arguments, for the `mean()` function.
+  
+  **Objects**
+  
+  Objects underpin just about everything we do in R. An object is a container for various types of data. Objects can take many forms, ranging from simple objects holding a single number or character to complex structures that support advanced visualizations. The assignment character `<-` is used to assign values to an object.
+  
+  Let's use the assignment operator to assign a number and character to separate objects. Note that non-numeric values must be enveloped in either single ticks `''` or double quotes `""`:
+
+```{r, warning = FALSE, message = FALSE}
+
+obj_1 <- 1
+obj_1
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+obj_2 <- 'a'
+obj_2
+
+```  
+  
+  Several functions are available for returning the type of data in an object:
+  
+```{r, warning = FALSE, message = FALSE}
+
+typeof(obj_2)
+
+``` 
+
+```{r, warning = FALSE, message = FALSE}
+
+class(obj_2)
+
+```    
+
+  **Comments**
+  
+  The `#` symbol is used for commenting/annotating code. This is a best practice to aid in quickly and easily deciphering the role of each line or block of code. Without comments, troubleshooting large scripts can be a more challenging task than necessary.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Assign a new number to the object named obj_1
+obj_1 <- 2
+# Display value in obj_1
+obj_1
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Assign a new character to the object named obj_2
+obj_2 <- 'b'
+# Display value in obj_2
+obj_2
+
+``` 
+
+  In-line code comments can also be added where needed to reduce the number of lines in a script:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Assign a new number to the object named obj_1
+obj_1 <- 3
+obj_1 # Display value in obj_1
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Assign a new character to the object named obj_2
+obj_2 <- 'c' 
+obj_2 # Display value in obj_2
+
+``` 
 
 ## Vectors
 
+  A **vector** is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, and set of characters, or a collection of dates.
+  
+  In this example, we introduce the combine function `c()`, which allows us to fill an object with more than one value:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill a numeric vector named vect_num
+vect_num <- c(2,4,6,8,10)
+vect_num
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill a character vector named vect_char
+vect_char <- c('a','b','c')
+vect_char
+
+```  
+
+  We can use the `as.Date()` function to convert character strings containing dates to an actual date data type. By default, anything within single ticks or double quotes is treated as a character, so we must make an **explicit type conversion** from characters to dates. Remember that R is case-sensitive. Therefore, `as.date()` is not a valid function; the `D` must be capitalized.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill a date vector named vect_dt
+vect_dt <- c(as.Date("2021-01-01"), as.Date("2022-01-01"))
+vect_dt
+
+``` 
+
+  We can use the sequence generation function `seq()` to fill values between a start and end point using a specified interval. For example, we can fill `vect_dt` with the first day of each month between `2021-01-01` and `2022-01-01` via the `seq()` function and its `by = "months"` argument:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill a date vector named vect_dt
+vect_dt <- seq(as.Date("2021-01-01"), as.Date("2022-01-01"), by = 'months')
+vect_dt
+
+``` 
+  
+  We can also use the `:` operator to fill integers between a starting and ending number:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill a numeric vector with values between 1 and 10
+vect_num <- 1:10
+vect_num
+
+``` 
+
+  **Vectorized Operations**
+  
+  **Vectorized operations (or vectorization)** underpin mathematical operations in R and greatly simplify computation. For example, if we need to perform a mathematical operation to each data element in a numeric vector, we do not need to specify each and every element explicitly. We can simply apply the operation at the vector level, and the operation will be applied to each of the vector's individual elements.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Create a numeric vector named x and fill with values between 1 and 10
+x <- 1:10
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Add 2 to each element of x
+x_plus2 <- x+2
+x_plus2
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Multiply each element of x by 2
+x_times2 <- x*2
+x_times2
+
+```
+
+```{r, warning = FALSE, message = FALSE}
+
+# Square each element of x
+x_sq <- x^2
+x_sq
+
+```  
 
 ## Matrices
 
+  A **matrix** is similar to a vector in that it represents a collection of data elements of the same data type; however, the elements of a matrix are *arranged into a fixed number of rows and columns*.
 
+  We can create a matrix using the `matrix()` function. Per `?matrix`, the `nrow` and `ncol` arguments can be used to organize like data elements into a specified number of rows and columns.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill matrix with numbers
+mtrx_num <- matrix(data = 1:10, nrow = 5, ncol = 2)
+mtrx_num
+
+``` 
+
+  We can leverage shorthand for function calls. As long as the argument values are in the correct order by the documentation, the argument names are not required. Per `?matrix`, the first argument is `data`, followed by `nrow` and then `ncol`. Therefore, we can achieve the same result using the following:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill matrix with numbers
+mtrx_num <- matrix(1:10, 5, 2)
+mtrx_num
+
+``` 
+  
 ## Factors
 
+  A **factor** is a data structure containing a finite number of categorical values. Each categorical value of a factor is known as a **level**, and the levels can be either ordered or unordered. This data structure is a requirement for several statistical models we will cover in later chapters.
+  
+  We can create a factor using the `factor()` function:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill factor with unordered categories
+education <- factor(c("undergraduate", "post-graduate", "graduate"))
+education
+
+```   
+
+  Since education has an inherent ordering, we can use the `ordered` and `levels` arguments of the `factor()` function to order the categories:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Create and fill factor with unordered categories
+education <- factor(education, ordered = TRUE, levels = c("undergraduate", "graduate", "post-graduate"))
+education
+
+``` 
+
+  The ordering of factors is critical to a correct interpretation of statistical model output as we will cover later.
 
 ## Data Frames
 

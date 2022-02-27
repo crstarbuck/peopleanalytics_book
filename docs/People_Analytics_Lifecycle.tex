@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-24}
+\date{2022-02-27}
 
 \begin{document}
 \maketitle
@@ -219,37 +219,9 @@ This book uses freely available software for statistics, modeling, and data visu
 \hypertarget{r}{%
 \subsection{R}\label{r}}
 
-While there are many commercial-grade analytics toolsets, R is open-sourced statistical and data visualization software that can be downloaded free of charge. It is incredibly powerful, and there is a package (or at least the ability to easily create one) for every conceivable statistical technique and data visualization. It is also widely used in highly regulated environments. As of this writing, R Markdown -- the dynamic document creator in which I am writing this book -- allows for coding in 56 different languages! Therefore, the debate around whether to use Python, Julia, or something else is now moot; we need not sacrifice the advantages of other languages by choosing one. To get started, simply download the latest version of R and the R Studio Integrated Development Environment (IDE) using the following links:
+While there are many commercial-grade analytics toolsets, R is open-sourced statistical and data visualization software that can be downloaded free of charge. It is incredibly powerful, and there is a package (or at least the ability to easily create one) for every conceivable statistical technique and data visualization. It is also widely used in highly regulated environments. As of this writing, R Markdown -- the dynamic document creator in which I am writing this book -- allows for coding in 56 different languages! Therefore, the debate around whether to use Python, Julia, or something else is now moot; we need not sacrifice the advantages of other languages by choosing one.
 
-\begin{itemize}
-\tightlist
-\item
-  R: \url{https://www.r-project.org/}
-\item
-  R Studio IDE: \url{https://www.rstudio.com/products/rstudio/download/\#download}
-\end{itemize}
-
-Please note that while R basics are covered, this is not a book on how to code. It is assumed that you already understand programming fundamentals. If this is not the case, an introductory programming course is highly recommended; this is one of the best investments you can make for a successful career in analytics. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses. Coding is to analytics professionals what typing was for Baby Boomers decades ago; a lack of coding proficiency is a major limiting factor on one's potential in analytics.
-
-Libraries from several R packages will be utilized in this book. The line of code below can be executed within R to install all at once:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Install required packages}
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## 
-##   There is a binary version available but the source version is later:
-##          binary source needs_compilation
-## corrplot   0.89   0.92             FALSE
-## 
-## 
-## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpOQzZZE/downloaded_packages
-\end{verbatim}
+Please note that while R basics are covered, this is not a book on how to code. It is assumed that you already understand programming fundamentals. If this is not the case, an introductory programming course is highly recommended; this is one of the best investments you can make for a successful career in analytics. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses. Coding is to analytics professionals what typing was for Baby Boomers decades ago; a lack of coding proficiency is a major limiting factor on one's potential in this field.
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
 
@@ -315,28 +287,361 @@ The Deliver phase can take many forms depending on the solution being released. 
 \hypertarget{r-intro}{%
 \chapter{Introduction to R}\label{r-intro}}
 
+This chapter covers how to install R, R Studio, and required packages for replicating examples in this book. This chapter also covers R basics such as objects, data structures, and data types that are fundamental to working in R.
+
 \hypertarget{getting-started}{%
 \section{Getting Started}\label{getting-started}}
 
 Run and test your code frequently. Writing a significant number of lines before testing will make debugging your code far more difficult and time-intensive than it needs to be.
 
-\hypertarget{installing-r}{%
-\subsection{Installing R}\label{installing-r}}
+\textbf{Installing R}
 
-\hypertarget{installing-r-studio}{%
-\subsection{Installing R Studio}\label{installing-r-studio}}
+R can be compiled and ran on a variety of platforms including UNIX, Windows, and MacOS. R can be downloaded here: \url{https://www.r-project.org/}
 
-\hypertarget{installing-packages}{%
-\subsection{Installing Packages}\label{installing-packages}}
+When installing R, you will need to select a CRAN mirror. The \textbf{Comprehensive R Archive Network (CRAN)} is a network of servers around the world that store identical, current versions of code and documentation for R. You should select the CRAN mirror nearest you to minimize network load.
+
+\textbf{Installing R Studio}
+
+\textbf{R Studio} is an \textbf{Integrated Development Environment (IDE)} for R. R Studio provides a console with syntax editing that is helpful for debugging code as well as tools for plotting, history, and workspace management. Both open source and commercial editions are available, but the open source option is sufficient for replicating everything in this book.
+
+R Studio can be downloaded here: \url{https://www.rstudio.com/products/rstudio/download/\#download}
+
+\textbf{Installing Packages}
+
+Libraries from several R packages will be utilized in this book. The line of code below can be executed within R or R Studio to install all at once:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##   There is a binary version available but the source version is later:
+##          binary source needs_compilation
+## corrplot   0.89   0.92             FALSE
+## 
+## 
+## The downloaded binary packages are in
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpI3PY3R/downloaded_packages
+\end{verbatim}
+
+\textbf{Case Sensitivity}
+
+It's important to note that everything in R is case-sensitive. When working with functions, be sure to match the case when typing the function name. For example, \texttt{Mean()} is not the same as \texttt{mean()}; since \texttt{mean()} is the correct case for the function, capitalized characters will result in an error when executing the function.
+
+\textbf{Help}
+
+Documentation for functions is available via the \texttt{?} command. This can be inserted prior to any function to access the function's documentation. For example, \texttt{?mean} will display the documentation, including its required and optional arguments, for the \texttt{mean()} function.
+
+\textbf{Objects}
+
+Objects underpin just about everything we do in R. An object is a container for various types of data. Objects can take many forms, ranging from simple objects holding a single number or character to complex structures that support advanced visualizations. The assignment character \texttt{\textless{}-} is used to assign values to an object.
+
+Let's use the assignment operator to assign a number and character to separate objects. Note that non-numeric values must be enveloped in either single ticks \texttt{\textquotesingle{}\textquotesingle{}} or double quotes \texttt{""}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{obj_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\DecValTok{1}
+\NormalTok{obj_}\DecValTok{1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{obj_}\DecValTok{2}\NormalTok{ <-}\StringTok{ 'a'}
+\NormalTok{obj_}\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "a"
+\end{verbatim}
+
+Several functions are available for returning the type of data in an object:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{typeof}\NormalTok{(obj_}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "character"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{class}\NormalTok{(obj_}\DecValTok{2}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "character"
+\end{verbatim}
+
+\textbf{Comments}
+
+The \texttt{\#} symbol is used for commenting/annotating code. This is a best practice to aid in quickly and easily deciphering the role of each line or block of code. Without comments, troubleshooting large scripts can be a more challenging task than necessary.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Assign a new number to the object named obj_1}
+\NormalTok{obj_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\DecValTok{2}
+\CommentTok{# Display value in obj_1}
+\NormalTok{obj_}\DecValTok{1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Assign a new character to the object named obj_2}
+\NormalTok{obj_}\DecValTok{2}\NormalTok{ <-}\StringTok{ 'b'}
+\CommentTok{# Display value in obj_2}
+\NormalTok{obj_}\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "b"
+\end{verbatim}
+
+In-line code comments can also be added where needed to reduce the number of lines in a script:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Assign a new number to the object named obj_1}
+\NormalTok{obj_}\DecValTok{1}\NormalTok{ <-}\StringTok{ }\DecValTok{3}
+\NormalTok{obj_}\DecValTok{1} \CommentTok{# Display value in obj_1}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Assign a new character to the object named obj_2}
+\NormalTok{obj_}\DecValTok{2}\NormalTok{ <-}\StringTok{ 'c'} 
+\NormalTok{obj_}\DecValTok{2} \CommentTok{# Display value in obj_2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "c"
+\end{verbatim}
 
 \hypertarget{vectors}{%
 \section{Vectors}\label{vectors}}
 
+A \textbf{vector} is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, and set of characters, or a collection of dates.
+
+In this example, we introduce the combine function \texttt{c()}, which allows us to fill an object with more than one value:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill a numeric vector named vect_num}
+\NormalTok{vect_num <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\NormalTok{,}\DecValTok{6}\NormalTok{,}\DecValTok{8}\NormalTok{,}\DecValTok{10}\NormalTok{)}
+\NormalTok{vect_num}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  2  4  6  8 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill a character vector named vect_char}
+\NormalTok{vect_char <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'a'}\NormalTok{,}\StringTok{'b'}\NormalTok{,}\StringTok{'c'}\NormalTok{)}
+\NormalTok{vect_char}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "a" "b" "c"
+\end{verbatim}
+
+We can use the \texttt{as.Date()} function to convert character strings containing dates to an actual date data type. By default, anything within single ticks or double quotes is treated as a character, so we must make an \textbf{explicit type conversion} from characters to dates. Remember that R is case-sensitive. Therefore, \texttt{as.date()} is not a valid function; the \texttt{D} must be capitalized.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill a date vector named vect_dt}
+\NormalTok{vect_dt <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2021-01-01"}\NormalTok{), }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2022-01-01"}\NormalTok{))}
+\NormalTok{vect_dt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "2021-01-01" "2022-01-01"
+\end{verbatim}
+
+We can use the sequence generation function \texttt{seq()} to fill values between a start and end point using a specified interval. For example, we can fill \texttt{vect\_dt} with the first day of each month between \texttt{2021-01-01} and \texttt{2022-01-01} via the \texttt{seq()} function and its \texttt{by\ =\ "months"} argument:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill a date vector named vect_dt}
+\NormalTok{vect_dt <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2021-01-01"}\NormalTok{), }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2022-01-01"}\NormalTok{), }\DataTypeTok{by =} \StringTok{'months'}\NormalTok{)}
+\NormalTok{vect_dt}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "2021-01-01" "2021-02-01" "2021-03-01" "2021-04-01" "2021-05-01"
+##  [6] "2021-06-01" "2021-07-01" "2021-08-01" "2021-09-01" "2021-10-01"
+## [11] "2021-11-01" "2021-12-01" "2022-01-01"
+\end{verbatim}
+
+We can also use the \texttt{:} operator to fill integers between a starting and ending number:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill a numeric vector with values between 1 and 10}
+\NormalTok{vect_num <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{10}
+\NormalTok{vect_num}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  1  2  3  4  5  6  7  8  9 10
+\end{verbatim}
+
+\textbf{Vectorized Operations}
+
+\textbf{Vectorized operations (or vectorization)} underpin mathematical operations in R and greatly simplify computation. For example, if we need to perform a mathematical operation to each data element in a numeric vector, we do not need to specify each and every element explicitly. We can simply apply the operation at the vector level, and the operation will be applied to each of the vector's individual elements.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create a numeric vector named x and fill with values between 1 and 10}
+\NormalTok{x <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{10}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Add 2 to each element of x}
+\NormalTok{x_plus2 <-}\StringTok{ }\NormalTok{x}\OperatorTok{+}\DecValTok{2}
+\NormalTok{x_plus2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  3  4  5  6  7  8  9 10 11 12
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Multiply each element of x by 2}
+\NormalTok{x_times2 <-}\StringTok{ }\NormalTok{x}\OperatorTok{*}\DecValTok{2}
+\NormalTok{x_times2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  2  4  6  8 10 12 14 16 18 20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Square each element of x}
+\NormalTok{x_sq <-}\StringTok{ }\NormalTok{x}\OperatorTok{^}\DecValTok{2}
+\NormalTok{x_sq}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]   1   4   9  16  25  36  49  64  81 100
+\end{verbatim}
+
 \hypertarget{matrices}{%
 \section{Matrices}\label{matrices}}
 
+A \textbf{matrix} is similar to a vector in that it represents a collection of data elements of the same data type; however, the elements of a matrix are \emph{arranged into a fixed number of rows and columns}.
+
+We can create a matrix using the \texttt{matrix()} function. Per \texttt{?matrix}, the \texttt{nrow} and \texttt{ncol} arguments can be used to organize like data elements into a specified number of rows and columns.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill matrix with numbers}
+\NormalTok{mtrx_num <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{data =} \DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{5}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{2}\NormalTok{)}
+\NormalTok{mtrx_num}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2]
+## [1,]    1    6
+## [2,]    2    7
+## [3,]    3    8
+## [4,]    4    9
+## [5,]    5   10
+\end{verbatim}
+
+We can leverage shorthand for function calls. As long as the argument values are in the correct order by the documentation, the argument names are not required. Per \texttt{?matrix}, the first argument is \texttt{data}, followed by \texttt{nrow} and then \texttt{ncol}. Therefore, we can achieve the same result using the following:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill matrix with numbers}
+\NormalTok{mtrx_num <-}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+\NormalTok{mtrx_num}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2]
+## [1,]    1    6
+## [2,]    2    7
+## [3,]    3    8
+## [4,]    4    9
+## [5,]    5   10
+\end{verbatim}
+
 \hypertarget{factors}{%
 \section{Factors}\label{factors}}
+
+A \textbf{factor} is a data structure containing a finite number of categorical values. Each categorical value of a factor is known as a \textbf{level}, and the levels can be either ordered or unordered. This data structure is a requirement for several statistical models we will cover in later chapters.
+
+We can create a factor using the \texttt{factor()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill factor with unordered categories}
+\NormalTok{education <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"undergraduate"}\NormalTok{, }\StringTok{"post-graduate"}\NormalTok{, }\StringTok{"graduate"}\NormalTok{))}
+\NormalTok{education}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] undergraduate post-graduate graduate     
+## Levels: graduate post-graduate undergraduate
+\end{verbatim}
+
+Since education has an inherent ordering, we can use the \texttt{ordered} and \texttt{levels} arguments of the \texttt{factor()} function to order the categories:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create and fill factor with unordered categories}
+\NormalTok{education <-}\StringTok{ }\KeywordTok{factor}\NormalTok{(education, }\DataTypeTok{ordered =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"undergraduate"}\NormalTok{, }\StringTok{"graduate"}\NormalTok{, }\StringTok{"post-graduate"}\NormalTok{))}
+\NormalTok{education}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] undergraduate post-graduate graduate     
+## Levels: undergraduate < graduate < post-graduate
+\end{verbatim}
+
+The ordering of factors is critical to a correct interpretation of statistical model output as we will cover later.
 
 \hypertarget{data-frames}{%
 \section{Data Frames}\label{data-frames}}
@@ -355,6 +660,8 @@ Run and test your code frequently. Writing a significant number of lines before 
 
 \hypertarget{measure-sampl}{%
 \chapter{Measurement \& Sampling}\label{measure-sampl}}
+
+This chapter will survey the type and function of study variables, measurement scales, sampling and nonsampling error, as well as probability and nonprobability sampling methods.
 
 \hypertarget{variable-types}{%
 \section{Variable Types}\label{variable-types}}
@@ -759,6 +1066,8 @@ Let's walk through the step-by-step process for implementing the systematic samp
 \hypertarget{research}{%
 \chapter{Research Fundamentals}\label{research}}
 
+The importance of appropriate research methods and designs cannot be overstated. Just as probability sampling methods help us achieve data that are representative of the population, research methods and designs help us achieve an accurate understanding of various phenomena and ensure conclusions are justified.
+
 \hypertarget{research-questions}{%
 \section{Research Questions}\label{research-questions}}
 
@@ -884,7 +1193,7 @@ Within the quantitative category, there are three types of designs: (a) \emph{ex
 \caption{Quantitative Research Designs}\label{fig:res-designs}
 \end{figure}
 
-\#\#\#\textbf{Experimental Research}
+\textbf{Experimental Research}
 
 \textbf{Experimental research} is concerned with casual (internal) validity. Randomized experimental designs provide the most rigor with regard to causal validity. However, in social science research contexts, true experiments often are not possible due to ethical considerations.
 
@@ -894,7 +1203,7 @@ Clinical trials are a common setting for true experiments, as isolating the effe
 
 Another example of an experimental design is \textbf{A/B testing}. A/B testing is often performed in the context of website optimization, in which two or more versions of the site are shown to customers to identify which version impacts key success metrics more positively. In a people analytics context, we may create two versions of a dashboard and \emph{randomly} assign the permissioned users to each. We could then assess whether utilization rates, average usage time, repeat usage, among other success measures are significantly different between the two groups of users to inform which design is most effective.
 
-\#\#\#\textbf{Quasi-Experimental Research}
+\textbf{Quasi-Experimental Research}
 
 \textbf{Quasi-experimental research} is an experiment in which participants cannot be randomly assigned.
 
@@ -904,29 +1213,17 @@ Another example of quasi-experiments is a pretest-posttest setting in which ther
 
 Though quasi-experiments are not as robust as true experiments, they are usually more feasible in a people analytics context. True experiments control for confounding variables by way of the research design (randomization ensures equivalent groups), while these factors must be controlled statistically in quasi-experimental contexts. In Chapter \ref{lm}, we will discuss how to model relationships among multiple variables (multivariate analysis) in order to study how one variable influences another while holding constant variables that may influence the outcome but are not the primary focus of the research.
 
-\#\#\#\textbf{Non-Experimental Research}
+\textbf{Non-Experimental Research}
 
 Unlike experimental and quasi-experimental designs, \textbf{non-experimental research} does not involve the manipulation of an IV. The goal of non-experiments is not to provide evidence for causal effects, but to study measured variables as they naturally occur.
 
 Given the potential for alternative explanations of any observed differences or relationships, non-experimental research tends to have lower internal validity than experimental and quasi-experimental designs. As we have discussed, it is often not possible or ethical to manipulate IVs or to randomly assign people to groups. In addition, the nature of research questions does not always warrant experiments. In these cases, one or three non-experimental approaches may be considered: (a) \emph{cross-sectional}, (b) \emph{correlational}, and (c) \emph{observational}.
 
-\textbf{Cross-Sectional Research}
+\textbf{Cross-sectional research} compares two or more natural groups of people. For example, we may examine differences in engagement between employees in the Engineering department relative to employees in the Product department. In this case, we would neither manipulate one's department to determine how department influences engagement, nor randomly assign employees to these departments. Department membership exists apart from the research, so these naturally occurring groups can be leveraged for comparisons. There are of course many examples of naturally occurring groups that we would not manipulate, such as gender, ethnicity, generation, education, job family, job level, location, and tenure band. When participant characteristics are used to create groups, the IV is sometimes referred to as \emph{experimenter-selected} rather than \emph{experimenter-manipulated} IVs.
 
-\textbf{Cross-sectional research} compares two or more natural groups of people. For example, we may examine differences in engagement between employees in the Engineering department relative to employees in the Product department. In this case, we would neither manipulate one's department to determine how department influences engagement, nor randomly assign employees to these departments. Department membership exists apart from the research, so these naturally occurring groups can be leveraged for comparisons.
+\textbf{Correlational research} involves studying the statistical relationship between two variables without the manipulation of an IV. The relationship between leadership quality and engagement could be evaluated using correlational research. However, we would be unable to leverage a correlational design to test a hypothesis positing a causal effect of leadership quality on engagement. We would be limited to understanding how leadership quality and engagement covary; that is, to what extent a change in one variable is associated with a change in the other. Engagement may tend to increase as leadership quality increases, but a correlational design does not lend to understanding the direction of causal influence -- if such an effect exists.
 
-There are of course many examples of naturally occurring groups that we would not manipulate, such as gender, ethnicity, generation, education, job family, job level, location, and tenure band. When participant characteristics are used to create groups, the IV is sometimes referred to as \emph{experimenter-selected} rather than \emph{experimenter-manipulated} IVs.
-
-\textbf{Correlational Research}
-
-\textbf{Correlational research} involves studying the statistical relationship between two variables without the manipulation of an IV.
-
-The relationship between leadership quality and engagement could be evaluated using correlational research. However, we would be unable to leverage a correlational design to test a hypothesis positing a causal effect of leadership quality on engagement. We would be limited to understanding how leadership quality and engagement covary; that is, to what extent a change in one variable is associated with a change in the other. Engagement may tend to increase as leadership quality increases, but a correlational design does not lend to understanding the direction of causal influence -- if such an effect exists.
-
-\textbf{Observational Research}
-
-\textbf{Observational research} refers to studies in which the researcher gathers information without research subjects being explicitly involved in the recording of data.
-
-Collecting data from the company's HRIS could be an observational research method. For example, if we access data on terminations to determine the rate of attrition over a specified period, we would not need to interfere by asking past or present employees for this information. We would also do so without manipulating an IV, tagging people to naturally occurring or artificially created groups, or evaluating the association of attrition with another variable. The reality is that such an approach would not be too actionable, however, as this would offer no understanding of what may be influencing attrition or how attrition varies across departments, jobs, locations, or other theoretically-relevant dimensions.
+\textbf{Observational research} refers to studies in which the researcher gathers information without research subjects being explicitly involved in the recording of data. Collecting data from the company's HRIS could be an observational research method. For example, if we access data on terminations to determine the rate of attrition over a specified period, we would not need to interfere by asking past or present employees for this information. We would also do so without manipulating an IV, tagging people to naturally occurring or artificially created groups, or evaluating the association of attrition with another variable. The reality is that such an approach would not be too actionable, however, as this would offer no understanding of what may be influencing attrition or how attrition varies across departments, jobs, locations, or other theoretically-relevant dimensions.
 
 \hypertarget{exercises-1}{%
 \section{Exercises}\label{exercises-1}}
@@ -934,6 +1231,25 @@ Collecting data from the company's HRIS could be an observational research metho
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
+  What type of research method and design would be best suited for a study aiming to understand the effect of stay interviews on employee attrition?
+\item
+  Why are quasi-experiments less rigorous than true experiments?
+\item
+  Why aren't experimental designs always implemented when an experimenter-manipulated IV is warranted?
+\item
+  What is the role of research questions?
+\item
+  What is the role of research hypotheses?
+\item
+  What is the difference between internal and external validity, and why are these concepts important in research?
+\item
+  What is an example of a mixed methods study?
+\item
+  What is the key difference between experimental and non-experimental research designs?
+\item
+  What are the differences between cross-sectional, correlational, and observational non-experimental designs?
+\item
+  What are some use cases for A/B testing in people analytics?
 \end{enumerate}
 
 \hypertarget{uni-bi-stats}{%
@@ -1225,7 +1541,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-18-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-39-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -1628,7 +1944,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-32-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-53-1.pdf}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
@@ -1642,7 +1958,7 @@ The GGally library produces a variety of useful information, including correlati
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-33-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-54-1.pdf}
 
 As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. Understanding the nature of associations will be highly important in the context of linear regression in Chapter \ref{lm}.
 
@@ -2157,11 +2473,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-41-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-62-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-41}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-62}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -2205,11 +2521,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-42-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-63-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-42}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-63}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -2891,8 +3207,7 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 \hypertarget{exercise-solutions}{%
 \section{Exercise Solutions}\label{exercise-solutions}}
 
-\hypertarget{measurement-sampling}{%
-\subsection{Measurement \& Sampling}\label{measurement-sampling}}
+\textbf{Measurement \& Sampling}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -2932,8 +3247,108 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
   D. Purposive sampling
 \end{enumerate}
 
-\hypertarget{univariate-bivariate-analysis}{%
-\subsection{Univariate \& Bivariate Analysis}\label{univariate-bivariate-analysis}}
+\textbf{Research Fundamentals}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  What type of research method and design would be best suited for a study aiming to understand the effect of stay interviews on employee attrition?
+\end{enumerate}
+
+A quantitative research method and quasi-experimental design would be best suited for this study. While experimental designs are more rigorous than quasi-experiments, stay interviews are unlikely to be initiated via random processes; leaders will likely identify select people as having a higher risk of attrition and initiate stay interviews accordingly.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Why are quasi-experiments less rigorous than true experiments?
+\end{enumerate}
+
+Randomized experimental designs provide the most rigor with regard to causal validity, but random assignment is not performed in a quasi-experimental context.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Why aren't experimental designs always implemented when an experimenter-manipulated IV is warranted?
+\end{enumerate}
+
+Randomized experimental designs provide the most rigor with regard to causal validity. However, in social science research contexts, true experiments often are not possible due to ethical considerations.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  What is the role of research questions?
+\end{enumerate}
+
+Research questions help focus the study, determine the appropriate methodology, and guide each stage of inquiry, analysis, and reporting.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  What is the role of research hypotheses?
+\end{enumerate}
+
+Research hypotheses are testable statements about the expected outcome of a research project or experiment.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  What is the difference between internal and external validity, and why are these concepts important in research?
+\end{enumerate}
+
+Internal validity reflects the robustness of the study -- the extent to which confounding variables are controlled. External validity refers to the extent to which study conclusions will hold in other contexts (for other people, in other places, at other times). Confidence in conclusions about causal effects or statistical relationships, and the likelihood of such conclusions to hold true in other contexts, is rooted in a study's internal and external validity.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  What is an example of a mixed methods study?
+\end{enumerate}
+
+One example of a mixed methods study is a two-part study in which part 1 involves employee focus groups to surface themes that are top-of-mind for employees, and part 2 involves a survey to measure constructs related to the emergent themes in order to test statistical relationships with outcomes like engagement and retention.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  What is the key difference between experimental and non-experimental research designs?
+\end{enumerate}
+
+Unlike experimental designs, non-experiments do not involve the manipulation of an IV. The goal of non-experiments is not to provide evidence for causal effects, but to study measured variables as they naturally occur.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  What are the differences between cross-sectional, correlational, and observational non-experimental designs?
+\end{enumerate}
+
+Cross-sectional research compares two or more natural groups of people. Correlational research involves studying the statistical relationship between two variables. Observational research refers to studies in which the researcher gathers information without research subjects being explicitly involved in the recording of data.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{9}
+\tightlist
+\item
+  What is an example of an A/B testing use case in people analytics?
+\end{enumerate}
+
+One example of an A/B testing use case for people analytics is dashboard user experience (UX) testing -- displaying multiple versions of a dashboard to users to study usage patterns and optimize the UX.
+
+\textbf{Univariate \& Bivariate Analysis}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -2973,8 +3388,7 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
   A. True
 \end{enumerate}
 
-\hypertarget{inferential-statistics}{%
-\subsection{Inferential Statistics}\label{inferential-statistics}}
+\textbf{Inferential Statistics}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
