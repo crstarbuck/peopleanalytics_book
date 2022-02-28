@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-02-27}
+\date{2022-02-28}
 
 \begin{document}
 \maketitle
@@ -287,7 +287,7 @@ The Deliver phase can take many forms depending on the solution being released. 
 \hypertarget{r-intro}{%
 \chapter{Introduction to R}\label{r-intro}}
 
-This chapter covers how to install R, R Studio, and required packages for replicating examples in this book. This chapter also covers R basics such as objects, data structures, and data types that are fundamental to working in R.
+This chapter covers how to install R, R Studio, and required packages for replicating examples in this book. This chapter also covers R basics such as objects, data structures, and data types that are fundamental to working in R. In addition, many common functions will be covered in this chapter, and many more will be introduced thoughout later chapters.
 
 \hypertarget{getting-started}{%
 \section{Getting Started}\label{getting-started}}
@@ -324,7 +324,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpI3PY3R/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpJtwiw8/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -444,7 +444,7 @@ In-line code comments can also be added where needed to reduce the number of lin
 \hypertarget{vectors}{%
 \section{Vectors}\label{vectors}}
 
-A \textbf{vector} is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, and set of characters, or a collection of dates.
+A \textbf{vector} is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, set of characters, collection of dates, or logical \texttt{TRUE} or \texttt{FALSE} results.
 
 In this example, we introduce the combine function \texttt{c()}, which allows us to fill an object with more than one value:
 
@@ -516,6 +516,32 @@ We can also use the \texttt{:} operator to fill integers between a starting and 
 ##  [1]  1  2  3  4  5  6  7  8  9 10
 \end{verbatim}
 
+We can access a particular element of a vector using its index. An \textbf{index} represents the position in a set of elements. In R, the first element of a vector has an index of 1, and the final element of a vector has an index equal to the vector's length. The index is specified using square brackets, such as \texttt{{[}5{]}} for the fifth element of a vector.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return the value in position 5 of vect_num}
+\NormalTok{vect_num[}\DecValTok{5}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5
+\end{verbatim}
+
+When applied to a vector, the \texttt{length()} function returns the number of elements in the vector, and this can be used to dynamically return the last value of vectors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return the last element of vect_num}
+\NormalTok{vect_num[}\KeywordTok{length}\NormalTok{(vect_num)]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
 \textbf{Vectorized Operations}
 
 \textbf{Vectorized operations (or vectorization)} underpin mathematical operations in R and greatly simplify computation. For example, if we need to perform a mathematical operation to each data element in a numeric vector, we do not need to specify each and every element explicitly. We can simply apply the operation at the vector level, and the operation will be applied to each of the vector's individual elements.
@@ -563,6 +589,98 @@ We can also use the \texttt{:} operator to fill integers between a starting and 
 ##  [1]   1   4   9  16  25  36  49  64  81 100
 \end{verbatim}
 
+Many built-in arithmetic functions are available and compatible with vectors:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Aggregate sum of x elements}
+\KeywordTok{sum}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 55
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Count of x elements}
+\KeywordTok{length}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Square root of x elements}
+\KeywordTok{sqrt}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 1.000000 1.414214 1.732051 2.000000 2.236068 2.449490 2.645751 2.828427
+##  [9] 3.000000 3.162278
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Natural logarithm of x elements}
+\KeywordTok{log}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 0.0000000 0.6931472 1.0986123 1.3862944 1.6094379 1.7917595 1.9459101
+##  [8] 2.0794415 2.1972246 2.3025851
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Exponential of x elements}
+\KeywordTok{exp}\NormalTok{(x)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]     2.718282     7.389056    20.085537    54.598150   148.413159
+##  [6]   403.428793  1096.633158  2980.957987  8103.083928 22026.465795
+\end{verbatim}
+
+We can also perform various operations on multiple vectors. Vectorization will result in an implied ordering about the elements, in that the specified operation will be applied to the first elements of the vectors and then the second, then third, etc.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create vectors x1 and x2 and fill with integers}
+\NormalTok{x1 <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{10}
+\NormalTok{x2 <-}\StringTok{ }\DecValTok{11}\OperatorTok{:}\DecValTok{20}
+
+\CommentTok{# Store sum of vectors to new x3 vector}
+\NormalTok{x3 <-}\StringTok{ }\NormalTok{x1 }\OperatorTok{+}\StringTok{ }\NormalTok{x2}
+\NormalTok{x3}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] 12 14 16 18 20 22 24 26 28 30
+\end{verbatim}
+
+Using vectorization, we can also evaluate whether a specified condition is true or false for each element in a vector:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Evaluate whether each element of x is less than 6, and store results to a logical vector}
+\NormalTok{logical_rslts <-}\StringTok{ }\NormalTok{x}\OperatorTok{<}\DecValTok{6}
+\NormalTok{logical_rslts}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1]  TRUE  TRUE  TRUE  TRUE  TRUE FALSE FALSE FALSE FALSE FALSE
+\end{verbatim}
+
 \hypertarget{matrices}{%
 \section{Matrices}\label{matrices}}
 
@@ -606,6 +724,41 @@ We can leverage shorthand for function calls. As long as the argument values are
 ## [5,]    5   10
 \end{verbatim}
 
+Several functions are available to quickly retrieve the number of rows and columns in a rectangular object like a matrix:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return the number of rows in mtrx_num}
+\KeywordTok{nrow}\NormalTok{(mtrx_num)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return the number of columns in mtrx_num}
+\KeywordTok{ncol}\NormalTok{(mtrx_num)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return the number of columns and rows in mtrx_num}
+\KeywordTok{dim}\NormalTok{(mtrx_num)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 5 2
+\end{verbatim}
+
 \hypertarget{factors}{%
 \section{Factors}\label{factors}}
 
@@ -646,17 +799,181 @@ The ordering of factors is critical to a correct interpretation of statistical m
 \hypertarget{data-frames}{%
 \section{Data Frames}\label{data-frames}}
 
+A \emph{data frame} is similar to a matrix in that it organizes elements within rows and columns but unlike matrices, data frames can store multiple types of data. Data frames are often the most appropriate data structures for the data required in people analytics.
+
+A data frame can be created using the \texttt{data.frame()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create three vectors containing integers (x), characters (y), and dates (z)}
+\NormalTok{x <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{10}
+\NormalTok{y <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'a'}\NormalTok{,}\StringTok{'b'}\NormalTok{,}\StringTok{'c'}\NormalTok{,}\StringTok{'d'}\NormalTok{,}\StringTok{'e'}\NormalTok{,}\StringTok{'f'}\NormalTok{,}\StringTok{'g'}\NormalTok{,}\StringTok{'h'}\NormalTok{,}\StringTok{'i'}\NormalTok{,}\StringTok{'j'}\NormalTok{)}
+\NormalTok{z <-}\StringTok{ }\KeywordTok{seq}\NormalTok{(}\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2021-01-01"}\NormalTok{), }\KeywordTok{as.Date}\NormalTok{(}\StringTok{"2021-10-01"}\NormalTok{), }\DataTypeTok{by =} \StringTok{'months'}\NormalTok{)}
+
+\CommentTok{# Create a data frame with 3 columns (vectors x, y, and z) and 10 rows}
+\NormalTok{df <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(x, y, z)}
+\NormalTok{df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     x y          z
+## 1   1 a 2021-01-01
+## 2   2 b 2021-02-01
+## 3   3 c 2021-03-01
+## 4   4 d 2021-04-01
+## 5   5 e 2021-05-01
+## 6   6 f 2021-06-01
+## 7   7 g 2021-07-01
+## 8   8 h 2021-08-01
+## 9   9 i 2021-09-01
+## 10 10 j 2021-10-01
+\end{verbatim}
+
+The data type of each vector in a data frame object can be viewed using the \texttt{str()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Describe the structure of df}
+\KeywordTok{str}\NormalTok{(df)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 'data.frame':    10 obs. of  3 variables:
+##  $ x: int  1 2 3 4 5 6 7 8 9 10
+##  $ y: chr  "a" "b" "c" "d" ...
+##  $ z: Date, format: "2021-01-01" "2021-02-01" ...
+\end{verbatim}
+
 \hypertarget{lists}{%
 \section{Lists}\label{lists}}
+
+\textbf{Lists} are versatile objects that can contain elements with different types and lengths. The elements of a list can be vectors, matrices, data frames, functions, or even other lists.
+
+A list can be created using the \texttt{list()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Store vectors x, y, and z as well as df to a list}
+\NormalTok{lst <-}\StringTok{ }\KeywordTok{list}\NormalTok{(x, y, z, df)}
+\KeywordTok{str}\NormalTok{(lst)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## List of 4
+##  $ : int [1:10] 1 2 3 4 5 6 7 8 9 10
+##  $ : chr [1:10] "a" "b" "c" "d" ...
+##  $ : Date[1:10], format: "2021-01-01" "2021-02-01" ...
+##  $ :'data.frame':    10 obs. of  3 variables:
+##   ..$ x: int [1:10] 1 2 3 4 5 6 7 8 9 10
+##   ..$ y: chr [1:10] "a" "b" "c" "d" ...
+##   ..$ z: Date[1:10], format: "2021-01-01" "2021-02-01" ...
+\end{verbatim}
+
+Unlike vectors, accessing elements of a list requires double brackets, such as \texttt{{[}{[}3{]}{]}} for the third element.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return data from the third element of lst}
+\NormalTok{lst[[}\DecValTok{3}\NormalTok{]]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  [1] "2021-01-01" "2021-02-01" "2021-03-01" "2021-04-01" "2021-05-01"
+##  [6] "2021-06-01" "2021-07-01" "2021-08-01" "2021-09-01" "2021-10-01"
+\end{verbatim}
 
 \hypertarget{loops}{%
 \section{Loops}\label{loops}}
 
-\hypertarget{graphics}{%
-\section{Graphics}\label{graphics}}
+In many cases, the need arises to perform an operation a variable number of times. Loops are available to avoid the cumbersome task of writing the same statement many times. The two most common types of loops are \texttt{for} and \texttt{while} loops.
+
+Let's use a \texttt{while} loop to square integers between 1 and 5:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Initialize variable}
+\NormalTok{i <-}\StringTok{ }\DecValTok{1}
+
+\CommentTok{# Using a 'while' loop, square the values 1 through 5 and print results to the screen}
+\CommentTok{# 'i' is a variable that takes on a value between 1 and 5 for the respective loop}
+\ControlFlowTok{while}\NormalTok{ (i }\OperatorTok{<}\StringTok{ }\DecValTok{6}\NormalTok{) \{}
+  
+  \KeywordTok{print}\NormalTok{(i}\OperatorTok{^}\DecValTok{2}\NormalTok{) }
+\NormalTok{  i <-}\StringTok{ }\NormalTok{i }\OperatorTok{+}\StringTok{ }\DecValTok{1} \CommentTok{# increment i by 1}
+  
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+## [1] 4
+## [1] 9
+## [1] 16
+## [1] 25
+\end{verbatim}
+
+With a \texttt{while} loop, we needed to initialize the variable \texttt{i} as well as increment it by \texttt{1} within the loop. With a \texttt{for} loop, we can accomplish the same goal with less code:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Using a 'for' loop, square the values 1 through 5 and print results to the screen}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{) \{ }
+  
+  \KeywordTok{print}\NormalTok{(i}\OperatorTok{^}\DecValTok{2}\NormalTok{)}
+  
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1
+## [1] 4
+## [1] 9
+## [1] 16
+## [1] 25
+\end{verbatim}
 
 \hypertarget{user-defined-functions-udfs}{%
 \section{User-Defined Functions (UDFs)}\label{user-defined-functions-udfs}}
+
+Though many built-in functions are available, R provides the flexibility to create our own. In fact, many functions used in this book are actually functions of functions.
+
+Functions can be an effective alternative to loops. For example, here is a basic function that achieves the same goal as our \texttt{while} and \texttt{for} loop examples (i.e., squaring integers 1 through 5):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create a function named square.val() with one argument (x) that squares given x values}
+\NormalTok{square.val <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(x) \{}
+  
+\NormalTok{  x}\OperatorTok{^}\DecValTok{2}
+\NormalTok{\}}
+
+\CommentTok{# Pass integers 1 through 5 into the new square.val() function and display results}
+\KeywordTok{square.val}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  1  4  9 16 25
+\end{verbatim}
+
+While many projects warrant UDFs and/or loops, we do not actually need either to square a set of integers. As you gain experience writing R code, you will naturally discover ways to write more performant and terse code:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Square integers}
+\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{)}\OperatorTok{^}\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1]  1  4  9 16 25
+\end{verbatim}
 
 \hypertarget{measure-sampl}{%
 \chapter{Measurement \& Sampling}\label{measure-sampl}}
@@ -1541,7 +1858,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-39-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-59-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -1944,7 +2261,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-53-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-73-1.pdf}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
@@ -1958,7 +2275,7 @@ The GGally library produces a variety of useful information, including correlati
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-54-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-74-1.pdf}
 
 As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. Understanding the nature of associations will be highly important in the context of linear regression in Chapter \ref{lm}.
 
@@ -2473,11 +2790,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-62-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-82-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-62}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-82}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -2521,11 +2838,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-63-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-83-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-63}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-83}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.

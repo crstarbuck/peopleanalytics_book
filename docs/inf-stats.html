@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-02-27" />
+<meta name="date" content="2022-02-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -160,8 +160,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="4.5" data-path="r-intro.html"><a href="r-intro.html#data-frames"><i class="fa fa-check"></i><b>4.5</b> Data Frames</a></li>
 <li class="chapter" data-level="4.6" data-path="r-intro.html"><a href="r-intro.html#lists"><i class="fa fa-check"></i><b>4.6</b> Lists</a></li>
 <li class="chapter" data-level="4.7" data-path="r-intro.html"><a href="r-intro.html#loops"><i class="fa fa-check"></i><b>4.7</b> Loops</a></li>
-<li class="chapter" data-level="4.8" data-path="r-intro.html"><a href="r-intro.html#graphics"><i class="fa fa-check"></i><b>4.8</b> Graphics</a></li>
-<li class="chapter" data-level="4.9" data-path="r-intro.html"><a href="r-intro.html#user-defined-functions-udfs"><i class="fa fa-check"></i><b>4.9</b> User-Defined Functions (UDFs)</a></li>
+<li class="chapter" data-level="4.8" data-path="r-intro.html"><a href="r-intro.html#user-defined-functions-udfs"><i class="fa fa-check"></i><b>4.8</b> User-Defined Functions (UDFs)</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="measure-sampl.html"><a href="measure-sampl.html"><i class="fa fa-check"></i><b>5</b> Measurement &amp; Sampling</a><ul>
 <li class="chapter" data-level="5.1" data-path="measure-sampl.html"><a href="measure-sampl.html#variable-types"><i class="fa fa-check"></i><b>5.1</b> Variable Types</a><ul>
@@ -330,29 +329,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h3><span class="header-section-number">8.1.1</span> Probability Distributions</h3>
 <p><strong>Probability distributions</strong> are statistical functions that yield the probability of obtaining possible values for a random variable. In other words, the underlying distribution describes how the values of a random variable vary. Probabilities range from 0 to 1, and the sum of all probabilities for all possible values must equal 1.</p>
 <p>For example, let’s look at how org tenure is distributed across employees. We can understand the general shape of the distribution using descriptive statistics:</p>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb106-1" data-line-number="1"><span class="co"># Load library for data wrangling</span></a>
-<a class="sourceLine" id="cb106-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb106-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb106-4" data-line-number="4"><span class="co"># Read employee demographics data</span></a>
-<a class="sourceLine" id="cb106-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb106-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb106-7" data-line-number="7"><span class="co"># Produce descriptive stats for org tenure</span></a>
-<a class="sourceLine" id="cb106-8" data-line-number="8"><span class="kw">summary</span>(demographics<span class="op">$</span>org_tenure)</a></code></pre></div>
+<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb146-1" data-line-number="1"><span class="co"># Load library for data wrangling</span></a>
+<a class="sourceLine" id="cb146-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb146-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb146-4" data-line-number="4"><span class="co"># Read employee demographics data</span></a>
+<a class="sourceLine" id="cb146-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb146-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb146-7" data-line-number="7"><span class="co"># Produce descriptive stats for org tenure</span></a>
+<a class="sourceLine" id="cb146-8" data-line-number="8"><span class="kw">summary</span>(demographics<span class="op">$</span>org_tenure)</a></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   1.000   5.000   8.000   9.193  13.000  20.000</code></pre>
 <p><br /></p>
 <p>Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.</p>
 <p>Beyond descriptives, visuals are often helpful in understanding a variable’s distribution. As shown in Figure <a href="inf-stats.html#fig:org-tenure-dist">8.1</a>, it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb108-1" data-line-number="1"><span class="co"># Load library for data visualization</span></a>
-<a class="sourceLine" id="cb108-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
-<a class="sourceLine" id="cb108-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb108-4" data-line-number="4"><span class="co"># Visualize org tenure distribution</span></a>
-<a class="sourceLine" id="cb108-5" data-line-number="5"><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb108-6" data-line-number="6"><span class="st">  </span><span class="kw">aes</span>(demographics<span class="op">$</span>org_tenure) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb108-7" data-line-number="7"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Org Tenure&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb108-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb108-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb108-10" data-line-number="10"><span class="st">  </span><span class="kw">theme_bw</span>()</a></code></pre></div>
+<div class="sourceCode" id="cb148"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb148-1" data-line-number="1"><span class="co"># Load library for data visualization</span></a>
+<a class="sourceLine" id="cb148-2" data-line-number="2"><span class="kw">library</span>(ggplot2)</a>
+<a class="sourceLine" id="cb148-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb148-4" data-line-number="4"><span class="co"># Visualize org tenure distribution</span></a>
+<a class="sourceLine" id="cb148-5" data-line-number="5"><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb148-6" data-line-number="6"><span class="st">  </span><span class="kw">aes</span>(demographics<span class="op">$</span>org_tenure) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb148-7" data-line-number="7"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;Org Tenure&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb148-8" data-line-number="8"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb148-9" data-line-number="9"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb148-10" data-line-number="10"><span class="st">  </span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:org-tenure-dist"></span>
 <img src="People_Analytics_Lifecycle_files/figure-html/org-tenure-dist-1.png" alt="Org Tenure Distribution" width="672" />
 <p class="caption">
@@ -373,72 +372,72 @@ Figure 8.1: Org Tenure Distribution
 <li><strong>Geometric</strong>: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)</li>
 </ul>
 <p>A number of functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate differences in the general shape of each. First, let’s simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb109-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
-<a class="sourceLine" id="cb109-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb109-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb109-4" data-line-number="4"><span class="co"># Simulate bernoulli distribution</span></a>
-<a class="sourceLine" id="cb109-5" data-line-number="5">bernoulli_dist &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, <span class="dt">prob =</span> <span class="fl">.5</span>)</a>
-<a class="sourceLine" id="cb109-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb109-7" data-line-number="7"><span class="co"># Simulate binomial distribution</span></a>
-<a class="sourceLine" id="cb109-8" data-line-number="8"><span class="co"># Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)</span></a>
-<a class="sourceLine" id="cb109-9" data-line-number="9">binomial_dist &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">1000</span>, <span class="dv">100</span>, <span class="dt">prob =</span> <span class="fl">.5</span>) </a>
-<a class="sourceLine" id="cb109-10" data-line-number="10"></a>
-<a class="sourceLine" id="cb109-11" data-line-number="11"><span class="co"># Simulate negative binomial distribution</span></a>
-<a class="sourceLine" id="cb109-12" data-line-number="12">nbinomial_dist &lt;-<span class="st"> </span><span class="kw">rnbinom</span>(<span class="dv">1000</span>, <span class="dv">100</span>, <span class="dt">prob =</span> <span class="fl">.5</span>) </a>
-<a class="sourceLine" id="cb109-13" data-line-number="13"></a>
-<a class="sourceLine" id="cb109-14" data-line-number="14"><span class="co"># Simulate multinomial distribution with varying probabilities per level</span></a>
-<a class="sourceLine" id="cb109-15" data-line-number="15">multinomial_dist &lt;-<span class="st"> </span><span class="kw">rmultinom</span>(<span class="dv">1000</span>, <span class="dv">4</span>, <span class="dt">prob =</span> <span class="kw">c</span>(.<span class="dv">4</span>, <span class="fl">.3</span>, <span class="fl">.2</span>, <span class="fl">.6</span>))</a>
-<a class="sourceLine" id="cb109-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb109-17" data-line-number="17"><span class="co"># Simulate poisson distribution</span></a>
-<a class="sourceLine" id="cb109-18" data-line-number="18">poisson_dist &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dv">1000</span>, <span class="dv">10</span>) </a>
-<a class="sourceLine" id="cb109-19" data-line-number="19"></a>
-<a class="sourceLine" id="cb109-20" data-line-number="20"><span class="co"># Simulate geometric distribution</span></a>
-<a class="sourceLine" id="cb109-21" data-line-number="21">geometric_dist &lt;-<span class="st"> </span><span class="kw">rgeom</span>(<span class="dv">1000</span>, <span class="dt">prob =</span> <span class="fl">.2</span>) </a></code></pre></div>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb149-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
+<a class="sourceLine" id="cb149-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb149-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb149-4" data-line-number="4"><span class="co"># Simulate bernoulli distribution</span></a>
+<a class="sourceLine" id="cb149-5" data-line-number="5">bernoulli_dist &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">1000</span>, <span class="dv">1</span>, <span class="dt">prob =</span> <span class="fl">.5</span>)</a>
+<a class="sourceLine" id="cb149-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb149-7" data-line-number="7"><span class="co"># Simulate binomial distribution</span></a>
+<a class="sourceLine" id="cb149-8" data-line-number="8"><span class="co"># Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)</span></a>
+<a class="sourceLine" id="cb149-9" data-line-number="9">binomial_dist &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dv">1000</span>, <span class="dv">100</span>, <span class="dt">prob =</span> <span class="fl">.5</span>) </a>
+<a class="sourceLine" id="cb149-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb149-11" data-line-number="11"><span class="co"># Simulate negative binomial distribution</span></a>
+<a class="sourceLine" id="cb149-12" data-line-number="12">nbinomial_dist &lt;-<span class="st"> </span><span class="kw">rnbinom</span>(<span class="dv">1000</span>, <span class="dv">100</span>, <span class="dt">prob =</span> <span class="fl">.5</span>) </a>
+<a class="sourceLine" id="cb149-13" data-line-number="13"></a>
+<a class="sourceLine" id="cb149-14" data-line-number="14"><span class="co"># Simulate multinomial distribution with varying probabilities per level</span></a>
+<a class="sourceLine" id="cb149-15" data-line-number="15">multinomial_dist &lt;-<span class="st"> </span><span class="kw">rmultinom</span>(<span class="dv">1000</span>, <span class="dv">4</span>, <span class="dt">prob =</span> <span class="kw">c</span>(.<span class="dv">4</span>, <span class="fl">.3</span>, <span class="fl">.2</span>, <span class="fl">.6</span>))</a>
+<a class="sourceLine" id="cb149-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb149-17" data-line-number="17"><span class="co"># Simulate poisson distribution</span></a>
+<a class="sourceLine" id="cb149-18" data-line-number="18">poisson_dist &lt;-<span class="st"> </span><span class="kw">rpois</span>(<span class="dv">1000</span>, <span class="dv">10</span>) </a>
+<a class="sourceLine" id="cb149-19" data-line-number="19"></a>
+<a class="sourceLine" id="cb149-20" data-line-number="20"><span class="co"># Simulate geometric distribution</span></a>
+<a class="sourceLine" id="cb149-21" data-line-number="21">geometric_dist &lt;-<span class="st"> </span><span class="kw">rgeom</span>(<span class="dv">1000</span>, <span class="dt">prob =</span> <span class="fl">.2</span>) </a></code></pre></div>
 <p><br /></p>
 <p>Next, we will visualize each distribution:</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb110-1" data-line-number="1"><span class="co"># Load library for arranging visuals</span></a>
-<a class="sourceLine" id="cb110-2" data-line-number="2"><span class="kw">library</span>(ggpubr)</a>
-<a class="sourceLine" id="cb110-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb110-4" data-line-number="4"><span class="co"># Create user-defined function (UDF) to simplify probability distribution visualization</span></a>
-<a class="sourceLine" id="cb110-5" data-line-number="5"><span class="co"># Function arguments: (1) data = object containing random distribution values; (2) type = &#39;discrete&#39; or &#39;continuous&#39; probability distribution; and (3) title = name of distribution</span></a>
-<a class="sourceLine" id="cb110-6" data-line-number="6">dist.viz &lt;-<span class="st"> </span><span class="cf">function</span>(data, type, title) {</a>
-<a class="sourceLine" id="cb110-7" data-line-number="7">  </a>
-<a class="sourceLine" id="cb110-8" data-line-number="8">  <span class="cf">if</span> (type <span class="op">==</span><span class="st"> &quot;discrete&quot;</span>){</a>
-<a class="sourceLine" id="cb110-9" data-line-number="9">    </a>
-<a class="sourceLine" id="cb110-10" data-line-number="10">    <span class="co"># Discrete distribution</span></a>
-<a class="sourceLine" id="cb110-11" data-line-number="11">    viz &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-12" data-line-number="12"><span class="st">           </span><span class="kw">aes</span>(data) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-13" data-line-number="13"><span class="st">           </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="kw">paste</span>(title), <span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;count&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-14" data-line-number="14"><span class="st">           </span><span class="kw">geom_histogram</span>(<span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-15" data-line-number="15"><span class="st">           </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-16" data-line-number="16"><span class="st">           </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">hjust =</span> <span class="fl">0.5</span>))</a>
-<a class="sourceLine" id="cb110-17" data-line-number="17">    </a>
-<a class="sourceLine" id="cb110-18" data-line-number="18">  } <span class="cf">else</span> {</a>
-<a class="sourceLine" id="cb110-19" data-line-number="19">    </a>
-<a class="sourceLine" id="cb110-20" data-line-number="20">    <span class="co"># Continuous distribution</span></a>
-<a class="sourceLine" id="cb110-21" data-line-number="21">    viz &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-22" data-line-number="22"><span class="st">           </span><span class="kw">aes</span>(data) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-23" data-line-number="23"><span class="st">           </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="kw">paste</span>(title), <span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb110-24" data-line-number="24"><span class="st">           </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-25" data-line-number="25"><span class="st">           </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-26" data-line-number="26"><span class="st">           </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb110-27" data-line-number="27"><span class="st">           </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">hjust =</span> <span class="fl">0.5</span>))</a>
-<a class="sourceLine" id="cb110-28" data-line-number="28">  }</a>
-<a class="sourceLine" id="cb110-29" data-line-number="29"></a>
-<a class="sourceLine" id="cb110-30" data-line-number="30">  <span class="kw">return</span>(viz)</a>
-<a class="sourceLine" id="cb110-31" data-line-number="31">}</a>
-<a class="sourceLine" id="cb110-32" data-line-number="32"></a>
-<a class="sourceLine" id="cb110-33" data-line-number="33"><span class="co"># Call UDF to build visualizations and store to objects</span></a>
-<a class="sourceLine" id="cb110-34" data-line-number="34">p_bernoulli &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> bernoulli_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Bernoulli&quot;</span>)</a>
-<a class="sourceLine" id="cb110-35" data-line-number="35">p_binomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> binomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Binomial&quot;</span>)</a>
-<a class="sourceLine" id="cb110-36" data-line-number="36">p_nbinomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> nbinomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial&quot;</span>)</a>
-<a class="sourceLine" id="cb110-37" data-line-number="37">p_multinomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> multinomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Multinomial&quot;</span>)</a>
-<a class="sourceLine" id="cb110-38" data-line-number="38">p_poisson &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> poisson_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Poisson&quot;</span>)</a>
-<a class="sourceLine" id="cb110-39" data-line-number="39">p_geometric &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> geometric_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Geometric&quot;</span>)</a>
-<a class="sourceLine" id="cb110-40" data-line-number="40">  </a>
-<a class="sourceLine" id="cb110-41" data-line-number="41"><span class="co"># Display distribution visualizations</span></a>
-<a class="sourceLine" id="cb110-42" data-line-number="42"><span class="kw">ggarrange</span>(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,</a>
-<a class="sourceLine" id="cb110-43" data-line-number="43">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb150"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb150-1" data-line-number="1"><span class="co"># Load library for arranging visuals</span></a>
+<a class="sourceLine" id="cb150-2" data-line-number="2"><span class="kw">library</span>(ggpubr)</a>
+<a class="sourceLine" id="cb150-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb150-4" data-line-number="4"><span class="co"># Create user-defined function (UDF) to simplify probability distribution visualization</span></a>
+<a class="sourceLine" id="cb150-5" data-line-number="5"><span class="co"># Function arguments: (1) data = object containing random distribution values; (2) type = &#39;discrete&#39; or &#39;continuous&#39; probability distribution; and (3) title = name of distribution</span></a>
+<a class="sourceLine" id="cb150-6" data-line-number="6">dist.viz &lt;-<span class="st"> </span><span class="cf">function</span>(data, type, title) {</a>
+<a class="sourceLine" id="cb150-7" data-line-number="7">  </a>
+<a class="sourceLine" id="cb150-8" data-line-number="8">  <span class="cf">if</span> (type <span class="op">==</span><span class="st"> &quot;discrete&quot;</span>){</a>
+<a class="sourceLine" id="cb150-9" data-line-number="9">    </a>
+<a class="sourceLine" id="cb150-10" data-line-number="10">    <span class="co"># Discrete distribution</span></a>
+<a class="sourceLine" id="cb150-11" data-line-number="11">    viz &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-12" data-line-number="12"><span class="st">           </span><span class="kw">aes</span>(data) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-13" data-line-number="13"><span class="st">           </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="kw">paste</span>(title), <span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;count&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-14" data-line-number="14"><span class="st">           </span><span class="kw">geom_histogram</span>(<span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb150-15" data-line-number="15"><span class="st">           </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb150-16" data-line-number="16"><span class="st">           </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">hjust =</span> <span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb150-17" data-line-number="17">    </a>
+<a class="sourceLine" id="cb150-18" data-line-number="18">  } <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb150-19" data-line-number="19">    </a>
+<a class="sourceLine" id="cb150-20" data-line-number="20">    <span class="co"># Continuous distribution</span></a>
+<a class="sourceLine" id="cb150-21" data-line-number="21">    viz &lt;-<span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-22" data-line-number="22"><span class="st">           </span><span class="kw">aes</span>(data) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-23" data-line-number="23"><span class="st">           </span><span class="kw">labs</span>(<span class="dt">title =</span> <span class="kw">paste</span>(title), <span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb150-24" data-line-number="24"><span class="st">           </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb150-25" data-line-number="25"><span class="st">           </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb150-26" data-line-number="26"><span class="st">           </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb150-27" data-line-number="27"><span class="st">           </span><span class="kw">theme</span>(<span class="dt">plot.title =</span> <span class="kw">element_text</span>(<span class="dt">hjust =</span> <span class="fl">0.5</span>))</a>
+<a class="sourceLine" id="cb150-28" data-line-number="28">  }</a>
+<a class="sourceLine" id="cb150-29" data-line-number="29"></a>
+<a class="sourceLine" id="cb150-30" data-line-number="30">  <span class="kw">return</span>(viz)</a>
+<a class="sourceLine" id="cb150-31" data-line-number="31">}</a>
+<a class="sourceLine" id="cb150-32" data-line-number="32"></a>
+<a class="sourceLine" id="cb150-33" data-line-number="33"><span class="co"># Call UDF to build visualizations and store to objects</span></a>
+<a class="sourceLine" id="cb150-34" data-line-number="34">p_bernoulli &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> bernoulli_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Bernoulli&quot;</span>)</a>
+<a class="sourceLine" id="cb150-35" data-line-number="35">p_binomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> binomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Binomial&quot;</span>)</a>
+<a class="sourceLine" id="cb150-36" data-line-number="36">p_nbinomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> nbinomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Negative Binomial&quot;</span>)</a>
+<a class="sourceLine" id="cb150-37" data-line-number="37">p_multinomial &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> multinomial_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Multinomial&quot;</span>)</a>
+<a class="sourceLine" id="cb150-38" data-line-number="38">p_poisson &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> poisson_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Poisson&quot;</span>)</a>
+<a class="sourceLine" id="cb150-39" data-line-number="39">p_geometric &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(<span class="dt">data =</span> geometric_dist, <span class="dt">type =</span> <span class="st">&quot;discrete&quot;</span>, <span class="dt">title =</span> <span class="st">&quot;Geometric&quot;</span>)</a>
+<a class="sourceLine" id="cb150-40" data-line-number="40">  </a>
+<a class="sourceLine" id="cb150-41" data-line-number="41"><span class="co"># Display distribution visualizations</span></a>
+<a class="sourceLine" id="cb150-42" data-line-number="42"><span class="kw">ggarrange</span>(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,</a>
+<a class="sourceLine" id="cb150-43" data-line-number="43">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:discrete-dist"></span>
 <img src="People_Analytics_Lifecycle_files/figure-html/discrete-dist-1.png" alt="Discrete Probability Distributions" width="672" />
 <p class="caption">
@@ -457,40 +456,40 @@ Figure 8.2: Discrete Probability Distributions
 <li><strong>F</strong>: developed to examine variances from random samples taken from two independent normal populations</li>
 </ul>
 <p>A number of functions are available in R to simulate PDFs. While the precise shape of a distribution depends on the parameters, we will simulate and visualize these common PDFs to illustrate differences in the general shape of each. Let’s first draw 1,000 random values from each distribution with a specified set of parameters:</p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb111-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
-<a class="sourceLine" id="cb111-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb111-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb111-4" data-line-number="4"><span class="co"># Simulate normal distribution</span></a>
-<a class="sourceLine" id="cb111-5" data-line-number="5">normal_dist &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1000</span>, <span class="dt">mean =</span> <span class="dv">50</span>, <span class="dt">sd =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb111-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb111-7" data-line-number="7"><span class="co"># Simulate log-normal distribution</span></a>
-<a class="sourceLine" id="cb111-8" data-line-number="8">lnormal_dist &lt;-<span class="st"> </span><span class="kw">rlnorm</span>(<span class="dv">1000</span>, <span class="dt">meanlog =</span> <span class="dv">0</span>, <span class="dt">sdlog =</span> <span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb111-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb111-10" data-line-number="10"><span class="co"># Simulate uniform distribution</span></a>
-<a class="sourceLine" id="cb111-11" data-line-number="11">uniform_dist &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">100</span>) </a>
-<a class="sourceLine" id="cb111-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb111-13" data-line-number="13"><span class="co"># Simulate student&#39;s t distribution</span></a>
-<a class="sourceLine" id="cb111-14" data-line-number="14">t_dist &lt;-<span class="st"> </span><span class="kw">rt</span>(<span class="dv">1000</span>, <span class="dt">df =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb111-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb111-16" data-line-number="16"><span class="co"># Simulate chi-square distribution</span></a>
-<a class="sourceLine" id="cb111-17" data-line-number="17">chisq_dist &lt;-<span class="st"> </span><span class="kw">rchisq</span>(<span class="dv">1000</span>, <span class="dt">df =</span> <span class="dv">5</span>)</a>
-<a class="sourceLine" id="cb111-18" data-line-number="18"></a>
-<a class="sourceLine" id="cb111-19" data-line-number="19"><span class="co"># Simulate F distribution</span></a>
-<a class="sourceLine" id="cb111-20" data-line-number="20">f_dist &lt;-<span class="st"> </span><span class="kw">rf</span>(<span class="dv">1000</span>, <span class="dt">df1 =</span> <span class="dv">5</span>, <span class="dt">df2 =</span> <span class="dv">200</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb151-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
+<a class="sourceLine" id="cb151-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb151-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb151-4" data-line-number="4"><span class="co"># Simulate normal distribution</span></a>
+<a class="sourceLine" id="cb151-5" data-line-number="5">normal_dist &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">1000</span>, <span class="dt">mean =</span> <span class="dv">50</span>, <span class="dt">sd =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb151-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb151-7" data-line-number="7"><span class="co"># Simulate log-normal distribution</span></a>
+<a class="sourceLine" id="cb151-8" data-line-number="8">lnormal_dist &lt;-<span class="st"> </span><span class="kw">rlnorm</span>(<span class="dv">1000</span>, <span class="dt">meanlog =</span> <span class="dv">0</span>, <span class="dt">sdlog =</span> <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb151-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb151-10" data-line-number="10"><span class="co"># Simulate uniform distribution</span></a>
+<a class="sourceLine" id="cb151-11" data-line-number="11">uniform_dist &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">100</span>) </a>
+<a class="sourceLine" id="cb151-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb151-13" data-line-number="13"><span class="co"># Simulate student&#39;s t distribution</span></a>
+<a class="sourceLine" id="cb151-14" data-line-number="14">t_dist &lt;-<span class="st"> </span><span class="kw">rt</span>(<span class="dv">1000</span>, <span class="dt">df =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb151-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb151-16" data-line-number="16"><span class="co"># Simulate chi-square distribution</span></a>
+<a class="sourceLine" id="cb151-17" data-line-number="17">chisq_dist &lt;-<span class="st"> </span><span class="kw">rchisq</span>(<span class="dv">1000</span>, <span class="dt">df =</span> <span class="dv">5</span>)</a>
+<a class="sourceLine" id="cb151-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb151-19" data-line-number="19"><span class="co"># Simulate F distribution</span></a>
+<a class="sourceLine" id="cb151-20" data-line-number="20">f_dist &lt;-<span class="st"> </span><span class="kw">rf</span>(<span class="dv">1000</span>, <span class="dt">df1 =</span> <span class="dv">5</span>, <span class="dt">df2 =</span> <span class="dv">200</span>)</a></code></pre></div>
 <p><br /></p>
 <p>Next, we will visualize each distribution. Since these continuous distributions are probability <em>density</em> functions, we will superimpose density plots over each:</p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb112-1" data-line-number="1"><span class="co"># Call UDF to build visualizations and store to objects</span></a>
-<a class="sourceLine" id="cb112-2" data-line-number="2"><span class="co"># Note that as long as the arguments are in the order specified in the function (see our UDF definition above), the argument names do not need to be specified. To illustrate, we will drop the argument names from these function calls:</span></a>
-<a class="sourceLine" id="cb112-3" data-line-number="3">p_normal &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(normal_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Normal&quot;</span>)</a>
-<a class="sourceLine" id="cb112-4" data-line-number="4">p_lnormal &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(lnormal_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Log-Normal&quot;</span>)</a>
-<a class="sourceLine" id="cb112-5" data-line-number="5">p_uniform &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(uniform_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Uniform&quot;</span>)</a>
-<a class="sourceLine" id="cb112-6" data-line-number="6">p_t &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(t_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Student&#39;s T&quot;</span>)</a>
-<a class="sourceLine" id="cb112-7" data-line-number="7">p_chisq &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(chisq_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Chi-Square&quot;</span>)</a>
-<a class="sourceLine" id="cb112-8" data-line-number="8">p_f &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(f_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;F&quot;</span>)</a>
-<a class="sourceLine" id="cb112-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb112-10" data-line-number="10"><span class="co"># Display distribution visualizations</span></a>
-<a class="sourceLine" id="cb112-11" data-line-number="11"><span class="kw">ggarrange</span>(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,</a>
-<a class="sourceLine" id="cb112-12" data-line-number="12">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb152"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb152-1" data-line-number="1"><span class="co"># Call UDF to build visualizations and store to objects</span></a>
+<a class="sourceLine" id="cb152-2" data-line-number="2"><span class="co"># Note that as long as the arguments are in the order specified in the function (see our UDF definition above), the argument names do not need to be specified. To illustrate, we will drop the argument names from these function calls:</span></a>
+<a class="sourceLine" id="cb152-3" data-line-number="3">p_normal &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(normal_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Normal&quot;</span>)</a>
+<a class="sourceLine" id="cb152-4" data-line-number="4">p_lnormal &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(lnormal_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Log-Normal&quot;</span>)</a>
+<a class="sourceLine" id="cb152-5" data-line-number="5">p_uniform &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(uniform_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Uniform&quot;</span>)</a>
+<a class="sourceLine" id="cb152-6" data-line-number="6">p_t &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(t_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Student&#39;s T&quot;</span>)</a>
+<a class="sourceLine" id="cb152-7" data-line-number="7">p_chisq &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(chisq_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;Chi-Square&quot;</span>)</a>
+<a class="sourceLine" id="cb152-8" data-line-number="8">p_f &lt;-<span class="st"> </span><span class="kw">dist.viz</span>(f_dist, <span class="st">&quot;continuous&quot;</span>, <span class="st">&quot;F&quot;</span>)</a>
+<a class="sourceLine" id="cb152-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb152-10" data-line-number="10"><span class="co"># Display distribution visualizations</span></a>
+<a class="sourceLine" id="cb152-11" data-line-number="11"><span class="kw">ggarrange</span>(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,</a>
+<a class="sourceLine" id="cb152-12" data-line-number="12">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:continous-dist"></span>
 <img src="People_Analytics_Lifecycle_files/figure-html/continous-dist-1.png" alt="Continuous Probability Distributions" width="672" />
 <p class="caption">
@@ -520,51 +519,51 @@ Figure 8.3: Continuous Probability Distributions
 <p>It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection have a 66% chance (rather than 50%) of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.</p>
 <p>When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. Monty’s knowledge of the door containing the prize does not impact the probability of selecting the winning door. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize’s location and opens a door he knows does not contain the prize. The probabilities change. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prize’s location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).</p>
 <p>Seeing is believing, so let’s prove this with a simulation in R:</p>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb113-1" data-line-number="1"><span class="co"># Set seed for reproducible simulations</span></a>
-<a class="sourceLine" id="cb113-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">12345</span>)</a>
-<a class="sourceLine" id="cb113-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb113-4" data-line-number="4"><span class="co"># Set number of simulations</span></a>
-<a class="sourceLine" id="cb113-5" data-line-number="5">trials =<span class="st"> </span><span class="dv">10000</span></a>
-<a class="sourceLine" id="cb113-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb113-7" data-line-number="7"><span class="co"># Store switch/keep decisions</span></a>
-<a class="sourceLine" id="cb113-8" data-line-number="8">decisions =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;switch&quot;</span>, <span class="st">&quot;keep&quot;</span>)</a>
-<a class="sourceLine" id="cb113-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb113-10" data-line-number="10"><span class="co"># Store integer for each door</span></a>
-<a class="sourceLine" id="cb113-11" data-line-number="11">doors =<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
-<a class="sourceLine" id="cb113-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb113-13" data-line-number="13"><span class="co"># Initialize empty data frame for results</span></a>
-<a class="sourceLine" id="cb113-14" data-line-number="14">results =<span class="st"> </span><span class="ot">NULL</span></a>
-<a class="sourceLine" id="cb113-15" data-line-number="15"></a>
-<a class="sourceLine" id="cb113-16" data-line-number="16"><span class="cf">for</span> (n <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>trials){</a>
-<a class="sourceLine" id="cb113-17" data-line-number="17">  </a>
-<a class="sourceLine" id="cb113-18" data-line-number="18">  <span class="cf">for</span> (decision <span class="cf">in</span> decisions){</a>
-<a class="sourceLine" id="cb113-19" data-line-number="19">    </a>
-<a class="sourceLine" id="cb113-20" data-line-number="20">    <span class="co"># Select correct door</span></a>
-<a class="sourceLine" id="cb113-21" data-line-number="21">    correct_door &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>, <span class="dt">replace =</span> T)</a>
-<a class="sourceLine" id="cb113-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb113-23" data-line-number="23">    <span class="co"># Contestant chooses a door at random</span></a>
-<a class="sourceLine" id="cb113-24" data-line-number="24">    selected_door &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>, <span class="dt">replace =</span> T)</a>
-<a class="sourceLine" id="cb113-25" data-line-number="25">  </a>
-<a class="sourceLine" id="cb113-26" data-line-number="26">    <span class="co"># Open door that was neither selected by the contestant nor contains the prize</span></a>
-<a class="sourceLine" id="cb113-27" data-line-number="27">    <span class="co"># Choose one door to open if multiple remain without the prize (i.e., the contestant didn&#39;t initially select the door containing the prize)</span></a>
-<a class="sourceLine" id="cb113-28" data-line-number="28">    remaining_doors &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>correct_door <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>selected_door)</a>
-<a class="sourceLine" id="cb113-29" data-line-number="29">    open_door &lt;-<span class="st"> </span><span class="kw">sample</span>(remaining_doors, <span class="dv">1</span>, <span class="dt">replace =</span> T) </a>
-<a class="sourceLine" id="cb113-30" data-line-number="30">  </a>
-<a class="sourceLine" id="cb113-31" data-line-number="31">    <span class="co"># Contestant makes decision to switch doors or keep with the originally selected door</span></a>
-<a class="sourceLine" id="cb113-32" data-line-number="32">    selected_door &lt;-<span class="st"> </span><span class="kw">ifelse</span>(decision <span class="op">==</span><span class="st"> &quot;switch&quot;</span>, <span class="kw">which</span>(<span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>selected_door <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>open_door), selected_door)</a>
-<a class="sourceLine" id="cb113-33" data-line-number="33">    </a>
-<a class="sourceLine" id="cb113-34" data-line-number="34">    <span class="co"># Store results in data frame</span></a>
-<a class="sourceLine" id="cb113-35" data-line-number="35">    results &lt;-<span class="st"> </span><span class="kw">rbind</span>(results, <span class="kw">cbind.data.frame</span>(</a>
-<a class="sourceLine" id="cb113-36" data-line-number="36">                     <span class="dt">trial =</span> n,</a>
-<a class="sourceLine" id="cb113-37" data-line-number="37">                     <span class="dt">decision =</span> decision,</a>
-<a class="sourceLine" id="cb113-38" data-line-number="38">                     <span class="dt">result =</span> <span class="kw">ifelse</span>(correct_door <span class="op">==</span><span class="st"> </span>selected_door, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;lose&quot;</span>)))</a>
-<a class="sourceLine" id="cb113-39" data-line-number="39">  }</a>
-<a class="sourceLine" id="cb113-40" data-line-number="40">}</a>
-<a class="sourceLine" id="cb113-41" data-line-number="41"></a>
-<a class="sourceLine" id="cb113-42" data-line-number="42"><span class="co"># Calculate percentage difference in wins for switch vs. keep decisions</span></a>
-<a class="sourceLine" id="cb113-43" data-line-number="43">switch_wins &lt;-<span class="st"> </span><span class="kw">nrow</span>(results[results<span class="op">$</span>decision <span class="op">==</span><span class="st"> &quot;switch&quot;</span> <span class="op">&amp;</span><span class="st"> </span>results<span class="op">$</span>result <span class="op">==</span><span class="st"> &quot;win&quot;</span>, ]) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(results) <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb113-44" data-line-number="44">keep_wins &lt;-<span class="st"> </span><span class="kw">nrow</span>(results[results<span class="op">$</span>decision <span class="op">==</span><span class="st"> &quot;keep&quot;</span> <span class="op">&amp;</span><span class="st"> </span>results<span class="op">$</span>result <span class="op">==</span><span class="st"> &quot;win&quot;</span>, ]) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(results) <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a>
-<a class="sourceLine" id="cb113-45" data-line-number="45"><span class="kw">round</span>((switch_wins <span class="op">-</span><span class="st"> </span>keep_wins) <span class="op">/</span><span class="st"> </span>keep_wins <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="dv">0</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb153-1" data-line-number="1"><span class="co"># Set seed for reproducible simulations</span></a>
+<a class="sourceLine" id="cb153-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">12345</span>)</a>
+<a class="sourceLine" id="cb153-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb153-4" data-line-number="4"><span class="co"># Set number of simulations</span></a>
+<a class="sourceLine" id="cb153-5" data-line-number="5">trials =<span class="st"> </span><span class="dv">10000</span></a>
+<a class="sourceLine" id="cb153-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb153-7" data-line-number="7"><span class="co"># Store switch/keep decisions</span></a>
+<a class="sourceLine" id="cb153-8" data-line-number="8">decisions =<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;switch&quot;</span>, <span class="st">&quot;keep&quot;</span>)</a>
+<a class="sourceLine" id="cb153-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb153-10" data-line-number="10"><span class="co"># Store integer for each door</span></a>
+<a class="sourceLine" id="cb153-11" data-line-number="11">doors =<span class="st"> </span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb153-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb153-13" data-line-number="13"><span class="co"># Initialize empty data frame for results</span></a>
+<a class="sourceLine" id="cb153-14" data-line-number="14">results =<span class="st"> </span><span class="ot">NULL</span></a>
+<a class="sourceLine" id="cb153-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb153-16" data-line-number="16"><span class="cf">for</span> (n <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>trials){</a>
+<a class="sourceLine" id="cb153-17" data-line-number="17">  </a>
+<a class="sourceLine" id="cb153-18" data-line-number="18">  <span class="cf">for</span> (decision <span class="cf">in</span> decisions){</a>
+<a class="sourceLine" id="cb153-19" data-line-number="19">    </a>
+<a class="sourceLine" id="cb153-20" data-line-number="20">    <span class="co"># Select correct door</span></a>
+<a class="sourceLine" id="cb153-21" data-line-number="21">    correct_door &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>, <span class="dt">replace =</span> T)</a>
+<a class="sourceLine" id="cb153-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb153-23" data-line-number="23">    <span class="co"># Contestant chooses a door at random</span></a>
+<a class="sourceLine" id="cb153-24" data-line-number="24">    selected_door &lt;-<span class="st"> </span><span class="kw">sample</span>(doors, <span class="dv">1</span>, <span class="dt">replace =</span> T)</a>
+<a class="sourceLine" id="cb153-25" data-line-number="25">  </a>
+<a class="sourceLine" id="cb153-26" data-line-number="26">    <span class="co"># Open door that was neither selected by the contestant nor contains the prize</span></a>
+<a class="sourceLine" id="cb153-27" data-line-number="27">    <span class="co"># Choose one door to open if multiple remain without the prize (i.e., the contestant didn&#39;t initially select the door containing the prize)</span></a>
+<a class="sourceLine" id="cb153-28" data-line-number="28">    remaining_doors &lt;-<span class="st"> </span><span class="kw">which</span>(<span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>correct_door <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>selected_door)</a>
+<a class="sourceLine" id="cb153-29" data-line-number="29">    open_door &lt;-<span class="st"> </span><span class="kw">sample</span>(remaining_doors, <span class="dv">1</span>, <span class="dt">replace =</span> T) </a>
+<a class="sourceLine" id="cb153-30" data-line-number="30">  </a>
+<a class="sourceLine" id="cb153-31" data-line-number="31">    <span class="co"># Contestant makes decision to switch doors or keep with the originally selected door</span></a>
+<a class="sourceLine" id="cb153-32" data-line-number="32">    selected_door &lt;-<span class="st"> </span><span class="kw">ifelse</span>(decision <span class="op">==</span><span class="st"> &quot;switch&quot;</span>, <span class="kw">which</span>(<span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>selected_door <span class="op">&amp;</span><span class="st"> </span><span class="op">!</span>doors <span class="op">==</span><span class="st"> </span>open_door), selected_door)</a>
+<a class="sourceLine" id="cb153-33" data-line-number="33">    </a>
+<a class="sourceLine" id="cb153-34" data-line-number="34">    <span class="co"># Store results in data frame</span></a>
+<a class="sourceLine" id="cb153-35" data-line-number="35">    results &lt;-<span class="st"> </span><span class="kw">rbind</span>(results, <span class="kw">cbind.data.frame</span>(</a>
+<a class="sourceLine" id="cb153-36" data-line-number="36">                     <span class="dt">trial =</span> n,</a>
+<a class="sourceLine" id="cb153-37" data-line-number="37">                     <span class="dt">decision =</span> decision,</a>
+<a class="sourceLine" id="cb153-38" data-line-number="38">                     <span class="dt">result =</span> <span class="kw">ifelse</span>(correct_door <span class="op">==</span><span class="st"> </span>selected_door, <span class="st">&quot;win&quot;</span>, <span class="st">&quot;lose&quot;</span>)))</a>
+<a class="sourceLine" id="cb153-39" data-line-number="39">  }</a>
+<a class="sourceLine" id="cb153-40" data-line-number="40">}</a>
+<a class="sourceLine" id="cb153-41" data-line-number="41"></a>
+<a class="sourceLine" id="cb153-42" data-line-number="42"><span class="co"># Calculate percentage difference in wins for switch vs. keep decisions</span></a>
+<a class="sourceLine" id="cb153-43" data-line-number="43">switch_wins &lt;-<span class="st"> </span><span class="kw">nrow</span>(results[results<span class="op">$</span>decision <span class="op">==</span><span class="st"> &quot;switch&quot;</span> <span class="op">&amp;</span><span class="st"> </span>results<span class="op">$</span>result <span class="op">==</span><span class="st"> &quot;win&quot;</span>, ]) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(results) <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb153-44" data-line-number="44">keep_wins &lt;-<span class="st"> </span><span class="kw">nrow</span>(results[results<span class="op">$</span>decision <span class="op">==</span><span class="st"> &quot;keep&quot;</span> <span class="op">&amp;</span><span class="st"> </span>results<span class="op">$</span>result <span class="op">==</span><span class="st"> &quot;win&quot;</span>, ]) <span class="op">/</span><span class="st"> </span><span class="kw">nrow</span>(results) <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb153-45" data-line-number="45"><span class="kw">round</span>((switch_wins <span class="op">-</span><span class="st"> </span>keep_wins) <span class="op">/</span><span class="st"> </span>keep_wins <span class="op">*</span><span class="st"> </span><span class="dv">100</span>, <span class="dv">0</span>)</a></code></pre></div>
 <pre><code>## [1] 45</code></pre>
 <p><br /></p>
 <p>As we can see, wins occur nearly 50% more often when contestants switch doors. This exercise hopefully demonstrates the importance of conditional probability and statistical assumptions like randomness. Also, if ever you find yourself playing Let’s Make a Deal, switch doors.</p>
@@ -587,67 +586,67 @@ Figure 8.4: The Empirical Rule
 <p>Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a ‘reasonably sized’ sample of statisticians with average funness so extremely different from the population average.</p>
 <p>Because small samples lend to anomalies, we could – by chance – select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!</p>
 <p>Let’s now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.</p>
-<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb115-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
-<a class="sourceLine" id="cb115-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
-<a class="sourceLine" id="cb115-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb115-4" data-line-number="4"><span class="co"># Generate uniform population distribution with 1000 values ranging from 1 to 100</span></a>
-<a class="sourceLine" id="cb115-5" data-line-number="5">rand.unif &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">100</span>)</a></code></pre></div>
-<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb116-1" data-line-number="1"><span class="co"># Calculate population mean</span></a>
-<a class="sourceLine" id="cb116-2" data-line-number="2"><span class="kw">mean</span>(rand.unif)</a></code></pre></div>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb155-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
+<a class="sourceLine" id="cb155-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
+<a class="sourceLine" id="cb155-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb155-4" data-line-number="4"><span class="co"># Generate uniform population distribution with 1000 values ranging from 1 to 100</span></a>
+<a class="sourceLine" id="cb155-5" data-line-number="5">rand.unif &lt;-<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1000</span>, <span class="dt">min =</span> <span class="dv">1</span>, <span class="dt">max =</span> <span class="dv">100</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb156"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb156-1" data-line-number="1"><span class="co"># Calculate population mean</span></a>
+<a class="sourceLine" id="cb156-2" data-line-number="2"><span class="kw">mean</span>(rand.unif)</a></code></pre></div>
 <pre><code>## [1] 51.22007</code></pre>
-<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb118-1" data-line-number="1"><span class="co"># Calculate population variance</span></a>
-<a class="sourceLine" id="cb118-2" data-line-number="2">N =<span class="st"> </span><span class="kw">length</span>(rand.unif)</a>
-<a class="sourceLine" id="cb118-3" data-line-number="3"><span class="kw">var</span>(rand.unif) <span class="op">*</span><span class="st"> </span>(N <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>N</a></code></pre></div>
+<div class="sourceCode" id="cb158"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb158-1" data-line-number="1"><span class="co"># Calculate population variance</span></a>
+<a class="sourceLine" id="cb158-2" data-line-number="2">N =<span class="st"> </span><span class="kw">length</span>(rand.unif)</a>
+<a class="sourceLine" id="cb158-3" data-line-number="3"><span class="kw">var</span>(rand.unif) <span class="op">*</span><span class="st"> </span>(N <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>N</a></code></pre></div>
 <pre><code>## [1] 830.3155</code></pre>
-<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb120-1" data-line-number="1"><span class="co"># Produce histogram to visualize population distribution</span></a>
-<a class="sourceLine" id="cb120-2" data-line-number="2"><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb120-3" data-line-number="3"><span class="st">  </span><span class="kw">aes</span>(rand.unif) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb120-4" data-line-number="4"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb120-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb120-6" data-line-number="6"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb120-7" data-line-number="7"><span class="st">  </span><span class="kw">theme_bw</span>()</a></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-62"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-62-1.png" alt="Uniform Population Distribution (N = 1000)" width="672" />
+<div class="sourceCode" id="cb160"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb160-1" data-line-number="1"><span class="co"># Produce histogram to visualize population distribution</span></a>
+<a class="sourceLine" id="cb160-2" data-line-number="2"><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb160-3" data-line-number="3"><span class="st">  </span><span class="kw">aes</span>(rand.unif) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb160-4" data-line-number="4"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;x&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb160-5" data-line-number="5"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb160-6" data-line-number="6"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb160-7" data-line-number="7"><span class="st">  </span><span class="kw">theme_bw</span>()</a></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-82"></span>
+<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-82-1.png" alt="Uniform Population Distribution (N = 1000)" width="672" />
 <p class="caption">
 Figure 8.5: Uniform Population Distribution (N = 1000)
 </p>
 </div>
 <p><br /></p>
 <p>As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.</p>
-<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb121-1" data-line-number="1"><span class="co"># Define number of samples to draw from population distribution</span></a>
-<a class="sourceLine" id="cb121-2" data-line-number="2">samples &lt;-<span class="st"> </span><span class="dv">10000</span></a>
-<a class="sourceLine" id="cb121-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb121-4" data-line-number="4"><span class="co"># Populate vector with sample sizes</span></a>
-<a class="sourceLine" id="cb121-5" data-line-number="5">sample_n &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">25</span>,<span class="dv">50</span>)</a>
-<a class="sourceLine" id="cb121-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb121-7" data-line-number="7"><span class="co"># Initialize empty data frame to hold sample means</span></a>
-<a class="sourceLine" id="cb121-8" data-line-number="8">sample_means =<span class="st"> </span><span class="ot">NULL</span></a>
-<a class="sourceLine" id="cb121-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb121-10" data-line-number="10"><span class="co"># Set seed for reproducible random samples</span></a>
-<a class="sourceLine" id="cb121-11" data-line-number="11"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
-<a class="sourceLine" id="cb121-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb121-13" data-line-number="13"><span class="co"># For each n, draw random samples</span></a>
-<a class="sourceLine" id="cb121-14" data-line-number="14"><span class="cf">for</span> (n <span class="cf">in</span> sample_n) {</a>
-<a class="sourceLine" id="cb121-15" data-line-number="15">  </a>
-<a class="sourceLine" id="cb121-16" data-line-number="16">  <span class="cf">for</span> (draw <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>samples) {</a>
-<a class="sourceLine" id="cb121-17" data-line-number="17">    </a>
-<a class="sourceLine" id="cb121-18" data-line-number="18">      <span class="co"># Store sample means in data frame</span></a>
-<a class="sourceLine" id="cb121-19" data-line-number="19">      sample_means &lt;-<span class="st"> </span><span class="kw">rbind</span>(sample_means, <span class="kw">cbind.data.frame</span>(</a>
-<a class="sourceLine" id="cb121-20" data-line-number="20">                            <span class="dt">n =</span> n, </a>
-<a class="sourceLine" id="cb121-21" data-line-number="21">                            <span class="dt">x_bar =</span> <span class="kw">mean</span>(<span class="kw">sample</span>(rand.unif, n, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>))))</a>
-<a class="sourceLine" id="cb121-22" data-line-number="22">  }</a>
-<a class="sourceLine" id="cb121-23" data-line-number="23">}</a>
-<a class="sourceLine" id="cb121-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb121-25" data-line-number="25"><span class="co"># Produce histograms to visualize distributions of sample means, grouped by n-count</span></a>
-<a class="sourceLine" id="cb121-26" data-line-number="26">sample_means <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb121-27" data-line-number="27"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> x_bar, <span class="dt">fill =</span> n) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb121-28" data-line-number="28"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;x-bar&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
-<a class="sourceLine" id="cb121-29" data-line-number="29"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb121-30" data-line-number="30"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
-<a class="sourceLine" id="cb121-31" data-line-number="31"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
-<a class="sourceLine" id="cb121-32" data-line-number="32"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>n)</a></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-63"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-63-1.png" alt="Distribution of 10,000 Sample Means of Varied Size" width="672" />
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb161-1" data-line-number="1"><span class="co"># Define number of samples to draw from population distribution</span></a>
+<a class="sourceLine" id="cb161-2" data-line-number="2">samples &lt;-<span class="st"> </span><span class="dv">10000</span></a>
+<a class="sourceLine" id="cb161-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb161-4" data-line-number="4"><span class="co"># Populate vector with sample sizes</span></a>
+<a class="sourceLine" id="cb161-5" data-line-number="5">sample_n &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">5</span>,<span class="dv">10</span>,<span class="dv">25</span>,<span class="dv">50</span>)</a>
+<a class="sourceLine" id="cb161-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb161-7" data-line-number="7"><span class="co"># Initialize empty data frame to hold sample means</span></a>
+<a class="sourceLine" id="cb161-8" data-line-number="8">sample_means =<span class="st"> </span><span class="ot">NULL</span></a>
+<a class="sourceLine" id="cb161-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb161-10" data-line-number="10"><span class="co"># Set seed for reproducible random samples</span></a>
+<a class="sourceLine" id="cb161-11" data-line-number="11"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
+<a class="sourceLine" id="cb161-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb161-13" data-line-number="13"><span class="co"># For each n, draw random samples</span></a>
+<a class="sourceLine" id="cb161-14" data-line-number="14"><span class="cf">for</span> (n <span class="cf">in</span> sample_n) {</a>
+<a class="sourceLine" id="cb161-15" data-line-number="15">  </a>
+<a class="sourceLine" id="cb161-16" data-line-number="16">  <span class="cf">for</span> (draw <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>samples) {</a>
+<a class="sourceLine" id="cb161-17" data-line-number="17">    </a>
+<a class="sourceLine" id="cb161-18" data-line-number="18">      <span class="co"># Store sample means in data frame</span></a>
+<a class="sourceLine" id="cb161-19" data-line-number="19">      sample_means &lt;-<span class="st"> </span><span class="kw">rbind</span>(sample_means, <span class="kw">cbind.data.frame</span>(</a>
+<a class="sourceLine" id="cb161-20" data-line-number="20">                            <span class="dt">n =</span> n, </a>
+<a class="sourceLine" id="cb161-21" data-line-number="21">                            <span class="dt">x_bar =</span> <span class="kw">mean</span>(<span class="kw">sample</span>(rand.unif, n, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>))))</a>
+<a class="sourceLine" id="cb161-22" data-line-number="22">  }</a>
+<a class="sourceLine" id="cb161-23" data-line-number="23">}</a>
+<a class="sourceLine" id="cb161-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb161-25" data-line-number="25"><span class="co"># Produce histograms to visualize distributions of sample means, grouped by n-count</span></a>
+<a class="sourceLine" id="cb161-26" data-line-number="26">sample_means <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">ggplot</span>() <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb161-27" data-line-number="27"><span class="st">  </span><span class="kw">aes</span>(<span class="dt">x =</span> x_bar, <span class="dt">fill =</span> n) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb161-28" data-line-number="28"><span class="st">  </span><span class="kw">labs</span>(<span class="dt">x =</span> <span class="st">&quot;x-bar&quot;</span>, <span class="dt">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="op">+</span><span class="st"> </span></a>
+<a class="sourceLine" id="cb161-29" data-line-number="29"><span class="st">  </span><span class="kw">geom_histogram</span>(<span class="kw">aes</span>(<span class="dt">y =</span> ..density..), <span class="dt">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb161-30" data-line-number="30"><span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
+<a class="sourceLine" id="cb161-31" data-line-number="31"><span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
+<a class="sourceLine" id="cb161-32" data-line-number="32"><span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span>n)</a></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-83"></span>
+<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-83-1.png" alt="Distribution of 10,000 Sample Means of Varied Size" width="672" />
 <p class="caption">
 Figure 8.6: Distribution of 10,000 Sample Means of Varied Size
 </p>
@@ -671,49 +670,49 @@ Figure 8.7: Intervals for 95% Confidence Level
 <p>A related concept that is fundamental to estimating CIs is the <strong>standard error (SE)</strong>, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:</p>
 <p><span class="math display">\[ SE = \frac{\sigma}{\sqrt{n}} \]</span></p>
 <p>Since the CLT is fundamental to inferential statistics, let’s validate that our simulated distribution of sample means adheres to the properties of normally distributed data per the Empirical Rule:</p>
-<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb122-1" data-line-number="1"><span class="co"># Store sample means with n = 50</span></a>
-<a class="sourceLine" id="cb122-2" data-line-number="2">x_bars &lt;-<span class="st"> </span>sample_means[sample_means<span class="op">$</span>n <span class="op">==</span><span class="st"> </span><span class="dv">50</span>, <span class="st">&quot;x_bar&quot;</span>]</a>
-<a class="sourceLine" id="cb122-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb122-4" data-line-number="4"><span class="co"># Store sample size</span></a>
-<a class="sourceLine" id="cb122-5" data-line-number="5">n &lt;-<span class="st"> </span><span class="kw">length</span>(x_bars)</a>
-<a class="sourceLine" id="cb122-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb122-7" data-line-number="7"><span class="co"># Calculate percent of sample means within +/- 2 SEs</span></a>
-<a class="sourceLine" id="cb122-8" data-line-number="8"><span class="kw">length</span>(x_bars[x_bars <span class="op">&lt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars) <span class="op">&amp;</span><span class="st"> </span>x_bars <span class="op">&gt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">-</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars)]) <span class="op">/</span><span class="st"> </span>n <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a></code></pre></div>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb162-1" data-line-number="1"><span class="co"># Store sample means with n = 50</span></a>
+<a class="sourceLine" id="cb162-2" data-line-number="2">x_bars &lt;-<span class="st"> </span>sample_means[sample_means<span class="op">$</span>n <span class="op">==</span><span class="st"> </span><span class="dv">50</span>, <span class="st">&quot;x_bar&quot;</span>]</a>
+<a class="sourceLine" id="cb162-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb162-4" data-line-number="4"><span class="co"># Store sample size</span></a>
+<a class="sourceLine" id="cb162-5" data-line-number="5">n &lt;-<span class="st"> </span><span class="kw">length</span>(x_bars)</a>
+<a class="sourceLine" id="cb162-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb162-7" data-line-number="7"><span class="co"># Calculate percent of sample means within +/- 2 SEs</span></a>
+<a class="sourceLine" id="cb162-8" data-line-number="8"><span class="kw">length</span>(x_bars[x_bars <span class="op">&lt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">+</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars) <span class="op">&amp;</span><span class="st"> </span>x_bars <span class="op">&gt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">-</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars)]) <span class="op">/</span><span class="st"> </span>n <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a></code></pre></div>
 <pre><code>## [1] 95.35</code></pre>
 <p>95% of sample means are within 2 SEs, which is what we expect per the characteristics of the normal distribution.</p>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb124-1" data-line-number="1"><span class="co"># Calculate percent of sample means within +/- 3 SEs</span></a>
-<a class="sourceLine" id="cb124-2" data-line-number="2"><span class="kw">length</span>(x_bars[x_bars <span class="op">&lt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars) <span class="op">&amp;</span><span class="st"> </span>x_bars <span class="op">&gt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">-</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars)]) <span class="op">/</span><span class="st"> </span>n <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a></code></pre></div>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb164-1" data-line-number="1"><span class="co"># Calculate percent of sample means within +/- 3 SEs</span></a>
+<a class="sourceLine" id="cb164-2" data-line-number="2"><span class="kw">length</span>(x_bars[x_bars <span class="op">&lt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">+</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars) <span class="op">&amp;</span><span class="st"> </span>x_bars <span class="op">&gt;</span><span class="st"> </span><span class="kw">mean</span>(x_bars) <span class="op">-</span><span class="st"> </span><span class="dv">3</span> <span class="op">*</span><span class="st"> </span><span class="kw">sd</span>(x_bars)]) <span class="op">/</span><span class="st"> </span>n <span class="op">*</span><span class="st"> </span><span class="dv">100</span></a></code></pre></div>
 <pre><code>## [1] 99.79</code></pre>
 <p>Nearly all of the sample means are within 3 SEs, indicating that it would be highly unlikely – nearly impossible even – to observe a sample mean ‘from the same population’ that falls outside this interval.</p>
 <p>Now, let’s illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\sigma\)</span> are known and our sample size <span class="math inline">\(n\)</span> is at least 30; therefore, we can use a <strong>Z-Test</strong> to calculate the 95% CI. A <span class="math inline">\(z\)</span> score of 1.96 corresponds to the 95% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95% CI represents the range of values we would expect to include <span class="math inline">\(\mu\)</span> in at least 95 of 100 random samples taken from the population.</p>
 <p>The CI in this case is defined by:</p>
 <p><span class="math display">\[ CI = \bar{x} \pm z_{\alpha/_2} \frac{\sigma}{\sqrt{n}} \]</span></p>
 <p>Let’s randomly take <span class="math inline">\(n\)</span> = 100 from the population, and compute sample statistics to estimate the 95% CI:</p>
-<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb126-1" data-line-number="1"><span class="co"># Set seed for reproducible random samples</span></a>
-<a class="sourceLine" id="cb126-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
-<a class="sourceLine" id="cb126-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb126-4" data-line-number="4"><span class="co"># Sample 100 values from uniform population distribution</span></a>
-<a class="sourceLine" id="cb126-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw">sample</span>(rand.unif, <span class="dv">100</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>)</a>
-<a class="sourceLine" id="cb126-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb126-7" data-line-number="7"><span class="co"># Calculate 95% CI</span></a>
-<a class="sourceLine" id="cb126-8" data-line-number="8">ci95_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a>
-<a class="sourceLine" id="cb126-9" data-line-number="9">ci95_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb127-1" data-line-number="1"><span class="co"># Print lower bound for 95% CI</span></a>
-<a class="sourceLine" id="cb127-2" data-line-number="2">ci95_lower_bound</a></code></pre></div>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb166-1" data-line-number="1"><span class="co"># Set seed for reproducible random samples</span></a>
+<a class="sourceLine" id="cb166-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
+<a class="sourceLine" id="cb166-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb166-4" data-line-number="4"><span class="co"># Sample 100 values from uniform population distribution</span></a>
+<a class="sourceLine" id="cb166-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw">sample</span>(rand.unif, <span class="dv">100</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb166-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb166-7" data-line-number="7"><span class="co"># Calculate 95% CI</span></a>
+<a class="sourceLine" id="cb166-8" data-line-number="8">ci95_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb166-9" data-line-number="9">ci95_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">1.96</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb167-1" data-line-number="1"><span class="co"># Print lower bound for 95% CI</span></a>
+<a class="sourceLine" id="cb167-2" data-line-number="2">ci95_lower_bound</a></code></pre></div>
 <pre><code>## [1] 47.90733</code></pre>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb129-1" data-line-number="1"><span class="co"># Print upper bound for 95% CI</span></a>
-<a class="sourceLine" id="cb129-2" data-line-number="2">ci95_upper_bound</a></code></pre></div>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb169-1" data-line-number="1"><span class="co"># Print upper bound for 95% CI</span></a>
+<a class="sourceLine" id="cb169-2" data-line-number="2">ci95_upper_bound</a></code></pre></div>
 <pre><code>## [1] 58.98773</code></pre>
 <p>Our known <span class="math inline">\(\mu\)</span> is 51.2, which is covered by our 95% CI (47.9 - 59.0). Per the CLT, in less than 5% of cases would we expect to draw a random sample from the population that results in a 95% CI which does not include <span class="math inline">\(\mu\)</span>. Note that our CI narrows with larger samples since our confidence that the range includes <span class="math inline">\(\mu\)</span> increases with more data.</p>
 <p>Next, let’s look at a 99% CI. We will enter 2.576 for <span class="math inline">\(z\)</span>:</p>
-<div class="sourceCode" id="cb131"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb131-1" data-line-number="1"><span class="co"># Calculate 99% CI</span></a>
-<a class="sourceLine" id="cb131-2" data-line-number="2">ci99_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.576</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a>
-<a class="sourceLine" id="cb131-3" data-line-number="3">ci99_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.576</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb132-1" data-line-number="1"><span class="co"># Print lower bound for 99% CI</span></a>
-<a class="sourceLine" id="cb132-2" data-line-number="2">ci99_lower_bound</a></code></pre></div>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb171-1" data-line-number="1"><span class="co"># Calculate 99% CI</span></a>
+<a class="sourceLine" id="cb171-2" data-line-number="2">ci99_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.576</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a>
+<a class="sourceLine" id="cb171-3" data-line-number="3">ci99_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.576</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">100</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb172-1" data-line-number="1"><span class="co"># Print lower bound for 99% CI</span></a>
+<a class="sourceLine" id="cb172-2" data-line-number="2">ci99_lower_bound</a></code></pre></div>
 <pre><code>## [1] 46.16612</code></pre>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb134-1" data-line-number="1"><span class="co"># Print upper bound for 99% CI</span></a>
-<a class="sourceLine" id="cb134-2" data-line-number="2">ci99_upper_bound</a></code></pre></div>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb174-1" data-line-number="1"><span class="co"># Print upper bound for 99% CI</span></a>
+<a class="sourceLine" id="cb174-2" data-line-number="2">ci99_upper_bound</a></code></pre></div>
 <pre><code>## [1] 60.72893</code></pre>
 <p>Like the 95% CI, this slightly wider 99% CI (46.2 - 60.7) also includes our <span class="math inline">\(\mu\)</span> of 51.2.</p>
 <p>If <span class="math inline">\(\sigma\)</span> is not known, and/or we have a small sample (<span class="math inline">\(n\)</span> &lt; 30), we need to use a <strong>T-Test</strong> to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.</p>
@@ -738,30 +737,30 @@ Figure 8.9: Critical Values of Student’s t Distribution
 </div>
 <p><br /></p>
 <p>For illustrative purposes, let’s draw a smaller sample of <span class="math inline">\(n\)</span> = 25 from our uniform population distribution and calculate the 95% CI using the <span class="math inline">\(t\)</span> statistic from the table (<span class="math inline">\(df\)</span> = 24). The <span class="math inline">\(t\)</span> statistic for this CI and <span class="math inline">\(df\)</span> is 2.064:</p>
-<div class="sourceCode" id="cb136"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb136-1" data-line-number="1"><span class="co"># Set seed for reproducible random samples</span></a>
-<a class="sourceLine" id="cb136-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
-<a class="sourceLine" id="cb136-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb136-4" data-line-number="4"><span class="co"># Sample 25 values from uniform population distribution</span></a>
-<a class="sourceLine" id="cb136-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw">sample</span>(rand.unif, <span class="dv">25</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>)</a>
-<a class="sourceLine" id="cb136-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb136-7" data-line-number="7"><span class="co"># Calculate 95% CI</span></a>
-<a class="sourceLine" id="cb136-8" data-line-number="8">ci95_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.064</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a>
-<a class="sourceLine" id="cb136-9" data-line-number="9">ci95_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.064</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb137-1" data-line-number="1"><span class="co"># Print lower bound for 95% CI</span></a>
-<a class="sourceLine" id="cb137-2" data-line-number="2">ci95_lower_bound</a></code></pre></div>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb176-1" data-line-number="1"><span class="co"># Set seed for reproducible random samples</span></a>
+<a class="sourceLine" id="cb176-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">456</span>)</a>
+<a class="sourceLine" id="cb176-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb176-4" data-line-number="4"><span class="co"># Sample 25 values from uniform population distribution</span></a>
+<a class="sourceLine" id="cb176-5" data-line-number="5">x &lt;-<span class="st"> </span><span class="kw">sample</span>(rand.unif, <span class="dv">25</span>, <span class="dt">replace =</span> <span class="ot">TRUE</span>, <span class="dt">prob =</span> <span class="ot">NULL</span>)</a>
+<a class="sourceLine" id="cb176-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb176-7" data-line-number="7"><span class="co"># Calculate 95% CI</span></a>
+<a class="sourceLine" id="cb176-8" data-line-number="8">ci95_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.064</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a>
+<a class="sourceLine" id="cb176-9" data-line-number="9">ci95_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.064</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb177"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb177-1" data-line-number="1"><span class="co"># Print lower bound for 95% CI</span></a>
+<a class="sourceLine" id="cb177-2" data-line-number="2">ci95_lower_bound</a></code></pre></div>
 <pre><code>## [1] 35.24305</code></pre>
-<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb139-1" data-line-number="1"><span class="co"># Print upper bound for 95% CI</span></a>
-<a class="sourceLine" id="cb139-2" data-line-number="2">ci95_upper_bound</a></code></pre></div>
+<div class="sourceCode" id="cb179"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb179-1" data-line-number="1"><span class="co"># Print upper bound for 95% CI</span></a>
+<a class="sourceLine" id="cb179-2" data-line-number="2">ci95_upper_bound</a></code></pre></div>
 <pre><code>## [1] 59.60959</code></pre>
 <p>As expected, the 95% CI using the <span class="math inline">\(t\)</span> statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given the limited information in this smaller sample. To increase our confidence to the 99% level, the interval widens even further (30.9 - 63.9):</p>
-<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb141-1" data-line-number="1"><span class="co"># Calculate 99% CI</span></a>
-<a class="sourceLine" id="cb141-2" data-line-number="2">ci99_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.797</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a>
-<a class="sourceLine" id="cb141-3" data-line-number="3">ci99_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.797</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a></code></pre></div>
-<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb142-1" data-line-number="1"><span class="co"># Print lower bound for 99% CI</span></a>
-<a class="sourceLine" id="cb142-2" data-line-number="2">ci99_lower_bound</a></code></pre></div>
+<div class="sourceCode" id="cb181"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb181-1" data-line-number="1"><span class="co"># Calculate 99% CI</span></a>
+<a class="sourceLine" id="cb181-2" data-line-number="2">ci99_lower_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">-</span><span class="st"> </span><span class="fl">2.797</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a>
+<a class="sourceLine" id="cb181-3" data-line-number="3">ci99_upper_bound &lt;-<span class="st"> </span><span class="kw">mean</span>(x) <span class="op">+</span><span class="st"> </span><span class="fl">2.797</span> <span class="op">*</span><span class="st"> </span>(<span class="kw">sd</span>(x) <span class="op">/</span><span class="st"> </span><span class="kw">sqrt</span>(<span class="dv">25</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb182-1" data-line-number="1"><span class="co"># Print lower bound for 99% CI</span></a>
+<a class="sourceLine" id="cb182-2" data-line-number="2">ci99_lower_bound</a></code></pre></div>
 <pre><code>## [1] 30.91633</code></pre>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb144-1" data-line-number="1"><span class="co"># Print upper bound for 99% CI</span></a>
-<a class="sourceLine" id="cb144-2" data-line-number="2">ci99_upper_bound</a></code></pre></div>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb184-1" data-line-number="1"><span class="co"># Print upper bound for 99% CI</span></a>
+<a class="sourceLine" id="cb184-2" data-line-number="2">ci99_upper_bound</a></code></pre></div>
 <pre><code>## [1] 63.93631</code></pre>
 <div id="hypothesis-testing" class="section level3">
 <h3><span class="header-section-number">8.3.1</span> Hypothesis Testing</h3>
