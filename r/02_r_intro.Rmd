@@ -112,7 +112,7 @@ obj_2 # Display value in obj_2
 
 ## Vectors
 
-  A **vector** is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, and set of characters, or a collection of dates.
+  A **vector** is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, set of characters, collection of dates, or logical `TRUE` or `FALSE` results.
   
   In this example, we introduce the combine function `c()`, which allows us to fill an object with more than one value:
 
@@ -162,6 +162,24 @@ vect_num
 
 ``` 
 
+  We can access a particular element of a vector using its index. An **index** represents the position in a set of elements. In R, the first element of a vector has an index of 1, and the final element of a vector has an index equal to the vector's length. The index is specified using square brackets, such as `[5]` for the fifth element of a vector.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Return the value in position 5 of vect_num
+vect_num[5]
+
+```  
+
+  When applied to a vector, the `length()` function returns the number of elements in the vector, and this can be used to dynamically return the last value of vectors.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return the last element of vect_num
+vect_num[length(vect_num)]
+
+```  
+
   **Vectorized Operations**
   
   **Vectorized operations (or vectorization)** underpin mathematical operations in R and greatly simplify computation. For example, if we need to perform a mathematical operation to each data element in a numeric vector, we do not need to specify each and every element explicitly. We can simply apply the operation at the vector level, and the operation will be applied to each of the vector's individual elements.
@@ -197,6 +215,16 @@ x_sq
 
 ```  
 
+  Using vectorization, we can also evaluate whether a specified condition is true or false for each element in a vector:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Evaluate whether each element of x is less than 6, and store results to a logical vector
+logical_rslts <- x<6
+logical_rslts
+
+``` 
+
 ## Matrices
 
   A **matrix** is similar to a vector in that it represents a collection of data elements of the same data type; however, the elements of a matrix are *arranged into a fixed number of rows and columns*.
@@ -221,6 +249,29 @@ mtrx_num
 
 ``` 
   
+  Several functions are available to quickly retrieve the number of rows and columns in a rectangular object like a matrix:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Return the number of rows in mtrx_num
+nrow(mtrx_num)
+
+``` 
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return the number of columns in mtrx_num
+ncol(mtrx_num)
+
+``` 
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return the number of columns and rows in mtrx_num
+dim(mtrx_num)
+
+``` 
+
 ## Factors
 
   A **factor** is a data structure containing a finite number of categorical values. Each categorical value of a factor is known as a **level**, and the levels can be either ordered or unordered. This data structure is a requirement for several statistical models we will cover in later chapters.
@@ -248,13 +299,90 @@ education
   The ordering of factors is critical to a correct interpretation of statistical model output as we will cover later.
 
 ## Data Frames
+  
+  A *data frame* is similar to a matrix in that it organizes elements within rows and columns but unlike matrices, data frames can store multiple types of data. Data frames are often the most appropriate data structures for the data required in people analytics.
+  
+  A data frame can be created using the `data.frame()` function:
 
+```{r, warning = FALSE, message = FALSE}
+
+# Create three vectors containing integers (x), characters (y), and dates (z)
+x <- 1:10
+y <- c('a','b','c','d','e','f','g','h','i','j')
+z <- seq(as.Date("2021-01-01"), as.Date("2021-10-01"), by = 'months')
+
+# Create a data frame with 3 columns (vectors x, y, and z) and 10 rows
+df <- data.frame(x, y, z)
+df
+
+``` 
+
+  The data type of each vector in a data frame object can be viewed using the `str()` function:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Describe the structure of df
+str(df)
+
+``` 
 
 ## Lists
 
+  **Lists** are versatile objects that can contain elements with different types and lengths. The elements of a list can be vectors, matrices, data frames, functions, or even other lists.
+  
+  A list can be created using the `list()` function:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Store vectors x, y, and z as well as df to a list
+lst <- list(x, y, z, df)
+str(lst)
+
+```  
+
+  Unlike vectors, accessing elements of a list requires double brackets, such as `[[3]]` for the third element.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return data from the third element of lst
+lst[[3]]
+
+```  
 
 ## Loops
 
+  In many cases, the need arises to perform an operation a variable number of times. Loops are available to avoid the cumbersome task of writing the same statement many times. The two most common types of loops are `for` and `while` loops.
+  
+  Let's use a `while` loop to square integers between 1 and 5:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Initialize variable
+i <- 1
+
+# Using a 'while' loop, square the values 1 through 5 and print results to the screen
+# 'i' is a variable that takes on a value between 1 and 5 for the respective loop
+while (i < 6) {
+  
+  print(i^2) 
+  i <- i + 1 # increment i by 1
+  
+}
+
+```    
+
+  With a `while` loop, we needed to initialize the variable `i` as well as increment it by `1` within the loop. With a `for` loop, we can accomplish the same goal with less code:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Using a 'for' loop, square the values 1 through 5 and print results to the screen
+for (i in 1:5) { 
+  
+  print(i^2)
+  
+}
+
+```  
 
 ## Graphics
 
