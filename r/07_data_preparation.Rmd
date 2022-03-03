@@ -4,14 +4,51 @@
 ## Data Wrangling
 
 
-### SQL
+  **SQL**
 
+  
 
-## Data Imputation
+## Data Screening & Cleaning
+
+  **Missingness**
+
+  Before considering whether and how to handle missing data, it is important to distinguish between *structural missingness* and *informative missingness* (Kuhn & Johnson, 2013). 
+  
+  **Structural missingness** relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.
+  
+  **Informative missingness** relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
+  
+  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
+  
+  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average or most frequent age could be used in place of the cases with a missing age. To be more precise, the average or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability around a mean and mode value of age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+  
+  There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+
+  **Outliers**
+
+  The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated.
+
+  **Low Variability**
+  
+  Variables with **low variability** often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.
+  
+  When working with survey data, checking for **straightlining** should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing "I plan to be here in a year" to "I do not plan to be here in a year"), which we expect to be inversely related, this gives added support for discarding these responses.
+  
+  **Inconsistent Categories**
+  
+  
+  
+  **Data Binning**
+  
+  
+  
+## One-Hot Encoding
+
+  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. 
 
 ## Feature Engineering
 
-Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure, etc.), but a good next step is to derive smarter variables from these fields. These can then be used to slice and dice turnover and engagement data differently, use as inputs in attrition risk models, etc. Below are some ideas to get you started:
+  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure, etc.), but a good next step is to derive smarter variables from these fields. These can then be used to slice and dice turnover and engagement data differently, use as inputs in attrition risk models, etc. Below are some ideas to get you started:
 
   + Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
   + Office/remote worker (binary variable dummy coded as 1/0)
@@ -31,7 +68,7 @@ overall)
 headcount over x months)
   + Industry experience (binary or length in years)
 
-Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.
+  Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.
 
 ## Exercises
 
