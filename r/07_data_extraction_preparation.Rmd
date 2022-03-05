@@ -1,4 +1,4 @@
-# Data Preparation {#data-prep}
+# Data Extraction and Preparation {#data-ext-prep}
 
 
 ## Data Wrangling
@@ -10,17 +10,17 @@
   
   There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently utilized.
   
-  * SELECT: Specifies the columns to include in the output
-  * FROM: Specifies the table(s) in which the relevant data are contained
-  * WHERE: Specifies the rows to search
+  * **SELECT**: Specifies the columns to include in the output
+  * **FROM**: Specifies the table(s) in which the relevant data are contained
+  * **WHERE**: Specifies the rows to search
   
   Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
   
   Additional clauses are available for more advanced operations.
   
-  * GROUP BY: Specifies the columns by which data should be grouped when using aggregate functions
-  * HAVING: Specifies conditions for filtering rows based on aggregate functions
-  * ORDER BY: Specifies how data should be sorted in the output
+  * **GROUP BY**: Specifies the columns by which data should be grouped when using aggregate functions
+  * **HAVING**: Specifies conditions for filtering rows based on aggregate functions
+  * **ORDER BY**: Specifies how data should be sorted in the output
   
   When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
   
@@ -40,7 +40,7 @@ demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleana
 
   Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, rows.print = 20}
 
 # Store SQL query as a character string using the paste() function
 sql_string <- paste("SELECT
@@ -243,7 +243,7 @@ sqldf(sql_string)
 
   An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
 
-```{r, message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE, rows.print = 20}
 
 # Store SQL query as a character string using the paste() function
 sql_string <- paste("SELECT
@@ -274,11 +274,12 @@ sqldf(sql_string)
 
   **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
   
-  For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause:
+  For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string using the paste() function
+# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table to include employee_id in the output
 sql_string <- paste("SELECT
                       job_df.employee_id,
                       job_title,

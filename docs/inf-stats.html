@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-03-03" />
+<meta name="date" content="2022-03-05" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -32,7 +32,7 @@
   
   
 <link rel="prev" href="uni-bi-stats.html"/>
-<link rel="next" href="data-prep.html"/>
+<link rel="next" href="data-ext-prep.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -218,12 +218,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="8.4" data-path="inf-stats.html"><a href="inf-stats.html#parametric-vs.nonparametric-tests"><i class="fa fa-check"></i><b>8.4</b> Parametric vs. Nonparametric Tests</a></li>
 <li class="chapter" data-level="8.5" data-path="inf-stats.html"><a href="inf-stats.html#exercises-4"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="9" data-path="data-prep.html"><a href="data-prep.html"><i class="fa fa-check"></i><b>9</b> Data Preparation</a><ul>
-<li class="chapter" data-level="9.1" data-path="data-prep.html"><a href="data-prep.html#data-wrangling"><i class="fa fa-check"></i><b>9.1</b> Data Wrangling</a></li>
-<li class="chapter" data-level="9.2" data-path="data-prep.html"><a href="data-prep.html#data-screening-cleaning"><i class="fa fa-check"></i><b>9.2</b> Data Screening &amp; Cleaning</a></li>
-<li class="chapter" data-level="9.3" data-path="data-prep.html"><a href="data-prep.html#one-hot-encoding"><i class="fa fa-check"></i><b>9.3</b> One-Hot Encoding</a></li>
-<li class="chapter" data-level="9.4" data-path="data-prep.html"><a href="data-prep.html#feature-engineering"><i class="fa fa-check"></i><b>9.4</b> Feature Engineering</a></li>
-<li class="chapter" data-level="9.5" data-path="data-prep.html"><a href="data-prep.html#exercises-5"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
+<li class="chapter" data-level="9" data-path="data-ext-prep.html"><a href="data-ext-prep.html"><i class="fa fa-check"></i><b>9</b> Data Extraction and Preparation</a><ul>
+<li class="chapter" data-level="9.1" data-path="data-ext-prep.html"><a href="data-ext-prep.html#data-wrangling"><i class="fa fa-check"></i><b>9.1</b> Data Wrangling</a></li>
+<li class="chapter" data-level="9.2" data-path="data-ext-prep.html"><a href="data-ext-prep.html#data-screening-cleaning"><i class="fa fa-check"></i><b>9.2</b> Data Screening &amp; Cleaning</a></li>
+<li class="chapter" data-level="9.3" data-path="data-ext-prep.html"><a href="data-ext-prep.html#one-hot-encoding"><i class="fa fa-check"></i><b>9.3</b> One-Hot Encoding</a></li>
+<li class="chapter" data-level="9.4" data-path="data-ext-prep.html"><a href="data-ext-prep.html#feature-engineering"><i class="fa fa-check"></i><b>9.4</b> Feature Engineering</a></li>
+<li class="chapter" data-level="9.5" data-path="data-ext-prep.html"><a href="data-ext-prep.html#exercises-5"><i class="fa fa-check"></i><b>9.5</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="10" data-path="aod.html"><a href="aod.html"><i class="fa fa-check"></i><b>10</b> Analysis of Differences</a><ul>
 <li class="chapter" data-level="10.1" data-path="aod.html"><a href="aod.html#comparing-2-distributions"><i class="fa fa-check"></i><b>10.1</b> Comparing 2 Distributions</a></li>
@@ -660,14 +660,12 @@ Figure 8.6: Distribution of 10,000 Sample Means of Varied Size
 <h2><span class="header-section-number">8.3</span> Confidence Intervals</h2>
 <p>A <strong>Confidence Interval (CI)</strong> is a range of values that likely contains the value of an unknown population parameter. These unknown population parameters are often <span class="math inline">\(\mu\)</span> or <span class="math inline">\(\sigma\)</span>, though we will also leverage CIs in later chapters for regression coefficients, proportions, rates, and differences.</p>
 <p>If we draw random samples from a population, we can compute a CI for each sample. Building on the CLT, for a given confidence level (usually 95%, though 99% or 90% are sometimes used), the specified percent of sample intervals is expected to include the estimated population parameter. For example, for a 95% CI we would expect 19 in every 20 (or 95 in every 100) intervals across the samples to include the true population parameter. This is illustrated in Figure <a href="inf-stats.html#fig:cis">8.7</a>:</p>
-<p><br /></p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:cis"></span>
 <img src="graphics/confidence_intervals.png" alt="Intervals for 95% Confidence Level" width="75%" />
 <p class="caption">
 Figure 8.7: Intervals for 95% Confidence Level
 </p>
 </div>
-<p><br /></p>
 <p>It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to <em>population parameters</em>. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exist, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!</p>
 <p>A related concept that is fundamental to estimating CIs is the <strong>standard error (SE)</strong>, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:</p>
 <p><span class="math display">\[ SE = \frac{\sigma}{\sqrt{n}} \]</span></p>
@@ -874,7 +872,7 @@ Figure 8.10: Type I and II Errors
         </div>
       </div>
 <a href="uni-bi-stats.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="data-prep.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="data-ext-prep.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
