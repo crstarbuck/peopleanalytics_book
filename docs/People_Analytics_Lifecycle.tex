@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-02}
+\date{2022-03-03}
 
 \begin{document}
 \maketitle
@@ -324,7 +324,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmprCU28k/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpkLqVAG/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -975,6 +975,52 @@ While many projects warrant UDFs and/or loops, we do not actually need either to
 ## [1]  1  4  9 16 25
 \end{verbatim}
 
+\hypertarget{graphics}{%
+\section{Graphics}\label{graphics}}
+
+While base R has native plotting capabilities, we will use the more flexibile and sophisticated visualization capabilities within the \texttt{ggplot2} library in this book. We can load the \texttt{ggplot2} library using the \texttt{library()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for data viz}
+\KeywordTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+The \texttt{ggplot2} library contains many types of visualizations. For example, we can build a line chart to show how the values of vector \texttt{x} relate to values of vector \texttt{y} in a data frame named \texttt{data}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create data frame containing two related vectors}
+\NormalTok{x <-}\StringTok{ }\DecValTok{1}\OperatorTok{:}\DecValTok{10}
+\NormalTok{y <-}\StringTok{ }\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{)}\OperatorTok{^}\DecValTok{2}
+\NormalTok{data <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(x, y))}
+
+\CommentTok{# Produce line chart}
+\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-45-1.pdf}
+
+Furthermore, we can use \texttt{ggplot} parameters and themes to adjust the aesthetics of visuals:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce line chart}
+\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{.4}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Reduce line thickness and change color to blue}
+\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }\CommentTok{# Remove the default grey background}
+\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Plot Title }\CharTok{\textbackslash{}n}\StringTok{ Split between Two Lines"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Assign a title}
+\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Variable x Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the x-axis}
+\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Variable y Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the y-axis}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\CommentTok{# Center plot title}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-46-1.pdf}
+
 \hypertarget{exercises}{%
 \section{Exercises}\label{exercises}}
 
@@ -1585,7 +1631,7 @@ Clinical trials are a common setting for true experiments, as isolating the effe
 
 Another example of an experimental design is \textbf{A/B testing}. A/B testing is often performed in the context of website optimization, in which two or more versions of the site are shown to customers to identify which version impacts key success metrics more positively. In a people analytics context, we may create two versions of a dashboard and \emph{randomly} assign the permissioned users to each. We could then assess whether utilization rates, average usage time, repeat usage, among other success measures are significantly different between the two groups of users to inform which design is most effective.
 
-In experimental research, it is important to consider the influence of the \textbf{Hawthorne Effect}, which refers to the tendency of some individuals to modify their behavior in response to the awareness that they are being observed. This term was coined during experiments at Western Electric's factory in the Hawthorne suburb of Chicago in the late 1920s and early 1930s. One of many studies conducted to understand the effects of work environments on productivity was known as the ``Illumination Experiment''. During this study, the researchers experimented with a number of lighting levels in a warehouse in which workers made electrical relays. The researchers found that any change in the lighting -- even when introducting poor lighting -- led to favorable changes in output. However, these productivity gains disappeared once the attention faded (Roethlisberg \& Dickson, 1939).
+In experimental research, it is important to consider the influence of the \textbf{Hawthorne Effect}, which refers to the tendency of some individuals to modify their behavior in response to the awareness that they are being observed. This term was coined during experiments at Western Electric's factory in the Hawthorne suburb of Chicago in the late 1920s and early 1930s. One of many studies conducted to understand how work environments effect productivity was known as the ``Illumination Experiment''. During this study, researchers experimented with a number of lighting levels in a warehouse in which workers made electrical relays. The researchers found that any change in the lighting -- even when introducting poor lighting -- led to favorable changes in output. However, these productivity gains disappeared once the attention faded (Roethlisberg \& Dickson, 1939).
 
 In a people analytics context, if we inform employees that we are going to monitor their productivity more closely over a period of time, it is likely that at least some employees will attempt to modify their behavior in order to increase productivity levels. After all, higher productivity is generally regarded as an ideal across companies and industries. In this case, manipulation of an IV to study a treatment effect, such as flexible work arrangements, would be impacted by this phenomenon; that is, observed differences in productivity may not be attributable to flexible work arrangements but merely due to employees knowing they were being observed.
 
@@ -1635,7 +1681,7 @@ Given the potential for alternative explanations of any observed differences or 
 \item
   What are the differences between cross-sectional, correlational, and observational non-experimental designs?
 \item
-  What are some use cases for A/B testing in people analytics?
+  How can the Hawthorne Effect impact the integrity of an experiment?
 \end{enumerate}
 
 \hypertarget{uni-bi-stats}{%
@@ -1910,15 +1956,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \begin{Highlighting}[]
 \CommentTok{# Load library for data viz}
 \KeywordTok{library}\NormalTok{(ggplot2)}
-\end{Highlighting}
-\end{Shaded}
 
-\begin{verbatim}
-## Warning: package 'ggplot2' was built under R version 4.0.2
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
 \CommentTok{# Produce boxplots to visualize compensation distribution by education and gender}
 \KeywordTok{ggplot}\NormalTok{(demographics, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(education), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
@@ -1927,7 +1965,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-59-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-62-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -2330,7 +2368,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-73-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-76-1.pdf}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
@@ -2344,7 +2382,7 @@ The GGally library produces a variety of useful information, including correlati
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-74-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-77-1.pdf}
 
 As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. We may find that these bivariate associations look quite different for certain business areas or jobs, assuming business units, divisions, and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
 
@@ -2861,11 +2899,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-82-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-85-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-82}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-85}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -2909,11 +2947,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-83-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-86-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-83}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-86}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -3297,11 +3335,43 @@ It's important to remember that the normal distribution properties under the CLT
 \hypertarget{data-wrangling}{%
 \section{Data Wrangling}\label{data-wrangling}}
 
-\hypertarget{sql}{%
-\subsection{SQL}\label{sql}}
+\textbf{SQL}
 
-\hypertarget{data-imputation}{%
-\section{Data Imputation}\label{data-imputation}}
+\hypertarget{data-screening-cleaning}{%
+\section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
+
+\textbf{Missingness}
+
+Before considering whether and how to handle missing data, it is important to distinguish between \emph{structural missingness} and \emph{informative missingness} (Kuhn \& Johnson, 2013).
+
+\textbf{Structural missingness} relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.
+
+\textbf{Informative missingness} relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
+
+In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
+
+\textbf{Data imputation} refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average or most frequent age could be used in place of the cases with a missing age. To be more precise, the average or most frequent age of those with \emph{similar characteristics} may be used (e.g., similar years of experience, job, level). We would expect there to be less variability around a mean and mode value of age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+
+There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+
+\textbf{Outliers}
+
+The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated.
+
+\textbf{Low Variability}
+
+Variables with \textbf{low variability} often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.
+
+When working with survey data, checking for \textbf{straightlining} should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing ``I plan to be here in a year'' to ``I do not plan to be here in a year''), which we expect to be inversely related, this gives added support for discarding these responses.
+
+\textbf{Inconsistent Categories}
+
+\textbf{Data Binning}
+
+\hypertarget{one-hot-encoding}{%
+\section{One-Hot Encoding}\label{one-hot-encoding}}
+
+\textbf{One-hot encoding}, also known as \textbf{dummy coding}, involves transforming a categorical variable into numeric values on which statistical procedures can be performed.
 
 \hypertarget{feature-engineering}{%
 \section{Feature Engineering}\label{feature-engineering}}
@@ -3587,6 +3657,8 @@ Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Girou
 
 Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
 
+Kuhn, M., \& Johnson, K. (2013). Applied predictive modeling. New York: Springer.
+
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 
 Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Processes. Blue Bell, PA: Kappa Research, LLC.
@@ -3808,10 +3880,10 @@ Cross-sectional research compares two or more natural groups of people. Correlat
 \setcounter{enumi}{9}
 \tightlist
 \item
-  What is an example of an A/B testing use case in people analytics?
+  How can the Hawthorne Effect impact the integrity of an experiment?
 \end{enumerate}
 
-One example of an A/B testing use case for people analytics is dashboard user experience (UX) testing -- displaying multiple versions of a dashboard to users to study usage patterns and optimize the UX.
+Observed differences in a DV may not be attributable to the manipulation of an IV but merely due to research subjects having knowledge that they are being observed and temporarily modifying behavior.
 
 \textbf{Univariate \& Bivariate Analysis}
 

@@ -6,8 +6,305 @@
 
   **SQL**
 
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into R only to then filter data to the relevant subset. Fewer records can help with enhancing the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. **Structured Query Language (SQL)** is the most common language used to extract and organize data contained in a relational database. SQL is an essential skill for anyone working in analytics.
   
+  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently utilized.
+  
+  * SELECT: Specifies the columns to include in the output
+  * FROM: Specifies the table(s) in which the relevant data are contained
+  * WHERE: Specifies the rows to search
+  
+  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
+  
+  Additional clauses are available for more advanced operations.
+  
+  * GROUP BY: Specifies the columns by which data should be grouped when using aggregate functions
+  * HAVING: Specifies conditions for filtering rows based on aggregate functions
+  * ORDER BY: Specifies how data should be sorted in the output
+  
+  When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
+  
+  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.
+  
+  First, let's load the `sqldf` library and store data to a data frame named `demographics`:
 
+```{r, message = FALSE, warning = FALSE}
+
+# Load SQL library
+library(sqldf)
+
+# Read employee demographics data
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+
+```
+
+  Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      employee_id
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  This query returned a list of employee ids for the 496 employees on the Social Marketing team. 
+  
+  Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      AVG(org_tenure)
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from `7.5` to `10`.
+  
+  Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common. 
+  
+  Since relatively few employees are Vice Presidents or Directors, let's use the `HAVING` clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a **Primary Key (PK)**, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
+  
+  To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Partition select columns into three data frames
+job_df <- demographics[, c("employee_id", "job_title")]
+tenure_df <- demographics[, c("employee_id", "org_tenure")]
+team_df <- demographics[, c("employee_id", "team")]
+
+```  
+
+  Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `job_df` and `tenure_df` for a particular employee id, but there is no team designation for it in `team_df`, that employee id would not be included in the output.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      team_df
+                        ON
+                      job_df.employee_id = team_df.employee_id
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure_df` and `team_df` were joined to `job_df` via the `employee_id` column. We could have instead joined `job_df` to `team_df` and achieved the same result since all employee ids exist in all three data frames in this case.
+  
+  If it were possible for all employee ids to exist in `job_df` but not in either `tenure_df` or `team_df`, we could leverage a `LEFT JOIN` to ensure all records from `job_df` are included in the output irrespective of whether they have matches in `tenure_df` or `team_df`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        LEFT JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        LEFT JOIN
+                      team_df
+                        ON
+                      job_df.employee_id = team_df.employee_id
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  **Subqueries** are nested SQL queries that allow us to pass results from an inner query to the main outer query. 
+  
+  For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        LEFT JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                    WHERE
+                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = 'Social Marketing')
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
+                        ON
+                      job_df.employee_id = social_mktg_ids.employee_id
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
+  
+  For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      job_df.employee_id,
+                      job_title,
+                      org_tenure,
+                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
+                        ON
+                      job_df.employee_id = social_mktg_ids.employee_id
+                    ORDER BY
+                      job_title,
+                      org_tenure_rank")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  Notice that in the case of organization tenure ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.
+  
 ## Data Screening & Cleaning
 
   **Missingness**
