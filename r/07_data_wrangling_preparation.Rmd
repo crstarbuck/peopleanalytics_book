@@ -1,0 +1,419 @@
+# Data Wrangling and Preparation {#data-wrang-prep}
+
+  To begin a data analysis, we must first access the requisite data. This often involves extracting data from either source systems in which the data are generated or downstream environments such as a *data lake*, *data warehouse*, or *data mart*.
+  
+  A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
+  
+  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
+  
+  A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+
+  **SQL**
+
+  **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
+  
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  
+  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently utilized.
+  
+  * **SELECT**: Specifies the columns to include in the output
+  * **FROM**: Specifies the table(s) in which the relevant data are contained
+  * **WHERE**: Specifies the rows to search
+  
+  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
+  
+  Additional clauses are available for more advanced operations.
+  
+  * **GROUP BY**: Specifies the columns by which data should be grouped when using aggregate functions
+  * **HAVING**: Specifies conditions for filtering rows based on aggregate functions
+  * **ORDER BY**: Specifies how data should be sorted in the output
+  
+  When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
+  
+  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.
+  
+  First, let's load the `sqldf` library and store data to a data frame named `demographics`:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load SQL library
+library(sqldf)
+
+# Read employee demographics data
+demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+
+# Return row and column counts
+dim(demographics)
+
+```
+
+  Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 4,875$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
+  
+  A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      employee_id
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    LIMIT 10")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  This query returned a list of employee ids for the 496 employees on the Social Marketing team. 
+  
+  Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      AVG(org_tenure)
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from `7.5` to `10`.
+  
+  Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common. 
+  
+  Since relatively few employees are Vice Presidents or Directors, let's use the `HAVING` clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      demographics
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a **Primary Key (PK)**, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
+  
+  To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Partition select columns into three data frames
+job_df <- demographics[, c("employee_id", "job_title")]
+tenure_df <- demographics[, c("employee_id", "org_tenure")]
+team_df <- demographics[, c("employee_id", "team")]
+
+```  
+
+  Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `job_df` and `tenure_df` for a particular employee id, but there is no team designation for it in `team_df`, that employee id would not be included in the output.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      team_df
+                        ON
+                      job_df.employee_id = team_df.employee_id
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure_df` and `team_df` were joined to `job_df` via the `employee_id` column. We could have instead joined `job_df` to `team_df` and achieved the same result since all employee ids exist in all three data frames in this case.
+  
+  If it were possible for all employee ids to exist in `job_df` but not in either `tenure_df` or `team_df`, we could leverage a `LEFT JOIN` to ensure all records from `job_df` are included in the output irrespective of whether they have matches in `tenure_df` or `team_df`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        LEFT JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        LEFT JOIN
+                      team_df
+                        ON
+                      job_df.employee_id = team_df.employee_id
+                    WHERE
+                      team = 'Social Marketing'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  **Subqueries** are nested SQL queries that allow us to pass results from an inner query to the main outer query. 
+  
+  For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        LEFT JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                    WHERE
+                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = 'Social Marketing')
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
+                        ON
+                      job_df.employee_id = social_mktg_ids.employee_id
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
+  
+  For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+# Limit output to 10 records since query does not collapse records
+# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table to include employee_id in the output
+sql_string <- paste("SELECT
+                      job_df.employee_id,
+                      job_title,
+                      org_tenure,
+                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
+                        ON
+                      job_df.employee_id = social_mktg_ids.employee_id
+                    ORDER BY
+                      job_title,
+                      org_tenure_rank
+                    LIMIT 10")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+
+  Notice that in the case of organization tenure ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.
+  
+  We can also treat this query as a derived table, and then filter on the derived `org_tenure_rank` field to return a list of Social Marketing employees with the highest tenure for each job. The `*` symbol in the `SELECT` clause will return all columns from the specified table:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT tbl.*
+                    FROM
+                    (SELECT
+                      job_df.employee_id,
+                      job_title,
+                      org_tenure,
+                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
+                    FROM
+                      job_df
+                        INNER JOIN
+                      tenure_df
+                        ON
+                      job_df.employee_id = tenure_df.employee_id
+                        INNER JOIN
+                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
+                        ON
+                      job_df.employee_id = social_mktg_ids.employee_id
+                    ORDER BY
+                      job_title,
+                      org_tenure_rank) tbl
+                    WHERE
+                      tbl.org_tenure_rank = 1")
+
+# Execute SQL query
+sqldf(sql_string)
+
+```
+  
+## Data Screening & Cleaning
+
+  **Missingness**
+
+  Before considering whether and how to handle missing data, it is important to distinguish between *structural missingness* and *informative missingness* (Kuhn & Johnson, 2013). 
+  
+  **Structural missingness** relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.
+  
+  **Informative missingness** relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
+  
+  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
+  
+  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average or most frequent age could be used in place of the cases with a missing age. To be more precise, the average or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability around a mean and mode value of age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+  
+  There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+
+  **Outliers**
+
+  The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated.
+
+  **Low Variability**
+  
+  Variables with **low variability** often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.
+  
+  When working with survey data, checking for **straightlining** should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing "I plan to be here in a year" to "I do not plan to be here in a year"), which we expect to be inversely related, this gives added support for discarding these responses.
+  
+  **Inconsistent Categories**
+  
+  
+  
+  **Data Binning**
+  
+  
+  
+## One-Hot Encoding
+
+  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. 
+
+## Feature Engineering
+
+  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure, etc.), but a good next step is to derive smarter variables from these fields. These can then be used to slice and dice turnover and engagement data differently, use as inputs in attrition risk models, etc. Below are some ideas to get you started:
+
+  + Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
+  + Office/remote worker (binary variable dummy coded as 1/0)
+  + Local/remote manager (binary variable dummy coded as 1/0)
+  + Hire/Rehire (binary variable dummy coded as 1/0)
+  + Hired/acquired (proxy for culture shock effects)
+  + Gender isolation (ratio of employee’s gender to number of the same within immediate work
+group)
+  + Generation isolation (comparison of age bracket to most frequent generational bracket within
+immediate work group)
+  + Ethnic isolation (ratio of employee’s ethnicity to number of the same within immediate work
+group)
+  + Difference between employee and manager age
+  + Percentage change between last two performance appraisal scores (per competency and/or
+overall)
+  + Team and department quit outbreak indicators (ratio of terms over x months relative to average
+headcount over x months)
+  + Industry experience (binary or length in years)
+
+  Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.
+
+## Exercises
+

@@ -327,16 +327,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into R only to then filter data to the relevant subset. Fewer records can help with enhancing the performance of R scripts – especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. <strong>Structured Query Language (SQL)</strong> is the most common language used to extract and organize data contained in a relational database. SQL is an essential skill for anyone working in analytics.</p>
 <p>There are three main <em>clauses</em> in a SQL query: (a) <code>SELECT</code>, (b) <code>FROM</code>, and (c) <code>WHERE</code>. The <code>SELECT</code> and <code>FROM</code> clauses are required, though the optional <code>WHERE</code> clause is frequently utilized.</p>
 <ul>
-<li>SELECT: Specifies the columns to include in the output</li>
-<li>FROM: Specifies the table(s) in which the relevant data are contained</li>
-<li>WHERE: Specifies the rows to search</li>
+<li><strong>SELECT</strong>: Specifies the columns to include in the output</li>
+<li><strong>FROM</strong>: Specifies the table(s) in which the relevant data are contained</li>
+<li><strong>WHERE</strong>: Specifies the rows to search</li>
 </ul>
 <p>Despite the clauses being ordered as shown above (<code>SELECT</code> then <code>FROM</code> then <code>WHERE</code>), the <code>FROM</code> clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The <code>SELECT</code> clause is the last to execute.</p>
 <p>Additional clauses are available for more advanced operations.</p>
 <ul>
-<li>GROUP BY: Specifies the columns by which data should be grouped when using aggregate functions</li>
-<li>HAVING: Specifies conditions for filtering rows based on aggregate functions</li>
-<li>ORDER BY: Specifies how data should be sorted in the output</li>
+<li><strong>GROUP BY</strong>: Specifies the columns by which data should be grouped when using aggregate functions</li>
+<li><strong>HAVING</strong>: Specifies conditions for filtering rows based on aggregate functions</li>
+<li><strong>ORDER BY</strong>: Specifies how data should be sorted in the output</li>
 </ul>
 <p>When implementing aggregate functions in a <code>SELECT</code> clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the <code>GROUP BY</code> clause.</p>
 <p>Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the <code>sqldf</code> library within R to demonstrate the mechanics of a SQL query. The <code>sqldf</code> library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.</p>
@@ -1085,29 +1085,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## 7               SEO Specialist           62       9.596774
 ## 8      Social Media Strategist           56      10.000000</code></pre>
 <p><strong>Window functions</strong> are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we’ve covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.</p>
-<p>For example, we can assign an organization tenure rank by Social Marketing job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause:</p>
+<p>For example, we can assign an organization tenure rank by Social Marketing job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause. The <code>PARTITION BY</code> argument functions like a <code>GROUP BY</code> clause but without collapsing rows, while the <code>ORDER BY</code> argument sorts the records in ascending (<code>ASC</code>) or descending (<code>DESC</code>) order for proper ranking:</p>
 <div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb205-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
-<a class="sourceLine" id="cb205-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb205-3" data-line-number="3"><span class="st">                      job_df.employee_id,</span></a>
-<a class="sourceLine" id="cb205-4" data-line-number="4"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb205-5" data-line-number="5"><span class="st">                      org_tenure,</span></a>
-<a class="sourceLine" id="cb205-6" data-line-number="6"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
-<a class="sourceLine" id="cb205-7" data-line-number="7"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb205-8" data-line-number="8"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb205-9" data-line-number="9"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb205-10" data-line-number="10"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb205-11" data-line-number="11"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb205-12" data-line-number="12"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb205-13" data-line-number="13"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb205-14" data-line-number="14"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
-<a class="sourceLine" id="cb205-15" data-line-number="15"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb205-16" data-line-number="16"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
-<a class="sourceLine" id="cb205-17" data-line-number="17"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb205-18" data-line-number="18"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb205-19" data-line-number="19"><span class="st">                      org_tenure_rank&quot;</span>)</a>
-<a class="sourceLine" id="cb205-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb205-21" data-line-number="21"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb205-22" data-line-number="22"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<a class="sourceLine" id="cb205-2" data-line-number="2"><span class="co"># Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table to include employee_id in the output</span></a>
+<a class="sourceLine" id="cb205-3" data-line-number="3">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb205-4" data-line-number="4"><span class="st">                      job_df.employee_id,</span></a>
+<a class="sourceLine" id="cb205-5" data-line-number="5"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb205-6" data-line-number="6"><span class="st">                      org_tenure,</span></a>
+<a class="sourceLine" id="cb205-7" data-line-number="7"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
+<a class="sourceLine" id="cb205-8" data-line-number="8"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb205-9" data-line-number="9"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb205-10" data-line-number="10"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb205-11" data-line-number="11"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb205-12" data-line-number="12"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb205-13" data-line-number="13"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb205-14" data-line-number="14"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb205-15" data-line-number="15"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb205-16" data-line-number="16"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb205-17" data-line-number="17"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb205-18" data-line-number="18"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb205-19" data-line-number="19"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb205-20" data-line-number="20"><span class="st">                      org_tenure_rank&quot;</span>)</a>
+<a class="sourceLine" id="cb205-21" data-line-number="21"></a>
+<a class="sourceLine" id="cb205-22" data-line-number="22"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb205-23" data-line-number="23"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##     employee_id                    job_title org_tenure org_tenure_rank
 ## 1          1236        Community Coordinator         20               1
 ## 2          1322        Community Coordinator         20               1

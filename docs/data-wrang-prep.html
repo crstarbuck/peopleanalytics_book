@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>9 Data Wrangling and Preparation | A Practitioner’s Guide through the People Analytics Lifecycle: With Applications in R</title>
+  <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="9 Data Wrangling and Preparation | A Practitioner’s Guide through the People Analytics Lifecycle: With Applications in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="github-repo" content="crstarbuck/peopleanalytics-lifecycle-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="9 Data Wrangling and Preparation | A Practitioner’s Guide through the People Analytics Lifecycle: With Applications in R" />
+  
+  <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  
+
+<meta name="author" content="Craig Starbuck" />
+
+
+<meta name="date" content="2022-03-06" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="inf-stats.html"/>
+<link rel="next" href="aod.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Practitioner's Guide through the People Analytics Lifecycle: With Applications in R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="foreword.html"><a href="foreword.html"><i class="fa fa-check"></i><b>1</b> Foreword</a></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> Introduction</a></li>
+<li class="chapter" data-level="3" data-path="planning.html"><a href="planning.html"><i class="fa fa-check"></i><b>3</b> Project Planning</a><ul>
+<li class="chapter" data-level="3.1" data-path="planning.html"><a href="planning.html#guiding-principles"><i class="fa fa-check"></i><b>3.1</b> Guiding Principles</a><ul>
+<li class="chapter" data-level="3.1.1" data-path="planning.html"><a href="planning.html#pro-employee-thinking"><i class="fa fa-check"></i><b>3.1.1</b> Pro Employee Thinking</a></li>
+<li class="chapter" data-level="3.1.2" data-path="planning.html"><a href="planning.html#quality"><i class="fa fa-check"></i><b>3.1.2</b> Quality</a></li>
+<li class="chapter" data-level="3.1.3" data-path="planning.html"><a href="planning.html#prioritization"><i class="fa fa-check"></i><b>3.1.3</b> Prioritization</a></li>
+</ul></li>
+<li class="chapter" data-level="3.2" data-path="planning.html"><a href="planning.html#tools"><i class="fa fa-check"></i><b>3.2</b> Tools</a><ul>
+<li class="chapter" data-level="3.2.1" data-path="planning.html"><a href="planning.html#r"><i class="fa fa-check"></i><b>3.2.1</b> R</a></li>
+</ul></li>
+<li class="chapter" data-level="3.3" data-path="planning.html"><a href="planning.html#d-framework"><i class="fa fa-check"></i><b>3.3</b> 4D Framework</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="planning.html"><a href="planning.html#discover"><i class="fa fa-check"></i><b>3.3.1</b> Discover</a></li>
+<li class="chapter" data-level="3.3.2" data-path="planning.html"><a href="planning.html#design"><i class="fa fa-check"></i><b>3.3.2</b> Design</a></li>
+<li class="chapter" data-level="3.3.3" data-path="planning.html"><a href="planning.html#develop"><i class="fa fa-check"></i><b>3.3.3</b> Develop</a></li>
+<li class="chapter" data-level="3.3.4" data-path="planning.html"><a href="planning.html#deliver"><i class="fa fa-check"></i><b>3.3.4</b> Deliver</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="r-intro.html"><a href="r-intro.html"><i class="fa fa-check"></i><b>4</b> Introduction to R</a><ul>
+<li class="chapter" data-level="4.1" data-path="r-intro.html"><a href="r-intro.html#getting-started"><i class="fa fa-check"></i><b>4.1</b> Getting Started</a></li>
+<li class="chapter" data-level="4.2" data-path="r-intro.html"><a href="r-intro.html#vectors"><i class="fa fa-check"></i><b>4.2</b> Vectors</a></li>
+<li class="chapter" data-level="4.3" data-path="r-intro.html"><a href="r-intro.html#matrices"><i class="fa fa-check"></i><b>4.3</b> Matrices</a></li>
+<li class="chapter" data-level="4.4" data-path="r-intro.html"><a href="r-intro.html#factors"><i class="fa fa-check"></i><b>4.4</b> Factors</a></li>
+<li class="chapter" data-level="4.5" data-path="r-intro.html"><a href="r-intro.html#data-frames"><i class="fa fa-check"></i><b>4.5</b> Data Frames</a></li>
+<li class="chapter" data-level="4.6" data-path="r-intro.html"><a href="r-intro.html#lists"><i class="fa fa-check"></i><b>4.6</b> Lists</a></li>
+<li class="chapter" data-level="4.7" data-path="r-intro.html"><a href="r-intro.html#loops"><i class="fa fa-check"></i><b>4.7</b> Loops</a></li>
+<li class="chapter" data-level="4.8" data-path="r-intro.html"><a href="r-intro.html#user-defined-functions-udfs"><i class="fa fa-check"></i><b>4.8</b> User-Defined Functions (UDFs)</a></li>
+<li class="chapter" data-level="4.9" data-path="r-intro.html"><a href="r-intro.html#graphics"><i class="fa fa-check"></i><b>4.9</b> Graphics</a></li>
+<li class="chapter" data-level="4.10" data-path="r-intro.html"><a href="r-intro.html#exercises"><i class="fa fa-check"></i><b>4.10</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="measure-sampl.html"><a href="measure-sampl.html"><i class="fa fa-check"></i><b>5</b> Measurement &amp; Sampling</a><ul>
+<li class="chapter" data-level="5.1" data-path="measure-sampl.html"><a href="measure-sampl.html#variable-types"><i class="fa fa-check"></i><b>5.1</b> Variable Types</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="measure-sampl.html"><a href="measure-sampl.html#independent-variables-iv"><i class="fa fa-check"></i><b>5.1.1</b> Independent Variables (IV)</a></li>
+<li class="chapter" data-level="5.1.2" data-path="measure-sampl.html"><a href="measure-sampl.html#dependent-variables-dv"><i class="fa fa-check"></i><b>5.1.2</b> Dependent Variables (DV)</a></li>
+<li class="chapter" data-level="5.1.3" data-path="measure-sampl.html"><a href="measure-sampl.html#control-variables-cv"><i class="fa fa-check"></i><b>5.1.3</b> Control Variables (CV)</a></li>
+<li class="chapter" data-level="5.1.4" data-path="measure-sampl.html"><a href="measure-sampl.html#moderating-variables"><i class="fa fa-check"></i><b>5.1.4</b> Moderating Variables</a></li>
+<li class="chapter" data-level="5.1.5" data-path="measure-sampl.html"><a href="measure-sampl.html#mediating-variables"><i class="fa fa-check"></i><b>5.1.5</b> Mediating Variables</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="measure-sampl.html"><a href="measure-sampl.html#measurement-scales"><i class="fa fa-check"></i><b>5.2</b> Measurement Scales</a><ul>
+<li class="chapter" data-level="5.2.1" data-path="measure-sampl.html"><a href="measure-sampl.html#discrete-variables"><i class="fa fa-check"></i><b>5.2.1</b> Discrete Variables</a></li>
+<li class="chapter" data-level="5.2.2" data-path="measure-sampl.html"><a href="measure-sampl.html#continuous-variables"><i class="fa fa-check"></i><b>5.2.2</b> Continuous Variables</a></li>
+</ul></li>
+<li class="chapter" data-level="5.3" data-path="measure-sampl.html"><a href="measure-sampl.html#sampling"><i class="fa fa-check"></i><b>5.3</b> Sampling</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="measure-sampl.html"><a href="measure-sampl.html#sampling-nonsampling-error"><i class="fa fa-check"></i><b>5.3.1</b> Sampling &amp; Nonsampling Error</a></li>
+<li class="chapter" data-level="5.3.2" data-path="measure-sampl.html"><a href="measure-sampl.html#sampling-methods"><i class="fa fa-check"></i><b>5.3.2</b> Sampling Methods</a></li>
+</ul></li>
+<li class="chapter" data-level="5.4" data-path="measure-sampl.html"><a href="measure-sampl.html#exercises-1"><i class="fa fa-check"></i><b>5.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="research.html"><a href="research.html"><i class="fa fa-check"></i><b>6</b> Research Fundamentals</a><ul>
+<li class="chapter" data-level="6.1" data-path="research.html"><a href="research.html#research-questions"><i class="fa fa-check"></i><b>6.1</b> Research Questions</a></li>
+<li class="chapter" data-level="6.2" data-path="research.html"><a href="research.html#research-hypotheses"><i class="fa fa-check"></i><b>6.2</b> Research Hypotheses</a></li>
+<li class="chapter" data-level="6.3" data-path="research.html"><a href="research.html#internal-vs.external-validity"><i class="fa fa-check"></i><b>6.3</b> Internal vs. External Validity</a></li>
+<li class="chapter" data-level="6.4" data-path="research.html"><a href="research.html#research-methods"><i class="fa fa-check"></i><b>6.4</b> Research Methods</a></li>
+<li class="chapter" data-level="6.5" data-path="research.html"><a href="research.html#research-designs"><i class="fa fa-check"></i><b>6.5</b> Research Designs</a></li>
+<li class="chapter" data-level="6.6" data-path="research.html"><a href="research.html#exercises-2"><i class="fa fa-check"></i><b>6.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html"><i class="fa fa-check"></i><b>7</b> Univariate &amp; Bivariate Analysis</a><ul>
+<li class="chapter" data-level="7.1" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#univariate-analysis"><i class="fa fa-check"></i><b>7.1</b> Univariate Analysis</a><ul>
+<li class="chapter" data-level="7.1.1" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#measures-of-central-tendency"><i class="fa fa-check"></i><b>7.1.1</b> Measures of Central Tendency</a></li>
+<li class="chapter" data-level="7.1.2" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#measures-of-spread"><i class="fa fa-check"></i><b>7.1.2</b> Measures of Spread</a></li>
+</ul></li>
+<li class="chapter" data-level="7.2" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#bivariate-analysis"><i class="fa fa-check"></i><b>7.2</b> Bivariate Analysis</a><ul>
+<li class="chapter" data-level="7.2.1" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#covariance"><i class="fa fa-check"></i><b>7.2.1</b> Covariance</a></li>
+<li class="chapter" data-level="7.2.2" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#correlation"><i class="fa fa-check"></i><b>7.2.2</b> Correlation</a></li>
+</ul></li>
+<li class="chapter" data-level="7.3" data-path="uni-bi-stats.html"><a href="uni-bi-stats.html#exercises-3"><i class="fa fa-check"></i><b>7.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="inf-stats.html"><a href="inf-stats.html"><i class="fa fa-check"></i><b>8</b> Inferential Statistics</a><ul>
+<li class="chapter" data-level="8.1" data-path="inf-stats.html"><a href="inf-stats.html#introduction-to-probability"><i class="fa fa-check"></i><b>8.1</b> Introduction to Probability</a><ul>
+<li class="chapter" data-level="8.1.1" data-path="inf-stats.html"><a href="inf-stats.html#probability-distributions"><i class="fa fa-check"></i><b>8.1.1</b> Probability Distributions</a></li>
+<li class="chapter" data-level="8.1.2" data-path="inf-stats.html"><a href="inf-stats.html#conditional-probability"><i class="fa fa-check"></i><b>8.1.2</b> Conditional Probability</a></li>
+</ul></li>
+<li class="chapter" data-level="8.2" data-path="inf-stats.html"><a href="inf-stats.html#central-limit-theorem"><i class="fa fa-check"></i><b>8.2</b> Central Limit Theorem</a></li>
+<li class="chapter" data-level="8.3" data-path="inf-stats.html"><a href="inf-stats.html#confidence-intervals"><i class="fa fa-check"></i><b>8.3</b> Confidence Intervals</a><ul>
+<li class="chapter" data-level="8.3.1" data-path="inf-stats.html"><a href="inf-stats.html#hypothesis-testing"><i class="fa fa-check"></i><b>8.3.1</b> Hypothesis Testing</a></li>
+<li class="chapter" data-level="8.3.2" data-path="inf-stats.html"><a href="inf-stats.html#alpha"><i class="fa fa-check"></i><b>8.3.2</b> Alpha</a></li>
+<li class="chapter" data-level="8.3.3" data-path="inf-stats.html"><a href="inf-stats.html#beta"><i class="fa fa-check"></i><b>8.3.3</b> Beta</a></li>
+<li class="chapter" data-level="8.3.4" data-path="inf-stats.html"><a href="inf-stats.html#type-i-ii-errors"><i class="fa fa-check"></i><b>8.3.4</b> Type I &amp; II Errors</a></li>
+<li class="chapter" data-level="8.3.5" data-path="inf-stats.html"><a href="inf-stats.html#p-values"><i class="fa fa-check"></i><b>8.3.5</b> P-Values</a></li>
+<li class="chapter" data-level="8.3.6" data-path="inf-stats.html"><a href="inf-stats.html#bonferroni-correction"><i class="fa fa-check"></i><b>8.3.6</b> Bonferroni Correction</a></li>
+</ul></li>
+<li class="chapter" data-level="8.4" data-path="inf-stats.html"><a href="inf-stats.html#parametric-vs.nonparametric-tests"><i class="fa fa-check"></i><b>8.4</b> Parametric vs. Nonparametric Tests</a></li>
+<li class="chapter" data-level="8.5" data-path="inf-stats.html"><a href="inf-stats.html#exercises-4"><i class="fa fa-check"></i><b>8.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="data-wrang-prep.html"><a href="data-wrang-prep.html"><i class="fa fa-check"></i><b>9</b> Data Wrangling and Preparation</a><ul>
+<li class="chapter" data-level="9.1" data-path="data-wrang-prep.html"><a href="data-wrang-prep.html#data-screening-cleaning"><i class="fa fa-check"></i><b>9.1</b> Data Screening &amp; Cleaning</a></li>
+<li class="chapter" data-level="9.2" data-path="data-wrang-prep.html"><a href="data-wrang-prep.html#one-hot-encoding"><i class="fa fa-check"></i><b>9.2</b> One-Hot Encoding</a></li>
+<li class="chapter" data-level="9.3" data-path="data-wrang-prep.html"><a href="data-wrang-prep.html#feature-engineering"><i class="fa fa-check"></i><b>9.3</b> Feature Engineering</a></li>
+<li class="chapter" data-level="9.4" data-path="data-wrang-prep.html"><a href="data-wrang-prep.html#exercises-5"><i class="fa fa-check"></i><b>9.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="10" data-path="aod.html"><a href="aod.html"><i class="fa fa-check"></i><b>10</b> Analysis of Differences</a><ul>
+<li class="chapter" data-level="10.1" data-path="aod.html"><a href="aod.html#comparing-2-distributions"><i class="fa fa-check"></i><b>10.1</b> Comparing 2 Distributions</a></li>
+<li class="chapter" data-level="10.2" data-path="aod.html"><a href="aod.html#comparing-3-distributions"><i class="fa fa-check"></i><b>10.2</b> Comparing 3+ Distributions</a></li>
+<li class="chapter" data-level="10.3" data-path="aod.html"><a href="aod.html#exercises-6"><i class="fa fa-check"></i><b>10.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="lm.html"><a href="lm.html"><i class="fa fa-check"></i><b>11</b> Linear Regression</a><ul>
+<li class="chapter" data-level="11.1" data-path="lm.html"><a href="lm.html#simple-linear-regression"><i class="fa fa-check"></i><b>11.1</b> Simple Linear Regression</a><ul>
+<li class="chapter" data-level="11.1.1" data-path="lm.html"><a href="lm.html#parameter-estimation"><i class="fa fa-check"></i><b>11.1.1</b> Parameter Estimation</a></li>
+</ul></li>
+<li class="chapter" data-level="11.2" data-path="lm.html"><a href="lm.html#multiple-linear-regression"><i class="fa fa-check"></i><b>11.2</b> Multiple Linear Regression</a><ul>
+<li class="chapter" data-level="11.2.1" data-path="lm.html"><a href="lm.html#moderation"><i class="fa fa-check"></i><b>11.2.1</b> Moderation</a></li>
+<li class="chapter" data-level="11.2.2" data-path="lm.html"><a href="lm.html#mediation"><i class="fa fa-check"></i><b>11.2.2</b> Mediation</a></li>
+</ul></li>
+<li class="chapter" data-level="11.3" data-path="lm.html"><a href="lm.html#polynomial-regression"><i class="fa fa-check"></i><b>11.3</b> Polynomial Regression</a></li>
+<li class="chapter" data-level="11.4" data-path="lm.html"><a href="lm.html#hierarchical-models"><i class="fa fa-check"></i><b>11.4</b> Hierarchical Models</a></li>
+<li class="chapter" data-level="11.5" data-path="lm.html"><a href="lm.html#exercises-7"><i class="fa fa-check"></i><b>11.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="glm.html"><a href="glm.html"><i class="fa fa-check"></i><b>12</b> Generalized Linear Regression</a><ul>
+<li class="chapter" data-level="12.1" data-path="glm.html"><a href="glm.html#logistic-regression"><i class="fa fa-check"></i><b>12.1</b> Logistic Regression</a><ul>
+<li class="chapter" data-level="12.1.1" data-path="glm.html"><a href="glm.html#binomial-logistic-regression"><i class="fa fa-check"></i><b>12.1.1</b> Binomial Logistic Regression</a></li>
+<li class="chapter" data-level="12.1.2" data-path="glm.html"><a href="glm.html#multinomial-logistic-regression"><i class="fa fa-check"></i><b>12.1.2</b> Multinomial Logistic Regression</a></li>
+<li class="chapter" data-level="12.1.3" data-path="glm.html"><a href="glm.html#ordinal-logistic-regression"><i class="fa fa-check"></i><b>12.1.3</b> Ordinal Logistic Regression</a></li>
+<li class="chapter" data-level="12.1.4" data-path="glm.html"><a href="glm.html#proportional-odds-logistic-regression"><i class="fa fa-check"></i><b>12.1.4</b> Proportional Odds Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="12.2" data-path="glm.html"><a href="glm.html#poisson-regression"><i class="fa fa-check"></i><b>12.2</b> Poisson Regression</a></li>
+<li class="chapter" data-level="12.3" data-path="glm.html"><a href="glm.html#exercises-8"><i class="fa fa-check"></i><b>12.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="13" data-path="surv-anal.html"><a href="surv-anal.html"><i class="fa fa-check"></i><b>13</b> Survival Analysis</a><ul>
+<li class="chapter" data-level="13.1" data-path="surv-anal.html"><a href="surv-anal.html#exercises-9"><i class="fa fa-check"></i><b>13.1</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="pred-mod.html"><a href="pred-mod.html"><i class="fa fa-check"></i><b>14</b> Predictive Models</a><ul>
+<li class="chapter" data-level="14.1" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>14.1</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="14.2" data-path="pred-mod.html"><a href="pred-mod.html#cross-validation"><i class="fa fa-check"></i><b>14.2</b> Cross-Validation</a></li>
+<li class="chapter" data-level="14.3" data-path="pred-mod.html"><a href="pred-mod.html#balancing-classes"><i class="fa fa-check"></i><b>14.3</b> Balancing Classes</a></li>
+<li class="chapter" data-level="14.4" data-path="pred-mod.html"><a href="pred-mod.html#model-performance"><i class="fa fa-check"></i><b>14.4</b> Model Performance</a></li>
+<li class="chapter" data-level="14.5" data-path="pred-mod.html"><a href="pred-mod.html#automated-machine-learning-automl"><i class="fa fa-check"></i><b>14.5</b> Automated Machine Learning (AutoML)</a></li>
+<li class="chapter" data-level="14.6" data-path="pred-mod.html"><a href="pred-mod.html#exercises-10"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="15" data-path="unsup-lrn.html"><a href="unsup-lrn.html"><i class="fa fa-check"></i><b>15</b> Unsupervised Learning</a><ul>
+<li class="chapter" data-level="15.1" data-path="unsup-lrn.html"><a href="unsup-lrn.html#factor-analysis"><i class="fa fa-check"></i><b>15.1</b> Factor Analysis</a></li>
+<li class="chapter" data-level="15.2" data-path="unsup-lrn.html"><a href="unsup-lrn.html#clustering"><i class="fa fa-check"></i><b>15.2</b> Clustering</a></li>
+<li class="chapter" data-level="15.3" data-path="unsup-lrn.html"><a href="unsup-lrn.html#exercises-11"><i class="fa fa-check"></i><b>15.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="16" data-path="net-anal.html"><a href="net-anal.html"><i class="fa fa-check"></i><b>16</b> Network Analysis</a><ul>
+<li class="chapter" data-level="16.1" data-path="net-anal.html"><a href="net-anal.html#centrality-measures"><i class="fa fa-check"></i><b>16.1</b> Centrality Measures</a></li>
+<li class="chapter" data-level="16.2" data-path="net-anal.html"><a href="net-anal.html#exercises-12"><i class="fa fa-check"></i><b>16.2</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="17" data-path="data-viz.html"><a href="data-viz.html"><i class="fa fa-check"></i><b>17</b> Data Visualization</a><ul>
+<li class="chapter" data-level="17.1" data-path="data-viz.html"><a href="data-viz.html#design-guidelines"><i class="fa fa-check"></i><b>17.1</b> Design Guidelines</a></li>
+<li class="chapter" data-level="17.2" data-path="data-viz.html"><a href="data-viz.html#visualization-types"><i class="fa fa-check"></i><b>17.2</b> Visualization Types</a><ul>
+<li class="chapter" data-level="17.2.1" data-path="data-viz.html"><a href="data-viz.html#tables"><i class="fa fa-check"></i><b>17.2.1</b> Tables</a></li>
+<li class="chapter" data-level="17.2.2" data-path="data-viz.html"><a href="data-viz.html#heatmaps"><i class="fa fa-check"></i><b>17.2.2</b> Heatmaps</a></li>
+<li class="chapter" data-level="17.2.3" data-path="data-viz.html"><a href="data-viz.html#scatterplots"><i class="fa fa-check"></i><b>17.2.3</b> Scatterplots</a></li>
+<li class="chapter" data-level="17.2.4" data-path="data-viz.html"><a href="data-viz.html#line-graphs"><i class="fa fa-check"></i><b>17.2.4</b> Line Graphs</a></li>
+<li class="chapter" data-level="17.2.5" data-path="data-viz.html"><a href="data-viz.html#slopegraphs"><i class="fa fa-check"></i><b>17.2.5</b> Slopegraphs</a></li>
+<li class="chapter" data-level="17.2.6" data-path="data-viz.html"><a href="data-viz.html#bar-charts"><i class="fa fa-check"></i><b>17.2.6</b> Bar Charts</a></li>
+<li class="chapter" data-level="17.2.7" data-path="data-viz.html"><a href="data-viz.html#waterfall-charts"><i class="fa fa-check"></i><b>17.2.7</b> Waterfall Charts</a></li>
+<li class="chapter" data-level="17.2.8" data-path="data-viz.html"><a href="data-viz.html#area-charts"><i class="fa fa-check"></i><b>17.2.8</b> Area Charts</a></li>
+<li class="chapter" data-level="17.2.9" data-path="data-viz.html"><a href="data-viz.html#pie-charts"><i class="fa fa-check"></i><b>17.2.9</b> Pie Charts</a></li>
+</ul></li>
+<li class="chapter" data-level="17.3" data-path="data-viz.html"><a href="data-viz.html#exercises-13"><i class="fa fa-check"></i><b>17.3</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="18" data-path="storytelling.html"><a href="storytelling.html"><i class="fa fa-check"></i><b>18</b> Data Storytelling</a><ul>
+<li class="chapter" data-level="18.1" data-path="storytelling.html"><a href="storytelling.html#know-your-audience"><i class="fa fa-check"></i><b>18.1</b> Know Your Audience</a></li>
+<li class="chapter" data-level="18.2" data-path="storytelling.html"><a href="storytelling.html#tldr"><i class="fa fa-check"></i><b>18.2</b> TL;DR</a></li>
+<li class="chapter" data-level="18.3" data-path="storytelling.html"><a href="storytelling.html#telling-the-story"><i class="fa fa-check"></i><b>18.3</b> Telling the Story</a></li>
+<li class="chapter" data-level="18.4" data-path="storytelling.html"><a href="storytelling.html#reference-material"><i class="fa fa-check"></i><b>18.4</b> Reference Material</a></li>
+<li class="chapter" data-level="18.5" data-path="storytelling.html"><a href="storytelling.html#exercises-14"><i class="fa fa-check"></i><b>18.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="19" data-path="bibli.html"><a href="bibli.html"><i class="fa fa-check"></i><b>19</b> Bibliography</a></li>
+<li class="chapter" data-level="20" data-path="appendix.html"><a href="appendix.html"><i class="fa fa-check"></i><b>20</b> Appendix</a><ul>
+<li class="chapter" data-level="20.1" data-path="appendix.html"><a href="appendix.html#exercise-solutions"><i class="fa fa-check"></i><b>20.1</b> Exercise Solutions</a></li>
+<li class="chapter" data-level="20.2" data-path="appendix.html"><a href="appendix.html#d-framework-1"><i class="fa fa-check"></i><b>20.2</b> 4D Framework</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">A Practitioner’s Guide through the People Analytics Lifecycle</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-wrang-prep" class="section level1">
+<h1><span class="header-section-number">9</span> Data Wrangling and Preparation</h1>
+<p>To begin a data analysis, we must first access the requisite data. This often involves extracting data from either source systems in which the data are generated or downstream environments such as a <em>data lake</em>, <em>data warehouse</em>, or <em>data mart</em>.</p>
+<p>A <strong>data lake</strong> stores myriad types of data – both structured and unstructured – in its native format until needed. <strong>Structured data</strong> refers to data that fits a predefined data model, such as hire dates formatted as <code>MM/DD/YYYY</code> or zip codes stored as a five-digit string. <strong>Unstructured data</strong> has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables.</p>
+<p>The main difference between a data lake and data warehouse is the type of data they are designed to store. A <strong>data warehouse (DW)</strong> is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.</p>
+<p>A <strong>data mart</strong> is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.</p>
+<p><strong>SQL</strong></p>
+<p><strong>Structured Query Language (SQL)</strong> is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.</p>
+<p>When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. Fewer records can help enhance the performance of R scripts – especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.</p>
+<p>There are three main <em>clauses</em> in a SQL query: (a) <code>SELECT</code>, (b) <code>FROM</code>, and (c) <code>WHERE</code>. The <code>SELECT</code> and <code>FROM</code> clauses are required, though the optional <code>WHERE</code> clause is frequently utilized.</p>
+<ul>
+<li><strong>SELECT</strong>: Specifies the columns to include in the output</li>
+<li><strong>FROM</strong>: Specifies the table(s) in which the relevant data are contained</li>
+<li><strong>WHERE</strong>: Specifies the rows to search</li>
+</ul>
+<p>Despite the clauses being ordered as shown above (<code>SELECT</code> then <code>FROM</code> then <code>WHERE</code>), the <code>FROM</code> clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The <code>SELECT</code> clause is the last to execute.</p>
+<p>Additional clauses are available for more advanced operations.</p>
+<ul>
+<li><strong>GROUP BY</strong>: Specifies the columns by which data should be grouped when using aggregate functions</li>
+<li><strong>HAVING</strong>: Specifies conditions for filtering rows based on aggregate functions</li>
+<li><strong>ORDER BY</strong>: Specifies how data should be sorted in the output</li>
+</ul>
+<p>When implementing aggregate functions in a <code>SELECT</code> clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the <code>GROUP BY</code> clause.</p>
+<p>Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the <code>sqldf</code> library within R to demonstrate the mechanics of a SQL query. The <code>sqldf</code> library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.</p>
+<p>First, let’s load the <code>sqldf</code> library and store data to a data frame named <code>demographics</code>:</p>
+<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb187-1" data-line-number="1"><span class="co"># Load SQL library</span></a>
+<a class="sourceLine" id="cb187-2" data-line-number="2"><span class="kw">library</span>(sqldf)</a>
+<a class="sourceLine" id="cb187-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb187-4" data-line-number="4"><span class="co"># Read employee demographics data</span></a>
+<a class="sourceLine" id="cb187-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb187-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb187-7" data-line-number="7"><span class="co"># Return row and column counts</span></a>
+<a class="sourceLine" id="cb187-8" data-line-number="8"><span class="kw">dim</span>(demographics)</a></code></pre></div>
+<pre><code>## [1] 4875   22</code></pre>
+<p>Next, we will apply the <code>sqldf</code> function to our data frame to extract specific rows and columns. In addition to the <code>SELECT</code>, <code>FROM</code>, and <code>WHERE</code> clauses, we will use the <code>LIMIT</code> clause to limit the number of rows that are displayed given the data frame’s size (<span class="math inline">\(n = 4,875\)</span>). In a practical setting, the <code>LIMIT</code> clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.</p>
+<p>A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:</p>
+<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb189-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
+<a class="sourceLine" id="cb189-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb189-3" data-line-number="3"><span class="st">                      employee_id</span></a>
+<a class="sourceLine" id="cb189-4" data-line-number="4"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb189-5" data-line-number="5"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb189-6" data-line-number="6"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb189-7" data-line-number="7"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb189-8" data-line-number="8"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb189-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb189-10" data-line-number="10"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb189-11" data-line-number="11"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##    employee_id
+## 1         1013
+## 2         1034
+## 3         1035
+## 4         1036
+## 5         1037
+## 6         1038
+## 7         1139
+## 8         1140
+## 9         1141
+## 10        1142</code></pre>
+<p>This query returned a list of employee ids for the 496 employees on the Social Marketing team.</p>
+<p>Next, let’s take a look at the average organization tenure by job for those on the Social Marketing team:</p>
+<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb191-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb191-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb191-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb191-4" data-line-number="4"><span class="st">                      AVG(org_tenure)</span></a>
+<a class="sourceLine" id="cb191-5" data-line-number="5"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb191-6" data-line-number="6"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb191-7" data-line-number="7"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb191-8" data-line-number="8"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb191-9" data-line-number="9"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb191-10" data-line-number="10"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb191-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb191-12" data-line-number="12"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb191-13" data-line-number="13"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                       job_title AVG(org_tenure)
+## 1         Community Coordinator        9.224138
+## 2            Content Strategist        8.152778
+## 3            Creative Assistant        9.454545
+## 4                  Data Analyst        8.666667
+## 5  Digital Marketing Specialist        8.228571
+## 6                      Director        8.100000
+## 7                       Manager        9.340000
+## 8                SEO Specialist        9.596774
+## 9       Social Media Strategist       10.000000
+## 10               Vice President        7.500000</code></pre>
+<p>There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from <code>7.5</code> to <code>10</code>.</p>
+<p>Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the <code>COUNT(*)</code> function to count the number of rows for each group. In this case, <code>COUNT(*)</code> will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via <code>AS</code> in the <code>SELECT</code> clause to assign different names to the output fields:</p>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb193-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb193-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb193-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb193-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb193-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb193-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb193-7" data-line-number="7"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb193-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb193-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb193-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb193-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb193-12" data-line-number="12"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb193-13" data-line-number="13"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb193-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb193-15" data-line-number="15"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb193-16" data-line-number="16"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                       job_title employee_cnt avg_org_tenure
+## 1         Community Coordinator           58       9.224138
+## 2            Content Strategist           72       8.152778
+## 3            Creative Assistant           44       9.454545
+## 4                  Data Analyst           72       8.666667
+## 5  Digital Marketing Specialist           70       8.228571
+## 6                      Director           10       8.100000
+## 7                       Manager           50       9.340000
+## 8                SEO Specialist           62       9.596774
+## 9       Social Media Strategist           56      10.000000
+## 10               Vice President            2       7.500000</code></pre>
+<p>The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common.</p>
+<p>Since relatively few employees are Vice Presidents or Directors, let’s use the <code>HAVING</code> clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:</p>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb195-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb195-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb195-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb195-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb195-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb195-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb195-7" data-line-number="7"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb195-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb195-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb195-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb195-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb195-12" data-line-number="12"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb195-13" data-line-number="13"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb195-14" data-line-number="14"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb195-15" data-line-number="15"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb195-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb195-17" data-line-number="17"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb195-18" data-line-number="18"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p>In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a <strong>Primary Key (PK)</strong>, which is a unique identifier that can be used to relate records from one table to corresponding records in another.</p>
+<p>To illustrate how this works, let’s partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:</p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb197-1" data-line-number="1"><span class="co"># Partition select columns into three data frames</span></a>
+<a class="sourceLine" id="cb197-2" data-line-number="2">job_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;job_title&quot;</span>)]</a>
+<a class="sourceLine" id="cb197-3" data-line-number="3">tenure_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>)]</a>
+<a class="sourceLine" id="cb197-4" data-line-number="4">team_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;team&quot;</span>)]</a></code></pre></div>
+<p>Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an <code>INNER JOIN</code>, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in <code>job_df</code> and <code>tenure_df</code> for a particular employee id, but there is no team designation for it in <code>team_df</code>, that employee id would not be included in the output.</p>
+<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb198-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb198-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb198-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb198-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb198-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb198-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb198-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb198-8" data-line-number="8"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb198-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb198-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb198-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb198-12" data-line-number="12"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb198-13" data-line-number="13"><span class="st">                      team_df</span></a>
+<a class="sourceLine" id="cb198-14" data-line-number="14"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb198-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
+<a class="sourceLine" id="cb198-16" data-line-number="16"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb198-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb198-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb198-19" data-line-number="19"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb198-20" data-line-number="20"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb198-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb198-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb198-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb198-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb198-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb198-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p>Note that the <code>INNER JOIN</code> in this SQL query was structured such that both <code>tenure_df</code> and <code>team_df</code> were joined to <code>job_df</code> via the <code>employee_id</code> column. We could have instead joined <code>job_df</code> to <code>team_df</code> and achieved the same result since all employee ids exist in all three data frames in this case.</p>
+<p>If it were possible for all employee ids to exist in <code>job_df</code> but not in either <code>tenure_df</code> or <code>team_df</code>, we could leverage a <code>LEFT JOIN</code> to ensure all records from <code>job_df</code> are included in the output irrespective of whether they have matches in <code>tenure_df</code> or <code>team_df</code>:</p>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb200-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb200-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb200-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb200-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb200-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb200-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb200-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb200-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb200-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb200-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb200-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb200-12" data-line-number="12"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb200-13" data-line-number="13"><span class="st">                      team_df</span></a>
+<a class="sourceLine" id="cb200-14" data-line-number="14"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb200-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
+<a class="sourceLine" id="cb200-16" data-line-number="16"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb200-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb200-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb200-19" data-line-number="19"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb200-20" data-line-number="20"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb200-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb200-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb200-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb200-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb200-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb200-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p><strong>Subqueries</strong> are nested SQL queries that allow us to pass results from an inner query to the main outer query.</p>
+<p>For example, instead of applying the <code>team = 'Social Marketing</code> condition in the <code>WHERE</code> clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include <code>team_df</code> in the join conditions of our main query:</p>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb202-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb202-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb202-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb202-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb202-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb202-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb202-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb202-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb202-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb202-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb202-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb202-12" data-line-number="12"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb202-13" data-line-number="13"><span class="st">                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;)</span></a>
+<a class="sourceLine" id="cb202-14" data-line-number="14"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb202-15" data-line-number="15"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb202-16" data-line-number="16"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb202-17" data-line-number="17"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb202-18" data-line-number="18"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb202-19" data-line-number="19"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb202-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb202-21" data-line-number="21"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb202-22" data-line-number="22"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p>An alternative to a subquery is creating a <strong>derived table</strong> in the <code>FROM</code> clause using a SQL statement. When using an <code>INNER JOIN</code> to connect <code>job_df</code> and <code>tenure_df</code> to the derived table containing Social Marketing employee ids, any records in <code>job_df</code> or <code>tenure_df</code> that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a <code>WHERE</code> clause:</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb204-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb204-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb204-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb204-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb204-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb204-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb204-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb204-8" data-line-number="8"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb204-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb204-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb204-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb204-12" data-line-number="12"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb204-13" data-line-number="13"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb204-14" data-line-number="14"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb204-15" data-line-number="15"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb204-16" data-line-number="16"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb204-17" data-line-number="17"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb204-18" data-line-number="18"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb204-19" data-line-number="19"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb204-20" data-line-number="20"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb204-21" data-line-number="21"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb204-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb204-23" data-line-number="23"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb204-24" data-line-number="24"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p><strong>Window functions</strong> are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we’ve covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.</p>
+<p>For example, we can assign an organization tenure rank by Social Marketing job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause. The <code>PARTITION BY</code> argument functions like a <code>GROUP BY</code> clause but without collapsing rows, while the <code>ORDER BY</code> argument sorts the records in ascending (<code>ASC</code>) or descending (<code>DESC</code>) order for proper ranking:</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb206-2" data-line-number="2"><span class="co"># Limit output to 10 records since query does not collapse records</span></a>
+<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="co"># Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table to include employee_id in the output</span></a>
+<a class="sourceLine" id="cb206-4" data-line-number="4">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb206-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
+<a class="sourceLine" id="cb206-6" data-line-number="6"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb206-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
+<a class="sourceLine" id="cb206-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
+<a class="sourceLine" id="cb206-9" data-line-number="9"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb206-10" data-line-number="10"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb206-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb206-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb206-13" data-line-number="13"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb206-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb206-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb206-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb206-17" data-line-number="17"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb206-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb206-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb206-20" data-line-number="20"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb206-21" data-line-number="21"><span class="st">                      org_tenure_rank</span></a>
+<a class="sourceLine" id="cb206-22" data-line-number="22"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb206-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb206-24" data-line-number="24"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb206-25" data-line-number="25"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##    employee_id             job_title org_tenure org_tenure_rank
+## 1         1236 Community Coordinator         20               1
+## 2         1322 Community Coordinator         20               1
+## 3         1264 Community Coordinator         19               3
+## 4         1348 Community Coordinator         19               3
+## 5         3759 Community Coordinator         19               3
+## 6         3694 Community Coordinator         18               6
+## 7         1257 Community Coordinator         17               7
+## 8         3702 Community Coordinator         17               7
+## 9         1344 Community Coordinator         16               9
+## 10        3659 Community Coordinator         16               9</code></pre>
+<p>Notice that in the case of organization tenure ties, the <code>RANK()</code> function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.</p>
+<p>We can also treat this query as a derived table, and then filter on the derived <code>org_tenure_rank</code> field to return a list of Social Marketing employees with the highest tenure for each job. The <code>*</code> symbol in the <code>SELECT</code> clause will return all columns from the specified table:</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb208-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT tbl.*</span></a>
+<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="st">                    (SELECT</span></a>
+<a class="sourceLine" id="cb208-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
+<a class="sourceLine" id="cb208-6" data-line-number="6"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb208-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
+<a class="sourceLine" id="cb208-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
+<a class="sourceLine" id="cb208-9" data-line-number="9"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb208-10" data-line-number="10"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb208-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb208-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb208-13" data-line-number="13"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb208-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb208-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb208-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb208-17" data-line-number="17"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb208-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb208-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb208-20" data-line-number="20"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb208-21" data-line-number="21"><span class="st">                      org_tenure_rank) tbl</span></a>
+<a class="sourceLine" id="cb208-22" data-line-number="22"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb208-23" data-line-number="23"><span class="st">                      tbl.org_tenure_rank = 1&quot;</span>)</a>
+<a class="sourceLine" id="cb208-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb208-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb208-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##    employee_id                    job_title org_tenure org_tenure_rank
+## 1         1236        Community Coordinator         20               1
+## 2         1322        Community Coordinator         20               1
+## 3         1209           Content Strategist         20               1
+## 4         3786           Creative Assistant         20               1
+## 5         3808           Creative Assistant         20               1
+## 6         1200                 Data Analyst         19               1
+## 7         1245                 Data Analyst         19               1
+## 8         1400                 Data Analyst         19               1
+## 9         3826                 Data Analyst         19               1
+## 10        3641 Digital Marketing Specialist         20               1
+## 11        3778 Digital Marketing Specialist         20               1
+## 12        3475                     Director         15               1
+## 13        1157                      Manager         20               1
+## 14        1161                      Manager         20               1
+## 15        3578                      Manager         20               1
+## 16        3599                      Manager         20               1
+## 17        1325               SEO Specialist         20               1
+## 18        3750               SEO Specialist         20               1
+## 19        3845               SEO Specialist         20               1
+## 20        1368      Social Media Strategist         20               1
+## 21        1013               Vice President         10               1</code></pre>
+<div id="data-screening-cleaning" class="section level2">
+<h2><span class="header-section-number">9.1</span> Data Screening &amp; Cleaning</h2>
+<p><strong>Missingness</strong></p>
+<p>Before considering whether and how to handle missing data, it is important to distinguish between <em>structural missingness</em> and <em>informative missingness</em> (Kuhn &amp; Johnson, 2013).</p>
+<p><strong>Structural missingness</strong> relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.</p>
+<p><strong>Informative missingness</strong> relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.</p>
+<p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.</p>
+<p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average or most frequent age could be used in place of the cases with a missing age. To be more precise, the average or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability around a mean and mode value of age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
+<p>There are more sophisticated methods of data imputation that involve models to estimate missing values. <em>Linear regression</em> and <em>K-Nearest Neighbor (KNN)</em> models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.</p>
+<p><strong>Outliers</strong></p>
+<p>The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated.</p>
+<p><strong>Low Variability</strong></p>
+<p>Variables with <strong>low variability</strong> often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.</p>
+<p>When working with survey data, checking for <strong>straightlining</strong> should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases – especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing “I plan to be here in a year” to “I do not plan to be here in a year”), which we expect to be inversely related, this gives added support for discarding these responses.</p>
+<p><strong>Inconsistent Categories</strong></p>
+<p><strong>Data Binning</strong></p>
+</div>
+<div id="one-hot-encoding" class="section level2">
+<h2><span class="header-section-number">9.2</span> One-Hot Encoding</h2>
+<p><strong>One-hot encoding</strong>, also known as <strong>dummy coding</strong>, involves transforming a categorical variable into numeric values on which statistical procedures can be performed.</p>
+</div>
+<div id="feature-engineering" class="section level2">
+<h2><span class="header-section-number">9.3</span> Feature Engineering</h2>
+<p>Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure, etc.), but a good next step is to derive smarter variables from these fields. These can then be used to slice and dice turnover and engagement data differently, use as inputs in attrition risk models, etc. Below are some ideas to get you started:</p>
+<ul>
+<li>Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)</li>
+<li>Office/remote worker (binary variable dummy coded as 1/0)</li>
+<li>Local/remote manager (binary variable dummy coded as 1/0)</li>
+<li>Hire/Rehire (binary variable dummy coded as 1/0)</li>
+<li>Hired/acquired (proxy for culture shock effects)</li>
+<li>Gender isolation (ratio of employee’s gender to number of the same within immediate work
+group)</li>
+<li>Generation isolation (comparison of age bracket to most frequent generational bracket within
+immediate work group)</li>
+<li>Ethnic isolation (ratio of employee’s ethnicity to number of the same within immediate work
+group)</li>
+<li>Difference between employee and manager age</li>
+<li>Percentage change between last two performance appraisal scores (per competency and/or
+overall)</li>
+<li>Team and department quit outbreak indicators (ratio of terms over x months relative to average
+headcount over x months)</li>
+<li>Industry experience (binary or length in years)</li>
+</ul>
+<p>Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.</p>
+</div>
+<div id="exercises-5" class="section level2">
+<h2><span class="header-section-number">9.4</span> Exercises</h2>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="inf-stats.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="aod.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["People_Analytics_Lifecycle.pdf", "People_Analytics_Lifecycle.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
