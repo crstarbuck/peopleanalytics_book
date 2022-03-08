@@ -180,7 +180,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, warning = FALSE, message = FALSE}
 
-install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
+install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf", "caret"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
 ```
 
@@ -2333,7 +2333,7 @@ ci99_upper_bound
   
   <br />
   
-```{r t-distribution, out.width = "50%", echo = FALSE, fig.cap = paste("t Distribution Shape by Degrees of Freedom"), fig.align = 'center'}
+```{r t-distribution, out.width = "75%", echo = FALSE, fig.cap = paste("t Distribution Shape by Degrees of Freedom"), fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution.png")
 
@@ -2551,11 +2551,13 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
 
-  **SQL**
+## SQL
 
   **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
   
-  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should filter to this subset on the database side rather than load data on the entire workforce into R before filtering to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  
+  **Basics**
   
   There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently utilized.
   
@@ -2565,7 +2567,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
   
-  Additional clauses are available for more advanced operations.
+  Additional clauses are available for grouping and sorting data.
   
   * **GROUP BY**: Specifies the columns by which data should be grouped when using aggregate functions
   * **HAVING**: Specifies conditions for filtering rows based on aggregate functions
@@ -2611,6 +2613,8 @@ sqldf(sql_string)
 ```
 
   This query returned a list of employee ids for the 496 employees on the Social Marketing team. 
+  
+  **Aggregate Functions**
   
   Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
   
@@ -2684,6 +2688,8 @@ sqldf(sql_string)
 
 ```
 
+  **Joins**
+  
   In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a **Primary Key (PK)**, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
   
   To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
@@ -2765,6 +2771,8 @@ sqldf(sql_string)
 
 ```
 
+  **Subqueries**
+  
   **Subqueries** are nested SQL queries that allow us to pass results from an inner query to the main outer query. 
   
   For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
@@ -2796,6 +2804,8 @@ sqldf(sql_string)
 
 ```
 
+  **Derived Tables**
+  
   An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
 
 ```{r, message = FALSE, warning = FALSE}
@@ -2827,6 +2837,8 @@ sqldf(sql_string)
 
 ```
 
+  **Window Functions**
+  
   **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
   
   For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
@@ -2835,7 +2847,7 @@ sqldf(sql_string)
 
 # Store SQL query as a character string
 # Limit output to 10 records since query does not collapse records
-# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table to include employee_id in the output
+# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output
 sql_string <- paste("SELECT
                       job_df.employee_id,
                       job_title,
@@ -2898,6 +2910,19 @@ sqldf(sql_string)
   
 ## Data Screening & Cleaning
 
+  The initial data review process is sometimes referred to as **exporatory data analysis (EDA)**. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
+
+  A handy function in base R for initial data screening is `summary()`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Summarize df
+summary(demographics)
+
+```
+
+  Note that fields with `NA's` contain missing values. Also, by default `employee_id` and `manager_id` are both treated as integers in R, which is why descriptive statistics appropriate for numeric data are provided. `employee_id` and `manager_id` should actually be treated as character strings since we will not perform any arithmetic operations using these ids.
+  
   **Missingness**
 
   Before considering whether and how to handle missing data, it is important to distinguish between *structural missingness* and *informative missingness* (Kuhn & Johnson, 2013). 
@@ -2908,13 +2933,42 @@ sqldf(sql_string)
   
   In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
   
-  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average or most frequent age could be used in place of the cases with a missing age. To be more precise, the average or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability around a mean and mode value of age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
   
-  There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+  Let's evaluate the `demographics` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Force a NA in lieu of annual comp for illustrative purposes
+demographics[demographics$employee_id == '4305', 'annual_comp'] <- NA
+
+# Return relevant employee characteristics where annual comp is missing
+demographics[is.na(demographics$annual_comp), c("employee_id", "job_title", "location", "job_level")]
+
+```
+
+  Next, we can impute the average value of `annual_comp` based on employees with the same values for the relevant variables:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return average annual comp for employees with similar characteristics, excluding employees with missing comp values
+imputed_comp <- mean(demographics[demographics$job_title == 'Manager' & demographics$location == 'HQ 1 - Austin' & demographics$job_level == 7, 'annual_comp'], na.rm = TRUE)
+
+# Impute missing comp for relevant segment
+demographics[demographics$employee_id == '4305', 'annual_comp'] <- imputed_comp
+
+# Display imputed comp
+demographics[demographics$employee_id == '4305', 'annual_comp']
+
+```
+
+  While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
 
   **Outliers**
 
-  The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated.
+  The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated. As discussed in Chapter \@ref(uni-bi-stats), a common method of outlier detection is identifying values which fall outside the following interval:
+  
+  $$I = [Q1 - 1.5 * IQR; Q3 + 1.5 * IQR]$$
 
   **Low Variability**
   
@@ -2922,21 +2976,39 @@ sqldf(sql_string)
   
   When working with survey data, checking for **straightlining** should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing "I plan to be here in a year" to "I do not plan to be here in a year"), which we expect to be inversely related, this gives added support for discarding these responses.
   
+  Fields with low variability can be easily identified using descriptive statistics from the `summary()` function. If the `Min` and `Max` values are equal, there is no variability in the field's values.
+  
   **Inconsistent Categories**
   
+  **Inconsistent categories** impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.
   
+  Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.
   
+  Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This will either warrant a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream to avoid duplicative data cleaning procedures across downstream applications.
+
   **Data Binning**
   
+  **Data binning** refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, very granular categories should be avoided – especially when there is no theoretical basis for such categories facilitating a project’s objectives or deepening insights. Where the $n$-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. A variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level “High School Not Completed” and “High School Completed” bins.
   
-  
+  For modeling applications, it is important to let the model determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of 'Less Than 1 Year', '1-5 Years', and 'More Than 5 Years' will likely result in information loss. Any variability *within* these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
+
 ## One-Hot Encoding
 
-  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. 
+  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, dummy coding is not required, as metrics such as counts and percentages can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications categorical variables must be converted into $k-1$ variables, where $k$ is the number of categories, using binary (1/0) coding.
+  
+  Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with "Remote" or "Non-Remote" values, we could code "Remote" values as 1 and "Non-Remote" values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables. 
+  
+  If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \@ref(lm), one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields would be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \@ref(fig:onehot-encoding), by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+  
+```{r onehot-encoding, out.width = "75%", echo = FALSE, fig.cap = 'One-Hot Encoding', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/onehot_encoding.png")
+
+```
 
 ## Feature Engineering
 
-  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure, etc.), but a good next step is to derive smarter variables from these fields. These can then be used to slice and dice turnover and engagement data differently, use as inputs in attrition risk models, etc. Below are some ideas to get you started:
+  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information:
 
   + Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
   + Office/remote worker (binary variable dummy coded as 1/0)
@@ -2956,10 +3028,27 @@ overall)
 headcount over x months)
   + Industry experience (binary or length in years)
 
-  Remember to compute variables consistent with a need (e.g., is there reason to believe generationally isolated employees are more likely to term?). There may be a time and place for undertaking data mining initiatives with no a priori theories about what may be uncovered; however, more often than not, our efforts should be tied to specific hypotheses the business needs tested, which have sound theoretical underpinnings.
-
 ## Exercises
 
+1. What are the differences between data lakes, data warehouses, and data marts?
+
+2. What two clauses must always be present in a SQL query?
+
+3. How do aggregate functions differ from window functions in SQL?
+
+4. What is a subquery?
+
+5. What is the difference between an INNER JOIN and LEFT JOIN?
+
+6. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+
+7. How can missing values be addressed when impacted records cannot be eliminated from a data set?
+
+8. When is one-hot encoding required for categorical variables?
+
+9. Why should variables with low to no variability be dropped?
+
+10. What is the role of feature engineering?
 
 <!--chapter:end:r/07_data_wrangling_preparation.Rmd-->
 
