@@ -1,13 +1,39 @@
 # Data Wrangling and Preparation {#data-wrang-prep}
 
-  To begin a data analysis, we must first access the requisite data. This often involves extracting data from either source systems in which the data are generated or downstream environments such as a *data lake*, *data warehouse*, or *data mart*.
+  To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for as much as 80% of a data scientist's work.
+  
+```{r ds-tasks, out.width = "75%", echo = FALSE, fig.cap = 'What Data Scientists Really Do', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/data_scientist_tasks.jpeg")
+
+```
+  
+## Data Management
+  
+  Data are often extracted directly from the source systems in which they are generated or downstream environments such as a *data lake*, *data warehouse*, or *data mart*.
   
   A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
   
-  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
+  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
   
-  A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+```{r dw-schema, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
 
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_schema.png")
+
+```
+
+  A DW usually contains many different types of tables, but the two most common are *Type 1* and *Type 2* tables. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table**, also known as a **slowly changing dimension (SCD)**, is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, locations, and managers are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  
+  Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for a worker's job changes. Note that for current values, the end date is usually set to `12/31/9999` and accompanied by a current record flag:
+  
+```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD with Job Changes', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_2_table.png")
+
+```
+
+  A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+  
 ## SQL
 
   **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
@@ -425,7 +451,7 @@ demographics[demographics$employee_id == '4305', 'annual_comp']
 
   The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated. As discussed in Chapter \@ref(uni-bi-stats), a common method of outlier detection is identifying values which fall outside the following interval:
   
-  $$I = [Q1 - 1.5 * IQR; Q3 + 1.5 * IQR]$$
+  $$I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR$$
 
   **Low Variability**
   
@@ -489,20 +515,20 @@ headcount over x months)
 
 1. What are the differences between data lakes, data warehouses, and data marts?
 
-2. What two clauses must always be present in a SQL query?
+2. What is the difference between a Type 1 and Type 2 table in a DW?
 
-3. How do aggregate functions differ from window functions in SQL?
+3. What two clauses must always be present in a SQL query?
 
-4. What is a subquery?
+4. How do aggregate functions differ from window functions in SQL?
 
-5. What is the difference between an INNER JOIN and LEFT JOIN?
+5. What is a subquery?
 
-6. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+6. What is the difference between an INNER JOIN and LEFT JOIN?
 
-7. How can missing values be addressed when impacted records cannot be eliminated from a data set?
+7. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
 
-8. When is one-hot encoding required for categorical variables?
+8. How can missing values be addressed when impacted records cannot be eliminated from a data set?
 
-9. Why should variables with low to no variability be dropped?
+9. When is one-hot encoding required for categorical variables?
 
-10. What is the role of feature engineering?
+10. Why should variables with low to no variability be dropped?
