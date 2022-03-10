@@ -16,19 +16,31 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
   
+  Figure \@ref(fig:dw-schema) illustrates how worker, position, and candidate schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
+  
 ```{r dw-schema, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_schema.png")
 
 ```
 
-  A DW usually contains many different types of tables, but the two most common are *Type 1* and *Type 2* tables. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table**, also known as a **slowly changing dimension (SCD)**, is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, locations, and managers are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  A DW usually contains many different types of tables, but the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
   
-  Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for a worker's job changes. Note that for current values, the end date is usually set to `12/31/9999` and accompanied by a current record flag:
+  Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
-```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD with Job Changes', fig.align = 'center'}
+  Note that `end_date = '12/31/9999'` and `current_record = 'Y'` for rows that represent *current attributes* for active workers. For inactive workers, `end_date` would be set to the worker's termination date for rows that represent the *last known attributes*, along with `current_record = 'Y'`:
+  
+```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_2_table.png")
+
+```
+
+  While we could select rows where `current_record = 'Y'` to construct a view of the last known attributes for each worker in this table, each worker would have a separate row for each dimension which isn't ideal. Using a Type 1 table simplifies the task and output, as each dimension value is stored in a separate column. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
+
+```{r type-1-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 1 SCD', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table.png")
 
 ```
 
