@@ -10,7 +10,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ## Data Management
   
-  Data are often extracted directly from the source systems in which they are generated or downstream environments such as a *data lake*, *data warehouse*, or *data mart*.
+  Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*.
   
   A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
   
@@ -24,7 +24,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  A DW usually contains many different types of tables, but the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  Tables in a DW are related using a set of keys. Each table needs a **Primary Key (PK)**, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a *composite key*. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A **Foreign Key (FK)** is a column whose values correspond to the values of a PK in another table. **Referential integrity** is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
+  
+  Figure \@ref(fig:dw-erd) shows an **Entity Relationship Diagram (ERD)** that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \@ref(fig:dw-schema) is listed as a FK.
+  
+```{r dw-erd, out.width = "100%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd.png")
+
+```
+
+  A DW usually contains many different types of tables, and the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
@@ -80,7 +90,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 library(sqldf)
 
 # Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv")
 
 # Return row and column counts
 dim(demographics)
@@ -185,9 +195,9 @@ sqldf(sql_string)
 
   **Joins**
   
-  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a **Primary Key (PK)**, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together.
   
-  To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
+  To illustrate how SQL joins work, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -485,7 +495,7 @@ demographics[demographics$employee_id == '4305', 'annual_comp']
   
   **Data binning** refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, very granular categories should be avoided – especially when there is no theoretical basis for such categories facilitating a project’s objectives or deepening insights. Where the $n$-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. A variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level “High School Not Completed” and “High School Completed” bins.
   
-  For modeling applications, it is important to let the model determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of 'Less Than 1 Year', '1-5 Years', and 'More Than 5 Years' will likely result in information loss. Any variability *within* these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
+  For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of 'Less Than 1 Year', '1-5 Years', and 'More Than 5 Years' will likely result in information loss. Any variability *within* these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
 
 ## One-Hot Encoding
 
@@ -493,11 +503,57 @@ demographics[demographics$employee_id == '4305', 'annual_comp']
   
   Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with "Remote" or "Non-Remote" values, we could code "Remote" values as 1 and "Non-Remote" values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables. 
   
-  If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \@ref(lm), one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields would be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \@ref(fig:onehot-encoding), by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+  If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \@ref(lm), one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \@ref(fig:onehot-encoding), by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
   
 ```{r onehot-encoding, out.width = "75%", echo = FALSE, fig.cap = 'One-Hot Encoding', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/onehot_encoding.png")
+
+```
+
+  For a categorical variable with only two values, the `ifelse()` function can be leveraged to assign values:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return unique values of gender field
+unique(demographics$gender)
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Gender one-hot encoding
+demographics$gender_ohe <- ifelse(demographics$gender == 'Female', 1, 0)
+
+# Preview records
+head(demographics[, c("employee_id", "gender_ohe")])
+
+```
+
+  For variables with more than 2 categories, we can leverage the `model.matrix()` function to one-hot encode them all:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+
+# Determine location with lowest n-count
+locations <- demographics %>% count(location, sort = TRUE)
+
+# Display counts by location
+locations
+
+# Store location with smallest n-count
+min_location <- locations[nrow(location_cnts), "location"]
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Location one-hot encoding
+# Omit location with lowest n-count
+location_ohe <- model.matrix(~location-1, data = demographics[!demographics$location == min_location, ])
+head(location_ohe)
 
 ```
 
