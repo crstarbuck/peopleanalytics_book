@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-03-11" />
+<meta name="date" content="2022-03-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -334,7 +334,7 @@ Figure 9.1: What Data Scientists Really Do
 <p>Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a <em>data lake</em>, <em>data warehouse</em>, or <em>data mart</em>.</p>
 <p>A <strong>data lake</strong> stores myriad types of data – both structured and unstructured – in its native format until needed. <strong>Structured data</strong> refers to data that fits a predefined data model, such as hire dates formatted as <code>MM/DD/YYYY</code> or zip codes stored as a five-digit string. <strong>Unstructured data</strong> has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables.</p>
 <p>The main difference between a data lake and data warehouse is the type of data they are designed to store. A <strong>data warehouse (DW)</strong> is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a>, data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.</p>
-<p>Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a> illustrates how worker, position, and candidate schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company’s workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.</p>
+<p>Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a> illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company’s workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:dw-schema"></span>
 <img src="graphics/dw_schema.png" alt="Related Tables Organized within Schemas" width="100%" />
 <p class="caption">
@@ -344,12 +344,12 @@ Figure 9.2: Related Tables Organized within Schemas
 <p>Tables in a DW are related using a set of keys. Each table needs a <strong>Primary Key (PK)</strong>, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a <em>composite key</em>. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A <strong>Foreign Key (FK)</strong> is a column whose values correspond to the values of a PK in another table. <strong>Referential integrity</strong> is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.</p>
 <p>Figure <a href="data-wrang-prep.html#fig:dw-erd">9.3</a> shows an <strong>Entity Relationship Diagram (ERD)</strong> that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a> is listed as a FK.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:dw-erd"></span>
-<img src="graphics/dw_erd.png" alt="Entity Relationship Diagram (ERD)" width="100%" />
+<img src="graphics/dw_erd.png" alt="Entity Relationship Diagram (ERD)" width="75%" />
 <p class="caption">
 Figure 9.3: Entity Relationship Diagram (ERD)
 </p>
 </div>
-<p>A DW usually contains many different types of tables, and the two most common are <em>Type 1</em> and <em>Type 2</em> tables. These tables are sometimes referred to as <strong>slowly changing dimensions (SCD)</strong>. A <strong>Type 1 table</strong> is overwritten on a regular cadence (usually daily) and contains no history – only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A <strong>Type 2 table</strong> is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a <em>start date</em> and <em>end date</em> for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.</p>
+<p>A DW may contain many different types of tables, and the two most common are <em>Type 1</em> and <em>Type 2</em> tables. These tables are sometimes referred to as <strong>slowly changing dimensions (SCD)</strong>. A <strong>Type 1 table</strong> is overwritten on a regular cadence (usually daily) and contains no history – only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A <strong>Type 2 table</strong> is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a <em>start date</em> and <em>end date</em> for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.</p>
 <p>Figure <a href="data-wrang-prep.html#fig:type-2-tbl">9.4</a> illustrates the design of a Type 2 SCD for an active worker’s job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.</p>
 <p>Note that <code>end_date = '12/31/9999'</code> and <code>current_record = 'Y'</code> for rows that represent <em>current attributes</em> for active workers. For inactive workers, <code>end_date</code> would be set to the worker’s termination date for rows that represent the <em>last known attributes</em>, along with <code>current_record = 'Y'</code>:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:type-2-tbl"></span>
@@ -388,28 +388,28 @@ Figure 9.5: Type 1 SCD
 <p>When implementing aggregate functions in a <code>SELECT</code> clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the <code>GROUP BY</code> clause.</p>
 <p>Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the <code>sqldf</code> library within R to demonstrate the mechanics of a SQL query. The <code>sqldf</code> library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.</p>
 <p>First, let’s load the <code>sqldf</code> library and store data to a data frame named <code>demographics</code>:</p>
-<div class="sourceCode" id="cb187"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb187-1" data-line-number="1"><span class="co"># Load SQL library</span></a>
-<a class="sourceLine" id="cb187-2" data-line-number="2"><span class="kw">library</span>(sqldf)</a>
-<a class="sourceLine" id="cb187-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb187-4" data-line-number="4"><span class="co"># Read employee demographics data</span></a>
-<a class="sourceLine" id="cb187-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb187-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb187-7" data-line-number="7"><span class="co"># Return row and column counts</span></a>
-<a class="sourceLine" id="cb187-8" data-line-number="8"><span class="kw">dim</span>(demographics)</a></code></pre></div>
+<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb193-1" data-line-number="1"><span class="co"># Load SQL library</span></a>
+<a class="sourceLine" id="cb193-2" data-line-number="2"><span class="kw">library</span>(sqldf)</a>
+<a class="sourceLine" id="cb193-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb193-4" data-line-number="4"><span class="co"># Read employee demographics data</span></a>
+<a class="sourceLine" id="cb193-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb193-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb193-7" data-line-number="7"><span class="co"># Return row and column counts</span></a>
+<a class="sourceLine" id="cb193-8" data-line-number="8"><span class="kw">dim</span>(demographics)</a></code></pre></div>
 <pre><code>## [1] 4875   22</code></pre>
 <p>Next, we will apply the <code>sqldf</code> function to our data frame to extract specific rows and columns. In addition to the <code>SELECT</code>, <code>FROM</code>, and <code>WHERE</code> clauses, we will use the <code>LIMIT</code> clause to limit the number of rows that are displayed given the data frame’s size (<span class="math inline">\(n = 4,875\)</span>). In a practical setting, the <code>LIMIT</code> clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.</p>
 <p>A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:</p>
-<div class="sourceCode" id="cb189"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb189-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
-<a class="sourceLine" id="cb189-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb189-3" data-line-number="3"><span class="st">                      employee_id</span></a>
-<a class="sourceLine" id="cb189-4" data-line-number="4"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb189-5" data-line-number="5"><span class="st">                      demographics</span></a>
-<a class="sourceLine" id="cb189-6" data-line-number="6"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb189-7" data-line-number="7"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb189-8" data-line-number="8"><span class="st">                    LIMIT 10&quot;</span>)</a>
-<a class="sourceLine" id="cb189-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb189-10" data-line-number="10"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb189-11" data-line-number="11"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb195-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
+<a class="sourceLine" id="cb195-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb195-3" data-line-number="3"><span class="st">                      employee_id</span></a>
+<a class="sourceLine" id="cb195-4" data-line-number="4"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb195-5" data-line-number="5"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb195-6" data-line-number="6"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb195-7" data-line-number="7"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb195-8" data-line-number="8"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb195-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb195-10" data-line-number="10"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb195-11" data-line-number="11"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##    employee_id
 ## 1         1013
 ## 2         1034
@@ -424,19 +424,19 @@ Figure 9.5: Type 1 SCD
 <p>This query returned a list of employee ids for the 496 employees on the Social Marketing team.</p>
 <p><strong>Aggregate Functions</strong></p>
 <p>Next, let’s take a look at the average organization tenure by job for those on the Social Marketing team:</p>
-<div class="sourceCode" id="cb191"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb191-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb191-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb191-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb191-4" data-line-number="4"><span class="st">                      AVG(org_tenure)</span></a>
-<a class="sourceLine" id="cb191-5" data-line-number="5"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb191-6" data-line-number="6"><span class="st">                      demographics</span></a>
-<a class="sourceLine" id="cb191-7" data-line-number="7"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb191-8" data-line-number="8"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb191-9" data-line-number="9"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb191-10" data-line-number="10"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb191-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb191-12" data-line-number="12"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb191-13" data-line-number="13"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb197-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb197-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb197-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb197-4" data-line-number="4"><span class="st">                      AVG(org_tenure)</span></a>
+<a class="sourceLine" id="cb197-5" data-line-number="5"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb197-6" data-line-number="6"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb197-7" data-line-number="7"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb197-8" data-line-number="8"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb197-9" data-line-number="9"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb197-10" data-line-number="10"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb197-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb197-12" data-line-number="12"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb197-13" data-line-number="13"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                       job_title AVG(org_tenure)
 ## 1         Community Coordinator        9.224138
 ## 2            Content Strategist        8.152778
@@ -450,22 +450,22 @@ Figure 9.5: Type 1 SCD
 ## 10               Vice President        7.500000</code></pre>
 <p>There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from <code>7.5</code> to <code>10</code>.</p>
 <p>Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the <code>COUNT(*)</code> function to count the number of rows for each group. In this case, <code>COUNT(*)</code> will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via <code>AS</code> in the <code>SELECT</code> clause to assign different names to the output fields:</p>
-<div class="sourceCode" id="cb193"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb193-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb193-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb193-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb193-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb193-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb193-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb193-7" data-line-number="7"><span class="st">                      demographics</span></a>
-<a class="sourceLine" id="cb193-8" data-line-number="8"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb193-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb193-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb193-11" data-line-number="11"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb193-12" data-line-number="12"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb193-13" data-line-number="13"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb193-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb193-15" data-line-number="15"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb193-16" data-line-number="16"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb199-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb199-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb199-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb199-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb199-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb199-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb199-7" data-line-number="7"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb199-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb199-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb199-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb199-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb199-12" data-line-number="12"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb199-13" data-line-number="13"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb199-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb199-15" data-line-number="15"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb199-16" data-line-number="16"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                       job_title employee_cnt avg_org_tenure
 ## 1         Community Coordinator           58       9.224138
 ## 2            Content Strategist           72       8.152778
@@ -479,24 +479,24 @@ Figure 9.5: Type 1 SCD
 ## 10               Vice President            2       7.500000</code></pre>
 <p>The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common.</p>
 <p>Since relatively few employees are Vice Presidents or Directors, let’s use the <code>HAVING</code> clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:</p>
-<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb195-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb195-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb195-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb195-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb195-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb195-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb195-7" data-line-number="7"><span class="st">                      demographics</span></a>
-<a class="sourceLine" id="cb195-8" data-line-number="8"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb195-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb195-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb195-11" data-line-number="11"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb195-12" data-line-number="12"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb195-13" data-line-number="13"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb195-14" data-line-number="14"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb195-15" data-line-number="15"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb195-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb195-17" data-line-number="17"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb195-18" data-line-number="18"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb201-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb201-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb201-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb201-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb201-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb201-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb201-7" data-line-number="7"><span class="st">                      demographics</span></a>
+<a class="sourceLine" id="cb201-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb201-9" data-line-number="9"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb201-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb201-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb201-12" data-line-number="12"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb201-13" data-line-number="13"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb201-14" data-line-number="14"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb201-15" data-line-number="15"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb201-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb201-17" data-line-number="17"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb201-18" data-line-number="18"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                      job_title employee_cnt avg_org_tenure
 ## 1        Community Coordinator           58       9.224138
 ## 2           Content Strategist           72       8.152778
@@ -507,121 +507,58 @@ Figure 9.5: Type 1 SCD
 ## 7               SEO Specialist           62       9.596774
 ## 8      Social Media Strategist           56      10.000000</code></pre>
 <p><strong>Joins</strong></p>
-<p>In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together.</p>
+<p>In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure <a href="data-wrang-prep.html#fig:sql-joins">9.6</a> illustrates SQL join types using Venn diagrams:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:sql-joins"></span>
+<img src="graphics/sql_joins.png" alt="Types of SQL Joins" width="75%" />
+<p class="caption">
+Figure 9.6: Types of SQL Joins
+</p>
+</div>
+<p>The structure of SQL queries containing each type of join is represented below:</p>
+<p><strong>LEFT INCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+LEFT OUTER JOIN B
+ON A.Key = B.Key</p>
+<p><strong>LEFT EXCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+LEFT OUTER JOIN B
+ON A.Key = B.Key
+WHERE B.Key IS NULL</p>
+<p><strong>FULL OUTER INCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+FULL OUTER JOIN B
+ON A.Key = B.Key</p>
+<p><strong>FULL OUTER EXCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+FULL OUTER JOIN B
+ON A.Key = B.Key
+WHERE A.Key IS NULL OR B.Key IS NULL</p>
+<p><strong>RIGHT INCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+RIGHT OUTER JOIN B
+ON A.Key = B.Key</p>
+<p><strong>RIGHT EXCLUSIVE</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+LEFT OUTER JOIN B
+ON A.Key = B.Key
+WHERE A.Key IS NULL</p>
+<p><strong>INNER JOIN</strong></p>
+<p>SELECT [Output Field List]
+FROM A
+INNER JOIN B
+ON A.Key = B.Key</p>
 <p>To illustrate how SQL joins work, let’s partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:</p>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb197-1" data-line-number="1"><span class="co"># Partition select columns into three data frames</span></a>
-<a class="sourceLine" id="cb197-2" data-line-number="2">job_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;job_title&quot;</span>)]</a>
-<a class="sourceLine" id="cb197-3" data-line-number="3">tenure_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>)]</a>
-<a class="sourceLine" id="cb197-4" data-line-number="4">team_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;team&quot;</span>)]</a></code></pre></div>
+<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb203-1" data-line-number="1"><span class="co"># Partition select columns into three data frames</span></a>
+<a class="sourceLine" id="cb203-2" data-line-number="2">job_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;job_title&quot;</span>)]</a>
+<a class="sourceLine" id="cb203-3" data-line-number="3">tenure_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>)]</a>
+<a class="sourceLine" id="cb203-4" data-line-number="4">team_df &lt;-<span class="st"> </span>demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;team&quot;</span>)]</a></code></pre></div>
 <p>Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an <code>INNER JOIN</code>, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in <code>job_df</code> and <code>tenure_df</code> for a particular employee id, but there is no team designation for it in <code>team_df</code>, that employee id would not be included in the output.</p>
-<div class="sourceCode" id="cb198"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb198-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb198-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb198-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb198-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb198-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb198-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb198-7" data-line-number="7"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb198-8" data-line-number="8"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb198-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb198-10" data-line-number="10"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb198-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb198-12" data-line-number="12"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb198-13" data-line-number="13"><span class="st">                      team_df</span></a>
-<a class="sourceLine" id="cb198-14" data-line-number="14"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb198-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
-<a class="sourceLine" id="cb198-16" data-line-number="16"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb198-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb198-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb198-19" data-line-number="19"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb198-20" data-line-number="20"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb198-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb198-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb198-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb198-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb198-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb198-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
-<pre><code>##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000</code></pre>
-<p>Note that the <code>INNER JOIN</code> in this SQL query was structured such that both <code>tenure_df</code> and <code>team_df</code> were joined to <code>job_df</code> via the <code>employee_id</code> column. We could have instead joined <code>job_df</code> to <code>team_df</code> and achieved the same result since all employee ids exist in all three data frames in this case.</p>
-<p>If it were possible for all employee ids to exist in <code>job_df</code> but not in either <code>tenure_df</code> or <code>team_df</code>, we could leverage a <code>LEFT JOIN</code> to ensure all records from <code>job_df</code> are included in the output irrespective of whether they have matches in <code>tenure_df</code> or <code>team_df</code>:</p>
-<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb200-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb200-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb200-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb200-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb200-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb200-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb200-7" data-line-number="7"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb200-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
-<a class="sourceLine" id="cb200-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb200-10" data-line-number="10"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb200-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb200-12" data-line-number="12"><span class="st">                        LEFT JOIN</span></a>
-<a class="sourceLine" id="cb200-13" data-line-number="13"><span class="st">                      team_df</span></a>
-<a class="sourceLine" id="cb200-14" data-line-number="14"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb200-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
-<a class="sourceLine" id="cb200-16" data-line-number="16"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb200-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
-<a class="sourceLine" id="cb200-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb200-19" data-line-number="19"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb200-20" data-line-number="20"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb200-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb200-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb200-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb200-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb200-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb200-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
-<pre><code>##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000</code></pre>
-<p><strong>Subqueries</strong></p>
-<p><strong>Subqueries</strong> are nested SQL queries that allow us to pass results from an inner query to the main outer query.</p>
-<p>For example, instead of applying the <code>team = 'Social Marketing</code> condition in the <code>WHERE</code> clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include <code>team_df</code> in the join conditions of our main query:</p>
-<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb202-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb202-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb202-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb202-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb202-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb202-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb202-7" data-line-number="7"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb202-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
-<a class="sourceLine" id="cb202-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb202-10" data-line-number="10"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb202-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb202-12" data-line-number="12"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb202-13" data-line-number="13"><span class="st">                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;)</span></a>
-<a class="sourceLine" id="cb202-14" data-line-number="14"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb202-15" data-line-number="15"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb202-16" data-line-number="16"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb202-17" data-line-number="17"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb202-18" data-line-number="18"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb202-19" data-line-number="19"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb202-20" data-line-number="20"></a>
-<a class="sourceLine" id="cb202-21" data-line-number="21"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb202-22" data-line-number="22"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
-<pre><code>##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000</code></pre>
-<p><strong>Derived Tables</strong></p>
-<p>An alternative to a subquery is creating a <strong>derived table</strong> in the <code>FROM</code> clause using a SQL statement. When using an <code>INNER JOIN</code> to connect <code>job_df</code> and <code>tenure_df</code> to the derived table containing Social Marketing employee ids, any records in <code>job_df</code> or <code>tenure_df</code> that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a <code>WHERE</code> clause:</p>
 <div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb204-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
 <a class="sourceLine" id="cb204-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
 <a class="sourceLine" id="cb204-3" data-line-number="3"><span class="st">                      job_title,</span></a>
@@ -634,18 +571,126 @@ Figure 9.5: Type 1 SCD
 <a class="sourceLine" id="cb204-10" data-line-number="10"><span class="st">                        ON</span></a>
 <a class="sourceLine" id="cb204-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
 <a class="sourceLine" id="cb204-12" data-line-number="12"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb204-13" data-line-number="13"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb204-13" data-line-number="13"><span class="st">                      team_df</span></a>
 <a class="sourceLine" id="cb204-14" data-line-number="14"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb204-15" data-line-number="15"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
-<a class="sourceLine" id="cb204-16" data-line-number="16"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb204-17" data-line-number="17"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb204-18" data-line-number="18"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb204-19" data-line-number="19"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb204-20" data-line-number="20"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb204-21" data-line-number="21"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb204-22" data-line-number="22"></a>
-<a class="sourceLine" id="cb204-23" data-line-number="23"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb204-24" data-line-number="24"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<a class="sourceLine" id="cb204-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
+<a class="sourceLine" id="cb204-16" data-line-number="16"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb204-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb204-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb204-19" data-line-number="19"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb204-20" data-line-number="20"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb204-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb204-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb204-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb204-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb204-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb204-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p>Note that the <code>INNER JOIN</code> in this SQL query was structured such that both <code>tenure_df</code> and <code>team_df</code> were joined to <code>job_df</code> via the <code>employee_id</code> column. We could have instead joined <code>job_df</code> to <code>team_df</code> and achieved the same result since all employee ids exist in all three data frames in this case.</p>
+<p>If it were possible for all employee ids to exist in <code>job_df</code> but not in either <code>tenure_df</code> or <code>team_df</code>, we could leverage a <code>LEFT JOIN</code> to ensure all records from <code>job_df</code> are included in the output irrespective of whether they have matches in <code>tenure_df</code> or <code>team_df</code>:</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb206-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb206-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb206-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb206-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb206-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb206-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb206-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb206-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb206-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb206-12" data-line-number="12"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb206-13" data-line-number="13"><span class="st">                      team_df</span></a>
+<a class="sourceLine" id="cb206-14" data-line-number="14"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb206-15" data-line-number="15"><span class="st">                      job_df.employee_id = team_df.employee_id</span></a>
+<a class="sourceLine" id="cb206-16" data-line-number="16"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb206-17" data-line-number="17"><span class="st">                      team = &#39;Social Marketing&#39;</span></a>
+<a class="sourceLine" id="cb206-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb206-19" data-line-number="19"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb206-20" data-line-number="20"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb206-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb206-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb206-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb206-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb206-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb206-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p><strong>Subqueries</strong></p>
+<p><strong>Subqueries</strong> are queries nested within other queries. Subqueries are often referred to as <strong>inner queries</strong>, while the main queries are referred to as <strong>outer queries</strong>.</p>
+<p>For example, instead of applying the <code>team = 'Social Marketing</code> condition in the <code>WHERE</code> clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include <code>team_df</code> in the join conditions of our main query:</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb208-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb208-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb208-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb208-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb208-8" data-line-number="8"><span class="st">                        LEFT JOIN</span></a>
+<a class="sourceLine" id="cb208-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb208-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb208-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb208-12" data-line-number="12"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb208-13" data-line-number="13"><span class="st">                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;)</span></a>
+<a class="sourceLine" id="cb208-14" data-line-number="14"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb208-15" data-line-number="15"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb208-16" data-line-number="16"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb208-17" data-line-number="17"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb208-18" data-line-number="18"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb208-19" data-line-number="19"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb208-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb208-21" data-line-number="21"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb208-22" data-line-number="22"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<pre><code>##                      job_title employee_cnt avg_org_tenure
+## 1        Community Coordinator           58       9.224138
+## 2           Content Strategist           72       8.152778
+## 3           Creative Assistant           44       9.454545
+## 4                 Data Analyst           72       8.666667
+## 5 Digital Marketing Specialist           70       8.228571
+## 6                      Manager           50       9.340000
+## 7               SEO Specialist           62       9.596774
+## 8      Social Media Strategist           56      10.000000</code></pre>
+<p><strong>Derived Tables</strong></p>
+<p>An alternative to a subquery is creating a <strong>derived table</strong> in the <code>FROM</code> clause using a SQL statement. When using an <code>INNER JOIN</code> to connect <code>job_df</code> and <code>tenure_df</code> to the derived table containing Social Marketing employee ids, any records in <code>job_df</code> or <code>tenure_df</code> that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a <code>WHERE</code> clause:</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb210-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb210-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb210-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb210-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb210-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb210-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb210-7" data-line-number="7"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb210-8" data-line-number="8"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb210-9" data-line-number="9"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb210-10" data-line-number="10"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb210-11" data-line-number="11"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb210-12" data-line-number="12"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb210-13" data-line-number="13"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb210-14" data-line-number="14"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb210-15" data-line-number="15"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb210-16" data-line-number="16"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb210-17" data-line-number="17"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb210-18" data-line-number="18"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb210-19" data-line-number="19"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb210-20" data-line-number="20"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb210-21" data-line-number="21"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb210-22" data-line-number="22"></a>
+<a class="sourceLine" id="cb210-23" data-line-number="23"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb210-24" data-line-number="24"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                      job_title employee_cnt avg_org_tenure
 ## 1        Community Coordinator           58       9.224138
 ## 2           Content Strategist           72       8.152778
@@ -658,31 +703,31 @@ Figure 9.5: Type 1 SCD
 <p><strong>Window Functions</strong></p>
 <p><strong>Window functions</strong> are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we’ve covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.</p>
 <p>For example, we can assign an organization tenure rank by Social Marketing job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause. The <code>PARTITION BY</code> argument functions like a <code>GROUP BY</code> clause but without collapsing rows, while the <code>ORDER BY</code> argument sorts the records in ascending (<code>ASC</code>) or descending (<code>DESC</code>) order for proper ranking:</p>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb206-2" data-line-number="2"><span class="co"># Limit output to 10 records since query does not collapse records</span></a>
-<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="co"># Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output</span></a>
-<a class="sourceLine" id="cb206-4" data-line-number="4">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb206-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
-<a class="sourceLine" id="cb206-6" data-line-number="6"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb206-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
-<a class="sourceLine" id="cb206-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
-<a class="sourceLine" id="cb206-9" data-line-number="9"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb206-10" data-line-number="10"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb206-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb206-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb206-13" data-line-number="13"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb206-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb206-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb206-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
-<a class="sourceLine" id="cb206-17" data-line-number="17"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb206-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
-<a class="sourceLine" id="cb206-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb206-20" data-line-number="20"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb206-21" data-line-number="21"><span class="st">                      org_tenure_rank</span></a>
-<a class="sourceLine" id="cb206-22" data-line-number="22"><span class="st">                    LIMIT 10&quot;</span>)</a>
-<a class="sourceLine" id="cb206-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb206-24" data-line-number="24"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb206-25" data-line-number="25"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb212-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb212-2" data-line-number="2"><span class="co"># Limit output to 10 records since query does not collapse records</span></a>
+<a class="sourceLine" id="cb212-3" data-line-number="3"><span class="co"># Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output</span></a>
+<a class="sourceLine" id="cb212-4" data-line-number="4">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb212-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
+<a class="sourceLine" id="cb212-6" data-line-number="6"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb212-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
+<a class="sourceLine" id="cb212-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
+<a class="sourceLine" id="cb212-9" data-line-number="9"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb212-10" data-line-number="10"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb212-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb212-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb212-13" data-line-number="13"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb212-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb212-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb212-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb212-17" data-line-number="17"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb212-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb212-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb212-20" data-line-number="20"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb212-21" data-line-number="21"><span class="st">                      org_tenure_rank</span></a>
+<a class="sourceLine" id="cb212-22" data-line-number="22"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb212-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb212-24" data-line-number="24"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb212-25" data-line-number="25"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##    employee_id             job_title org_tenure org_tenure_rank
 ## 1         1236 Community Coordinator         20               1
 ## 2         1322 Community Coordinator         20               1
@@ -696,32 +741,32 @@ Figure 9.5: Type 1 SCD
 ## 10        3659 Community Coordinator         16               9</code></pre>
 <p>Notice that in the case of organization tenure ties, the <code>RANK()</code> function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.</p>
 <p>We can also treat this query as a derived table, and then filter on the derived <code>org_tenure_rank</code> field to return a list of Social Marketing employees with the highest tenure for each job. The <code>*</code> symbol in the <code>SELECT</code> clause will return all columns from the specified table:</p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb208-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT tbl.*</span></a>
-<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="st">                    (SELECT</span></a>
-<a class="sourceLine" id="cb208-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
-<a class="sourceLine" id="cb208-6" data-line-number="6"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb208-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
-<a class="sourceLine" id="cb208-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
-<a class="sourceLine" id="cb208-9" data-line-number="9"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb208-10" data-line-number="10"><span class="st">                      job_df</span></a>
-<a class="sourceLine" id="cb208-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb208-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
-<a class="sourceLine" id="cb208-13" data-line-number="13"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb208-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
-<a class="sourceLine" id="cb208-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
-<a class="sourceLine" id="cb208-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
-<a class="sourceLine" id="cb208-17" data-line-number="17"><span class="st">                        ON</span></a>
-<a class="sourceLine" id="cb208-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
-<a class="sourceLine" id="cb208-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb208-20" data-line-number="20"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb208-21" data-line-number="21"><span class="st">                      org_tenure_rank) tbl</span></a>
-<a class="sourceLine" id="cb208-22" data-line-number="22"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb208-23" data-line-number="23"><span class="st">                      tbl.org_tenure_rank = 1&quot;</span>)</a>
-<a class="sourceLine" id="cb208-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb208-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb208-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb214-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT tbl.*</span></a>
+<a class="sourceLine" id="cb214-3" data-line-number="3"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb214-4" data-line-number="4"><span class="st">                    (SELECT</span></a>
+<a class="sourceLine" id="cb214-5" data-line-number="5"><span class="st">                      job_df.employee_id,</span></a>
+<a class="sourceLine" id="cb214-6" data-line-number="6"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb214-7" data-line-number="7"><span class="st">                      org_tenure,</span></a>
+<a class="sourceLine" id="cb214-8" data-line-number="8"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank</span></a>
+<a class="sourceLine" id="cb214-9" data-line-number="9"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb214-10" data-line-number="10"><span class="st">                      job_df</span></a>
+<a class="sourceLine" id="cb214-11" data-line-number="11"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb214-12" data-line-number="12"><span class="st">                      tenure_df</span></a>
+<a class="sourceLine" id="cb214-13" data-line-number="13"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb214-14" data-line-number="14"><span class="st">                      job_df.employee_id = tenure_df.employee_id</span></a>
+<a class="sourceLine" id="cb214-15" data-line-number="15"><span class="st">                        INNER JOIN</span></a>
+<a class="sourceLine" id="cb214-16" data-line-number="16"><span class="st">                      (SELECT employee_id FROM team_df WHERE team = &#39;Social Marketing&#39;) social_mktg_ids</span></a>
+<a class="sourceLine" id="cb214-17" data-line-number="17"><span class="st">                        ON</span></a>
+<a class="sourceLine" id="cb214-18" data-line-number="18"><span class="st">                      job_df.employee_id = social_mktg_ids.employee_id</span></a>
+<a class="sourceLine" id="cb214-19" data-line-number="19"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb214-20" data-line-number="20"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb214-21" data-line-number="21"><span class="st">                      org_tenure_rank) tbl</span></a>
+<a class="sourceLine" id="cb214-22" data-line-number="22"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb214-23" data-line-number="23"><span class="st">                      tbl.org_tenure_rank = 1&quot;</span>)</a>
+<a class="sourceLine" id="cb214-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb214-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb214-26" data-line-number="26"><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##    employee_id                    job_title org_tenure org_tenure_rank
 ## 1         1236        Community Coordinator         20               1
 ## 2         1322        Community Coordinator         20               1
@@ -749,8 +794,8 @@ Figure 9.5: Type 1 SCD
 <h2><span class="header-section-number">9.3</span> Data Screening &amp; Cleaning</h2>
 <p>The initial data review process is sometimes referred to as <strong>exporatory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.</p>
 <p>A handy function in base R for initial data screening is <code>summary()</code>:</p>
-<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb210-1" data-line-number="1"><span class="co"># Summarize df</span></a>
-<a class="sourceLine" id="cb210-2" data-line-number="2"><span class="kw">summary</span>(demographics)</a></code></pre></div>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb216-1" data-line-number="1"><span class="co"># Summarize df</span></a>
+<a class="sourceLine" id="cb216-2" data-line-number="2"><span class="kw">summary</span>(demographics)</a></code></pre></div>
 <pre><code>##   employee_id     manager_id    hire_date         current_job_start_date
 ##  Min.   :1001   Min.   :1001   Length:4875        Length:4875           
 ##  1st Qu.:2220   1st Qu.:1973   Class :character   Class :character      
@@ -805,24 +850,24 @@ Figure 9.5: Type 1 SCD
 <p><strong>Structural missingness</strong> relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.</p>
 <p><strong>Informative missingness</strong> relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.</p>
 <p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.</p>
-<p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
+<p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
 <p>Let’s evaluate the <code>demographics</code> data frame for missing <code>annual_comp</code> values using the logical <code>is.na()</code> function, and return values of variables relevant in determining one’s annual compensation:</p>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb212-1" data-line-number="1"><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></a>
-<a class="sourceLine" id="cb212-2" data-line-number="2">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb212-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb212-4" data-line-number="4"><span class="co"># Return relevant employee characteristics where annual comp is missing</span></a>
-<a class="sourceLine" id="cb212-5" data-line-number="5">demographics[<span class="kw">is.na</span>(demographics<span class="op">$</span>annual_comp), <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;job_title&quot;</span>, <span class="st">&quot;location&quot;</span>, <span class="st">&quot;job_level&quot;</span>)]</a></code></pre></div>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb218-1" data-line-number="1"><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></a>
+<a class="sourceLine" id="cb218-2" data-line-number="2">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb218-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb218-4" data-line-number="4"><span class="co"># Return relevant employee characteristics where annual comp is missing</span></a>
+<a class="sourceLine" id="cb218-5" data-line-number="5">demographics[<span class="kw">is.na</span>(demographics<span class="op">$</span>annual_comp), <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;job_title&quot;</span>, <span class="st">&quot;location&quot;</span>, <span class="st">&quot;job_level&quot;</span>)]</a></code></pre></div>
 <pre><code>##      employee_id job_title      location job_level
 ## 3305        4305   Manager HQ 1 - Austin         7</code></pre>
 <p>Next, we can impute the average value of <code>annual_comp</code> based on employees with the same values for the relevant variables:</p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1"><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></a>
-<a class="sourceLine" id="cb214-2" data-line-number="2">imputed_comp &lt;-<span class="st"> </span><span class="kw">mean</span>(demographics[demographics<span class="op">$</span>job_title <span class="op">==</span><span class="st"> &#39;Manager&#39;</span> <span class="op">&amp;</span><span class="st"> </span>demographics<span class="op">$</span>location <span class="op">==</span><span class="st"> &#39;HQ 1 - Austin&#39;</span> <span class="op">&amp;</span><span class="st"> </span>demographics<span class="op">$</span>job_level <span class="op">==</span><span class="st"> </span><span class="dv">7</span>, <span class="st">&#39;annual_comp&#39;</span>], <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb214-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb214-4" data-line-number="4"><span class="co"># Impute missing comp for relevant segment</span></a>
-<a class="sourceLine" id="cb214-5" data-line-number="5">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span>imputed_comp</a>
-<a class="sourceLine" id="cb214-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb214-7" data-line-number="7"><span class="co"># Display imputed comp</span></a>
-<a class="sourceLine" id="cb214-8" data-line-number="8">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>]</a></code></pre></div>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb220-1" data-line-number="1"><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></a>
+<a class="sourceLine" id="cb220-2" data-line-number="2">imputed_comp &lt;-<span class="st"> </span><span class="kw">mean</span>(demographics[demographics<span class="op">$</span>job_title <span class="op">==</span><span class="st"> &#39;Manager&#39;</span> <span class="op">&amp;</span><span class="st"> </span>demographics<span class="op">$</span>location <span class="op">==</span><span class="st"> &#39;HQ 1 - Austin&#39;</span> <span class="op">&amp;</span><span class="st"> </span>demographics<span class="op">$</span>job_level <span class="op">==</span><span class="st"> </span><span class="dv">7</span>, <span class="st">&#39;annual_comp&#39;</span>], <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb220-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb220-4" data-line-number="4"><span class="co"># Impute missing comp for relevant segment</span></a>
+<a class="sourceLine" id="cb220-5" data-line-number="5">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span>imputed_comp</a>
+<a class="sourceLine" id="cb220-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb220-7" data-line-number="7"><span class="co"># Display imputed comp</span></a>
+<a class="sourceLine" id="cb220-8" data-line-number="8">demographics[demographics<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;4305&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>]</a></code></pre></div>
 <pre><code>## [1] 115338.2</code></pre>
 <p>While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. <em>Linear regression</em> and <em>K-Nearest Neighbor (KNN)</em> models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.</p>
 <p><strong>Outliers</strong></p>
@@ -844,22 +889,22 @@ Figure 9.5: Type 1 SCD
 <h2><span class="header-section-number">9.4</span> One-Hot Encoding</h2>
 <p><strong>One-hot encoding</strong>, also known as <strong>dummy coding</strong>, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, dummy coding is not required, as metrics such as counts and percentages can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications categorical variables must be converted into <span class="math inline">\(k-1\)</span> variables, where <span class="math inline">\(k\)</span> is the number of categories, using binary (1/0) coding.</p>
 <p>Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with “Remote” or “Non-Remote” values, we could code “Remote” values as 1 and “Non-Remote” values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.</p>
-<p>If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter <a href="lm.html#lm">11</a>, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure <a href="data-wrang-prep.html#fig:onehot-encoding">9.6</a>, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.</p>
+<p>If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter <a href="lm.html#lm">11</a>, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure <a href="data-wrang-prep.html#fig:onehot-encoding">9.7</a>, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:onehot-encoding"></span>
 <img src="graphics/onehot_encoding.png" alt="One-Hot Encoding" width="75%" />
 <p class="caption">
-Figure 9.6: One-Hot Encoding
+Figure 9.7: One-Hot Encoding
 </p>
 </div>
 <p>For a categorical variable with only two values, the <code>ifelse()</code> function can be leveraged to assign values:</p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb216-1" data-line-number="1"><span class="co"># Return unique values of gender field</span></a>
-<a class="sourceLine" id="cb216-2" data-line-number="2"><span class="kw">unique</span>(demographics<span class="op">$</span>gender)</a></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb222-1" data-line-number="1"><span class="co"># Return unique values of gender field</span></a>
+<a class="sourceLine" id="cb222-2" data-line-number="2"><span class="kw">unique</span>(demographics<span class="op">$</span>gender)</a></code></pre></div>
 <pre><code>## [1] &quot;Male&quot;   &quot;Female&quot;</code></pre>
-<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb218-1" data-line-number="1"><span class="co"># Gender one-hot encoding</span></a>
-<a class="sourceLine" id="cb218-2" data-line-number="2">demographics<span class="op">$</span>gender_ohe &lt;-<span class="st"> </span><span class="kw">ifelse</span>(demographics<span class="op">$</span>gender <span class="op">==</span><span class="st"> &#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb218-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb218-4" data-line-number="4"><span class="co"># Preview records</span></a>
-<a class="sourceLine" id="cb218-5" data-line-number="5"><span class="kw">head</span>(demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;gender_ohe&quot;</span>)])</a></code></pre></div>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb224-1" data-line-number="1"><span class="co"># Gender one-hot encoding</span></a>
+<a class="sourceLine" id="cb224-2" data-line-number="2">demographics<span class="op">$</span>gender_ohe &lt;-<span class="st"> </span><span class="kw">ifelse</span>(demographics<span class="op">$</span>gender <span class="op">==</span><span class="st"> &#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb224-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb224-4" data-line-number="4"><span class="co"># Preview records</span></a>
+<a class="sourceLine" id="cb224-5" data-line-number="5"><span class="kw">head</span>(demographics[, <span class="kw">c</span>(<span class="st">&quot;employee_id&quot;</span>, <span class="st">&quot;gender_ohe&quot;</span>)])</a></code></pre></div>
 <pre><code>##   employee_id gender_ohe
 ## 1        1001          0
 ## 2        1002          1
@@ -867,33 +912,46 @@ Figure 9.6: One-Hot Encoding
 ## 4        1004          0
 ## 5        1005          1
 ## 6        1006          1</code></pre>
-<p>For variables with more than 2 categories, we can leverage the <code>model.matrix()</code> function to one-hot encode them all:</p>
-<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb220-1" data-line-number="1"><span class="co"># Load library</span></a>
-<a class="sourceLine" id="cb220-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb220-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb220-4" data-line-number="4"><span class="co"># Determine location with lowest n-count</span></a>
-<a class="sourceLine" id="cb220-5" data-line-number="5">locations &lt;-<span class="st"> </span>demographics <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(location, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb220-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb220-7" data-line-number="7"><span class="co"># Display counts by location</span></a>
-<a class="sourceLine" id="cb220-8" data-line-number="8">locations</a></code></pre></div>
-<pre><code>##                        location    n
-## 1                 HQ 1 - Austin 1733
-## 2                HQ 2 - Atlanta 1522
-## 3                        Remote  969
-## 4 Operations Center - St. Louis  651</code></pre>
-<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb222-1" data-line-number="1"><span class="co"># Store location with smallest n-count</span></a>
-<a class="sourceLine" id="cb222-2" data-line-number="2">min_location &lt;-<span class="st"> </span>locations[<span class="kw">nrow</span>(locations), <span class="st">&quot;location&quot;</span>]</a></code></pre></div>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb223-1" data-line-number="1"><span class="co"># Location one-hot encoding</span></a>
-<a class="sourceLine" id="cb223-2" data-line-number="2"><span class="co"># Omit location with lowest n-count</span></a>
-<a class="sourceLine" id="cb223-3" data-line-number="3">location_ohe &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span>location<span class="dv">-1</span>, <span class="dt">data =</span> demographics[<span class="op">!</span>demographics<span class="op">$</span>location <span class="op">==</span><span class="st"> </span>min_location, ])</a>
-<a class="sourceLine" id="cb223-4" data-line-number="4"><span class="kw">head</span>(location_ohe)</a></code></pre></div>
-<pre><code>##   locationHQ 1 - Austin locationHQ 2 - Atlanta locationRemote
-## 1                     1                      0              0
-## 2                     1                      0              0
-## 3                     1                      0              0
-## 4                     1                      0              0
-## 5                     1                      0              0
-## 6                     1                      0              0</code></pre>
+<p>For variables with more than 2 categories, we can leverage the <code>model.matrix()</code> function for one-hot encoding. Let’s illustrate be encoding locations.</p>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb226-1" data-line-number="1"><span class="co"># Load library</span></a>
+<a class="sourceLine" id="cb226-2" data-line-number="2"><span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb226-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb226-4" data-line-number="4"><span class="co"># Return counts by location</span></a>
+<a class="sourceLine" id="cb226-5" data-line-number="5">demographics <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(location, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<pre><code>##                  location    n
+## 1           HQ 1 - Austin 1733
+## 2          HQ 2 - Atlanta 1522
+## 3                  Remote  969
+## 4 Data Center - St. Louis  651</code></pre>
+<p>By default, the <code>model.matrix()</code> function will produce a matrix of 1/0 values for <span class="math inline">\(k-1\)</span> categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being positioned as the omitted group. For more flexibility over which value is omitted, we can drop the intercept using <code>-1</code> in the first argument passed to <code>model.matrix()</code> and then choose the omitted group in a subsequent step.</p>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb228-1" data-line-number="1"><span class="co"># Location one-hot encoding</span></a>
+<a class="sourceLine" id="cb228-2" data-line-number="2">location_ohe &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span>location<span class="dv">-1</span>, <span class="dt">data =</span> demographics)</a>
+<a class="sourceLine" id="cb228-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb228-4" data-line-number="4"><span class="co"># Preview data</span></a>
+<a class="sourceLine" id="cb228-5" data-line-number="5"><span class="kw">head</span>(location_ohe)</a></code></pre></div>
+<pre><code>##   locationData Center - St. Louis locationHQ 1 - Austin locationHQ 2 - Atlanta
+## 1                               0                     1                      0
+## 2                               0                     1                      0
+## 3                               0                     1                      0
+## 4                               0                     1                      0
+## 5                               0                     1                      0
+## 6                               0                     1                      0
+##   locationRemote
+## 1              0
+## 2              0
+## 3              0
+## 4              0
+## 5              0
+## 6              0</code></pre>
+<p>We will drop the location with the lowest <span class="math inline">\(n\)</span> rather than the more arbitrary method based on the first value of the factor. Since locations are coded as either <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span>, we can use the <code>colSums()</code> function to sum each column and the <code>which.min()</code> function to identify which has the lowest sum (i.e., least common location).</p>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb230-1" data-line-number="1"><span class="co"># Drop location with lowest sum (lowest n-count)</span></a>
+<a class="sourceLine" id="cb230-2" data-line-number="2">location_ohe &lt;-<span class="st"> </span>location_ohe[, <span class="op">-</span><span class="kw">which.min</span>(<span class="kw">colSums</span>(location_ohe))]</a>
+<a class="sourceLine" id="cb230-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb230-4" data-line-number="4"><span class="co"># Combine demographics and matrix containing one-hot encoded locations</span></a>
+<a class="sourceLine" id="cb230-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">cbind</span>(demographics, location_ohe)</a>
+<a class="sourceLine" id="cb230-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb230-7" data-line-number="7"><span class="co"># Drop original location field</span></a>
+<a class="sourceLine" id="cb230-8" data-line-number="8">demographics &lt;-<span class="st"> </span><span class="kw">subset</span>(demographics, <span class="dt">select =</span> <span class="op">-</span><span class="kw">c</span>(location))</a></code></pre></div>
 </div>
 <div id="feature-engineering" class="section level2">
 <h2><span class="header-section-number">9.5</span> Feature Engineering</h2>

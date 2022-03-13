@@ -195,8 +195,96 @@ sqldf(sql_string)
 
   **Joins**
   
-  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together.
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
+
+```{r sql-joins, out.width = "100%", echo = FALSE, fig.cap = 'Types of SQL Joins', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins.png")
+
+```
+
+  The structure of SQL queries containing each type of join is represented below:
+
+  **LEFT INCLUSIVE**
   
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+  
+```
+
+  **LEFT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE B.Key IS NULL
+
+```
+
+  **FULL OUTER INCLUSIVE**
+  
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **FULL OUTER EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL OR B.Key IS NULL  
+
+```
+
+  **RIGHT INCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  RIGHT OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **RIGHT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL
+
+```
+
+  **INNER JOIN**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  INNER JOIN B
+#  ON A.Key = B.Key
+
+```
+
   To illustrate how SQL joins work, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
   
 ```{r, message = FALSE, warning = FALSE}
