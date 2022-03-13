@@ -16,7 +16,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
   
-  Figure \@ref(fig:dw-schema) illustrates how worker, position, and candidate schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
+  Figure \@ref(fig:dw-schema) illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
   
 ```{r dw-schema, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
 
@@ -28,13 +28,13 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Figure \@ref(fig:dw-erd) shows an **Entity Relationship Diagram (ERD)** that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \@ref(fig:dw-schema) is listed as a FK.
   
-```{r dw-erd, out.width = "100%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
+```{r dw-erd, out.width = "75%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd.png")
 
 ```
 
-  A DW usually contains many different types of tables, and the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  A DW may contain many different types of tables, and the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
@@ -278,7 +278,7 @@ sqldf(sql_string)
 
   **Subqueries**
   
-  **Subqueries** are nested SQL queries that allow us to pass results from an inner query to the main outer query. 
+  **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
   
   For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
 
@@ -438,7 +438,7 @@ summary(demographics)
   
   In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
   
-  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
   
   Let's evaluate the `demographics` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
 
@@ -530,30 +530,42 @@ head(demographics[, c("employee_id", "gender_ohe")])
 
 ```
 
-  For variables with more than 2 categories, we can leverage the `model.matrix()` function to one-hot encode them all:
+  For variables with more than 2 categories, we can leverage the `model.matrix()` function for one-hot encoding. Let's illustrate be encoding locations.
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Load library
 library(dplyr)
 
-# Determine location with lowest n-count
-locations <- demographics %>% count(location, sort = TRUE)
-
-# Display counts by location
-locations
-
-# Store location with smallest n-count
-min_location <- locations[nrow(location_cnts), "location"]
+# Return counts by location
+demographics %>% count(location, sort = TRUE)
 
 ```
 
+  By default, the `model.matrix()` function will produce a matrix of 1/0 values for $k-1$ categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being positioned as the omitted group. For more flexibility over which value is omitted, we can drop the intercept using `-1` in the first argument passed to `model.matrix()` and then choose the omitted group in a subsequent step.
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Location one-hot encoding
-# Omit location with lowest n-count
-location_ohe <- model.matrix(~location-1, data = demographics[!demographics$location == min_location, ])
+location_ohe <- model.matrix(~location-1, data = demographics)
+
+# Preview data
 head(location_ohe)
+
+```
+
+  We will drop the location with the lowest $n$ rather than the more arbitrary method based on the first value of the factor. Since locations are coded as either $1$ or $0$, we can use the `colSums()` function to sum each column and the `which.min()` function to identify which has the lowest sum (i.e., least common location).
+
+```{r, message = FALSE, warning = FALSE}
+
+# Drop location with lowest sum (lowest n-count)
+location_ohe <- location_ohe[, -which.min(colSums(location_ohe))]
+
+# Combine demographics and matrix containing one-hot encoded locations
+demographics <- cbind(demographics, location_ohe)
+
+# Drop original location field
+demographics <- subset(demographics, select = -c(location))
 
 ```
 

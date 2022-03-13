@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-10}
+\date{2022-03-11}
 
 \begin{document}
 \maketitle
@@ -324,7 +324,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpqfQtXL/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpt3clH8/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1320,7 +1320,7 @@ We can use the sample() function in R to randomly select from a vector of elemen
 \KeywordTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
 
 \CommentTok{# Set seed for reproducible results}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
@@ -1861,7 +1861,7 @@ In R, the sample variance can be calculated using the var() function:
 \KeywordTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
 
 \CommentTok{# Calculate sample variance for annual compensation}
 \KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
@@ -2501,7 +2501,7 @@ For example, let's look at how org tenure is distributed across employees. We ca
 \KeywordTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
 
 \CommentTok{# Produce descriptive stats for org tenure}
 \KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
@@ -3346,13 +3346,13 @@ To begin a data analysis, we must first access, integrate, and clean the relevan
 \hypertarget{data-management}{%
 \section{Data Management}\label{data-management}}
 
-Data are often extracted directly from the source systems in which they are generated or downstream environments such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}.
+Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}.
 
 A \textbf{data lake} stores myriad types of data -- both structured and unstructured -- in its native format until needed. \textbf{Structured data} refers to data that fits a predefined data model, such as hire dates formatted as \texttt{MM/DD/YYYY} or zip codes stored as a five-digit string. \textbf{Unstructured data} has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables.
 
 The main difference between a data lake and data warehouse is the type of data they are designed to store. A \textbf{data warehouse (DW)} is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \ref{fig:dw-schema}, data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
 
-Figure \ref{fig:dw-schema} illustrates how worker, position, and candidate schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals) during their tenure with the company.
+Figure \ref{fig:dw-schema} illustrates how worker, position, and candidate schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.
 
 \begin{figure}
 
@@ -3363,7 +3363,20 @@ Figure \ref{fig:dw-schema} illustrates how worker, position, and candidate schem
 \caption{Related Tables Organized within Schemas}\label{fig:dw-schema}
 \end{figure}
 
-A DW usually contains many different types of tables, but the two most common are \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+Tables in a DW are related using a set of keys. Each table needs a \textbf{Primary Key (PK)}, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a \emph{composite key}. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A \textbf{Foreign Key (FK)} is a column whose values correspond to the values of a PK in another table. \textbf{Referential integrity} is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
+
+Figure \ref{fig:dw-erd} shows an \textbf{Entity Relationship Diagram (ERD)} that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \ref{fig:dw-schema} is listed as a FK.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd} 
+
+}
+
+\caption{Entity Relationship Diagram (ERD)}\label{fig:dw-erd}
+\end{figure}
+
+A DW usually contains many different types of tables, and the two most common are \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
 
 Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
 
@@ -3382,7 +3395,7 @@ While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table} 
 
 }
 
@@ -3438,7 +3451,7 @@ First, let's load the \texttt{sqldf} library and store data to a data frame name
 \KeywordTok{library}\NormalTok{(sqldf)}
 
 \CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
 
 \CommentTok{# Return row and column counts}
 \KeywordTok{dim}\NormalTok{(demographics)}
@@ -3601,9 +3614,9 @@ Since relatively few employees are Vice Presidents or Directors, let's use the \
 
 \textbf{Joins}
 
-In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a \textbf{Primary Key (PK)}, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
+In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together.
 
-To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee\_id column is present in each of the three data frames to facilitate subsequent joins:
+To illustrate how SQL joins work, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee\_id column is present in each of the three data frames to facilitate subsequent joins:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4049,7 +4062,7 @@ Changes to allowable values in source systems often result in inconsistent categ
 
 \textbf{Data binning} refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, very granular categories should be avoided -- especially when there is no theoretical basis for such categories facilitating a project's objectives or deepening insights. Where the \(n\)-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. A variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level ``High School Not Completed'' and ``High School Completed'' bins.
 
-For modeling applications, it is important to let the model determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of `Less Than 1 Year', `1-5 Years', and `More Than 5 Years' will likely result in information loss. Any variability \emph{within} these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
+For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of `Less Than 1 Year', `1-5 Years', and `More Than 5 Years' will likely result in information loss. Any variability \emph{within} these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
 
 \hypertarget{one-hot-encoding}{%
 \section{One-Hot Encoding}\label{one-hot-encoding}}
@@ -4058,7 +4071,7 @@ For modeling applications, it is important to let the model determine the cutpoi
 
 Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with ``Remote'' or ``Non-Remote'' values, we could code ``Remote'' values as 1 and ``Non-Remote'' values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.
 
-If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields would be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
 
 \begin{figure}
 
@@ -4068,6 +4081,88 @@ If a categorical variable has more than 2 values, we must create a separate 1/0 
 
 \caption{One-Hot Encoding}\label{fig:onehot-encoding}
 \end{figure}
+
+For a categorical variable with only two values, the \texttt{ifelse()} function can be leveraged to assign values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return unique values of gender field}
+\KeywordTok{unique}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Male"   "Female"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Gender one-hot encoding}
+\NormalTok{demographics}\OperatorTok{$}\NormalTok{gender_ohe <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{# Preview records}
+\KeywordTok{head}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"gender_ohe"}\NormalTok{)])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   employee_id gender_ohe
+## 1        1001          0
+## 2        1002          1
+## 3        1003          0
+## 4        1004          0
+## 5        1005          1
+## 6        1006          1
+\end{verbatim}
+
+For variables with more than 2 categories, we can leverage the \texttt{model.matrix()} function to one-hot encode them all:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{# Determine location with lowest n-count}
+\NormalTok{locations <-}\StringTok{ }\NormalTok{demographics }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(location, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{)}
+
+\CommentTok{# Display counts by location}
+\NormalTok{locations}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                        location    n
+## 1                 HQ 1 - Austin 1733
+## 2                HQ 2 - Atlanta 1522
+## 3                        Remote  969
+## 4 Operations Center - St. Louis  651
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Store location with smallest n-count}
+\NormalTok{min_location <-}\StringTok{ }\NormalTok{locations[}\KeywordTok{nrow}\NormalTok{(locations), }\StringTok{"location"}\NormalTok{]}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Location one-hot encoding}
+\CommentTok{# Omit location with lowest n-count}
+\NormalTok{location_ohe <-}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(}\OperatorTok{~}\NormalTok{location}\DecValTok{-1}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ demographics[}\OperatorTok{!}\NormalTok{demographics}\OperatorTok{$}\NormalTok{location }\OperatorTok{==}\StringTok{ }\NormalTok{min_location, ])}
+\KeywordTok{head}\NormalTok{(location_ohe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   locationHQ 1 - Austin locationHQ 2 - Atlanta locationRemote
+## 1                     1                      0              0
+## 2                     1                      0              0
+## 3                     1                      0              0
+## 4                     1                      0              0
+## 5                     1                      0              0
+## 6                     1                      0              0
+\end{verbatim}
 
 \hypertarget{feature-engineering}{%
 \section{Feature Engineering}\label{feature-engineering}}
