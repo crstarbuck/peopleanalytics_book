@@ -82,22 +82,31 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.
   
-  First, let's load the `sqldf` library and store data to a data frame named `demographics`:
+  First, let's load the `sqldf` library and load the data sets:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Load SQL library
 library(sqldf)
 
-# Read employee demographics data
-demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv")
+# Load data sets
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+status <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv")
+benefits <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv")
+demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv")
+job <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv")
+payroll <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv")
+performance <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv")
+prior_employment <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv")
+survey_response <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv")
+tenure <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv")
 
 # Return row and column counts
-dim(demographics)
+dim(employees)
 
 ```
 
-  Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 4,875$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
+  Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 1,470$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
   
   A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
 
@@ -107,9 +116,9 @@ dim(demographics)
 sql_string <- paste("SELECT
                       employee_id
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     LIMIT 10")
 
 # Execute SQL query
@@ -117,22 +126,22 @@ sqldf(sql_string)
 
 ```
 
-  This query returned a list of employee ids for the 496 employees on the Social Marketing team. 
+  This query returned a list of employee ids for employees in the Research & Development department. 
   
   **Aggregate Functions**
   
-  Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
+  Next, let's take a look at the average organization tenure by job for those in the Research & Development department:
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
 sql_string <- paste("SELECT
                       job_title,
-                      AVG(org_tenure)
+                      AVG(years_at_company)
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     GROUP BY
                       job_title")
 
@@ -141,9 +150,9 @@ sqldf(sql_string)
 
 ```
 
-  There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from `7.5` to `10`.
+  There are 6 distinct job titles among employees in the Research & Development department, and the average organization tenure for these ranges from `5` to `13.7` years.
   
-  Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We will also utilize aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -151,11 +160,11 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(years_at_company) AS avg_org_tenure
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     GROUP BY
                       job_title
                     ORDER BY
@@ -166,9 +175,9 @@ sqldf(sql_string)
 
 ```
 
-  The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common. 
+  The output shows that there are only 2 Vice Presidents in the Research & Development department, while other job titles are much more common. 
   
-  Since relatively few employees are Vice Presidents or Directors, let's use the `HAVING` clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:
+  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -176,11 +185,11 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(years_at_company) AS avg_org_tenure
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -285,18 +294,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  To illustrate how SQL joins work, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
+  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
   
-```{r, message = FALSE, warning = FALSE}
-
-# Partition select columns into three data frames
-job_df <- demographics[, c("employee_id", "job_title")]
-tenure_df <- demographics[, c("employee_id", "org_tenure")]
-team_df <- demographics[, c("employee_id", "team")]
-
-```  
-
-  Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `job_df` and `tenure_df` for a particular employee id, but there is no team designation for it in `team_df`, that employee id would not be included in the output.
+  Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no team designation for it in `job`, that employee id would not be included in the output.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -304,19 +304,20 @@ team_df <- demographics[, c("employee_id", "team")]
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(years_at_company) AS avg_org_tenure,
+                      AVG(commute_distance) AS avg_commute_dist
                     FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      team_df
-                        ON
-                      job_df.employee_id = team_df.employee_id
+                        demographics
+                      INNER JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      INNER JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -329,9 +330,9 @@ sqldf(sql_string)
 
 ```
 
-  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure_df` and `team_df` were joined to `job_df` via the `employee_id` column. We could have instead joined `job_df` to `team_df` and achieved the same result since all employee ids exist in all three data frames in this case.
+  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure` and `job` were joined to `demographics` via the `employee_id` column. We could have instead joined `job` to `tenure` since we joined `tenure` to `demographics`; this would have achieved the same result since all employee ids exist in each of the three data frames.
   
-  If it were possible for all employee ids to exist in `job_df` but not in either `tenure_df` or `team_df`, we could leverage a `LEFT JOIN` to ensure all records from `job_df` are included in the output irrespective of whether they have matches in `tenure_df` or `team_df`:
+  If it were possible for all employee ids to exist in `demographics` but not in either `tenure` or `job`, we could leverage a `LEFT JOIN` to ensure all records from `demographics` are included in the output irrespective of whether they have matches in `tenure` or `job`:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -339,19 +340,20 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(years_at_company) AS avg_org_tenure,
+                      AVG(commute_distance) AS avg_commute_dist
                     FROM
-                      job_df
-                        LEFT JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        LEFT JOIN
-                      team_df
-                        ON
-                      job_df.employee_id = team_df.employee_id
+                        demographics
+                      LEFT JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
                     WHERE
-                      team = 'Social Marketing'
+                      department = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -362,29 +364,54 @@ sql_string <- paste("SELECT
 # Execute SQL query
 sqldf(sql_string)
 
+```
+
+  In this case, if demographics is the base data set which contains all employee ids, it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
+
+  When integrating data within R, the `tidyverse` provides a more parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single `employees` data frame using a left join on the `employee_id` column:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load tidyverse
+library(tidyverse)
+
+employees <- list(demographics,
+                  status,
+                  benefits,
+                  job,
+                  payroll,
+                  performance,
+                  prior_employment,
+                  survey_response,
+                  tenure) %>%
+                  reduce(left_join, by = "employee_id")
+                  
 ```
 
   **Subqueries**
   
   **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
   
-  For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
+  For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criteria into the outer query for filtering. In this case, we would not need to include `tenure` in the join conditions of our main query:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
+# Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(commute_distance) AS avg_commute_dist
                     FROM
-                      job_df
-                        LEFT JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
                     WHERE
-                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = 'Social Marketing')
+                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE years_at_company > 1)
+                      AND 
+                        department = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -397,9 +424,9 @@ sqldf(sql_string)
 
 ```
 
-  **Derived Tables**
+  **Virtual Tables**
   
-  An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
+  An alternative to a subquery is creating a **virtual table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `demographics` to the virtual table containing a list of employee ids for those with more than a year of organization tenure, any records in `demographics` or `job` that do not relate to employees with at least a year of organization tenure will be dropped. With this approach, our `WHERE` clause is limited to the `department = 'Research & Development'` condition:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -407,17 +434,19 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      AVG(commute_distance) AS avg_commute_dist
                     FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      department = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -440,25 +469,26 @@ sqldf(sql_string)
 
 # Store SQL query as a character string
 # Limit output to 10 records since query does not collapse records
-# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output
 sql_string <- paste("SELECT
-                      job_df.employee_id,
+                      demographics.employee_id,
                       job_title,
-                      org_tenure,
-                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
+                      commute_distance,
+                      RANK () OVER (PARTITION BY job_title ORDER BY commute_distance DESC) AS commute_dist_rank
                     FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      department = 'Research & Development'
                     ORDER BY
                       job_title,
-                      org_tenure_rank
+                      commute_dist_rank
                     LIMIT 10")
 
 # Execute SQL query
@@ -466,35 +496,42 @@ sqldf(sql_string)
 
 ```
 
-  Notice that in the case of organization tenure ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.
+  Notice that in the case of organization tenure ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.
   
-  We can also treat this query as a derived table, and then filter on the derived `org_tenure_rank` field to return a list of Social Marketing employees with the highest tenure for each job. The `*` symbol in the `SELECT` clause will return all columns from the specified table:
+  We can also treat this query as a virtual table, and then filter on the derived `commute_dist_rank` field to return the highest commute distance for each job. We can add a `DISTINCT()` function in the `SELECT` clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the `COUNT(*)` function:
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
-sql_string <- paste("SELECT tbl.*
-                    FROM
-                    (SELECT
-                      job_df.employee_id,
-                      job_title,
-                      org_tenure,
-                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
-                    FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
-                    ORDER BY
-                      job_title,
-                      org_tenure_rank) tbl
-                    WHERE
-                      tbl.org_tenure_rank = 1")
+sql_string <- paste("SELECT
+                        DISTINCT(job_title) AS job_title,
+                        COUNT(*) AS employee_count,
+                        commute_distance
+                     FROM
+                        (SELECT
+                          demographics.employee_id,
+                          job_title,
+                          commute_distance,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_distance DESC) AS commute_dist_rank
+                        FROM
+                            demographics
+                          LEFT JOIN
+                            job
+                          ON
+                            demographics.employee_id = job.employee_id
+                          INNER JOIN
+                            (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                          ON
+                            demographics.employee_id = ids.employee_id
+                        WHERE
+                          department = 'Research & Development'
+                        ORDER BY
+                          job_title,
+                          commute_dist_rank) tbl
+                      WHERE
+                        tbl.commute_dist_rank = 1
+                      GROUP BY
+                        job_title")
 
 # Execute SQL query
 sqldf(sql_string)
@@ -510,11 +547,11 @@ sqldf(sql_string)
 ```{r, message = FALSE, warning = FALSE}
 
 # Summarize df
-summary(demographics)
+summary(employees)
 
 ```
 
-  Note that fields with `NA's` contain missing values. Also, by default `employee_id` and `manager_id` are both treated as integers in R, which is why descriptive statistics appropriate for numeric data are provided. `employee_id` and `manager_id` should actually be treated as character strings since we will not perform any arithmetic operations using these ids.
+  Note that fields with `NA's` contain missing values. Also, by default `employee_id` is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. `employee_id` should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
   
   **Missingness**
 
@@ -528,15 +565,18 @@ summary(demographics)
   
   **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
   
-  Let's evaluate the `demographics` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
+  Let's evaluate the `employees` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
 
 ```{r, message = FALSE, warning = FALSE}
 
+# Store original annual comp for sample employee
+orig_comp <- employees[employees$employee_id == '2176', 'annual_comp']
+
 # Force a NA in lieu of annual comp for illustrative purposes
-demographics[demographics$employee_id == '4305', 'annual_comp'] <- NA
+employees[employees$employee_id == '2176', 'annual_comp'] <- NA
 
 # Return relevant employee characteristics where annual comp is missing
-demographics[is.na(demographics$annual_comp), c("employee_id", "job_title", "location", "job_level")]
+employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_level")]
 
 ```
 
@@ -545,13 +585,13 @@ demographics[is.na(demographics$annual_comp), c("employee_id", "job_title", "loc
 ```{r, message = FALSE, warning = FALSE}
 
 # Return average annual comp for employees with similar characteristics, excluding employees with missing comp values
-imputed_comp <- mean(demographics[demographics$job_title == 'Manager' & demographics$location == 'HQ 1 - Austin' & demographics$job_level == 7, 'annual_comp'], na.rm = TRUE)
+imputed_comp <- mean(employees[employees$job_title == 'Manufacturing Director' & employees$job_level == 2, 'annual_comp'], na.rm = TRUE)
 
 # Impute missing comp for relevant segment
-demographics[demographics$employee_id == '4305', 'annual_comp'] <- imputed_comp
+employees[employees$employee_id == '2176', 'annual_comp'] <- imputed_comp
 
-# Display imputed comp
-demographics[demographics$employee_id == '4305', 'annual_comp']
+# Display absolute difference between original and imputed comp
+abs(orig_comp - employees[employees$employee_id == '2176', 'annual_comp'])
 
 ```
 
@@ -604,17 +644,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r, message = FALSE, warning = FALSE}
 
 # Return unique values of gender field
-unique(demographics$gender)
+unique(employees$gender)
 
 ```
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Gender one-hot encoding
-demographics$gender_ohe <- ifelse(demographics$gender == 'Female', 1, 0)
+employees$gender_ohe <- ifelse(employees$gender == 'Female', 1, 0)
 
 # Preview records
-head(demographics[, c("employee_id", "gender_ohe")])
+head(employees[, c("employee_id", "gender_ohe")])
 
 ```
 
@@ -622,11 +662,8 @@ head(demographics[, c("employee_id", "gender_ohe")])
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Load library
-library(dplyr)
-
-# Return counts by location
-demographics %>% count(location, sort = TRUE)
+# Return counts by department
+employees %>% count(department, sort = TRUE)
 
 ```
 
@@ -634,26 +671,26 @@ demographics %>% count(location, sort = TRUE)
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Location one-hot encoding
-location_ohe <- model.matrix(~location-1, data = demographics)
+# Department one-hot encoding
+department_ohe <- model.matrix(~department-1, data = employees)
 
 # Preview data
-head(location_ohe)
+head(department_ohe)
 
 ```
 
-  We will drop the location with the lowest $n$ rather than the more arbitrary method based on the first value of the factor. Since locations are coded as either $1$ or $0$, we can use the `colSums()` function to sum each column and the `which.min()` function to identify which has the lowest sum (i.e., least common location).
+  We will drop the department with the lowest $n$ rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either $1$ or $0$, we can use the `colSums()` function to sum each column and the `which.min()` function to identify which has the lowest sum (i.e., smallest department by employee count).
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Drop location with lowest sum (lowest n-count)
-location_ohe <- location_ohe[, -which.min(colSums(location_ohe))]
+# Drop department with lowest sum (lowest n-count)
+department_ohe <- department_ohe[, -which.min(colSums(department_ohe))]
 
-# Combine demographics and matrix containing one-hot encoded locations
-demographics <- cbind(demographics, location_ohe)
+# Combine employees and matrix containing one-hot encoded departments
+employees <- cbind(employees, department_ohe)
 
-# Drop original location field
-demographics <- subset(demographics, select = -c(location))
+# Drop original department field
+employees <- subset(employees, select = -c(department))
 
 ```
 
