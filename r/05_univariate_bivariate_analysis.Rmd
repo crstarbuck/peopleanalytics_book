@@ -1,12 +1,16 @@
 # Univariate & Bivariate Analysis {#uni-bi-stats}
 
-This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book.
+  This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book. 
+  
+  Univariate and bivariate analysis can be either descriptive or inferential. This chapter will cover descriptive techniques, while Chapter \@ref(inf-stats) will cover inferential methods.
 
 ## Univariate Analysis
 
-**Descriptive statistics** are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+  **Univariate analysis** is the simplest form of statistical analysis, which explores each variable independently. 
+  
+  **Descriptive statistics** are rudimentary analysis techniques that help describe and summarize a variable's data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
-There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
+  There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
 
 ### Measures of Central Tendency
 
@@ -132,11 +136,11 @@ In people analytics, there are many conventional descriptive metrics -- largely 
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv")
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Calculate sample variance for annual compensation
-var(demographics$annual_comp)
+var(employees$annual_comp)
 
 ```
 
@@ -145,10 +149,10 @@ var(demographics$annual_comp)
 ```{r, message = FALSE}
 
 # Store number of observations
-n = length(demographics$annual_comp)
+n = length(employees$annual_comp)
 
 # Calculate population variance for annual compensation
-var(demographics$annual_comp) * (n - 1) / n
+var(employees$annual_comp) * (n - 1) / n
 
 ```
 
@@ -171,7 +175,7 @@ var(demographics$annual_comp) * (n - 1) / n
 ```{r, message = FALSE}
 
 # Calculate sample standard deviation for annual compensation
-sd(demographics$annual_comp)
+sd(employees$annual_comp)
 
 ```
 
@@ -180,7 +184,7 @@ sd(demographics$annual_comp)
 ```{r, message = FALSE}
 
 # Calculate population standard deviation for annual compensation
-sd(demographics$annual_comp) * sqrt((n - 1) / n)
+sd(employees$annual_comp) * sqrt((n - 1) / n)
 
 ```
 
@@ -195,11 +199,11 @@ sd(demographics$annual_comp) * sqrt((n - 1) / n)
 ```{r, message = FALSE}
 
 # Return quartiles for annual compensation
-quantile(demographics$annual_comp)
+quantile(employees$annual_comp)
 
 ```
 
-  Based on this output, we know that 25% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75% of people earn annual compensation of 163,263 USD or less.
+  Based on this output, we know that 25% of people in our data earn annual compensation of 99,840 USD or less, 137,280 USD is the median annual compensation, and 75% of people earn annual compensation of 174,200 USD or less.
   
   **Boxplots** are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the `ggplot2` library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the ggplot() function:
   
@@ -208,9 +212,9 @@ quantile(demographics$annual_comp)
 # Load library for data viz
 library(ggplot2)
 
-# Produce boxplots to visualize compensation distribution by education and gender
-ggplot(demographics, aes(x = as.factor(education), y = annual_comp, color = gender)) +
-  labs(x = "Education", y = "Annual Compensation") + 
+# Produce boxplots to visualize compensation distribution by education level and gender
+ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
+  labs(x = "Education Level", y = "Annual Compensation") + 
   theme_bw() +
   geom_boxplot()
 
@@ -228,7 +232,7 @@ ggplot(demographics, aes(x = as.factor(education), y = annual_comp, color = gend
 ```{r, message = FALSE}
 
 # Return 80th percentile annual compensation value
-quantile(demographics$annual_comp, probs = .8)
+quantile(employees$annual_comp, probs = .8)
 
 ```
 
@@ -237,7 +241,7 @@ quantile(demographics$annual_comp, probs = .8)
 ```{r, message = FALSE}
 
 # Return common descriptives
-summary(demographics$annual_comp)
+summary(employees$annual_comp)
 
 ```
 
@@ -267,7 +271,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable's scale. Alternatively, we can simply evaluate this using the coefficient of skewness:
   
-  * If skewness is between -0.5 - 0.5, the data are symmetrical.
+  * If skewness is between -0.5 - 0.5, the data are considered symmetrical.
   * If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
   * If skewness is < -1 or > 1, the data are highly skewed.
   
@@ -278,8 +282,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 # Load library
 library(moments)
 
-# Calculate skewness for org tenure, rounded to three significant figures
-round(skewness(demographics$org_tenure), 3)
+# Calculate skewness for org tenure, rounded to two significant figures via the round() function
+round(skewness(employees$org_tenure), 2)
 
 ```
 
@@ -290,23 +294,23 @@ round(skewness(demographics$org_tenure), 3)
 ```{r, message = FALSE}
 
 # Store components of skewness calculation
-n = length(demographics$org_tenure)
-x = demographics$org_tenure
-x_bar = mean(demographics$org_tenure)
-s = sd(demographics$org_tenure)
+n = length(employees$org_tenure)
+x = employees$org_tenure
+x_bar = mean(employees$org_tenure)
+s = sd(employees$org_tenure)
 
-# Calculate skewness manually, rounded to three significant figures
-round(1/n * (sum((x - x_bar)^3) / s^3), 3)
+# Calculate skewness manually, rounded to two significant figures via the round() function
+round(1/n * (sum((x - x_bar)^3) / s^3), 2)
 
 ```
 
-  A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+  A skewness coefficient of 2.27 indicates that organization tenure is positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
 
 ```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Produce histogram to visualize sample distribution
 ggplot() + 
-  aes(demographics$org_tenure) + 
+  aes(employees$org_tenure) + 
   labs(x = "Organization Tenure", y = "Density") + 
   geom_histogram(aes(y = ..density..), fill = "#414141") +
   geom_density(fill = "#ADD8E6", alpha = 0.6) +
@@ -338,8 +342,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```{r, message = FALSE}
 
-# Calculate kurtosis for org tenure, rounded to two significant figures
-round(kurtosis(demographics$org_tenure), 2)
+# Calculate kurtosis for org tenure, rounded to one significant figure
+round(kurtosis(employees$org_tenure), 1)
 
 ```
 
@@ -347,14 +351,18 @@ round(kurtosis(demographics$org_tenure), 2)
 
 ```{r, message = FALSE}
 
-# Calculate kurtosis manually, rounded to two significant figures
-round(1/n * (sum((x - x_bar)^4) / s^4), 2)
+# Calculate kurtosis manually, rounded to one significant figure
+round(1/n * (sum((x - x_bar)^4) / s^4), 1)
 
 ```
 
-  As we saw in Figure \@ref(fig:org-tenure-distribution), there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is < 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
+  Our kurtosis coefficient of 13.4 indicates a leptokurtic distribution which is supported by the visual in Figure \@ref(fig:org-tenure-distribution).
+  
+  It is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
   
 ## Bivariate Analysis  
+
+  While univariate analysis explores each variable independently, **bivariate analysis** explores statistical relationships between two variables.
 
 ### Covariance
   
@@ -371,18 +379,18 @@ round(1/n * (sum((x - x_bar)^4) / s^4), 2)
 ```{r, message = FALSE}
 
 # Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
-cov(demographics$annual_comp, demographics$age, use = "complete.obs")
+cov(employees$annual_comp, employees$age, use = "complete.obs")
 
 ```
   
-  In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+  In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
   Just as we multiplied the sample variance by $(n - 1) / n$ to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
   
 ```{r, message = FALSE}
 
 # Calculate population covariance between annual compensation and age
-cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) / n
+cov(employees$annual_comp, employees$age, use = "complete.obs") * (n - 1) / n
 
 ```
 
@@ -390,8 +398,8 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) 
 
 ```{r, message = FALSE}
 
-# Generate a correlation matrix among continuous variables
-cov(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+# Generate a covariance matrix among select continuous variables
+cov(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")], use = "complete.obs")
 
 ```
 
@@ -400,11 +408,11 @@ cov(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "
 ```{r, message = FALSE}
 
 # Return sample variance for age
-var(demographics$age)
+var(employees$age)
 
 ```
 
-  As expected, the variance for age ($s^{2} = 168.39$) matches the value found in the age x age cell of the covariance matrix.
+  As expected, the variance for age ($s^{2} = 83.5$) matches the value found in the age x age cell of the covariance matrix.
 
 ### Correlation
 
@@ -417,11 +425,11 @@ var(demographics$age)
 ```{r, message = FALSE}
 
 # Calculate the correlation between annual compensation and age
-cor(demographics$annual_comp, demographics$age, use = "complete.obs")
+cor(employees$annual_comp, employees$age, use = "complete.obs")
 
 ```
 
-  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
+  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .02 indicates that the strength of the positive association is weak ($r$ = 0 represents the absence of a relationship). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
   
   * Weak = Absolute value of correlation coefficients between 0 and .3
   * Moderate = Absolute value of correlation coefficients between .4 and .6
@@ -450,11 +458,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r corr-lvl-ed, message = FALSE}
 
 # Calculate the correlation between job level and education level using Spearman's method
-cor(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
+cor(employees$job_lvl, employees$ed_lvl, method = "spearman", use = "complete.obs")
 
 ```
 
-  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is moderate-to-strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
+  The $\rho$ coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
   
   The **Phi Coefficient** ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
   
@@ -476,31 +484,31 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 library(psych)
 
 # Set females to 1 and everything else to 0
-demographics$gender_code <- ifelse(demographics$gender == 'Female', 1, 0)
+employees$gender_code <- ifelse(employees$gender == 'Female', 1, 0)
 
-# Set high performers (3 and above) to 1 and everything else to 0
-demographics$performance_code <- ifelse(demographics$performance < 3, 0, 1)
+# Set stock options to 1 if level > 0
+employees$stock_option_code <- ifelse(employees$stock_opt_lvl > 0, 1, 0)
 
 # Create a 2x2 contingency table
-contingency_tbl <- table(demographics$gender_code, demographics$performance_code)
+contingency_tbl <- table(employees$gender_code, employees$stock_option_code)
 
 # Calculate the Phi Coefficient between dichotomous variables
 phi(contingency_tbl)
 
 ``` 
   
-  $\phi$ is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
+  $\phi$ is essentially 0, which means stock options are distributed equitably across gender categories (good news!). While there are not differences in the proportion of males and females who receive at least some stock options, examining whether there is equity in the amount of stock grants and refreshes may be a good next step.
   
   A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the cor() function:
   
 ```{r, message = FALSE}
 
-# Generate a correlation matrix among continuous variables
-cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+# Generate a correlation matrix among select continuous variables
+cor(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")], use = "complete.obs")
 
 ```
 
-  Based on this correlation matrix, there are several moderate and strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between `org_tenure` and `job_tenure` ($r = .7$). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
   A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
   
@@ -510,7 +518,7 @@ cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "
 library(corrplot)
 
 # Store correlation matrix to object M
-M <- cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+M <- cor(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")], use = "complete.obs")
 
 # Visualize correlation matrix
 corrplot.mixed(M, order = 'AOE')
@@ -525,11 +533,11 @@ corrplot.mixed(M, order = 'AOE')
 library(GGally)
 
 # Visualize correlation matrix
-ggpairs(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")])
+ggpairs(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")])
 
 ```
 
-  As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. We may find that these bivariate associations look quite different for certain business areas or jobs, assuming business units, divisions, and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \@ref(lm).
+  We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \@ref(lm).
 
   It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. 
   

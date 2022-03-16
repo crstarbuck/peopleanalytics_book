@@ -227,15 +227,15 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv")
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Set seed for reproducible results
 set.seed(1234)
 
 # Sample 10 employees randomly
 n = 10
-sample(demographics$employee_id, n, replace = F)
+sample(employees$employee_id, n, replace = F)
 
 ```
   
@@ -249,29 +249,29 @@ sample(demographics$employee_id, n, replace = F)
   
   To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30% of all employees are in the Engineering department, the researcher could *randomly* select a calculated number of employees from the Engineering department such that 30% of employees in the sample come from this department.
 
-  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each location. First, we can review counts of employees for each division using the group_by() and summarise() functions from the `dplyr` library:
+  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each department. First, we can review counts of employees for each department using the group_by() and summarise() functions from the `dplyr` library:
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Return employee counts by location
-demographics %>%
-group_by(location) %>%
+# Return employee counts by department
+employees %>%
+group_by(dept) %>%
 summarise(n = n())
 
 ```
 
-  Next, we will randomly select $\frac{1}{2}$ of employees within each location using the group_by() and sample_frac() functions from the `dplyr` library. We will store the selected employees' records to a data frame and then query it to validate that the counts are roughly $\frac{1}{2}$ the total count observed for each location.
+  Next, we will randomly select $\frac{1}{2}$ of employees within each department using the group_by() and sample_frac() functions from the `dplyr` library. We will store the selected employees' records in a data frame and then query it to validate that the counts are roughly $\frac{1}{2}$ the total count observed for each department.
 
 ```{r, warning = FALSE, message = FALSE}
 
 # Obtain and store stratified random sample
-strat_sample <- demographics %>%
-                group_by(location) %>%
+strat_sample <- employees %>%
+                group_by(dept) %>%
                 sample_frac(size = .5)
 
-# Return sample counts by location
+# Return sample counts by department
 strat_sample %>%
-group_by(location) %>%
+group_by(dept) %>%
 summarise(n = n())
 
 ```
@@ -287,14 +287,17 @@ summarise(n = n())
 ```{r, warning = FALSE, message = FALSE}
 
 # Randomly assign each employee to 1 of 10 clusters (groups)
-demographics$cluster <- sample(1:10, size = nrow(demographics), replace = T)
+employees$cluster <- sample(1:10, size = nrow(employees), replace = T)
 
 # Randomly select 5 clusters
-clusters <- sample(unique(demographics$cluster), size = 5, replace = F)
+clusters <- sample(unique(employees$cluster), size = 5, replace = F)
 
 # Store cluster sample
-clust_sample <- demographics %>%
+clust_sample <- employees %>%
                 filter(cluster %in% clusters)
+
+# Display dimensions of the cluster sample object
+dim(clust_sample)
 
 ```
 
@@ -312,7 +315,7 @@ clust_sample <- demographics %>%
 n = 100
 
 # Determine population size
-N = nrow(demographics)
+N = nrow(employees)
 
 # Compute sampling interval, rounding up to nearest whole number via the ceiling() function
 si = ceiling(N/n)
@@ -324,7 +327,7 @@ strt = sample(1:si, 1)
 index = seq(strt, strt + si * (n - 1), si)
 
 # Store systematic sample
-syst_sample <- demographics[index, ]
+syst_sample <- employees[index, ]
 
 ```
 

@@ -118,7 +118,7 @@ sql_string <- paste("SELECT
                     FROM
                       employees
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     LIMIT 10")
 
 # Execute SQL query
@@ -137,11 +137,11 @@ sqldf(sql_string)
 # Store SQL query as a character string
 sql_string <- paste("SELECT
                       job_title,
-                      AVG(years_at_company)
+                      AVG(org_tenure)
                     FROM
                       employees
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title")
 
@@ -160,11 +160,11 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(years_at_company) AS avg_org_tenure
+                      AVG(org_tenure) AS avg_org_tenure
                     FROM
                       employees
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     ORDER BY
@@ -177,7 +177,7 @@ sqldf(sql_string)
 
   The output shows that there are only 2 Vice Presidents in the Research & Development department, while other job titles are much more prevalent. 
   
-  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees:
+  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees. We can also use the `ROUND()` function to truncate average organization tenure to one significant digit:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -185,11 +185,11 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(years_at_company) AS avg_org_tenure
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure
                     FROM
                       employees
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -304,8 +304,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(years_at_company) AS avg_org_tenure,
-                      AVG(commute_distance) AS avg_commute_dist
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
                         demographics
                       INNER JOIN
@@ -317,7 +317,7 @@ sql_string <- paste("SELECT
                       ON
                         demographics.employee_id = job.employee_id
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -340,8 +340,8 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(years_at_company) AS avg_org_tenure,
-                      AVG(commute_distance) AS avg_commute_dist
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
                         demographics
                       LEFT JOIN
@@ -353,7 +353,7 @@ sql_string <- paste("SELECT
                       ON
                         demographics.employee_id = job.employee_id
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -401,7 +401,7 @@ employees <- list(demographics,
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(commute_distance) AS avg_commute_dist
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
                         demographics
                       LEFT JOIN
@@ -409,9 +409,9 @@ sql_string <- paste("SELECT
                       ON
                         demographics.employee_id = job.employee_id
                     WHERE
-                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE years_at_company > 1)
+                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure > 1)
                       AND 
-                        department = 'Research & Development'
+                        dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -434,7 +434,7 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(commute_distance) AS avg_commute_dist
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
                         demographics
                       LEFT JOIN
@@ -442,11 +442,11 @@ sql_string <- paste("SELECT
                       ON
                         demographics.employee_id = job.employee_id
                       INNER JOIN
-                        (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
                       ON
                         demographics.employee_id = ids.employee_id
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -474,8 +474,8 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       demographics.employee_id,
                       job_title,
-                      commute_distance,
-                      RANK () OVER (PARTITION BY job_title ORDER BY commute_distance DESC) AS commute_dist_rank
+                      commute_dist,
+                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
                     FROM
                         demographics
                       LEFT JOIN
@@ -483,11 +483,11 @@ sql_string <- paste("SELECT
                       ON
                         demographics.employee_id = job.employee_id
                       INNER JOIN
-                        (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
                       ON
                         demographics.employee_id = ids.employee_id
                     WHERE
-                      department = 'Research & Development'
+                      dept = 'Research & Development'
                     ORDER BY
                       job_title,
                       commute_dist_rank
@@ -508,13 +508,13 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                         DISTINCT(job_title) AS job_title,
                         COUNT(*) AS employee_count,
-                        commute_distance
+                        commute_dist
                      FROM
                         (SELECT
                           demographics.employee_id,
                           job_title,
-                          commute_distance,
-                          RANK () OVER (PARTITION BY job_title ORDER BY commute_distance DESC) AS commute_dist_rank
+                          commute_dist,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
                         FROM
                             demographics
                           LEFT JOIN
@@ -522,11 +522,11 @@ sql_string <- paste("SELECT
                           ON
                             demographics.employee_id = job.employee_id
                           INNER JOIN
-                            (SELECT employee_id FROM tenure WHERE years_at_company > 1) ids
+                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
                           ON
                             demographics.employee_id = ids.employee_id
                         WHERE
-                          department = 'Research & Development'
+                          dept = 'Research & Development'
                         ORDER BY
                           job_title,
                           commute_dist_rank) tbl
@@ -578,7 +578,7 @@ orig_comp <- employees[employees$employee_id == '2176', 'annual_comp']
 employees[employees$employee_id == '2176', 'annual_comp'] <- NA
 
 # Return relevant employee characteristics where annual comp is missing
-employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_level")]
+employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_lvl")]
 
 ```
 
@@ -587,7 +587,7 @@ employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_level
 ```{r, message = FALSE, warning = FALSE}
 
 # Return average annual comp for employees with similar characteristics, excluding employees with missing comp values
-imputed_comp <- mean(employees[employees$job_title == 'Manufacturing Director' & employees$job_level == 2, 'annual_comp'], na.rm = TRUE)
+imputed_comp <- mean(employees[employees$job_title == 'Manufacturing Director' & employees$job_lvl == 2, 'annual_comp'], na.rm = TRUE)
 
 # Impute missing comp for relevant segment
 employees[employees$employee_id == '2176', 'annual_comp'] <- imputed_comp
@@ -672,7 +672,7 @@ head(employees[, c("employee_id", "gender_ohe")])
 ```{r, message = FALSE, warning = FALSE}
 
 # Return counts by department
-employees %>% count(department, sort = TRUE)
+employees %>% count(dept, sort = TRUE)
 
 ```
 
@@ -681,10 +681,10 @@ employees %>% count(department, sort = TRUE)
 ```{r, message = FALSE, warning = FALSE}
 
 # Department one-hot encoding
-department_ohe <- model.matrix(~department-1, data = employees)
+dept_ohe <- model.matrix(~dept-1, data = employees)
 
 # Preview data
-head(department_ohe)
+head(dept_ohe)
 
 ```
 
@@ -693,20 +693,20 @@ head(department_ohe)
 ```{r, message = FALSE, warning = FALSE}
 
 # Drop department with lowest sum (lowest n-count)
-department_ohe <- department_ohe[, -which.min(colSums(department_ohe))]
+dept_ohe <- dept_ohe[, -which.min(colSums(dept_ohe))]
 
 # Preview refined one-hot encoded data
-head(department_ohe)
+head(dept_ohe)
 
 ```
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Combine employees and matrix containing one-hot encoded departments
-employees <- cbind(employees, department_ohe)
+employees <- cbind(employees, dept_ohe)
 
 # Drop original department field
-employees <- subset(employees, select = -c(department))
+employees <- subset(employees, select = -c(dept))
 
 ```
 

@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-13}
+\date{2022-03-16}
 
 \begin{document}
 \maketitle
@@ -225,6 +225,81 @@ Please note that while R basics are covered, this is not a book on how to code. 
 
 The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
 
+\hypertarget{data}{%
+\subsection{Data}\label{data}}
+
+The primary data set used in this book is \texttt{employees}, which contains information on active and terminated employees. Fields are defined in the data dictionary provided below:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{employee\_id}: Unique identifier for each employee
+\item
+  \texttt{active}: Flag set to \emph{Yes} for active employees and \emph{No} for inactive employees
+\item
+  \texttt{stock\_opt\_lvl}: Stock option level
+\item
+  \texttt{trainings}: Number of trainings completed within the past year
+\item
+  \texttt{age}: Employee age in years
+\item
+  \texttt{commute\_dist}: Commute distance in miles
+\item
+  \texttt{ed\_lvl}: Education level, where 1 = \emph{High School}, 2 = \emph{Associate Degree}, 3 = \emph{Bachelor's Degree}, 4 = \emph{Master's Degree}, and 5 = \emph{Doctoral Degree}
+\item
+  \texttt{ed\_field}: Education field associated with most recent degree
+\item
+  \texttt{gender}: Gender self-identification
+\item
+  \texttt{marital\_sts}: Marital status
+\item
+  \texttt{dept}: Department of which an employee is a member
+\item
+  \texttt{engagement}: Employee engagement score measured on a 4-point Likert scale, where 1 = \emph{Highly Disengaged} and 4 = \emph{Highly Engaged}
+\item
+  \texttt{job\_lvl}: Job level, where 1 = \emph{Junior} and 5 = \emph{Senior}
+\item
+  \texttt{job\_title}: Job title
+\item
+  \texttt{overtime}: Flag set to \emph{Yes} if the employee is nonexempt and works overtime and \emph{No} if the employee does not work overtime
+\item
+  \texttt{business\_travel}: Business travel frequency
+\item
+  \texttt{hourly\_rate}: Hourly rate calculated irrespective of hourly/salaried employees
+\item
+  \texttt{daily\_comp}: Hourly rate * 8
+\item
+  \texttt{monthly\_comp}: Hourly rate * 2080 / 12
+\item
+  \texttt{annual\_comp}: Hourly rate * 2080
+\item
+  \texttt{standard\_hrs}: Expected working hours over a two-week payroll cycle
+\item
+  \texttt{salary\_hike\_pct}: The percent increase in salary for the employee's most recent compensation adjustment (whether due to a standard merit increase, off-cycle adjustment, or promotion)
+\item
+  \texttt{perf\_rating}: Most recent performance rating, where 1 = \emph{Needs Improvement}, 2 = \emph{Core Contributor}, 3 = \emph{Noteworthy}, and 4 = \emph{Exceptional}
+\item
+  \texttt{prior\_emplr\_cnt}: Number of prior employers
+\item
+  \texttt{env\_sat}: Environment satisfaction score measured on a 4-point Likert scale, where 1 = \emph{Highly Dissatisfied} and 4 = \emph{Highly Satisfied}
+\item
+  \texttt{job\_sat}: Job satisfaction score measured on a 4-point Likert scale, where 1 = \emph{Highly Dissatisfied} and 4 = \emph{Highly Satisfied}
+\item
+  \texttt{rel\_sat}: Colleague relationship satisfaction score measured on a 4-point Likert scale, where 1 = \emph{Highly Dissatisfied} and 4 = \emph{Highly Satisfied}
+\item
+  \texttt{wl\_balance}: Work-life balance score measured on a 4-point Likert scale, where 1 = \emph{Poor Balance} and 4 = \emph{Excellent Balance}
+\item
+  \texttt{work\_exp}: Total years of work experience
+\item
+  \texttt{org\_tenure}: Years at current company
+\item
+  \texttt{job\_tenure}: Years in current job
+\item
+  \texttt{last\_promo}: Years since last promotion
+\item
+  \texttt{mgr\_tenure}: Years under current manager
+\end{itemize}
+
 \hypertarget{d-framework}{%
 \section{4D Framework}\label{d-framework}}
 
@@ -324,7 +399,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpIKf6e8/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpiKZWVq/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -334,6 +409,15 @@ It's important to note that everything in R is case-sensitive. When working with
 \textbf{Help}
 
 Documentation for functions is available via the \texttt{?} command. This can be inserted prior to any function to access the function's documentation. For example, \texttt{?mean} will display the documentation, including its required and optional arguments, for the \texttt{mean()} function.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/r_help} 
+
+}
+
+\caption{Documentation for Arithmetic Mean Function}\label{fig:r-help}
+\end{figure}
 
 \textbf{Objects}
 
@@ -1366,20 +1450,20 @@ We can use the sample() function in R to randomly select from a vector of elemen
 \CommentTok{# Load library for data wrangling}
 \KeywordTok{library}\NormalTok{(dplyr)}
 
-\CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
+\CommentTok{# Read employee data}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
 
 \CommentTok{# Set seed for reproducible results}
 \KeywordTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
 
 \CommentTok{# Sample 10 employees randomly}
 \NormalTok{n =}\StringTok{ }\DecValTok{10}
-\KeywordTok{sample}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{employee_id, n, }\DataTypeTok{replace =}\NormalTok{ F)}
+\KeywordTok{sample}\NormalTok{(employees}\OperatorTok{$}\NormalTok{employee_id, n, }\DataTypeTok{replace =}\NormalTok{ F)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##  [1] 2004 1623 3693 1934 5496 3948 3146 4175 3774 3374
+##  [1] 2308 2018 2125 2004 1623 1905 1645 1934 1400 1900
 \end{verbatim}
 
 The \texttt{replace\ =\ F} argument in the sample() function indicates that we want to sample \emph{without} replacement (i.e., we do not want an employee to be selected twice in the sample). For example, if we draw multiple names from a hat without replacement, we will not put names back into the hat once they are drawn; each has a chance of being selected only once.
@@ -1392,51 +1476,49 @@ While sampling \emph{with} replacement would not make sense for applications suc
 
 To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30\% of all employees are in the Engineering department, the researcher could \emph{randomly} select a calculated number of employees from the Engineering department such that 30\% of employees in the sample come from this department.
 
-Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each location. First, we can review counts of employees for each division using the group\_by() and summarise() functions from the \texttt{dplyr} library:
+Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each department. First, we can review counts of employees for each department using the group\_by() and summarise() functions from the \texttt{dplyr} library:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Return employee counts by location}
-\NormalTok{demographics }\OperatorTok{%>%}
-\KeywordTok{group_by}\NormalTok{(location) }\OperatorTok{%>%}
+\CommentTok{# Return employee counts by department}
+\NormalTok{employees }\OperatorTok{%>%}
+\KeywordTok{group_by}\NormalTok{(dept) }\OperatorTok{%>%}
 \KeywordTok{summarise}\NormalTok{(}\DataTypeTok{n =} \KeywordTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 4 x 2
-##   location                    n
-##   <chr>                   <int>
-## 1 Data Center - St. Louis   651
-## 2 HQ 1 - Austin            1733
-## 3 HQ 2 - Atlanta           1522
-## 4 Remote                    969
+## # A tibble: 3 x 2
+##   dept                       n
+##   <chr>                  <int>
+## 1 Human Resources           63
+## 2 Research & Development   961
+## 3 Sales                    446
 \end{verbatim}
 
-Next, we will randomly select \(\frac{1}{2}\) of employees within each location using the group\_by() and sample\_frac() functions from the \texttt{dplyr} library. We will store the selected employees' records to a data frame and then query it to validate that the counts are roughly \(\frac{1}{2}\) the total count observed for each location.
+Next, we will randomly select \(\frac{1}{2}\) of employees within each department using the group\_by() and sample\_frac() functions from the \texttt{dplyr} library. We will store the selected employees' records in a data frame and then query it to validate that the counts are roughly \(\frac{1}{2}\) the total count observed for each department.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Obtain and store stratified random sample}
-\NormalTok{strat_sample <-}\StringTok{ }\NormalTok{demographics }\OperatorTok{%>%}
-\StringTok{                }\KeywordTok{group_by}\NormalTok{(location) }\OperatorTok{%>%}
+\NormalTok{strat_sample <-}\StringTok{ }\NormalTok{employees }\OperatorTok{%>%}
+\StringTok{                }\KeywordTok{group_by}\NormalTok{(dept) }\OperatorTok{%>%}
 \StringTok{                }\KeywordTok{sample_frac}\NormalTok{(}\DataTypeTok{size =} \FloatTok{.5}\NormalTok{)}
 
-\CommentTok{# Return sample counts by location}
+\CommentTok{# Return sample counts by department}
 \NormalTok{strat_sample }\OperatorTok{%>%}
-\KeywordTok{group_by}\NormalTok{(location) }\OperatorTok{%>%}
+\KeywordTok{group_by}\NormalTok{(dept) }\OperatorTok{%>%}
 \KeywordTok{summarise}\NormalTok{(}\DataTypeTok{n =} \KeywordTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## # A tibble: 4 x 2
-##   location                    n
-##   <chr>                   <int>
-## 1 Data Center - St. Louis   326
-## 2 HQ 1 - Austin             866
-## 3 HQ 2 - Atlanta            761
-## 4 Remote                    484
+## # A tibble: 3 x 2
+##   dept                       n
+##   <chr>                  <int>
+## 1 Human Resources           32
+## 2 Research & Development   480
+## 3 Sales                    223
 \end{verbatim}
 
 \textbf{Cluster Sampling}
@@ -1450,16 +1532,23 @@ Let's demonstrate how to implement cluster sampling in R:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Randomly assign each employee to 1 of 10 clusters (groups)}
-\NormalTok{demographics}\OperatorTok{$}\NormalTok{cluster <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(demographics), }\DataTypeTok{replace =}\NormalTok{ T)}
+\NormalTok{employees}\OperatorTok{$}\NormalTok{cluster <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{10}\NormalTok{, }\DataTypeTok{size =} \KeywordTok{nrow}\NormalTok{(employees), }\DataTypeTok{replace =}\NormalTok{ T)}
 
 \CommentTok{# Randomly select 5 clusters}
-\NormalTok{clusters <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\KeywordTok{unique}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{cluster), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ F)}
+\NormalTok{clusters <-}\StringTok{ }\KeywordTok{sample}\NormalTok{(}\KeywordTok{unique}\NormalTok{(employees}\OperatorTok{$}\NormalTok{cluster), }\DataTypeTok{size =} \DecValTok{5}\NormalTok{, }\DataTypeTok{replace =}\NormalTok{ F)}
 
 \CommentTok{# Store cluster sample}
-\NormalTok{clust_sample <-}\StringTok{ }\NormalTok{demographics }\OperatorTok{%>%}
+\NormalTok{clust_sample <-}\StringTok{ }\NormalTok{employees }\OperatorTok{%>%}
 \StringTok{                }\KeywordTok{filter}\NormalTok{(cluster }\OperatorTok{%in%}\StringTok{ }\NormalTok{clusters)}
+
+\CommentTok{# Display dimensions of the cluster sample object}
+\KeywordTok{dim}\NormalTok{(clust_sample)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## [1] 748  34
+\end{verbatim}
 
 \textbf{Systematic Sampling}
 
@@ -1475,7 +1564,7 @@ Let's walk through the step-by-step process for implementing the systematic samp
 \NormalTok{n =}\StringTok{ }\DecValTok{100}
 
 \CommentTok{# Determine population size}
-\NormalTok{N =}\StringTok{ }\KeywordTok{nrow}\NormalTok{(demographics)}
+\NormalTok{N =}\StringTok{ }\KeywordTok{nrow}\NormalTok{(employees)}
 
 \CommentTok{# Compute sampling interval, rounding up to nearest whole number via the ceiling() function}
 \NormalTok{si =}\StringTok{ }\KeywordTok{ceiling}\NormalTok{(N}\OperatorTok{/}\NormalTok{n)}
@@ -1487,7 +1576,7 @@ Let's walk through the step-by-step process for implementing the systematic samp
 \NormalTok{index =}\StringTok{ }\KeywordTok{seq}\NormalTok{(strt, strt }\OperatorTok{+}\StringTok{ }\NormalTok{si }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{), si)}
 
 \CommentTok{# Store systematic sample}
-\NormalTok{syst_sample <-}\StringTok{ }\NormalTok{demographics[index, ]}
+\NormalTok{syst_sample <-}\StringTok{ }\NormalTok{employees[index, ]}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1736,10 +1825,14 @@ Given the potential for alternative explanations of any observed differences or 
 
 This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book.
 
+Univariate and bivariate analysis can be either descriptive or inferential. This chapter will cover descriptive techniques, while Chapter \ref{inf-stats} will cover inferential methods.
+
 \hypertarget{univariate-analysis}{%
 \section{Univariate Analysis}\label{univariate-analysis}}
 
-\textbf{Descriptive statistics} are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+\textbf{Univariate analysis} is the simplest form of statistical analysis, which explores each variable independently.
+
+\textbf{Descriptive statistics} are rudimentary analysis techniques that help describe and summarize a variable's data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
 There are two categories of descriptive statistics: (a) \textbf{measures of central tendency} describe the central position in a set of data; and (b) \textbf{measures of spread} describe how dispersed the data are.
 
@@ -1907,16 +2000,16 @@ In R, the sample variance can be calculated using the var() function:
 \CommentTok{# Load library for data wrangling}
 \KeywordTok{library}\NormalTok{(dplyr)}
 
-\CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
+\CommentTok{# Read employee data}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
 
 \CommentTok{# Calculate sample variance for annual compensation}
-\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
+\KeywordTok{var}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1876686960
+## [1] 1788038934
 \end{verbatim}
 
 Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of \(s^2 (\frac{n - 1}{n})\), it is simple to convert output from var() to the population variance:
@@ -1924,15 +2017,15 @@ Sample statistics are the default in R. Since the population variance differs fr
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store number of observations}
-\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
+\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp)}
 
 \CommentTok{# Calculate population variance for annual compensation}
-\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
+\KeywordTok{var}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1876301998
+## [1] 1786822581
 \end{verbatim}
 
 \textbf{Standard Deviation}
@@ -1954,12 +2047,12 @@ In R, the sample standard deviation can be calculated using the sd() function:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate sample standard deviation for annual compensation}
-\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
+\KeywordTok{sd}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 43320.75
+## [1] 42285.21
 \end{verbatim}
 
 Since the population standard deviation differs from the sample standard deviation by a factor of \(s \sqrt \frac{n - 1}{n}\), it is simple to convert output from sd() to the population standard deviation:
@@ -1967,12 +2060,12 @@ Since the population standard deviation differs from the sample standard deviati
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate population standard deviation for annual compensation}
-\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{((n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n)}
+\KeywordTok{sd}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp) }\OperatorTok{*}\StringTok{ }\KeywordTok{sqrt}\NormalTok{((n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 43316.3
+## [1] 42270.82
 \end{verbatim}
 
 \textbf{Quartiles}
@@ -1986,16 +2079,16 @@ In R, the quantile() function returns the values that bookend each quartile:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return quartiles for annual compensation}
-\KeywordTok{quantile}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
+\KeywordTok{quantile}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##       0%      25%      50%      75%     100% 
-##  50016.0  87946.0 125522.0 163262.5 199968.0
+##     0%    25%    50%    75%   100% 
+##  62400  99840 137280 174200 208000
 \end{verbatim}
 
-Based on this output, we know that 25\% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75\% of people earn annual compensation of 163,263 USD or less.
+Based on this output, we know that 25\% of people in our data earn annual compensation of 99,840 USD or less, 137,280 USD is the median annual compensation, and 75\% of people earn annual compensation of 174,200 USD or less.
 
 \textbf{Boxplots} are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the \texttt{ggplot2} library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the ggplot() function:
 
@@ -2004,9 +2097,9 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \CommentTok{# Load library for data viz}
 \KeywordTok{library}\NormalTok{(ggplot2)}
 
-\CommentTok{# Produce boxplots to visualize compensation distribution by education and gender}
-\KeywordTok{ggplot}\NormalTok{(demographics, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(education), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\CommentTok{# Produce boxplots to visualize compensation distribution by education level and gender}
+\KeywordTok{ggplot}\NormalTok{(employees, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(ed_lvl), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education Level"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{()}
 \end{Highlighting}
@@ -2026,13 +2119,13 @@ We can also return a specific percentile value using the \texttt{probs} argument
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return 80th percentile annual compensation value}
-\KeywordTok{quantile}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, }\DataTypeTok{probs =} \FloatTok{.8}\NormalTok{)}
+\KeywordTok{quantile}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp, }\DataTypeTok{probs =} \FloatTok{.8}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##      80% 
-## 170196.4
+##    80% 
+## 180960
 \end{verbatim}
 
 In addition, the summary() function returns several common descriptive statistics for an object:
@@ -2040,13 +2133,13 @@ In addition, the summary() function returns several common descriptive statistic
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return common descriptives}
-\KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp)}
+\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   50016   87946  125522  125369  163262  199968
+##   62400   99840  137280  137054  174200  208000
 \end{verbatim}
 
 \textbf{Skewness}
@@ -2083,7 +2176,7 @@ The magnitude of skewness can be determined by measuring the distance between th
 \begin{itemize}
 \tightlist
 \item
-  If skewness is between -0.5 - 0.5, the data are symmetrical.
+  If skewness is between -0.5 - 0.5, the data are considered symmetrical.
 \item
   If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
 \item
@@ -2097,13 +2190,13 @@ Since there is not a base R function for skewness, we can leverage the moments l
 \CommentTok{# Load library}
 \KeywordTok{library}\NormalTok{(moments)}
 
-\CommentTok{# Calculate skewness for org tenure, rounded to three significant figures}
-\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{3}\NormalTok{)}
+\CommentTok{# Calculate skewness for org tenure, rounded to two significant figures via the round() function}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.562
+## [1] 2.27
 \end{verbatim}
 
 \textbf{Statistical Moments}, after which this library was named, play an important role in specifying the appropriate probability distribution for a set of data. Moments are a set of statistical parameters used to describe the characteristics of a distribution. Skewness is the third statistical moment in the set; hence the sum of cubed differences and cubic polynomial in the denominator of the formula above. The complete set of moments comprises: (1) expected value or mean, (2) variance and standard deviation, (3) skewness, and (4) kurtosis.
@@ -2113,27 +2206,27 @@ We can verify that the skewness() function from the moments library returns the 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store components of skewness calculation}
-\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
-\NormalTok{x =}\StringTok{ }\NormalTok{demographics}\OperatorTok{$}\NormalTok{org_tenure}
-\NormalTok{x_bar =}\StringTok{ }\KeywordTok{mean}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
-\NormalTok{s =}\StringTok{ }\KeywordTok{sd}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
+\NormalTok{n =}\StringTok{ }\KeywordTok{length}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure)}
+\NormalTok{x =}\StringTok{ }\NormalTok{employees}\OperatorTok{$}\NormalTok{org_tenure}
+\NormalTok{x_bar =}\StringTok{ }\KeywordTok{mean}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure)}
+\NormalTok{s =}\StringTok{ }\KeywordTok{sd}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure)}
 
-\CommentTok{# Calculate skewness manually, rounded to three significant figures}
-\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{3}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{3}\NormalTok{), }\DecValTok{3}\NormalTok{)}
+\CommentTok{# Calculate skewness manually, rounded to two significant figures via the round() function}
+\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{3}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{3}\NormalTok{), }\DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.562
+## [1] 2.27
 \end{verbatim}
 
-A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+A skewness coefficient of 2.27 indicates that organization tenure is positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Produce histogram to visualize sample distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
@@ -2177,32 +2270,36 @@ The moments library can also be used to calculate kurtosis in R:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate kurtosis for org tenure, rounded to two significant figures}
-\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{2}\NormalTok{)}
+\CommentTok{# Calculate kurtosis for org tenure, rounded to one significant figure}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 2.26
+## [1] 13.4
 \end{verbatim}
 
 We can verify that the kurtosis() function returns the expected value (per the aforementioned formula) by validating against a manual calculation:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Calculate kurtosis manually, rounded to two significant figures}
-\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{4}\NormalTok{), }\DecValTok{2}\NormalTok{)}
+\CommentTok{# Calculate kurtosis manually, rounded to one significant figure}
+\KeywordTok{round}\NormalTok{(}\DecValTok{1}\OperatorTok{/}\NormalTok{n }\OperatorTok{*}\StringTok{ }\NormalTok{(}\KeywordTok{sum}\NormalTok{((x }\OperatorTok{-}\StringTok{ }\NormalTok{x_bar)}\OperatorTok{^}\DecValTok{4}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{s}\OperatorTok{^}\DecValTok{4}\NormalTok{), }\DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 2.26
+## [1] 13.4
 \end{verbatim}
 
-As we saw in Figure \ref{fig:org-tenure-distribution}, there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is \textless{} 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
+Our kurtosis coefficient of 13.4 indicates a leptokurtic distribution which is supported by the visual in Figure \ref{fig:org-tenure-distribution}.
+
+It is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
 
 \hypertarget{bivariate-analysis}{%
 \section{Bivariate Analysis}\label{bivariate-analysis}}
+
+While univariate analysis explores each variable independently, \textbf{bivariate analysis} explores statistical relationships between two variables.
 
 \hypertarget{covariance}{%
 \subsection{Covariance}\label{covariance}}
@@ -2220,44 +2317,53 @@ In R, we can compute the covariance between a pair of numeric variables by passi
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)}
-\KeywordTok{cov}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, demographics}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\KeywordTok{cov}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp, employees}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 453179.4
+## [1] 9381.677
 \end{verbatim}
 
-In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
 
 Just as we multiplied the sample variance by \((n - 1) / n\) to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate population covariance between annual compensation and age}
-\KeywordTok{cov}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, demographics}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
+\KeywordTok{cov}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp, employees}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{) }\OperatorTok{*}\StringTok{ }\NormalTok{(n }\OperatorTok{-}\StringTok{ }\DecValTok{1}\NormalTok{) }\OperatorTok{/}\StringTok{ }\NormalTok{n}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 453086.4
+## [1] 9375.295
 \end{verbatim}
 
 The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the cov() function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Generate a correlation matrix among continuous variables}
-\KeywordTok{cov}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Generate a covariance matrix among select continuous variables}
+\KeywordTok{cov}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##              annual_comp          age   org_tenure  job_tenure
-## annual_comp 1.876687e+09 453179.39528 138551.73439 61576.65315
-## age         4.531794e+05    168.38661     41.56006    17.96902
-## org_tenure  1.385517e+05     41.56006     26.03270    11.04572
-## job_tenure  6.157665e+04     17.96902     11.04572    13.29996
+##                   annual_comp          age    org_tenure    job_tenure
+## annual_comp      1.788039e+09 9381.6772019 -3921.9601469 -3693.1960749
+## age              9.381677e+03   83.4550488    17.9255146     7.0467503
+## org_tenure      -3.921960e+03   17.9255146    39.7967987    16.9797312
+## job_tenure      -3.693196e+03    7.0467503    16.9797312    13.1271220
+## prior_emplr_cnt  2.340406e+03    6.8377387    -1.8547177    -0.8213802
+## commute_dist     1.067158e+04   -0.1248728     0.7746438     0.5535206
+##                 prior_emplr_cnt  commute_dist
+## annual_comp        2340.4057552 10671.5790741
+## age                   6.8377387    -0.1248728
+## org_tenure           -1.8547177     0.7746438
+## job_tenure           -0.8213802     0.5535206
+## prior_emplr_cnt       6.2400490    -0.5923586
+## commute_dist         -0.5923586    65.7212510
 \end{verbatim}
 
 Using the default Pearson method, the cov() function will return sample variances for each variable down the diagonal, since covariance is not applicable in the context of a variable with itself. We can confirm by producing the variance for age:
@@ -2265,15 +2371,15 @@ Using the default Pearson method, the cov() function will return sample variance
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return sample variance for age}
-\KeywordTok{var}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{age)}
+\KeywordTok{var}\NormalTok{(employees}\OperatorTok{$}\NormalTok{age)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 168.3866
+## [1] 83.45505
 \end{verbatim}
 
-As expected, the variance for age (\(s^{2} = 168.39\)) matches the value found in the age x age cell of the covariance matrix.
+As expected, the variance for age (\(s^{2} = 83.5\)) matches the value found in the age x age cell of the covariance matrix.
 
 \hypertarget{correlation}{%
 \subsection{Correlation}\label{correlation}}
@@ -2287,15 +2393,15 @@ In R, Pearson's \(r\) can be calculated using the cor() function:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate the correlation between annual compensation and age}
-\KeywordTok{cor}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp, demographics}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\KeywordTok{cor}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp, employees}\OperatorTok{$}\NormalTok{age, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.8061585
+## [1] 0.02428654
 \end{verbatim}
 
-While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's \(r\) of .81 indicates that the strength of the positive association is strong (\(r\) = 1 is perfectly positive). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
+While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's \(r\) of .02 indicates that the strength of the positive association is weak (\(r\) = 0 represents the absence of a relationship). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
 
 \begin{itemize}
 \tightlist
@@ -2329,15 +2435,15 @@ We can override the default Pearson method in the cor() function to implement a 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate the correlation between job level and education level using Spearman's method}
-\KeywordTok{cor}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{job_level, demographics}\OperatorTok{$}\NormalTok{education, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\KeywordTok{cor}\NormalTok{(employees}\OperatorTok{$}\NormalTok{job_lvl, employees}\OperatorTok{$}\NormalTok{ed_lvl, }\DataTypeTok{method =} \StringTok{"spearman"}\NormalTok{, }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.6749776
+## [1] 0.1074192
 \end{verbatim}
 
-The \(\rho\) coefficient of .67 indicates that the positive association we observed between job level and education level is moderate-to-strong. We could also pass \texttt{method\ =\ "kendall"} to this cor() function to implement Kendall's \(\tau\).
+The \(\rho\) coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass \texttt{method\ =\ "kendall"} to this cor() function to implement Kendall's \(\tau\).
 
 The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables \(x\) and \(y\):
 
@@ -2362,13 +2468,13 @@ To illustrate, let's examine whether there is a relationship between gender and 
 \KeywordTok{library}\NormalTok{(psych)}
 
 \CommentTok{# Set females to 1 and everything else to 0}
-\NormalTok{demographics}\OperatorTok{$}\NormalTok{gender_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\NormalTok{employees}\OperatorTok{$}\NormalTok{gender_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
 
-\CommentTok{# Set high performers (3 and above) to 1 and everything else to 0}
-\NormalTok{demographics}\OperatorTok{$}\NormalTok{performance_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{performance }\OperatorTok{<}\StringTok{ }\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+\CommentTok{# Set stock options to 1 if level > 0}
+\NormalTok{employees}\OperatorTok{$}\NormalTok{stock_option_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{stock_opt_lvl }\OperatorTok{>}\StringTok{ }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
 
 \CommentTok{# Create a 2x2 contingency table}
-\NormalTok{contingency_tbl <-}\StringTok{ }\KeywordTok{table}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender_code, demographics}\OperatorTok{$}\NormalTok{performance_code)}
+\NormalTok{contingency_tbl <-}\StringTok{ }\KeywordTok{table}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender_code, employees}\OperatorTok{$}\NormalTok{stock_option_code)}
 
 \CommentTok{# Calculate the Phi Coefficient between dichotomous variables}
 \KeywordTok{phi}\NormalTok{(contingency_tbl)}
@@ -2376,29 +2482,38 @@ To illustrate, let's examine whether there is a relationship between gender and 
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 0.01
+## [1] -0.01
 \end{verbatim}
 
-\(\phi\) is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
+\(\phi\) is essentially 0, which means stock options are distributed equitably across gender categories (good news!). While there are not differences in the proportion of males and females who receive at least some stock options, examining whether there is equity in the amount of stock grants and refreshes may be a good next step.
 
 A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the cor() function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Generate a correlation matrix among continuous variables}
-\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\CommentTok{# Generate a correlation matrix among select continuous variables}
+\KeywordTok{cor}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##             annual_comp       age org_tenure job_tenure
-## annual_comp   1.0000000 0.8061585  0.6268397  0.3897580
-## age           0.8061585 1.0000000  0.6277154  0.3797042
-## org_tenure    0.6268397 0.6277154  1.0000000  0.5936211
-## job_tenure    0.3897580 0.3797042  0.5936211  1.0000000
+##                 annual_comp         age  org_tenure  job_tenure prior_emplr_cnt
+## annual_comp      1.00000000  0.02428654 -0.01470248 -0.02410622      0.02215688
+## age              0.02428654  1.00000000  0.31104359  0.21290106      0.29963476
+## org_tenure      -0.01470248  0.31104359  1.00000000  0.74288567     -0.11769547
+## job_tenure      -0.02410622  0.21290106  0.74288567  1.00000000     -0.09075393
+## prior_emplr_cnt  0.02215688  0.29963476 -0.11769547 -0.09075393      1.00000000
+## commute_dist     0.03113059 -0.00168612  0.01514695  0.01884500     -0.02925080
+##                 commute_dist
+## annual_comp       0.03113059
+## age              -0.00168612
+## org_tenure        0.01514695
+## job_tenure        0.01884500
+## prior_emplr_cnt  -0.02925080
+## commute_dist      1.00000000
 \end{verbatim}
 
-Based on this correlation matrix, there are several moderate and strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between \texttt{org\_tenure} and \texttt{job\_tenure} (\(r = .7\)). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
 
 A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
 
@@ -2408,7 +2523,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \KeywordTok{library}\NormalTok{(corrplot)}
 
 \CommentTok{# Store correlation matrix to object M}
-\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 
 \CommentTok{# Visualize correlation matrix}
 \KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
@@ -2425,13 +2540,13 @@ The GGally library produces a variety of useful information, including correlati
 \KeywordTok{library}\NormalTok{(GGally)}
 
 \CommentTok{# Visualize correlation matrix}
-\KeywordTok{ggpairs}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{)])}
+\KeywordTok{ggpairs}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)])}
 \end{Highlighting}
 \end{Shaded}
 
 \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-80-1.pdf}
 
-As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. We may find that these bivariate associations look quite different for certain business areas or jobs, assuming business units, divisions, and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
+We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
 
 It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous.
 
@@ -2547,17 +2662,17 @@ For example, let's look at how org tenure is distributed across employees. We ca
 \CommentTok{# Load library for data wrangling}
 \KeywordTok{library}\NormalTok{(dplyr)}
 
-\CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
+\CommentTok{# Read employee data}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
 
 \CommentTok{# Produce descriptive stats for org tenure}
-\KeywordTok{summary}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure)}
+\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   1.000   5.000   8.000   9.193  13.000  20.000
+##   0.000   3.000   5.000   7.032   9.000  72.000
 \end{verbatim}
 
 Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
@@ -2571,7 +2686,7 @@ Beyond descriptives, visuals are often helpful in understanding a variable's dis
 
 \CommentTok{# Visualize org tenure distribution}
 \KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Org Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
 \StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
@@ -3379,7 +3494,7 @@ It's important to remember that the normal distribution properties under the CLT
 \hypertarget{data-wrang-prep}{%
 \chapter{Data Wrangling and Preparation}\label{data-wrang-prep}}
 
-To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for as much as 80\% of a data scientist's work.
+To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for the majority of the work analytics professionals do.
 
 \begin{figure}
 
@@ -3423,11 +3538,11 @@ Figure \ref{fig:dw-erd} shows an \textbf{Entity Relationship Diagram (ERD)} that
 \caption{Entity Relationship Diagram (ERD)}\label{fig:dw-erd}
 \end{figure}
 
-A DW may contain many different types of tables, and the two most common are \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+A DW may contain many different types of tables, but the two most common are \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
 
 Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
 
-Note that \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} and \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} for rows that represent \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} would be set to the worker's termination date for rows that represent the \emph{last known attributes}, along with \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}}:
+Note that the combination of \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} and \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} indicate \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} is set to the worker's termination date for rows that represent the \emph{last known attributes} along with \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}}:
 
 \begin{figure}
 
@@ -3438,7 +3553,7 @@ Note that \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} 
 \caption{Type 2 SCD}\label{fig:type-2-tbl}
 \end{figure}
 
-While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} to construct a view of the last known attributes for each worker in this table, each worker would have a separate row for each dimension which isn't ideal. Using a Type 1 table simplifies the task and output, as each dimension value is stored in a separate column. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
+While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
 
 \begin{figure}
 
@@ -3456,11 +3571,11 @@ A \textbf{data mart} is a subset of a DW designed to easily deliver specific inf
 
 \textbf{Structured Query Language (SQL)} is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
 
-When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should filter to this subset on the database side rather than load data on the entire workforce into R before filtering to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.
+When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.
 
 \textbf{Basics}
 
-There are three main \emph{clauses} in a SQL query: (a) \texttt{SELECT}, (b) \texttt{FROM}, and (c) \texttt{WHERE}. The \texttt{SELECT} and \texttt{FROM} clauses are required, though the optional \texttt{WHERE} clause is frequently utilized.
+There are three main \emph{clauses} in a SQL query: (a) \texttt{SELECT}, (b) \texttt{FROM}, and (c) \texttt{WHERE}. The \texttt{SELECT} and \texttt{FROM} clauses are required, though the optional \texttt{WHERE} clause is frequently needed.
 
 \begin{itemize}
 \tightlist
@@ -3488,28 +3603,37 @@ Additional clauses are available for grouping and sorting data.
 
 When implementing aggregate functions in a \texttt{SELECT} clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the \texttt{GROUP\ BY} clause.
 
-Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query. The \texttt{sqldf} library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.
+Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The \texttt{sqldf} library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is universal.
 
-First, let's load the \texttt{sqldf} library and store data to a data frame named \texttt{demographics}:
+First, let's load the \texttt{sqldf} library and load the data sets:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Load SQL library}
 \KeywordTok{library}\NormalTok{(sqldf)}
 
-\CommentTok{# Read employee demographics data}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/files/employee_demographics.csv"}\NormalTok{)}
+\CommentTok{# Load data sets}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
+\NormalTok{status <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv"}\NormalTok{)}
+\NormalTok{benefits <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv"}\NormalTok{)}
+\NormalTok{demographics <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv"}\NormalTok{)}
+\NormalTok{job <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv"}\NormalTok{)}
+\NormalTok{payroll <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv"}\NormalTok{)}
+\NormalTok{performance <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv"}\NormalTok{)}
+\NormalTok{prior_employment <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv"}\NormalTok{)}
+\NormalTok{survey_response <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv"}\NormalTok{)}
+\NormalTok{tenure <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv"}\NormalTok{)}
 
 \CommentTok{# Return row and column counts}
-\KeywordTok{dim}\NormalTok{(demographics)}
+\KeywordTok{dim}\NormalTok{(employees)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 4875   22
+## [1] 1470   33
 \end{verbatim}
 
-Next, we will apply the \texttt{sqldf} function to our data frame to extract specific rows and columns. In addition to the \texttt{SELECT}, \texttt{FROM}, and \texttt{WHERE} clauses, we will use the \texttt{LIMIT} clause to limit the number of rows that are displayed given the data frame's size (\(n = 4,875\)). In a practical setting, the \texttt{LIMIT} clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
+Next, we will apply the \texttt{sqldf()} function to our data frame to extract specific rows and columns. In addition to the \texttt{SELECT}, \texttt{FROM}, and \texttt{WHERE} clauses, we will use the \texttt{LIMIT} clause to limit the number of rows that are displayed given the data frame's size (\(n = 1,470\)). In a practical setting, the \texttt{LIMIT} clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
 
 A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
 
@@ -3519,9 +3643,9 @@ A best practice in writing SQL is to capitalize the names of clauses and functio
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      employee_id}
 \StringTok{                    FROM}
-\StringTok{                      demographics}
+\StringTok{                      employees}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    LIMIT 10"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
@@ -3531,23 +3655,23 @@ A best practice in writing SQL is to capitalize the names of clauses and functio
 
 \begin{verbatim}
 ##    employee_id
-## 1         1013
-## 2         1034
-## 3         1035
-## 4         1036
-## 5         1037
-## 6         1038
-## 7         1139
-## 8         1140
-## 9         1141
-## 10        1142
+## 1         1002
+## 2         1003
+## 3         1004
+## 4         1005
+## 5         1006
+## 6         1007
+## 7         1008
+## 8         1009
+## 9         1010
+## 10        1011
 \end{verbatim}
 
-This query returned a list of employee ids for the 496 employees on the Social Marketing team.
+This query returned a list of employee ids for employees in the Research \& Development department.
 
 \textbf{Aggregate Functions}
 
-Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
+Next, let's take a look at average organization tenure by job for those in the Research \& Development department:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3556,9 +3680,9 @@ Next, let's take a look at the average organization tenure by job for those on t
 \StringTok{                      job_title,}
 \StringTok{                      AVG(org_tenure)}
 \StringTok{                    FROM}
-\StringTok{                      demographics}
+\StringTok{                      employees}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title"}\NormalTok{)}
 
@@ -3568,22 +3692,19 @@ Next, let's take a look at the average organization tenure by job for those on t
 \end{Shaded}
 
 \begin{verbatim}
-##                       job_title AVG(org_tenure)
-## 1         Community Coordinator        9.224138
-## 2            Content Strategist        8.152778
-## 3            Creative Assistant        9.454545
-## 4                  Data Analyst        8.666667
-## 5  Digital Marketing Specialist        8.228571
-## 6                      Director        8.100000
-## 7                       Manager        9.340000
-## 8                SEO Specialist        9.596774
-## 9       Social Media Strategist       10.000000
-## 10               Vice President        7.500000
+##                   job_title AVG(org_tenure)
+## 1 Healthcare Representative        8.618321
+## 2     Laboratory Technician        5.019305
+## 3                   Manager       13.673077
+## 4    Manufacturing Director        7.600000
+## 5         Research Director       10.937500
+## 6        Research Scientist        5.113014
+## 7            Vice President        9.500000
 \end{verbatim}
 
-There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from \texttt{7.5} to \texttt{10}.
+There are 7 distinct job titles among employees in the Research \& Development department, and the average organization tenure for these ranges from \texttt{5} to \texttt{13.7} years.
 
-Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the \texttt{COUNT(*)} function to count the number of rows for each group. In this case, \texttt{COUNT(*)} will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via \texttt{AS} in the \texttt{SELECT} clause to assign different names to the output fields:
+Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the \texttt{COUNT(*)} function to count the number of rows for each group. In this case, \texttt{COUNT(*)} will return the number of employees in each job in the Research \& Development department. We will also apply column aliases via \texttt{AS} in the \texttt{SELECT} clause to assign different names to the output fields:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3593,9 +3714,9 @@ Since there could be few employees in certain jobs, in which case average organi
 \StringTok{                      COUNT(*) AS employee_cnt,}
 \StringTok{                      AVG(org_tenure) AS avg_org_tenure}
 \StringTok{                    FROM}
-\StringTok{                      demographics}
+\StringTok{                      employees}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    ORDER BY}
@@ -3607,22 +3728,19 @@ Since there could be few employees in certain jobs, in which case average organi
 \end{Shaded}
 
 \begin{verbatim}
-##                       job_title employee_cnt avg_org_tenure
-## 1         Community Coordinator           58       9.224138
-## 2            Content Strategist           72       8.152778
-## 3            Creative Assistant           44       9.454545
-## 4                  Data Analyst           72       8.666667
-## 5  Digital Marketing Specialist           70       8.228571
-## 6                      Director           10       8.100000
-## 7                       Manager           50       9.340000
-## 8                SEO Specialist           62       9.596774
-## 9       Social Media Strategist           56      10.000000
-## 10               Vice President            2       7.500000
+##                   job_title employee_cnt avg_org_tenure
+## 1 Healthcare Representative          131       8.618321
+## 2     Laboratory Technician          259       5.019305
+## 3                   Manager           52      13.673077
+## 4    Manufacturing Director          145       7.600000
+## 5         Research Director           80      10.937500
+## 6        Research Scientist          292       5.113014
+## 7            Vice President            2       9.500000
 \end{verbatim}
 
-The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common.
+The output shows that there are only 2 Vice Presidents in the Research \& Development department, while other job titles are much more prevalent.
 
-Since relatively few employees are Vice Presidents or Directors, let's use the \texttt{HAVING} clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:
+Since relatively few employees are Vice Presidents, let's use the \texttt{HAVING} clause to only show average organization tenure for Research \& Development department jobs with more than 10 employees. We can also use the \texttt{ROUND()} function to truncate average organization tenure to one significant digit:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3630,11 +3748,11 @@ Since relatively few employees are Vice Presidents or Directors, let's use the \
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      job_title,}
 \StringTok{                      COUNT(*) AS employee_cnt,}
-\StringTok{                      AVG(org_tenure) AS avg_org_tenure}
+\StringTok{                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure}
 \StringTok{                    FROM}
-\StringTok{                      demographics}
+\StringTok{                      employees}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    HAVING}
@@ -3648,15 +3766,13 @@ Since relatively few employees are Vice Presidents or Directors, let's use the \
 \end{Shaded}
 
 \begin{verbatim}
-##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000
+##                   job_title employee_cnt avg_org_tenure
+## 1 Healthcare Representative          131            8.6
+## 2     Laboratory Technician          259            5.0
+## 3                   Manager           52           13.7
+## 4    Manufacturing Director          145            7.6
+## 5         Research Director           80           10.9
+## 6        Research Scientist          292            5.1
 \end{verbatim}
 
 \textbf{Joins}
@@ -3665,7 +3781,7 @@ In a practical setting, the required data are rarely contained within a single t
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins} 
 
 }
 
@@ -3676,68 +3792,87 @@ The structure of SQL queries containing each type of join is represented below:
 
 \textbf{LEFT INCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-LEFT OUTER JOIN B
-ON A.Key = B.Key
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  LEFT OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{LEFT EXCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-LEFT OUTER JOIN B
-ON A.Key = B.Key
-WHERE B.Key IS NULL
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  LEFT OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\CommentTok{#  WHERE B.Key IS NULL}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{FULL OUTER INCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-FULL OUTER JOIN B
-ON A.Key = B.Key
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  FULL OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{FULL OUTER EXCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-FULL OUTER JOIN B
-ON A.Key = B.Key
-WHERE A.Key IS NULL OR B.Key IS NULL
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  FULL OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\CommentTok{#  WHERE A.Key IS NULL OR B.Key IS NULL  }
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{RIGHT INCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-RIGHT OUTER JOIN B
-ON A.Key = B.Key
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  RIGHT OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{RIGHT EXCLUSIVE}
 
-SELECT {[}Output Field List{]}
-FROM A
-LEFT OUTER JOIN B
-ON A.Key = B.Key
-WHERE A.Key IS NULL
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  LEFT OUTER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
+\CommentTok{#  WHERE A.Key IS NULL}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{INNER JOIN}
 
-SELECT {[}Output Field List{]}
-FROM A
-INNER JOIN B
-ON A.Key = B.Key
-
-To illustrate how SQL joins work, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee\_id column is present in each of the three data frames to facilitate subsequent joins:
-
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Partition select columns into three data frames}
-\NormalTok{job_df <-}\StringTok{ }\NormalTok{demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"job_title"}\NormalTok{)]}
-\NormalTok{tenure_df <-}\StringTok{ }\NormalTok{demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{)]}
-\NormalTok{team_df <-}\StringTok{ }\NormalTok{demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"team"}\NormalTok{)]}
+\CommentTok{#  SELECT [Output Field List]}
+\CommentTok{#  FROM A }
+\CommentTok{#  INNER JOIN B}
+\CommentTok{#  ON A.Key = B.Key}
 \end{Highlighting}
 \end{Shaded}
 
-Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an \texttt{INNER\ JOIN}, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in \texttt{job\_df} and \texttt{tenure\_df} for a particular employee id, but there is no team designation for it in \texttt{team\_df}, that employee id would not be included in the output.
+To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated \texttt{employees} data set we have been using: \texttt{job}, \texttt{tenure}, and \texttt{demographics}. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the \texttt{employee\_id} column in each of the three data frames to facilitate joins:
+
+Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research \& Development department, grouped by jobs with more than 10 employees. For this, we will leverage an \texttt{INNER\ JOIN}, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in \texttt{demographics} and \texttt{tenure} for a particular employee id, but there is no corresponding record in \texttt{job}, that employee id would not be included in the output.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3745,19 +3880,20 @@ Next, we will query our three new dataframes to return the average organization 
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      job_title,}
 \StringTok{                      COUNT(*) AS employee_cnt,}
-\StringTok{                      AVG(org_tenure) AS avg_org_tenure}
+\StringTok{                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,}
+\StringTok{                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist}
 \StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        INNER JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
-\StringTok{                        INNER JOIN}
-\StringTok{                      team_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = team_df.employee_id}
+\StringTok{                        demographics}
+\StringTok{                      INNER JOIN}
+\StringTok{                        tenure}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = tenure.employee_id}
+\StringTok{                      INNER JOIN}
+\StringTok{                        job}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = job.employee_id}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    HAVING}
@@ -3771,20 +3907,18 @@ Next, we will query our three new dataframes to return the average organization 
 \end{Shaded}
 
 \begin{verbatim}
-##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000
+##                   job_title employee_cnt avg_org_tenure avg_commute_dist
+## 1 Healthcare Representative          131            8.6              9.8
+## 2     Laboratory Technician          259            5.0              9.4
+## 3                   Manager           52           13.7              7.2
+## 4    Manufacturing Director          145            7.6              9.5
+## 5         Research Director           80           10.9              8.4
+## 6        Research Scientist          292            5.1              9.0
 \end{verbatim}
 
-Note that the \texttt{INNER\ JOIN} in this SQL query was structured such that both \texttt{tenure\_df} and \texttt{team\_df} were joined to \texttt{job\_df} via the \texttt{employee\_id} column. We could have instead joined \texttt{job\_df} to \texttt{team\_df} and achieved the same result since all employee ids exist in all three data frames in this case.
+Note that the \texttt{INNER\ JOIN} in this SQL query was structured such that both \texttt{tenure} and \texttt{job} were joined to \texttt{demographics} via the \texttt{employee\_id} column. We could have instead joined \texttt{job} to \texttt{tenure} since we joined \texttt{tenure} to \texttt{demographics}; this would have achieved the same result since all employee ids exist in each of the three data frames.
 
-If it were possible for all employee ids to exist in \texttt{job\_df} but not in either \texttt{tenure\_df} or \texttt{team\_df}, we could leverage a \texttt{LEFT\ JOIN} to ensure all records from \texttt{job\_df} are included in the output irrespective of whether they have matches in \texttt{tenure\_df} or \texttt{team\_df}:
+If it were possible for all employee ids to exist in \texttt{demographics} but not in either \texttt{tenure} or \texttt{job}, we could leverage a \texttt{LEFT\ JOIN} to ensure all records from \texttt{demographics} are included in the output irrespective of whether they have matches in \texttt{tenure} or \texttt{job}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3792,19 +3926,20 @@ If it were possible for all employee ids to exist in \texttt{job\_df} but not in
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      job_title,}
 \StringTok{                      COUNT(*) AS employee_cnt,}
-\StringTok{                      AVG(org_tenure) AS avg_org_tenure}
+\StringTok{                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,}
+\StringTok{                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist}
 \StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        LEFT JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
-\StringTok{                        LEFT JOIN}
-\StringTok{                      team_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = team_df.employee_id}
+\StringTok{                        demographics}
+\StringTok{                      LEFT JOIN}
+\StringTok{                        tenure}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = tenure.employee_id}
+\StringTok{                      LEFT JOIN}
+\StringTok{                        job}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = job.employee_id}
 \StringTok{                    WHERE}
-\StringTok{                      team = 'Social Marketing'}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    HAVING}
@@ -3818,38 +3953,61 @@ If it were possible for all employee ids to exist in \texttt{job\_df} but not in
 \end{Shaded}
 
 \begin{verbatim}
-##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000
+##                   job_title employee_cnt avg_org_tenure avg_commute_dist
+## 1 Healthcare Representative          131            8.6              9.8
+## 2     Laboratory Technician          259            5.0              9.4
+## 3                   Manager           52           13.7              7.2
+## 4    Manufacturing Director          145            7.6              9.5
+## 5         Research Director           80           10.9              8.4
+## 6        Research Scientist          292            5.1              9.0
 \end{verbatim}
+
+In this case, if demographics is the base data set which contains all employee ids (i.e., the `LEFT' dataset), it is important for \texttt{tenure} and \texttt{job} to be joined to it. Joining \texttt{job} to \texttt{tenure} may result in information loss if an employee id exists in \texttt{demographics} and \texttt{job} but not in the intermediate \texttt{tenure} data set.
+
+When integrating data within R, the \texttt{tidyverse} provides a more efficient and parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single \texttt{employees} data frame using a left join on the \texttt{employee\_id} column:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load tidyverse}
+\KeywordTok{library}\NormalTok{(tidyverse)}
+
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{list}\NormalTok{(demographics,}
+\NormalTok{                  status,}
+\NormalTok{                  benefits,}
+\NormalTok{                  job,}
+\NormalTok{                  payroll,}
+\NormalTok{                  performance,}
+\NormalTok{                  prior_employment,}
+\NormalTok{                  survey_response,}
+\NormalTok{                  tenure) }\OperatorTok{%>%}
+\StringTok{                  }\KeywordTok{reduce}\NormalTok{(left_join, }\DataTypeTok{by =} \StringTok{"employee_id"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \textbf{Subqueries}
 
 \textbf{Subqueries} are queries nested within other queries. Subqueries are often referred to as \textbf{inner queries}, while the main queries are referred to as \textbf{outer queries}.
 
-For example, instead of applying the \texttt{team\ =\ \textquotesingle{}Social\ Marketing} condition in the \texttt{WHERE} clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include \texttt{team\_df} in the join conditions of our main query:
+For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include \texttt{tenure} in the join conditions of our main query:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store SQL query as a character string}
+\CommentTok{# Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it}
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      job_title,}
 \StringTok{                      COUNT(*) AS employee_cnt,}
-\StringTok{                      AVG(org_tenure) AS avg_org_tenure}
+\StringTok{                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist}
 \StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        LEFT JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
+\StringTok{                        demographics}
+\StringTok{                      LEFT JOIN}
+\StringTok{                        job}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = job.employee_id}
 \StringTok{                    WHERE}
-\StringTok{                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = 'Social Marketing')}
+\StringTok{                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure > 1)}
+\StringTok{                      AND }
+\StringTok{                        dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    HAVING}
@@ -3863,20 +4021,18 @@ For example, instead of applying the \texttt{team\ =\ \textquotesingle{}Social\ 
 \end{Shaded}
 
 \begin{verbatim}
-##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000
+##                   job_title employee_cnt avg_commute_dist
+## 1 Healthcare Representative          118              9.7
+## 2     Laboratory Technician          198              9.6
+## 3                   Manager           49              6.9
+## 4    Manufacturing Director          133              9.7
+## 5         Research Director           74              8.3
+## 6        Research Scientist          238              9.2
 \end{verbatim}
 
-\textbf{Derived Tables}
+\textbf{Virtual Tables}
 
-An alternative to a subquery is creating a \textbf{derived table} in the \texttt{FROM} clause using a SQL statement. When using an \texttt{INNER\ JOIN} to connect \texttt{job\_df} and \texttt{tenure\_df} to the derived table containing Social Marketing employee ids, any records in \texttt{job\_df} or \texttt{tenure\_df} that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a \texttt{WHERE} clause:
+An alternative to a subquery is creating a \textbf{virtual table} in the \texttt{FROM} clause. When using an \texttt{INNER\ JOIN} to connect \texttt{demographics} to the virtual table \texttt{ids}, which provides a list of employee ids for those with more than a year of organization tenure, any records in \texttt{demographics} or \texttt{job} that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a \texttt{LEFT\ JOIN} is used to join \texttt{job} to \texttt{demographics} since records in \texttt{demographics} will be filtered based on \texttt{employee\_id} matches in the virtual table. With this approach, our \texttt{WHERE} clause is limited to the \texttt{department\ =\ \textquotesingle{}Research\ \&\ Development\textquotesingle{}} condition:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3884,17 +4040,19 @@ An alternative to a subquery is creating a \textbf{derived table} in the \texttt
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
 \StringTok{                      job_title,}
 \StringTok{                      COUNT(*) AS employee_cnt,}
-\StringTok{                      AVG(org_tenure) AS avg_org_tenure}
+\StringTok{                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist}
 \StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        INNER JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
-\StringTok{                        INNER JOIN}
-\StringTok{                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = social_mktg_ids.employee_id}
+\StringTok{                        demographics}
+\StringTok{                      LEFT JOIN}
+\StringTok{                        job}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = job.employee_id}
+\StringTok{                      INNER JOIN}
+\StringTok{                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = ids.employee_id}
+\StringTok{                    WHERE}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    GROUP BY}
 \StringTok{                      job_title}
 \StringTok{                    HAVING}
@@ -3908,46 +4066,47 @@ An alternative to a subquery is creating a \textbf{derived table} in the \texttt
 \end{Shaded}
 
 \begin{verbatim}
-##                      job_title employee_cnt avg_org_tenure
-## 1        Community Coordinator           58       9.224138
-## 2           Content Strategist           72       8.152778
-## 3           Creative Assistant           44       9.454545
-## 4                 Data Analyst           72       8.666667
-## 5 Digital Marketing Specialist           70       8.228571
-## 6                      Manager           50       9.340000
-## 7               SEO Specialist           62       9.596774
-## 8      Social Media Strategist           56      10.000000
+##                   job_title employee_cnt avg_commute_dist
+## 1 Healthcare Representative          118              9.7
+## 2     Laboratory Technician          198              9.6
+## 3                   Manager           49              6.9
+## 4    Manufacturing Director          133              9.7
+## 5         Research Director           74              8.3
+## 6        Research Scientist          238              9.2
 \end{verbatim}
+
+As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
 
 \textbf{Window Functions}
 
-\textbf{Window functions} are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
+\textbf{Window functions} are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
 
-For example, we can assign an organization tenure rank by Social Marketing job using the \texttt{RANK()} and \texttt{OVER()} functions in the \texttt{SELECT} clause. The \texttt{PARTITION\ BY} argument functions like a \texttt{GROUP\ BY} clause but without collapsing rows, while the \texttt{ORDER\ BY} argument sorts the records in ascending (\texttt{ASC}) or descending (\texttt{DESC}) order for proper ranking:
+For example, we can assign an organization tenure rank by Research \& Development job using the \texttt{RANK()} and \texttt{OVER()} functions in the \texttt{SELECT} clause. The \texttt{PARTITION\ BY} argument functions like a \texttt{GROUP\ BY} clause but without collapsing rows, while the \texttt{ORDER\ BY} argument sorts the records in ascending (\texttt{ASC}) or descending (\texttt{DESC}) order for proper ranking:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store SQL query as a character string}
 \CommentTok{# Limit output to 10 records since query does not collapse records}
-\CommentTok{# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output}
 \NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
-\StringTok{                      job_df.employee_id,}
+\StringTok{                      demographics.employee_id,}
 \StringTok{                      job_title,}
-\StringTok{                      org_tenure,}
-\StringTok{                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank}
+\StringTok{                      commute_dist,}
+\StringTok{                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank}
 \StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        INNER JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
-\StringTok{                        INNER JOIN}
-\StringTok{                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = social_mktg_ids.employee_id}
+\StringTok{                        demographics}
+\StringTok{                      LEFT JOIN}
+\StringTok{                        job}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = job.employee_id}
+\StringTok{                      INNER JOIN}
+\StringTok{                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids}
+\StringTok{                      ON}
+\StringTok{                        demographics.employee_id = ids.employee_id}
+\StringTok{                    WHERE}
+\StringTok{                      dept = 'Research & Development'}
 \StringTok{                    ORDER BY}
 \StringTok{                      job_title,}
-\StringTok{                      org_tenure_rank}
+\StringTok{                      commute_dist_rank}
 \StringTok{                    LIMIT 10"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
@@ -3956,48 +4115,55 @@ For example, we can assign an organization tenure rank by Social Marketing job u
 \end{Shaded}
 
 \begin{verbatim}
-##    employee_id             job_title org_tenure org_tenure_rank
-## 1         1236 Community Coordinator         20               1
-## 2         1322 Community Coordinator         20               1
-## 3         1264 Community Coordinator         19               3
-## 4         1348 Community Coordinator         19               3
-## 5         3759 Community Coordinator         19               3
-## 6         3694 Community Coordinator         18               6
-## 7         1257 Community Coordinator         17               7
-## 8         3702 Community Coordinator         17               7
-## 9         1344 Community Coordinator         16               9
-## 10        3659 Community Coordinator         16               9
+##    employee_id                 job_title commute_dist commute_dist_rank
+## 1         2325 Healthcare Representative           29                 1
+## 2         1414 Healthcare Representative           28                 2
+## 3         1010 Healthcare Representative           27                 3
+## 4         1573 Healthcare Representative           27                 3
+## 5         2200 Healthcare Representative           26                 5
+## 6         1730 Healthcare Representative           25                 6
+## 7         1833 Healthcare Representative           25                 6
+## 8         1993 Healthcare Representative           25                 6
+## 9         2415 Healthcare Representative           25                 6
+## 10        1164 Healthcare Representative           24                10
 \end{verbatim}
 
-Notice that in the case of organization tenure ties, the \texttt{RANK()} function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.
+Notice that in the case of commute distance ties, the \texttt{RANK()} function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.
 
-We can also treat this query as a derived table, and then filter on the derived \texttt{org\_tenure\_rank} field to return a list of Social Marketing employees with the highest tenure for each job. The \texttt{*} symbol in the \texttt{SELECT} clause will return all columns from the specified table:
+We can also treat this query as a virtual table, and then filter on the derived \texttt{commute\_dist\_rank} field to return the highest commute distance for each job. We can add a \texttt{DISTINCT()} function in the \texttt{SELECT} clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the \texttt{COUNT(*)} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store SQL query as a character string}
-\NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT tbl.*}
-\StringTok{                    FROM}
-\StringTok{                    (SELECT}
-\StringTok{                      job_df.employee_id,}
-\StringTok{                      job_title,}
-\StringTok{                      org_tenure,}
-\StringTok{                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank}
-\StringTok{                    FROM}
-\StringTok{                      job_df}
-\StringTok{                        INNER JOIN}
-\StringTok{                      tenure_df}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = tenure_df.employee_id}
-\StringTok{                        INNER JOIN}
-\StringTok{                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids}
-\StringTok{                        ON}
-\StringTok{                      job_df.employee_id = social_mktg_ids.employee_id}
-\StringTok{                    ORDER BY}
-\StringTok{                      job_title,}
-\StringTok{                      org_tenure_rank) tbl}
-\StringTok{                    WHERE}
-\StringTok{                      tbl.org_tenure_rank = 1"}\NormalTok{)}
+\NormalTok{sql_string <-}\StringTok{ }\KeywordTok{paste}\NormalTok{(}\StringTok{"SELECT}
+\StringTok{                        DISTINCT(job_title) AS job_title,}
+\StringTok{                        COUNT(*) AS employee_count,}
+\StringTok{                        commute_dist}
+\StringTok{                     FROM}
+\StringTok{                        (SELECT}
+\StringTok{                          demographics.employee_id,}
+\StringTok{                          job_title,}
+\StringTok{                          commute_dist,}
+\StringTok{                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank}
+\StringTok{                        FROM}
+\StringTok{                            demographics}
+\StringTok{                          LEFT JOIN}
+\StringTok{                            job}
+\StringTok{                          ON}
+\StringTok{                            demographics.employee_id = job.employee_id}
+\StringTok{                          INNER JOIN}
+\StringTok{                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids}
+\StringTok{                          ON}
+\StringTok{                            demographics.employee_id = ids.employee_id}
+\StringTok{                        WHERE}
+\StringTok{                          dept = 'Research & Development'}
+\StringTok{                        ORDER BY}
+\StringTok{                          job_title,}
+\StringTok{                          commute_dist_rank) tbl}
+\StringTok{                      WHERE}
+\StringTok{                        tbl.commute_dist_rank = 1}
+\StringTok{                      GROUP BY}
+\StringTok{                        job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
 \KeywordTok{sqldf}\NormalTok{(sql_string)}
@@ -4005,28 +4171,14 @@ We can also treat this query as a derived table, and then filter on the derived 
 \end{Shaded}
 
 \begin{verbatim}
-##    employee_id                    job_title org_tenure org_tenure_rank
-## 1         1236        Community Coordinator         20               1
-## 2         1322        Community Coordinator         20               1
-## 3         1209           Content Strategist         20               1
-## 4         3786           Creative Assistant         20               1
-## 5         3808           Creative Assistant         20               1
-## 6         1200                 Data Analyst         19               1
-## 7         1245                 Data Analyst         19               1
-## 8         1400                 Data Analyst         19               1
-## 9         3826                 Data Analyst         19               1
-## 10        3641 Digital Marketing Specialist         20               1
-## 11        3778 Digital Marketing Specialist         20               1
-## 12        3475                     Director         15               1
-## 13        1157                      Manager         20               1
-## 14        1161                      Manager         20               1
-## 15        3578                      Manager         20               1
-## 16        3599                      Manager         20               1
-## 17        1325               SEO Specialist         20               1
-## 18        3750               SEO Specialist         20               1
-## 19        3845               SEO Specialist         20               1
-## 20        1368      Social Media Strategist         20               1
-## 21        1013               Vice President         10               1
+##                   job_title employee_count commute_dist
+## 1 Healthcare Representative              1           29
+## 2     Laboratory Technician              6           29
+## 3                   Manager              2           29
+## 4    Manufacturing Director              4           29
+## 5         Research Director              3           28
+## 6        Research Scientist              4           29
+## 7            Vice President              1            8
 \end{verbatim}
 
 \hypertarget{data-screening-cleaning}{%
@@ -4039,90 +4191,101 @@ A handy function in base R for initial data screening is \texttt{summary()}:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Summarize df}
-\KeywordTok{summary}\NormalTok{(demographics)}
+\KeywordTok{summary}\NormalTok{(employees)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   employee_id     manager_id    hire_date         current_job_start_date
-##  Min.   :1001   Min.   :1001   Length:4875        Length:4875           
-##  1st Qu.:2220   1st Qu.:1973   Class :character   Class :character      
-##  Median :3438   Median :3188   Mode  :character   Mode  :character      
-##  Mean   :3438   Mean   :3317                                            
-##  3rd Qu.:4656   3rd Qu.:4410                                            
-##  Max.   :5875   Max.   :5625                                            
-##                 NA's   :1                                               
-##  current_manager_start_date last_promotion_date  job_title        
-##  Length:4875                Length:4875         Length:4875       
-##  Class :character           Class :character    Class :character  
-##  Mode  :character           Mode  :character    Mode  :character  
-##                                                                   
-##                                                                   
-##                                                                   
-##                                                                   
-##  business_unit        division             team             location        
-##  Length:4875        Length:4875        Length:4875        Length:4875       
+##   employee_id        age         commute_dist        ed_lvl     
+##  Min.   :1001   Min.   :18.00   Min.   : 1.000   Min.   :1.000  
+##  1st Qu.:1368   1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000  
+##  Median :1736   Median :36.00   Median : 7.000   Median :3.000  
+##  Mean   :1736   Mean   :36.92   Mean   : 9.193   Mean   :2.913  
+##  3rd Qu.:2103   3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000  
+##  Max.   :2470   Max.   :60.00   Max.   :29.000   Max.   :5.000  
+##    ed_field            gender          marital_sts           active         
+##  Length:1470        Length:1470        Length:1470        Length:1470       
 ##  Class :character   Class :character   Class :character   Class :character  
 ##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
 ##                                                                             
 ##                                                                             
 ##                                                                             
-##                                                                             
-##     work_zip        home_zip      annual_comp       job_level    
-##  Min.   :30301   Min.   :30301   Min.   : 50016   Min.   : 1.00  
-##  1st Qu.:30318   1st Qu.:30318   1st Qu.: 87946   1st Qu.: 4.00  
-##  Median :63143   Median :63139   Median :125522   Median : 8.00  
-##  Mean   :56693   Mean   :56693   Mean   :125369   Mean   : 7.02  
-##  3rd Qu.:78722   3rd Qu.:78722   3rd Qu.:163262   3rd Qu.:10.00  
-##  Max.   :78759   Max.   :78759   Max.   :199968   Max.   :10.00  
-##  NA's   :1311    NA's   :1311                                    
-##       age          org_tenure       job_tenure        gender         
-##  Min.   :21.00   Min.   : 1.000   Min.   : 0.000   Length:4875       
-##  1st Qu.:39.00   1st Qu.: 5.000   1st Qu.: 2.000   Class :character  
-##  Median :50.00   Median : 8.000   Median : 3.000   Mode  :character  
-##  Mean   :48.51   Mean   : 9.193   Mean   : 4.154                     
-##  3rd Qu.:59.00   3rd Qu.:13.000   3rd Qu.: 5.000                     
-##  Max.   :70.00   Max.   :20.000   Max.   :20.000                     
-##                                                                      
-##   ethnicity           education     performance   
-##  Length:4875        Min.   :1.00   Min.   :1.000  
-##  Class :character   1st Qu.:2.00   1st Qu.:1.000  
-##  Mode  :character   Median :3.00   Median :3.000  
-##                     Mean   :2.88   Mean   :2.495  
-##                     3rd Qu.:4.00   3rd Qu.:3.000  
-##                     Max.   :4.00   Max.   :4.000  
-## 
+##  stock_opt_lvl      trainings         dept              job_lvl     
+##  Min.   :0.0000   Min.   :0.000   Length:1470        Min.   :1.000  
+##  1st Qu.:0.0000   1st Qu.:2.000   Class :character   1st Qu.:1.000  
+##  Median :1.0000   Median :3.000   Mode  :character   Median :2.000  
+##  Mean   :0.7939   Mean   :2.799                      Mean   :2.064  
+##  3rd Qu.:1.0000   3rd Qu.:3.000                      3rd Qu.:3.000  
+##  Max.   :3.0000   Max.   :6.000                      Max.   :5.000  
+##   job_title           overtime         business_travel     hourly_rate    
+##  Length:1470        Length:1470        Length:1470        Min.   : 30.00  
+##  Class :character   Class :character   Class :character   1st Qu.: 48.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median : 66.00  
+##                                                           Mean   : 65.89  
+##                                                           3rd Qu.: 83.75  
+##                                                           Max.   :100.00  
+##    daily_comp     monthly_comp    annual_comp      standard_hrs salary_hike_pct
+##  Min.   :240.0   Min.   : 5200   Min.   : 62400   Min.   :80    Min.   :11.00  
+##  1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840   1st Qu.:80    1st Qu.:12.00  
+##  Median :528.0   Median :11440   Median :137280   Median :80    Median :14.00  
+##  Mean   :527.1   Mean   :11421   Mean   :137054   Mean   :80    Mean   :15.21  
+##  3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200   3rd Qu.:80    3rd Qu.:18.00  
+##  Max.   :800.0   Max.   :17333   Max.   :208000   Max.   :80    Max.   :25.00  
+##   perf_rating    prior_emplr_cnt    env_sat        engagement      job_sat     
+##  Min.   :3.000   Min.   :0.000   Min.   :1.000   Min.   :1.00   Min.   :1.000  
+##  1st Qu.:3.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:2.000  
+##  Median :3.000   Median :2.000   Median :3.000   Median :3.00   Median :3.000  
+##  Mean   :3.154   Mean   :2.693   Mean   :2.722   Mean   :2.73   Mean   :2.729  
+##  3rd Qu.:3.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:3.00   3rd Qu.:4.000  
+##  Max.   :4.000   Max.   :9.000   Max.   :4.000   Max.   :4.00   Max.   :4.000  
+##     rel_sat        wl_balance       work_exp       org_tenure    
+##  Min.   :1.000   Min.   :1.000   Min.   : 0.00   Min.   : 0.000  
+##  1st Qu.:2.000   1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000  
+##  Median :3.000   Median :2.000   Median :10.00   Median : 5.000  
+##  Mean   :2.712   Mean   :1.841   Mean   :11.28   Mean   : 7.032  
+##  3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000  
+##  Max.   :4.000   Max.   :2.000   Max.   :40.00   Max.   :72.000  
+##    job_tenure       last_promo       mgr_tenure    
+##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
+##  1st Qu.: 2.000   1st Qu.: 0.000   1st Qu.: 2.000  
+##  Median : 3.000   Median : 1.000   Median : 3.000  
+##  Mean   : 4.229   Mean   : 2.188   Mean   : 4.123  
+##  3rd Qu.: 7.000   3rd Qu.: 3.000   3rd Qu.: 7.000  
+##  Max.   :18.000   Max.   :15.000   Max.   :17.000
 \end{verbatim}
 
-Note that fields with \texttt{NA\textquotesingle{}s} contain missing values. Also, by default \texttt{employee\_id} and \texttt{manager\_id} are both treated as integers in R, which is why descriptive statistics appropriate for numeric data are provided. \texttt{employee\_id} and \texttt{manager\_id} should actually be treated as character strings since we will not perform any arithmetic operations using these ids.
+Note that fields with \texttt{NA\textquotesingle{}s} contain missing values. Also, by default \texttt{employee\_id} is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. \texttt{employee\_id} should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
 
 \textbf{Missingness}
 
 Before considering whether and how to handle missing data, it is important to distinguish between \emph{structural missingness} and \emph{informative missingness} (Kuhn \& Johnson, 2013).
 
-\textbf{Structural missingness} relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.
+\textbf{Structural missingness} relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.
 
 \textbf{Informative missingness} relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
 
-In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
+In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of a large number of impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns.
 
 \textbf{Data imputation} refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with \emph{similar characteristics} may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
 
-Let's evaluate the \texttt{demographics} data frame for missing \texttt{annual\_comp} values using the logical \texttt{is.na()} function, and return values of variables relevant in determining one's annual compensation:
+Let's evaluate the \texttt{employees} data frame for missing \texttt{annual\_comp} values using the logical \texttt{is.na()} function, and return values of variables relevant in determining one's annual compensation:
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{# Store original annual comp for sample employee}
+\NormalTok{orig_comp <-}\StringTok{ }\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{]}
+
 \CommentTok{# Force a NA in lieu of annual comp for illustrative purposes}
-\NormalTok{demographics[demographics}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '4305'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
+\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
 
 \CommentTok{# Return relevant employee characteristics where annual comp is missing}
-\NormalTok{demographics[}\KeywordTok{is.na}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{annual_comp), }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"job_title"}\NormalTok{, }\StringTok{"location"}\NormalTok{, }\StringTok{"job_level"}\NormalTok{)]}
+\NormalTok{employees[}\KeywordTok{is.na}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp), }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"job_title"}\NormalTok{, }\StringTok{"job_lvl"}\NormalTok{)]}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##      employee_id job_title      location job_level
-## 3305        4305   Manager HQ 1 - Austin         7
+##      employee_id              job_title job_lvl
+## 1176        2176 Manufacturing Director       2
 \end{verbatim}
 
 Next, we can impute the average value of \texttt{annual\_comp} based on employees with the same values for the relevant variables:
@@ -4130,21 +4293,21 @@ Next, we can impute the average value of \texttt{annual\_comp} based on employee
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return average annual comp for employees with similar characteristics, excluding employees with missing comp values}
-\NormalTok{imputed_comp <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(demographics[demographics}\OperatorTok{$}\NormalTok{job_title }\OperatorTok{==}\StringTok{ 'Manager'} \OperatorTok{&}\StringTok{ }\NormalTok{demographics}\OperatorTok{$}\NormalTok{location }\OperatorTok{==}\StringTok{ 'HQ 1 - Austin'} \OperatorTok{&}\StringTok{ }\NormalTok{demographics}\OperatorTok{$}\NormalTok{job_level }\OperatorTok{==}\StringTok{ }\DecValTok{7}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{], }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{imputed_comp <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(employees[employees}\OperatorTok{$}\NormalTok{job_title }\OperatorTok{==}\StringTok{ 'Manufacturing Director'} \OperatorTok{&}\StringTok{ }\NormalTok{employees}\OperatorTok{$}\NormalTok{job_lvl }\OperatorTok{==}\StringTok{ }\DecValTok{2}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{], }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
 
 \CommentTok{# Impute missing comp for relevant segment}
-\NormalTok{demographics[demographics}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '4305'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\NormalTok{imputed_comp}
+\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\NormalTok{imputed_comp}
 
-\CommentTok{# Display imputed comp}
-\NormalTok{demographics[demographics}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '4305'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{]}
+\CommentTok{# Display absolute difference between original and imputed comp}
+\KeywordTok{abs}\NormalTok{(orig_comp }\OperatorTok{-}\StringTok{ }\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{])}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 115338.2
+## [1] 1168.539
 \end{verbatim}
 
-While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. \textbf{Multiple imputation} combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.
 
 \textbf{Outliers}
 
@@ -4158,7 +4321,19 @@ Variables with \textbf{low variability} often do not provide sufficient informat
 
 When working with survey data, checking for \textbf{straightlining} should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing ``I plan to be here in a year'' to ``I do not plan to be here in a year''), which we expect to be inversely related, this gives added support for discarding these responses.
 
-Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values.
+Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove \texttt{standard\_hours} from the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return descriptives to understand distribution of standard hours}
+\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{standard_hours)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Length  Class   Mode 
+##      0   NULL   NULL
+\end{verbatim}
 
 \textbf{Inconsistent Categories}
 
@@ -4166,22 +4341,22 @@ Fields with low variability can be easily identified using descriptive statistic
 
 Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.
 
-Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This will either warrant a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream to avoid duplicative data cleaning procedures across downstream applications.
+Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a clean and well-defined set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This warrants either a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream (e.g., in the source system) to avoid duplicative data cleaning procedures across downstream applications.
 
 \textbf{Data Binning}
 
-\textbf{Data binning} refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, very granular categories should be avoided -- especially when there is no theoretical basis for such categories facilitating a project's objectives or deepening insights. Where the \(n\)-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. A variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level ``High School Not Completed'' and ``High School Completed'' bins.
+\textbf{Data binning} refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, extremely granular categories should be avoided -- especially when there is no theoretical basis for such categories facilitating a project's objectives or deepening insights. Where the \(n\)-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. For example, a variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level ``High School Not Completed'' and ``High School Completed'' bins.
 
 For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of `Less Than 1 Year', `1-5 Years', and `More Than 5 Years' will likely result in information loss. Any variability \emph{within} these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
 
 \hypertarget{one-hot-encoding}{%
 \section{One-Hot Encoding}\label{one-hot-encoding}}
 
-\textbf{One-hot encoding}, also known as \textbf{dummy coding}, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, dummy coding is not required, as metrics such as counts and percentages can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications categorical variables must be converted into \(k-1\) variables, where \(k\) is the number of categories, using binary (1/0) coding.
+\textbf{One-hot encoding}, also known as \textbf{dummy coding}, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, this is not required, as counts and percent of total metrics can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications, categorical variables must be converted into \(k-1\) variables, where \(k\) is the number of categories, using binary (1/0) coding.
 
-Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with ``Remote'' or ``Non-Remote'' values, we could code ``Remote'' values as 1 and ``Non-Remote'' values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.
+Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with ``Remote'' or ``Non-Remote'' values, we may code ``Remote'' values as 1 and ``Non-Remote'' values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.
 
-If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others. That is, when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
 
 \begin{figure}
 
@@ -4197,102 +4372,108 @@ For a categorical variable with only two values, the \texttt{ifelse()} function 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return unique values of gender field}
-\KeywordTok{unique}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender)}
+\KeywordTok{unique}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] "Male"   "Female"
+## [1] "Female" "Male"
 \end{verbatim}
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Gender one-hot encoding}
-\NormalTok{demographics}\OperatorTok{$}\NormalTok{gender_ohe <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(demographics}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\NormalTok{employees}\OperatorTok{$}\NormalTok{gender_ohe <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
 
 \CommentTok{# Preview records}
-\KeywordTok{head}\NormalTok{(demographics[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"gender_ohe"}\NormalTok{)])}
+\KeywordTok{head}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"gender_ohe"}\NormalTok{)])}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ##   employee_id gender_ohe
-## 1        1001          0
-## 2        1002          1
+## 1        1001          1
+## 2        1002          0
 ## 3        1003          0
-## 4        1004          0
-## 5        1005          1
-## 6        1006          1
+## 4        1004          1
+## 5        1005          0
+## 6        1006          0
 \end{verbatim}
 
 For variables with more than 2 categories, we can leverage the \texttt{model.matrix()} function for one-hot encoding. Let's illustrate be encoding locations.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library}
-\KeywordTok{library}\NormalTok{(dplyr)}
-
-\CommentTok{# Return counts by location}
-\NormalTok{demographics }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(location, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{)}
+\CommentTok{# Return counts by department}
+\NormalTok{employees }\OperatorTok{%>%}\StringTok{ }\KeywordTok{count}\NormalTok{(dept, }\DataTypeTok{sort =} \OtherTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##                  location    n
-## 1           HQ 1 - Austin 1733
-## 2          HQ 2 - Atlanta 1522
-## 3                  Remote  969
-## 4 Data Center - St. Louis  651
+##                     dept   n
+## 1 Research & Development 961
+## 2                  Sales 446
+## 3        Human Resources  63
 \end{verbatim}
 
-By default, the \texttt{model.matrix()} function will produce a matrix of 1/0 values for \(k-1\) categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being positioned as the omitted group. For more flexibility over which value is omitted, we can drop the intercept using \texttt{-1} in the first argument passed to \texttt{model.matrix()} and then choose the omitted group in a subsequent step.
+By default, the \texttt{model.matrix()} function will produce a matrix of 1/0 values for \(k-1\) categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using \texttt{-1} in the first argument passed to \texttt{model.matrix()} and then choose the reference group for the analysis in a subsequent step.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Location one-hot encoding}
-\NormalTok{location_ohe <-}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(}\OperatorTok{~}\NormalTok{location}\DecValTok{-1}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ demographics)}
+\CommentTok{# Department one-hot encoding}
+\NormalTok{dept_ohe <-}\StringTok{ }\KeywordTok{model.matrix}\NormalTok{(}\OperatorTok{~}\NormalTok{dept}\DecValTok{-1}\NormalTok{, }\DataTypeTok{data =}\NormalTok{ employees)}
 
 \CommentTok{# Preview data}
-\KeywordTok{head}\NormalTok{(location_ohe)}
+\KeywordTok{head}\NormalTok{(dept_ohe)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   locationData Center - St. Louis locationHQ 1 - Austin locationHQ 2 - Atlanta
-## 1                               0                     1                      0
-## 2                               0                     1                      0
-## 3                               0                     1                      0
-## 4                               0                     1                      0
-## 5                               0                     1                      0
-## 6                               0                     1                      0
-##   locationRemote
-## 1              0
-## 2              0
-## 3              0
-## 4              0
-## 5              0
-## 6              0
+##   deptHuman Resources deptResearch & Development deptSales
+## 1                   0                          0         1
+## 2                   0                          1         0
+## 3                   0                          1         0
+## 4                   0                          1         0
+## 5                   0                          1         0
+## 6                   0                          1         0
 \end{verbatim}
 
-We will drop the location with the lowest \(n\) rather than the more arbitrary method based on the first value of the factor. Since locations are coded as either \(1\) or \(0\), we can use the \texttt{colSums()} function to sum each column and the \texttt{which.min()} function to identify which has the lowest sum (i.e., least common location).
+We will drop the department with the lowest \(n\) rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either \(1\) or \(0\), we can use the \texttt{colSums()} function to sum each column and the \texttt{which.min()} function to identify which has the lowest sum (i.e., smallest department by employee count).
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Drop location with lowest sum (lowest n-count)}
-\NormalTok{location_ohe <-}\StringTok{ }\NormalTok{location_ohe[, }\OperatorTok{-}\KeywordTok{which.min}\NormalTok{(}\KeywordTok{colSums}\NormalTok{(location_ohe))]}
+\CommentTok{# Drop department with lowest sum (lowest n-count)}
+\NormalTok{dept_ohe <-}\StringTok{ }\NormalTok{dept_ohe[, }\OperatorTok{-}\KeywordTok{which.min}\NormalTok{(}\KeywordTok{colSums}\NormalTok{(dept_ohe))]}
 
-\CommentTok{# Combine demographics and matrix containing one-hot encoded locations}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(demographics, location_ohe)}
+\CommentTok{# Preview refined one-hot encoded data}
+\KeywordTok{head}\NormalTok{(dept_ohe)}
+\end{Highlighting}
+\end{Shaded}
 
-\CommentTok{# Drop original location field}
-\NormalTok{demographics <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(demographics, }\DataTypeTok{select =} \OperatorTok{-}\KeywordTok{c}\NormalTok{(location))}
+\begin{verbatim}
+##   deptResearch & Development deptSales
+## 1                          0         1
+## 2                          1         0
+## 3                          1         0
+## 4                          1         0
+## 5                          1         0
+## 6                          1         0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Combine employees and matrix containing one-hot encoded departments}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(employees, dept_ohe)}
+
+\CommentTok{# Drop original department field}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \OperatorTok{-}\KeywordTok{c}\NormalTok{(dept))}
 \end{Highlighting}
 \end{Shaded}
 
 \hypertarget{feature-engineering}{%
 \section{Feature Engineering}\label{feature-engineering}}
 
-Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information:
+Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information. This can be easily accomplished using the arithmetic functions we've covered.
 
 \begin{itemize}
 \tightlist
