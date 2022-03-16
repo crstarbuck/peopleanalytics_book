@@ -611,15 +611,26 @@ abs(orig_comp - employees[employees$employee_id == '2176', 'annual_comp'])
   
   When working with survey data, checking for **straightlining** should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing "I plan to be here in a year" to "I do not plan to be here in a year"), which we expect to be inversely related, this gives added support for discarding these responses.
   
-  Fields with low variability can be easily identified using descriptive statistics from the `summary()` function. If the `Min` and `Max` values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove `standard_hours` from the data:
+  Fields with low variability can be easily identified using descriptive statistics from the `summary()` function. If the `Min` and `Max` values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove `standard_hrs` from the data:
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Return descriptives to understand distribution of standard hours
-summary(employees$standard_hours)
+summary(employees$standard_hrs)
 
 ```
-  
+
+  Given that the data dictionary in Chapter \@ref(getting-started) indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return descriptives to understand distribution of standard hours
+summary(employees$perf_rating)
+
+```
+
+  Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that will likely bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.
+
   **Inconsistent Categories**
   
   **Inconsistent categories** impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.
