@@ -207,11 +207,8 @@ quantile(employees$annual_comp)
   
 ```{r, message = FALSE}
 
-# Load library for data viz
-library(ggplot2)
-
 # Produce boxplots to visualize compensation distribution by education level and gender
-ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
+ggplot2::ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
   labs(x = "Education Level", y = "Annual Compensation") + 
   theme_bw() +
   geom_boxplot()
@@ -281,7 +278,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 library(moments)
 
 # Calculate skewness for org tenure, rounded to two significant figures via the round() function
-round(skewness(employees$org_tenure), 2)
+round(moments::skewness(employees$org_tenure), 2)
 
 ```
 
@@ -307,7 +304,7 @@ round(1/n * (sum((x - x_bar)^3) / s^3), 2)
 ```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Produce histogram to visualize sample distribution
-ggplot() + 
+ggplot2::ggplot() + 
   aes(employees$org_tenure) + 
   labs(x = "Organization Tenure", y = "Density") + 
   geom_histogram(aes(y = ..density..), fill = "#414141") +
@@ -341,7 +338,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r, message = FALSE}
 
 # Calculate kurtosis for org tenure, rounded to one significant figure
-round(kurtosis(employees$org_tenure), 1)
+round(moments::kurtosis(employees$org_tenure), 1)
 
 ```
 
@@ -478,9 +475,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for Phi Coefficient
-library(psych)
-
 # Set females to 1 and everything else to 0
 employees$gender_code <- ifelse(employees$gender == 'Female', 1, 0)
 
@@ -491,7 +485,7 @@ employees$stock_option_code <- ifelse(employees$stock_opt_lvl > 0, 1, 0)
 contingency_tbl <- table(employees$gender_code, employees$stock_option_code)
 
 # Calculate the Phi Coefficient between dichotomous variables
-phi(contingency_tbl)
+psych::phi(contingency_tbl)
 
 ``` 
   
@@ -512,14 +506,11 @@ cor(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr
   
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for correlation visuals
-library(corrplot)
-
 # Store correlation matrix to object M
 M <- cor(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")], use = "complete.obs")
 
 # Visualize correlation matrix
-corrplot.mixed(M, order = 'AOE')
+corrplot::corrplot.mixed(M, order = 'AOE')
 
 ```
 
@@ -527,11 +518,8 @@ corrplot.mixed(M, order = 'AOE')
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for correlation visuals
-library(GGally)
-
 # Visualize correlation matrix
-ggpairs(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")])
+GGally::ggpairs(employees[, c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")])
 
 ```
 
