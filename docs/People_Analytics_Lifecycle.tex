@@ -29,7 +29,7 @@
 }
 \usepackage{hyperref}
 \hypersetup{
-            pdftitle={A Practitioner's Guide through the People Analytics Lifecycle},
+            pdftitle={An Introduction to the People Analytics Lifecycle},
             pdfauthor={Craig Starbuck},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -115,11 +115,11 @@
 \usepackage[]{natbib}
 \bibliographystyle{plainnat}
 
-\title{A Practitioner's Guide through the People Analytics Lifecycle}
+\title{An Introduction to the People Analytics Lifecycle}
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-16}
+\date{2022-03-18}
 
 \begin{document}
 \maketitle
@@ -147,8 +147,8 @@ December 2021
 
 Craig Starbuck, PhD is the CEO and Co-Founder of OrgAcuity, a tech company with a mission to democratize access to people analytics. Craig has built and led people analytics teams at companies such as Robinhood, Mastercard, Equifax, TD Ameritrade, and Scottrade, and he also spent a decade in various data engineering and analytics positions in the banking and health care industries. He is a Member of the Society for Industrial and Organizational Psychology (SIOP) and has a passion for transforming people data into information and insights that help organizations enhance the experience and wellbeing of employees.
 
-\hypertarget{planning}{%
-\chapter{Project Planning}\label{planning}}
+\hypertarget{getting-started}{%
+\chapter{Getting Started}\label{getting-started}}
 
 Nothing in this book will increase the value of an analysis no one needs. Analyses should always have a strong value proposition -- a clear expectation of how an analysis will support a General Manager, People Partner, Salesperson, or other member of the organization. Curiosity is not a business reason, and this chapter will cover a set of guiding principles as well as a project management framework that will help ensure analytics are anchored in well-defined problem statements with meaningful ROI.
 
@@ -364,8 +364,8 @@ The Deliver phase can take many forms depending on the solution being released. 
 
 This chapter covers how to install R, R Studio, and required packages for replicating examples in this book. This chapter also covers R basics such as objects, data structures, and data types that are fundamental to working in R. In addition, many common functions will be covered in this chapter, and many more will be introduced thoughout later chapters.
 
-\hypertarget{getting-started}{%
-\section{Getting Started}\label{getting-started}}
+\hypertarget{getting-started-1}{%
+\section{Getting Started}\label{getting-started-1}}
 
 Run and test your code frequently. Writing a significant number of lines before testing will make debugging your code far more difficult and time-intensive than it needs to be.
 
@@ -399,7 +399,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpiKZWVq/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpqMMApP/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -977,6 +977,26 @@ Specific columns in the data frame can be referenced using the \texttt{\$} symbo
 ##  [1]  1  2  3  4  5  6  7  8  9 10
 \end{verbatim}
 
+Another method that allows for efficient subsetting of rows and/or columns is the \texttt{subset()} function. The example below illustrates how to subset \texttt{df} using conditions on \texttt{x} and \texttt{y} while only displaying \texttt{z} in the output:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return z values for rows where x is at least 7 OR y is a, b, or c.}
+\KeywordTok{subset}\NormalTok{(df, x }\OperatorTok{>=}\StringTok{ }\DecValTok{7} \OperatorTok{|}\StringTok{ }\NormalTok{y }\OperatorTok{==}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'a'}\NormalTok{,}\StringTok{'b'}\NormalTok{,}\StringTok{'c'}\NormalTok{), }\DataTypeTok{select =}\NormalTok{ z)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##             z
+## 1  2021-01-01
+## 2  2021-02-01
+## 3  2021-03-01
+## 7  2021-07-01
+## 8  2021-08-01
+## 9  2021-09-01
+## 10 2021-10-01
+\end{verbatim}
+
 \hypertarget{lists}{%
 \section{Lists}\label{lists}}
 
@@ -1118,6 +1138,8 @@ While base R has native plotting capabilities, we will use the more flexibile an
 \end{Highlighting}
 \end{Shaded}
 
+When working with functions beyond what is available in base R, entering \texttt{::} between the library and function name is a best practice for efficient coding. R Studio will provide a menu of available functions within the specified library upon typing \texttt{library\_name::}.
+
 The \texttt{ggplot2} library contains many types of visualizations. For example, we can build a line chart to show how the values of vector \texttt{x} relate to values of vector \texttt{y} in a data frame named \texttt{data}:
 
 \begin{Shaded}
@@ -1128,29 +1150,29 @@ The \texttt{ggplot2} library contains many types of visualizations. For example,
 \NormalTok{data <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(x, y))}
 
 \CommentTok{# Produce line chart}
-\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_line}\NormalTok{()}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_line}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-48-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-49-1.pdf}
 
 Furthermore, we can use \texttt{ggplot} parameters and themes to adjust the aesthetics of visuals:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Produce line chart}
-\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{.4}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Reduce line thickness and change color to blue}
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }\CommentTok{# Remove the default grey background}
-\StringTok{  }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Plot Title }\CharTok{\textbackslash{}n}\StringTok{ Split between Two Lines"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Assign a title}
-\StringTok{  }\KeywordTok{xlab}\NormalTok{(}\StringTok{"Variable x Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the x-axis}
-\StringTok{  }\KeywordTok{ylab}\NormalTok{(}\StringTok{"Variable y Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the y-axis}
-\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\CommentTok{# Center plot title}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{(data, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y)) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_line}\NormalTok{(}\DataTypeTok{size =} \FloatTok{.4}\NormalTok{, }\DataTypeTok{colour =} \StringTok{"blue"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Reduce line thickness and change color to blue}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}\StringTok{ }\CommentTok{# Remove the default grey background}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Plot Title }\CharTok{\textbackslash{}n}\StringTok{ Split between Two Lines"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Assign a title}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{xlab}\NormalTok{(}\StringTok{"Variable x Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the x-axis}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ylab}\NormalTok{(}\StringTok{"Variable y Name"}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# Label the y-axis}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{)) }\CommentTok{# Center plot title}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-49-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-50-1.pdf}
 
 \hypertarget{exercises}{%
 \section{Exercises}\label{exercises}}
@@ -1476,7 +1498,7 @@ While sampling \emph{with} replacement would not make sense for applications suc
 
 To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30\% of all employees are in the Engineering department, the researcher could \emph{randomly} select a calculated number of employees from the Engineering department such that 30\% of employees in the sample come from this department.
 
-Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each department. First, we can review counts of employees for each department using the group\_by() and summarise() functions from the \texttt{dplyr} library:
+Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each department. First, we can review counts of employees for each department using the group\_by() and summarise() functions from the \texttt{dplyr} library. Note that \texttt{dplyr} functions are chained together using a \texttt{\%\textgreater{}\%} symbol:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1820,12 +1842,10 @@ Given the potential for alternative explanations of any observed differences or 
   How can the Hawthorne Effect impact the integrity of an experiment?
 \end{enumerate}
 
-\hypertarget{uni-bi-stats}{%
-\chapter{Univariate \& Bivariate Analysis}\label{uni-bi-stats}}
+\hypertarget{desc-stats}{%
+\chapter{Descriptive Statistics}\label{desc-stats}}
 
-This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book.
-
-Univariate and bivariate analysis can be either descriptive or inferential. This chapter will cover descriptive techniques, while Chapter \ref{inf-stats} will cover inferential methods.
+This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book. Univariate and bivariate analyses can be either descriptive or inferential, and this chapter will cover descriptive techniques while Chapter \ref{inf-stats} will cover inferential methods.
 
 \hypertarget{univariate-analysis}{%
 \section{Univariate Analysis}\label{univariate-analysis}}
@@ -2094,18 +2114,15 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for data viz}
-\KeywordTok{library}\NormalTok{(ggplot2)}
-
 \CommentTok{# Produce boxplots to visualize compensation distribution by education level and gender}
-\KeywordTok{ggplot}\NormalTok{(employees, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(ed_lvl), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education Level"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{()}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{(employees, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(ed_lvl), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education Level"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_boxplot}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-65-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-66-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -2191,7 +2208,7 @@ Since there is not a base R function for skewness, we can leverage the moments l
 \KeywordTok{library}\NormalTok{(moments)}
 
 \CommentTok{# Calculate skewness for org tenure, rounded to two significant figures via the round() function}
-\KeywordTok{round}\NormalTok{(}\KeywordTok{skewness}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{2}\NormalTok{)}
+\KeywordTok{round}\NormalTok{(moments}\OperatorTok{::}\KeywordTok{skewness}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2225,12 +2242,12 @@ A skewness coefficient of 2.27 indicates that organization tenure is positively 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Produce histogram to visualize sample distribution}
-\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Organization Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2271,7 +2288,7 @@ The moments library can also be used to calculate kurtosis in R:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate kurtosis for org tenure, rounded to one significant figure}
-\KeywordTok{round}\NormalTok{(}\KeywordTok{kurtosis}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{1}\NormalTok{)}
+\KeywordTok{round}\NormalTok{(moments}\OperatorTok{::}\KeywordTok{kurtosis}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure), }\DecValTok{1}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2345,7 +2362,7 @@ The examples thus far have only examined associations between two variables at a
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Generate a covariance matrix among select continuous variables}
-\KeywordTok{cov}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\KeywordTok{cov}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)), }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2464,9 +2481,6 @@ To illustrate, let's examine whether there is a relationship between gender and 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for Phi Coefficient}
-\KeywordTok{library}\NormalTok{(psych)}
-
 \CommentTok{# Set females to 1 and everything else to 0}
 \NormalTok{employees}\OperatorTok{$}\NormalTok{gender_code <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
 
@@ -2477,7 +2491,7 @@ To illustrate, let's examine whether there is a relationship between gender and 
 \NormalTok{contingency_tbl <-}\StringTok{ }\KeywordTok{table}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender_code, employees}\OperatorTok{$}\NormalTok{stock_option_code)}
 
 \CommentTok{# Calculate the Phi Coefficient between dichotomous variables}
-\KeywordTok{phi}\NormalTok{(contingency_tbl)}
+\NormalTok{psych}\OperatorTok{::}\KeywordTok{phi}\NormalTok{(contingency_tbl)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2492,7 +2506,7 @@ A correlation matrix can be produced to surface associations among many variable
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Generate a correlation matrix among select continuous variables}
-\KeywordTok{cor}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\KeywordTok{cor}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)), }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2519,32 +2533,26 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for correlation visuals}
-\KeywordTok{library}\NormalTok{(corrplot)}
-
 \CommentTok{# Store correlation matrix to object M}
-\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)], }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)), }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 
 \CommentTok{# Visualize correlation matrix}
-\KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
+\NormalTok{corrplot}\OperatorTok{::}\KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-79-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-80-1.pdf}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for correlation visuals}
-\KeywordTok{library}\NormalTok{(GGally)}
-
 \CommentTok{# Visualize correlation matrix}
-\KeywordTok{ggpairs}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)])}
+\NormalTok{GGally}\OperatorTok{::}\KeywordTok{ggpairs}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)))}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-80-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-81-1.pdf}
 
 We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
 
@@ -2681,16 +2689,13 @@ Beyond descriptives, visuals are often helpful in understanding a variable's dis
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for data visualization}
-\KeywordTok{library}\NormalTok{(ggplot2)}
-
 \CommentTok{# Visualize org tenure distribution}
-\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Org Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(employees}\OperatorTok{$}\NormalTok{org_tenure) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Org Tenure"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2761,9 +2766,6 @@ Next, we will visualize each distribution:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for arranging visuals}
-\KeywordTok{library}\NormalTok{(ggpubr)}
-
 \CommentTok{# Create user-defined function (UDF) to simplify probability distribution visualization}
 \CommentTok{# Function arguments: (1) data = object containing random distribution values; (2) type = 'discrete' or 'continuous' probability distribution; and (3) title = name of distribution}
 \NormalTok{dist.viz <-}\StringTok{ }\ControlFlowTok{function}\NormalTok{(data, type, title) \{}
@@ -2771,23 +2773,23 @@ Next, we will visualize each distribution:
   \ControlFlowTok{if}\NormalTok{ (type }\OperatorTok{==}\StringTok{ "discrete"}\NormalTok{)\{}
     
     \CommentTok{# Discrete distribution}
-\NormalTok{    viz <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"count"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{           }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
-\StringTok{           }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\NormalTok{    viz <-}\StringTok{ }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"count"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
     
 \NormalTok{  \} }\ControlFlowTok{else}\NormalTok{ \{}
     
     \CommentTok{# Continuous distribution}
-\NormalTok{    viz <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{           }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{           }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\StringTok{           }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
-\StringTok{           }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
+\NormalTok{    viz <-}\StringTok{ }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(data) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \KeywordTok{paste}\NormalTok{(title), }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{           }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme}\NormalTok{(}\DataTypeTok{plot.title =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{hjust =} \FloatTok{0.5}\NormalTok{))}
 \NormalTok{  \}}
 
   \KeywordTok{return}\NormalTok{(viz)}
@@ -2802,7 +2804,7 @@ Next, we will visualize each distribution:
 \NormalTok{p_geometric <-}\StringTok{ }\KeywordTok{dist.viz}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ geometric_dist, }\DataTypeTok{type =} \StringTok{"discrete"}\NormalTok{, }\DataTypeTok{title =} \StringTok{"Geometric"}\NormalTok{)}
   
 \CommentTok{# Display distribution visualizations}
-\KeywordTok{ggarrange}\NormalTok{(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,}
+\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggarrange}\NormalTok{(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,}
           \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -2877,7 +2879,7 @@ Next, we will visualize each distribution. Since these continuous distributions 
 \NormalTok{p_f <-}\StringTok{ }\KeywordTok{dist.viz}\NormalTok{(f_dist, }\StringTok{"continuous"}\NormalTok{, }\StringTok{"F"}\NormalTok{)}
 
 \CommentTok{# Display distribution visualizations}
-\KeywordTok{ggarrange}\NormalTok{(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,}
+\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggarrange}\NormalTok{(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,}
           \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{2}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -3050,22 +3052,22 @@ Let's now see the CLT in action by simulating a random uniform population distri
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Produce histogram to visualize population distribution}
-\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(rand.unif) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{()}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(rand.unif) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-88-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-89-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-88}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-89}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -3097,23 +3099,23 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 \NormalTok{\}}
 
 \CommentTok{# Produce histograms to visualize distributions of sample means, grouped by n-count}
-\NormalTok{sample_means }\OperatorTok{%>%}\StringTok{ }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x_bar, }\DataTypeTok{fill =}\NormalTok{ n) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x-bar"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\StringTok{  }\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\StringTok{  }\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
-\StringTok{  }\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{n)}
+\NormalTok{sample_means }\OperatorTok{%>%}\StringTok{ }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x_bar, }\DataTypeTok{fill =}\NormalTok{ n) }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"x-bar"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
+\StringTok{                 }\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{facet_wrap}\NormalTok{(}\OperatorTok{~}\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-89-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-90-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-89}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-90}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -3151,7 +3153,7 @@ Since the CLT is fundamental to inferential statistics, let's validate that our 
 \NormalTok{n <-}\StringTok{ }\KeywordTok{length}\NormalTok{(x_bars)}
 
 \CommentTok{# Calculate percent of sample means within +/- 2 SEs}
-\KeywordTok{length}\NormalTok{(x_bars[x_bars }\OperatorTok{<}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars)]) }\OperatorTok{/}\StringTok{ }\NormalTok{n }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\KeywordTok{length}\NormalTok{(}\KeywordTok{subset}\NormalTok{(x_bars, x_bars }\OperatorTok{<}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\DecValTok{2} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars))) }\OperatorTok{/}\StringTok{ }\NormalTok{n }\OperatorTok{*}\StringTok{ }\DecValTok{100}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3164,7 +3166,7 @@ Since the CLT is fundamental to inferential statistics, let's validate that our 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Calculate percent of sample means within +/- 3 SEs}
-\KeywordTok{length}\NormalTok{(x_bars[x_bars }\OperatorTok{<}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\DecValTok{3} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\DecValTok{3} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars)]) }\OperatorTok{/}\StringTok{ }\NormalTok{n }\OperatorTok{*}\StringTok{ }\DecValTok{100}
+\KeywordTok{length}\NormalTok{(}\KeywordTok{subset}\NormalTok{(x_bars, x_bars }\OperatorTok{<}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{+}\StringTok{ }\DecValTok{3} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars) }\OperatorTok{&}\StringTok{ }\NormalTok{x_bars }\OperatorTok{>}\StringTok{ }\KeywordTok{mean}\NormalTok{(x_bars) }\OperatorTok{-}\StringTok{ }\DecValTok{3} \OperatorTok{*}\StringTok{ }\KeywordTok{sd}\NormalTok{(x_bars))) }\OperatorTok{/}\StringTok{ }\NormalTok{n }\OperatorTok{*}\StringTok{ }\DecValTok{100}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3605,13 +3607,10 @@ When implementing aggregate functions in a \texttt{SELECT} clause, such as count
 
 Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The \texttt{sqldf} library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is universal.
 
-First, let's load the \texttt{sqldf} library and load the data sets:
+First, let's load the data sets:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load SQL library}
-\KeywordTok{library}\NormalTok{(sqldf)}
-
 \CommentTok{# Load data sets}
 \NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
 \NormalTok{status <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv"}\NormalTok{)}
@@ -3649,7 +3648,7 @@ A best practice in writing SQL is to capitalize the names of clauses and functio
 \StringTok{                    LIMIT 10"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3687,7 +3686,7 @@ Next, let's take a look at average organization tenure by job for those in the R
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3723,7 +3722,7 @@ Since there could be a small number of employees in certain jobs, in which case 
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3761,7 +3760,7 @@ Since relatively few employees are Vice Presidents, let's use the \texttt{HAVING
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3902,7 +3901,7 @@ Next, we will query these data frames to return the average organization tenure 
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3948,7 +3947,7 @@ If it were possible for all employee ids to exist in \texttt{demographics} but n
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4016,7 +4015,7 @@ For example, if we are interested in performing an analysis on employees with mo
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4061,7 +4060,7 @@ An alternative to a subquery is creating a \textbf{virtual table} in the \texttt
 \StringTok{                      job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4110,7 +4109,7 @@ For example, we can assign an organization tenure rank by Research \& Developmen
 \StringTok{                    LIMIT 10"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4166,7 +4165,7 @@ We can also treat this query as a virtual table, and then filter on the derived 
 \StringTok{                        job_title"}\NormalTok{)}
 
 \CommentTok{# Execute SQL query}
-\KeywordTok{sqldf}\NormalTok{(sql_string)}
+\NormalTok{sqldf}\OperatorTok{::}\KeywordTok{sqldf}\NormalTok{(sql_string)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4273,13 +4272,13 @@ Let's evaluate the \texttt{employees} data frame for missing \texttt{annual\_com
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Store original annual comp for sample employee}
-\NormalTok{orig_comp <-}\StringTok{ }\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{]}
+\NormalTok{orig_comp <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(employees, employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ annual_comp)}
 
 \CommentTok{# Force a NA in lieu of annual comp for illustrative purposes}
 \NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\OtherTok{NA}
 
 \CommentTok{# Return relevant employee characteristics where annual comp is missing}
-\NormalTok{employees[}\KeywordTok{is.na}\NormalTok{(employees}\OperatorTok{$}\NormalTok{annual_comp), }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"job_title"}\NormalTok{, }\StringTok{"job_lvl"}\NormalTok{)]}
+\KeywordTok{subset}\NormalTok{(employees, }\KeywordTok{is.na}\NormalTok{(annual_comp), }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(employee_id, job_title, job_lvl))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4293,18 +4292,19 @@ Next, we can impute the average value of \texttt{annual\_comp} based on employee
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return average annual comp for employees with similar characteristics, excluding employees with missing comp values}
-\NormalTok{imputed_comp <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(employees[employees}\OperatorTok{$}\NormalTok{job_title }\OperatorTok{==}\StringTok{ 'Manufacturing Director'} \OperatorTok{&}\StringTok{ }\NormalTok{employees}\OperatorTok{$}\NormalTok{job_lvl }\OperatorTok{==}\StringTok{ }\DecValTok{2}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{], }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
+\NormalTok{imputed_comp <-}\StringTok{ }\KeywordTok{sapply}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, job_title }\OperatorTok{==}\StringTok{ 'Manufacturing Director'} \OperatorTok{&}\StringTok{ }\NormalTok{job_lvl }\OperatorTok{==}\StringTok{ }\DecValTok{2}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ annual_comp), mean, }\DataTypeTok{na.rm =} \OtherTok{TRUE}\NormalTok{)}
 
 \CommentTok{# Impute missing comp for relevant segment}
 \NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{] <-}\StringTok{ }\NormalTok{imputed_comp}
 
 \CommentTok{# Display absolute difference between original and imputed comp}
-\KeywordTok{abs}\NormalTok{(orig_comp }\OperatorTok{-}\StringTok{ }\NormalTok{employees[employees}\OperatorTok{$}\NormalTok{employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\StringTok{'annual_comp'}\NormalTok{])}
+\KeywordTok{round}\NormalTok{(}\KeywordTok{abs}\NormalTok{(orig_comp }\OperatorTok{-}\StringTok{ }\KeywordTok{subset}\NormalTok{(employees, employee_id }\OperatorTok{==}\StringTok{ '2176'}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ annual_comp)), }\DecValTok{0}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1168.539
+##      annual_comp
+## 1176        1169
 \end{verbatim}
 
 While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. \textbf{Multiple imputation} combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.
@@ -4321,19 +4321,35 @@ Variables with \textbf{low variability} often do not provide sufficient informat
 
 When working with survey data, checking for \textbf{straightlining} should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing ``I plan to be here in a year'' to ``I do not plan to be here in a year''), which we expect to be inversely related, this gives added support for discarding these responses.
 
-Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove \texttt{standard\_hours} from the data:
+Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove \texttt{standard\_hrs} from the data:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Return descriptives to understand distribution of standard hours}
-\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{standard_hours)}
+\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{standard_hrs)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## Length  Class   Mode 
-##      0   NULL   NULL
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      80      80      80      80      80      80
 \end{verbatim}
+
+Given that the data dictionary in Chapter \ref{getting-started} indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Return descriptives to understand distribution of standard hours}
+\KeywordTok{summary}\NormalTok{(employees}\OperatorTok{$}\NormalTok{perf_rating)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   3.000   3.000   3.000   3.154   3.000   4.000
+\end{verbatim}
+
+Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that will likely bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.
 
 \textbf{Inconsistent Categories}
 
@@ -4386,7 +4402,7 @@ For a categorical variable with only two values, the \texttt{ifelse()} function 
 \NormalTok{employees}\OperatorTok{$}\NormalTok{gender_ohe <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{gender }\OperatorTok{==}\StringTok{ 'Female'}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
 
 \CommentTok{# Preview records}
-\KeywordTok{head}\NormalTok{(employees[, }\KeywordTok{c}\NormalTok{(}\StringTok{"employee_id"}\NormalTok{, }\StringTok{"gender_ohe"}\NormalTok{)])}
+\KeywordTok{head}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(employee_id, gender_ohe)))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4538,11 +4554,79 @@ Level one people analytics tends to utilize only the delivered fields from the H
 \hypertarget{aod}{%
 \chapter{Analysis of Differences}\label{aod}}
 
-\hypertarget{comparing-2-distributions}{%
-\section{Comparing 2 Distributions}\label{comparing-2-distributions}}
+\hypertarget{parametric-vs.nonparametric-tests-1}{%
+\section{Parametric vs.~Nonparametric Tests}\label{parametric-vs.nonparametric-tests-1}}
 
-\hypertarget{comparing-3-distributions}{%
-\section{Comparing 3+ Distributions}\label{comparing-3-distributions}}
+\hypertarget{differences-of-means}{%
+\section{Differences of Means}\label{differences-of-means}}
+
+\hypertarget{differences-of-medians}{%
+\section{Differences of Medians}\label{differences-of-medians}}
+
+\hypertarget{comparing-2-groups}{%
+\section{Comparing 2 Groups}\label{comparing-2-groups}}
+
+\hypertarget{comparing-2-independent-groups}{%
+\subsection{Comparing 2 Independent Groups}\label{comparing-2-independent-groups}}
+
+\textbf{Independent Samples T-Test}
+
+\textbf{Mann-Whitney U Test}
+
+\textbf{Wilcoxon Rank-Sum Test}
+
+\textbf{Wilcoxon Signed-Rank Test}
+
+\hypertarget{comparing-2-related-groups}{%
+\subsection{Comparing 2 Related Groups}\label{comparing-2-related-groups}}
+
+\textbf{Paired Samples T-Test}
+
+\hypertarget{comparing-proportions}{%
+\subsection{Comparing Proportions}\label{comparing-proportions}}
+
+\textbf{Two Proportion Z-Test}
+
+\textbf{Chi-Square Test}
+
+\hypertarget{comparing-3-groups}{%
+\section{Comparing 3+ Groups}\label{comparing-3-groups}}
+
+\hypertarget{analysis-of-variance-anova}{%
+\subsection{Analysis of Variance (ANOVA)}\label{analysis-of-variance-anova}}
+
+\hypertarget{practical-significance}{%
+\section{Practical Significance}\label{practical-significance}}
+
+\hypertarget{cohens-d}{%
+\subsection{Cohen's d}\label{cohens-d}}
+
+\textbf{Cohen's d} is a standardized measure of the difference between two means. Cohen's \(d\) is defined by:
+
+\[ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  \]
+
+where \(s_p\) represents the pooled standard deviation defined by:
+
+\[ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} \]
+
+Cohen's \(d\) can be produced using the \texttt{cohen.d()} function from the \texttt{effsize} package in R. The following thresholds can be referenced as a \emph{general} rule of thumb for interpreting effect size:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Small} = 0.2
+\item
+  \textbf{Medium} = 0.5
+\item
+  \textbf{Large} = 0.8
+\end{itemize}
+
+\hypertarget{cliffs-delta}{%
+\subsection{Cliff's Delta}\label{cliffs-delta}}
+
+\textbf{Cliff's delta} provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a Wilcoxon-Mann-Whitney test is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
+
+Some (e.g., Vargha \& Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 \hypertarget{exercises-6}{%
 \section{Exercises}\label{exercises-6}}
@@ -4783,6 +4867,8 @@ Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139)
 Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Processes. Blue Bell, PA: Kappa Research, LLC.
 
 Roethlisberger, F. J., \& Dickson, W. J. (1939). Management and the worker. Harvard Univ. Press.
+
+Vargha, A. \& Delaney, H. D. (2000). A Critique and Improvement of the CL Common Language Effect Size Statistics of McGraw and Wong. Journal of Educational and Behavioral Statistics 25(2), 101--132.
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 

@@ -569,13 +569,13 @@ summary(employees)
 ```{r, message = FALSE, warning = FALSE}
 
 # Store original annual comp for sample employee
-orig_comp <- employees[employees$employee_id == '2176', 'annual_comp']
+orig_comp <- subset(employees, employee_id == '2176', select = annual_comp)
 
 # Force a NA in lieu of annual comp for illustrative purposes
 employees[employees$employee_id == '2176', 'annual_comp'] <- NA
 
 # Return relevant employee characteristics where annual comp is missing
-employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_lvl")]
+subset(employees, is.na(annual_comp), select = c(employee_id, job_title, job_lvl))
 
 ```
 
@@ -584,13 +584,13 @@ employees[is.na(employees$annual_comp), c("employee_id", "job_title", "job_lvl")
 ```{r, message = FALSE, warning = FALSE}
 
 # Return average annual comp for employees with similar characteristics, excluding employees with missing comp values
-imputed_comp <- mean(employees[employees$job_title == 'Manufacturing Director' & employees$job_lvl == 2, 'annual_comp'], na.rm = TRUE)
+imputed_comp <- sapply(subset(employees, job_title == 'Manufacturing Director' & job_lvl == 2, select = annual_comp), mean, na.rm = TRUE)
 
 # Impute missing comp for relevant segment
 employees[employees$employee_id == '2176', 'annual_comp'] <- imputed_comp
 
 # Display absolute difference between original and imputed comp
-abs(orig_comp - employees[employees$employee_id == '2176', 'annual_comp'])
+round(abs(orig_comp - subset(employees, employee_id == '2176', select = annual_comp)), 0)
 
 ```
 
@@ -671,7 +671,7 @@ unique(employees$gender)
 employees$gender_ohe <- ifelse(employees$gender == 'Female', 1, 0)
 
 # Preview records
-head(employees[, c("employee_id", "gender_ohe")])
+head(subset(employees, select = c(employee_id, gender_ohe)))
 
 ```
 

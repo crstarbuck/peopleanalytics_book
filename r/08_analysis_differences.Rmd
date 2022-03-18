@@ -12,6 +12,13 @@
 
 
 
+```{r, message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+```
+
 ## Comparing 2 Groups
 
 ### Comparing 2 Independent Groups
@@ -45,19 +52,26 @@
 
 ### Analysis of Variance (ANOVA)
 
-
-
+  **Analysis of Variance (ANOVA)** is used to determine whether the means of three or more groups are equal.
+  
+  ANOVA is not a test, per se, but a $F$ test underpins it. It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, in order to reject $H_0$ in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant $F$-statistic but no significant differences between pairwise group means.
+  
+  As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
 
 ## Practical Significance
 
 
 ### Cohen's d
 
-  **Cohen's d** is a standardized measure of the difference between two means. This statistic can be produced using the `cohen.d()` function from the `effsize` package in R.
+  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
   
-  $$ d = \frac{\bar{x}_1 - \bar{x}_2} \frac{s^2_1 + s^2_2}{2} $$
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
   
-  The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
   
   * **Small** = 0.2
   * **Medium** = 0.5
@@ -66,7 +80,7 @@
 
 ### Cliff's Delta
 
-  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
   
   Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
   
