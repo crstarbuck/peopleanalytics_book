@@ -52,11 +52,132 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
 
 ### Analysis of Variance (ANOVA)
 
-  **Analysis of Variance (ANOVA)** is used to determine whether the means of three or more groups are equal.
+  **Analysis of Variance (ANOVA)** is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
   
-  ANOVA is not a test, per se, but a $F$ test underpins it. It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, in order to reject $H_0$ in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant $F$-statistic but no significant differences between pairwise group means.
+  It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, in order to reject $H_0$ in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant $F$-statistic but no significant differences between pairwise means.
   
-  As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+  In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \@ref(inf-stats), multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+  
+  ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A **one-way ANOVA** is used to determine how one categorical IV influences a continuous DV. A **two-way ANOVA** is used to determine how two categorical IVs influence a continuous DV, while a **three-way ANOVA** is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a **factorial ANOVA**. As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+  
+  ANOVA is not a test, per se, but a $F$-test underpins it. The mathematical procedure behind the $F$-test is relatively straightforward:
+  
+  1. Compute the **within-group variance**, which is also known as residual variance. Simply put, this tells us how different each member of the group is from the average.
+  2. Compute the **between-group variance**. This represents how different the group means are from one another.
+  3. Produce the $F$-statistic, which is the *within-group variance* / *between-group variance*.
+  
+  Beyond the data screening procedures outlined in Chapter \@ref(data-wrang-prep), such as addressing any outliers, ANOVA has two key assumptions:
+  
+  1. **Independent and Identically Distributed (IID) Random Variables**: Observations in each group are independent of each other (independence), and all observations are taken from the same probability distribution (identically distributed)
+  2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
+  
+  **One-Way ANOVA**
+  
+  To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.
+  
+  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. It is important to note that the assumption of normality *does not* apply to the distribution of random variables' data but to *normality of residuals*. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV. The assumption of normality requires that the residuals are distributed normally (with a mean = 0) across each of the levels of the categorical IV. In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed; the more skewed the data, the larger the average distance of each DV value from the mean.
+  
+  We will leverage this plot again in Chapter \@ref(lm) to test assumptions of linear models. We will use the `ggqqplot()` function from the `ggpubr` library after building a simple linear model via the `lm()` function:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library for normality plots
+library(ggpubr)
+
+# Build a linear model
+model <- lm(annual_comp ~ job_sat, data = employees)
+
+# Create a Q-Q plot of residuals
+ggpubr::ggqqplot(residuals(model))
+
+``` 
+
+  An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro & Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function in R can be used to perform this test:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(residuals(model))
+
+``` 
+
+  Since `p < .05`, we reject the null hypothesis, indicating that there is insufficient evidence for the assumption of normality. This should not be surprising based on the deviation from normality we observed in the Q-Q plot.
+  
+  Because the assumption of normality is violated, we have two main options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA, which are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests about the *median* rather than *mean* centers.
+  
+  Let's try several data transformations and then examine the resulting Q-Q plots:
+
+```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed DVs", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Build a linear model using the natural logarithm of annual comp
+ln.model <- lm(log(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the log base 10 of annual comp
+log10.model <- lm(log10(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the square root of annual comp
+sqrt.model <- lm(sqrt(annual_comp) ~ job_sat, data = employees)
+
+# Store Q-Q plots to viz objects
+ln.viz <- ggpubr::ggqqplot(residuals(ln.model)) + ggtitle("Natural Log")
+log10.viz <- ggpubr::ggqqplot(residuals(log10.model)) + ggtitle("Log Base 10")
+sqrt.viz <- ggpubr::ggqqplot(residuals(sqrt.model)) + ggtitle("Square Root")
+
+# Display Q-Q plots of residuals
+ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
+          ncol = 3, nrow = 1)
+
+``` 
+
+  Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the `leveneTest()` function from the `car` package:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library for Levene's test
+library(car)
+
+# Perform Levene's test for homogeneity of variance
+car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
+
+```  
+  
+  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since `p > .05`, we fail to reject this null hypothesis and can assume equal variances.
+  
+  ANOVA can be performed using the `aov()` function, followed by the `summary()` function to display model output:
+    
+```{r, message = FALSE, warning = FALSE}
+
+# One-way ANOVA investigating mean differences in annual comp by job satisfaction
+one.way <- aov(annual_comp ~ job_sat, data = employees)
+summary(one.way)
+
+```
+  
+  **Two-Way ANOVA**
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Two-way ANOVA investigating mean differences in annual comp by job satisfaction and dept
+two.way <- aov(annual_comp ~ job_sat + dept, data = employees)
+summary(two.way)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
+# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept
+interaction <- aov(annual_comp ~ job_sat * dept, data = employees)
+summary(interaction)
+
+```
+
+### Post-Hoc Tests
+  
+  **Tukey's Honest Significant Difference (HSD)** test
+  
+  **Scheffe**
+  
+  **Bonferroni**
 
 ## Practical Significance
 

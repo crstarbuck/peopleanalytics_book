@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-03-18" />
+<meta name="date" content="2022-03-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -238,6 +238,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="10.5" data-path="aod.html"><a href="aod.html#comparing-3-groups"><i class="fa fa-check"></i><b>10.5</b> Comparing 3+ Groups</a><ul>
 <li class="chapter" data-level="10.5.1" data-path="aod.html"><a href="aod.html#analysis-of-variance-anova"><i class="fa fa-check"></i><b>10.5.1</b> Analysis of Variance (ANOVA)</a></li>
+<li class="chapter" data-level="10.5.2" data-path="aod.html"><a href="aod.html#post-hoc-tests"><i class="fa fa-check"></i><b>10.5.2</b> Post-Hoc Tests</a></li>
 </ul></li>
 <li class="chapter" data-level="10.6" data-path="aod.html"><a href="aod.html#practical-significance"><i class="fa fa-check"></i><b>10.6</b> Practical Significance</a><ul>
 <li class="chapter" data-level="10.6.1" data-path="aod.html"><a href="aod.html#cohens-d"><i class="fa fa-check"></i><b>10.6.1</b> Cohen’s d</a></li>
@@ -344,6 +345,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="differences-of-medians" class="section level2">
 <h2><span class="header-section-number">10.3</span> Differences of Medians</h2>
+<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb247-1" data-line-number="1"><span class="co"># Load employee data</span></a>
+<a class="sourceLine" id="cb247-2" data-line-number="2">employees &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</a></code></pre></div>
 </div>
 <div id="comparing-2-groups" class="section level2">
 <h2><span class="header-section-number">10.4</span> Comparing 2 Groups</h2>
@@ -368,6 +371,114 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">10.5</span> Comparing 3+ Groups</h2>
 <div id="analysis-of-variance-anova" class="section level3">
 <h3><span class="header-section-number">10.5.1</span> Analysis of Variance (ANOVA)</h3>
+<p><strong>Analysis of Variance (ANOVA)</strong> is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.</p>
+<p>It is important to understand that <span class="math inline">\(H_0\)</span> in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, <span class="math inline">\(H_0\)</span> requires that <span class="math inline">\(\mu_A = \mu_B = \mu_C = \mu_D\)</span> is true as well as the various complex contrasts such as <span class="math inline">\(\mu_{A,B} = \mu_{C,D}\)</span> and <span class="math inline">\(\mu_A = \mu_{B,C,D}\)</span> and <span class="math inline">\(\mu_D = \mu_{B,C}\)</span>. Therefore, in order to reject <span class="math inline">\(H_0\)</span> in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant <span class="math inline">\(F\)</span>-statistic but no significant differences between pairwise means.</p>
+<p>In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter <a href="inf-stats.html#inf-stats">8</a>, multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.</p>
+<p>ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A <strong>one-way ANOVA</strong> is used to determine how one categorical IV influences a continuous DV. A <strong>two-way ANOVA</strong> is used to determine how two categorical IVs influence a continuous DV, while a <strong>three-way ANOVA</strong> is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a <strong>factorial ANOVA</strong>. As discussed in Chapter <a href="getting-started.html#getting-started">3</a>, it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.</p>
+<p>ANOVA is not a test, per se, but a <span class="math inline">\(F\)</span>-test underpins it. The mathematical procedure behind the <span class="math inline">\(F\)</span>-test is relatively straightforward:</p>
+<ol style="list-style-type: decimal">
+<li>Compute the <strong>within-group variance</strong>, which is also known as residual variance. Simply put, this tells us how different each member of the group is from the average.</li>
+<li>Compute the <strong>between-group variance</strong>. This represents how different the group means are from one another.</li>
+<li>Produce the <span class="math inline">\(F\)</span>-statistic, which is the <em>within-group variance</em> / <em>between-group variance</em>.</li>
+</ol>
+<p>Beyond the data screening procedures outlined in Chapter <a href="data-wrang-prep.html#data-wrang-prep">9</a>, such as addressing any outliers, ANOVA has two key assumptions:</p>
+<ol style="list-style-type: decimal">
+<li><strong>Independent and Identically Distributed (IID) Random Variables</strong>: Observations in each group are independent of each other (independence), and all observations are taken from the same probability distribution (identically distributed)</li>
+<li><strong>Homogeneity of Variance</strong>: Variances of populations from which samples were drawn are equal</li>
+</ol>
+<p><strong>One-Way ANOVA</strong></p>
+<p>To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.</p>
+<p>To test whether the assumption of normality is met, we will first produce and review a <strong>quantile-quantile (Q-Q) plot</strong>. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. It is important to note that the assumption of normality <em>does not</em> apply to the distribution of random variables’ data but to <em>normality of residuals</em>. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV. The assumption of normality requires that the residuals are distributed normally (with a mean = 0) across each of the levels of the categorical IV. In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed; the more skewed the data, the larger the average distance of each DV value from the mean.</p>
+<p>We will leverage this plot again in Chapter <a href="lm.html#lm">11</a> to test assumptions of linear models. We will use the <code>ggqqplot()</code> function from the <code>ggpubr</code> library after building a simple linear model via the <code>lm()</code> function:</p>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb248-1" data-line-number="1"><span class="co"># Load library for normality plots</span></a>
+<a class="sourceLine" id="cb248-2" data-line-number="2"><span class="kw">library</span>(ggpubr)</a>
+<a class="sourceLine" id="cb248-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb248-4" data-line-number="4"><span class="co"># Build a linear model</span></a>
+<a class="sourceLine" id="cb248-5" data-line-number="5">model &lt;-<span class="st"> </span><span class="kw">lm</span>(annual_comp <span class="op">~</span><span class="st"> </span>job_sat, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb248-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb248-7" data-line-number="7"><span class="co"># Create a Q-Q plot of residuals</span></a>
+<a class="sourceLine" id="cb248-8" data-line-number="8">ggpubr<span class="op">::</span><span class="kw">ggqqplot</span>(<span class="kw">residuals</span>(model))</a></code></pre></div>
+<p><img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-136-1.png" width="672" /></p>
+<p>An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro &amp; Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The <code>shapiro.test()</code> function in R can be used to perform this test:</p>
+<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb249-1" data-line-number="1"><span class="co"># Compute Shapiro-Wilk test of normality</span></a>
+<a class="sourceLine" id="cb249-2" data-line-number="2"><span class="kw">shapiro.test</span>(<span class="kw">residuals</span>(model))</a></code></pre></div>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuals(model)
+## W = 0.9588, p-value &lt; 2.2e-16</code></pre>
+<p>Since <code>p &lt; .05</code>, we reject the null hypothesis, indicating that there is insufficient evidence for the assumption of normality. This should not be surprising based on the deviation from normality we observed in the Q-Q plot.</p>
+<p>Because the assumption of normality is violated, we have two main options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA, which are <strong>distribution-free tests</strong> that do not require the population’s distribution to be characterized by certain parameters. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests about the <em>median</em> rather than <em>mean</em> centers.</p>
+<p>Let’s try several data transformations and then examine the resulting Q-Q plots:</p>
+<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb251-1" data-line-number="1"><span class="co"># Build a linear model using the natural logarithm of annual comp</span></a>
+<a class="sourceLine" id="cb251-2" data-line-number="2">ln.model &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log</span>(annual_comp) <span class="op">~</span><span class="st"> </span>job_sat, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb251-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb251-4" data-line-number="4"><span class="co"># Build a linear model using the log base 10 of annual comp</span></a>
+<a class="sourceLine" id="cb251-5" data-line-number="5">log10.model &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">log10</span>(annual_comp) <span class="op">~</span><span class="st"> </span>job_sat, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb251-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb251-7" data-line-number="7"><span class="co"># Build a linear model using the square root of annual comp</span></a>
+<a class="sourceLine" id="cb251-8" data-line-number="8">sqrt.model &lt;-<span class="st"> </span><span class="kw">lm</span>(<span class="kw">sqrt</span>(annual_comp) <span class="op">~</span><span class="st"> </span>job_sat, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb251-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb251-10" data-line-number="10"><span class="co"># Store Q-Q plots to viz objects</span></a>
+<a class="sourceLine" id="cb251-11" data-line-number="11">ln.viz &lt;-<span class="st"> </span>ggpubr<span class="op">::</span><span class="kw">ggqqplot</span>(<span class="kw">residuals</span>(ln.model)) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Natural Log&quot;</span>)</a>
+<a class="sourceLine" id="cb251-12" data-line-number="12">log10.viz &lt;-<span class="st"> </span>ggpubr<span class="op">::</span><span class="kw">ggqqplot</span>(<span class="kw">residuals</span>(log10.model)) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Log Base 10&quot;</span>)</a>
+<a class="sourceLine" id="cb251-13" data-line-number="13">sqrt.viz &lt;-<span class="st"> </span>ggpubr<span class="op">::</span><span class="kw">ggqqplot</span>(<span class="kw">residuals</span>(sqrt.model)) <span class="op">+</span><span class="st"> </span><span class="kw">ggtitle</span>(<span class="st">&quot;Square Root&quot;</span>)</a>
+<a class="sourceLine" id="cb251-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb251-15" data-line-number="15"><span class="co"># Display Q-Q plots of residuals</span></a>
+<a class="sourceLine" id="cb251-16" data-line-number="16">ggpubr<span class="op">::</span><span class="kw">ggarrange</span>(ln.viz, log10.viz, sqrt.viz,</a>
+<a class="sourceLine" id="cb251-17" data-line-number="17">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">1</span>)</a></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:qq-plots-trans"></span>
+<img src="People_Analytics_Lifecycle_files/figure-html/qq-plots-trans-1.png" alt="Q-Q Plots of Transformed DVs" width="672" />
+<p class="caption">
+Figure 10.1: Q-Q Plots of Transformed DVs
+</p>
+</div>
+<p>Levene’s test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the <code>leveneTest()</code> function from the <code>car</code> package:</p>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb252-1" data-line-number="1"><span class="co"># Load library for Levene&#39;s test</span></a>
+<a class="sourceLine" id="cb252-2" data-line-number="2"><span class="kw">library</span>(car)</a>
+<a class="sourceLine" id="cb252-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb252-4" data-line-number="4"><span class="co"># Perform Levene&#39;s test for homogeneity of variance</span></a>
+<a class="sourceLine" id="cb252-5" data-line-number="5">car<span class="op">::</span><span class="kw">leveneTest</span>(annual_comp <span class="op">~</span><span class="st"> </span><span class="kw">as.factor</span>(job_sat), <span class="dt">data =</span> employees)</a></code></pre></div>
+<pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
+##         Df F value Pr(&gt;F)
+## group    3  0.3293 0.8042
+##       1466</code></pre>
+<p>The test statistic associated with Levene’s test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since <code>p &gt; .05</code>, we fail to reject this null hypothesis and can assume equal variances.</p>
+<p>ANOVA can be performed using the <code>aov()</code> function, followed by the <code>summary()</code> function to display model output:</p>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb254-1" data-line-number="1"><span class="co"># One-way ANOVA investigating mean differences in annual comp by job satisfaction</span></a>
+<a class="sourceLine" id="cb254-2" data-line-number="2">one.way &lt;-<span class="st"> </span><span class="kw">aov</span>(annual_comp <span class="op">~</span><span class="st"> </span>job_sat, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb254-3" data-line-number="3"><span class="kw">summary</span>(one.way)</a></code></pre></div>
+<pre><code>##               Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
+## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
+## Residuals   1468 2.613e+12 1.780e+09                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p><strong>Two-Way ANOVA</strong></p>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb256-1" data-line-number="1"><span class="co"># Two-way ANOVA investigating mean differences in annual comp by job satisfaction and dept</span></a>
+<a class="sourceLine" id="cb256-2" data-line-number="2">two.way &lt;-<span class="st"> </span><span class="kw">aov</span>(annual_comp <span class="op">~</span><span class="st"> </span>job_sat <span class="op">+</span><span class="st"> </span>dept, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb256-3" data-line-number="3"><span class="kw">summary</span>(two.way)</a></code></pre></div>
+<pre><code>##               Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
+## job_sat        1 1.337e+10 1.337e+10   7.502 0.00624 **
+## dept           2 1.375e+09 6.874e+08   0.386 0.67995   
+## Residuals   1466 2.612e+12 1.782e+09                   
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb258-1" data-line-number="1"><span class="co"># ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept</span></a>
+<a class="sourceLine" id="cb258-2" data-line-number="2">interaction &lt;-<span class="st"> </span><span class="kw">aov</span>(annual_comp <span class="op">~</span><span class="st"> </span>job_sat <span class="op">*</span><span class="st"> </span>dept, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb258-3" data-line-number="3"><span class="kw">summary</span>(interaction)</a></code></pre></div>
+<pre><code>##                Df    Sum Sq   Mean Sq F value Pr(&gt;F)   
+## job_sat         1 1.337e+10 1.337e+10   7.514 0.0062 **
+## dept            2 1.375e+09 6.874e+08   0.386 0.6795   
+## job_sat:dept    2 7.762e+09 3.881e+09   2.182 0.1132   
+## Residuals    1464 2.604e+12 1.779e+09                  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+</div>
+<div id="post-hoc-tests" class="section level3">
+<h3><span class="header-section-number">10.5.2</span> Post-Hoc Tests</h3>
+<p><strong>Tukey’s Honest Significant Difference (HSD)</strong> test</p>
+<p><strong>Scheffe</strong></p>
+<p><strong>Bonferroni</strong></p>
 </div>
 </div>
 <div id="practical-significance" class="section level2">
@@ -387,7 +498,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="cliffs-delta" class="section level3">
 <h3><span class="header-section-number">10.6.2</span> Cliff’s Delta</h3>
-<p><strong>Cliff’s delta</strong> provides the effect size for ordinal variables. Simply put, Cliff’s delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a Wilcoxon-Mann-Whitney test is used. This statistic can be produced using the <code>cliff.delta()</code> function from the <code>effsize</code> package in R.</p>
+<p><strong>Cliff’s delta</strong> provides the effect size for ordinal variables. Simply put, Cliff’s delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the <code>cliff.delta()</code> function from the <code>effsize</code> package in R.</p>
 <p>Some (e.g., Vargha &amp; Delaney, 2000) have endeavored to categorize the Cliff’s delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen’s d.</p>
 </div>
 </div>

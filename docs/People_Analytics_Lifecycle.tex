@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-18}
+\date{2022-03-20}
 
 \begin{document}
 \maketitle
@@ -387,7 +387,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -399,7 +399,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpqMMApP/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp64gmk1/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -4563,6 +4563,13 @@ Level one people analytics tends to utilize only the delivered fields from the H
 \hypertarget{differences-of-medians}{%
 \section{Differences of Medians}\label{differences-of-medians}}
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load employee data}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{comparing-2-groups}{%
 \section{Comparing 2 Groups}\label{comparing-2-groups}}
 
@@ -4595,6 +4602,200 @@ Level one people analytics tends to utilize only the delivered fields from the H
 \hypertarget{analysis-of-variance-anova}{%
 \subsection{Analysis of Variance (ANOVA)}\label{analysis-of-variance-anova}}
 
+\textbf{Analysis of Variance (ANOVA)} is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
+
+It is important to understand that \(H_0\) in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, \(H_0\) requires that \(\mu_A = \mu_B = \mu_C = \mu_D\) is true as well as the various complex contrasts such as \(\mu_{A,B} = \mu_{C,D}\) and \(\mu_A = \mu_{B,C,D}\) and \(\mu_D = \mu_{B,C}\). Therefore, in order to reject \(H_0\) in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant \(F\)-statistic but no significant differences between pairwise means.
+
+In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \ref{inf-stats}, multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+
+ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A \textbf{one-way ANOVA} is used to determine how one categorical IV influences a continuous DV. A \textbf{two-way ANOVA} is used to determine how two categorical IVs influence a continuous DV, while a \textbf{three-way ANOVA} is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a \textbf{factorial ANOVA}. As discussed in Chapter \ref{getting-started}, it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+
+ANOVA is not a test, per se, but a \(F\)-test underpins it. The mathematical procedure behind the \(F\)-test is relatively straightforward:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Compute the \textbf{within-group variance}, which is also known as residual variance. Simply put, this tells us how different each member of the group is from the average.
+\item
+  Compute the \textbf{between-group variance}. This represents how different the group means are from one another.
+\item
+  Produce the \(F\)-statistic, which is the \emph{within-group variance} / \emph{between-group variance}.
+\end{enumerate}
+
+Beyond the data screening procedures outlined in Chapter \ref{data-wrang-prep}, such as addressing any outliers, ANOVA has two key assumptions:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Independent and Identically Distributed (IID) Random Variables}: Observations in each group are independent of each other (independence), and all observations are taken from the same probability distribution (identically distributed)
+\item
+  \textbf{Homogeneity of Variance}: Variances of populations from which samples were drawn are equal
+\end{enumerate}
+
+\textbf{One-Way ANOVA}
+
+To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.
+
+To test whether the assumption of normality is met, we will first produce and review a \textbf{quantile-quantile (Q-Q) plot}. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. It is important to note that the assumption of normality \emph{does not} apply to the distribution of random variables' data but to \emph{normality of residuals}. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV. The assumption of normality requires that the residuals are distributed normally (with a mean = 0) across each of the levels of the categorical IV. In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed; the more skewed the data, the larger the average distance of each DV value from the mean.
+
+We will leverage this plot again in Chapter \ref{lm} to test assumptions of linear models. We will use the \texttt{ggqqplot()} function from the \texttt{ggpubr} library after building a simple linear model via the \texttt{lm()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for normality plots}
+\KeywordTok{library}\NormalTok{(ggpubr)}
+
+\CommentTok{# Build a linear model}
+\NormalTok{model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+
+\CommentTok{# Create a Q-Q plot of residuals}
+\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggqqplot}\NormalTok{(}\KeywordTok{residuals}\NormalTok{(model))}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-136-1.pdf}
+
+An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro \& Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The \texttt{shapiro.test()} function in R can be used to perform this test:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Compute Shapiro-Wilk test of normality}
+\KeywordTok{shapiro.test}\NormalTok{(}\KeywordTok{residuals}\NormalTok{(model))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  residuals(model)
+## W = 0.9588, p-value < 2.2e-16
+\end{verbatim}
+
+Since \texttt{p\ \textless{}\ .05}, we reject the null hypothesis, indicating that there is insufficient evidence for the assumption of normality. This should not be surprising based on the deviation from normality we observed in the Q-Q plot.
+
+Because the assumption of normality is violated, we have two main options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA, which are \textbf{distribution-free tests} that do not require the population's distribution to be characterized by certain parameters. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests about the \emph{median} rather than \emph{mean} centers.
+
+Let's try several data transformations and then examine the resulting Q-Q plots:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Build a linear model using the natural logarithm of annual comp}
+\NormalTok{ln.model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(annual_comp) }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+
+\CommentTok{# Build a linear model using the log base 10 of annual comp}
+\NormalTok{log10.model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log10}\NormalTok{(annual_comp) }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+
+\CommentTok{# Build a linear model using the square root of annual comp}
+\NormalTok{sqrt.model <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(annual_comp) }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+
+\CommentTok{# Store Q-Q plots to viz objects}
+\NormalTok{ln.viz <-}\StringTok{ }\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggqqplot}\NormalTok{(}\KeywordTok{residuals}\NormalTok{(ln.model)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Natural Log"}\NormalTok{)}
+\NormalTok{log10.viz <-}\StringTok{ }\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggqqplot}\NormalTok{(}\KeywordTok{residuals}\NormalTok{(log10.model)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Log Base 10"}\NormalTok{)}
+\NormalTok{sqrt.viz <-}\StringTok{ }\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggqqplot}\NormalTok{(}\KeywordTok{residuals}\NormalTok{(sqrt.model)) }\OperatorTok{+}\StringTok{ }\KeywordTok{ggtitle}\NormalTok{(}\StringTok{"Square Root"}\NormalTok{)}
+
+\CommentTok{# Display Q-Q plots of residuals}
+\NormalTok{ggpubr}\OperatorTok{::}\KeywordTok{ggarrange}\NormalTok{(ln.viz, log10.viz, sqrt.viz,}
+          \DataTypeTok{ncol =} \DecValTok{3}\NormalTok{, }\DataTypeTok{nrow =} \DecValTok{1}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/qq-plots-trans-1} 
+
+}
+
+\caption{Q-Q Plots of Transformed DVs}\label{fig:qq-plots-trans}
+\end{figure}
+
+Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the \texttt{leveneTest()} function from the \texttt{car} package:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library for Levene's test}
+\KeywordTok{library}\NormalTok{(car)}
+
+\CommentTok{# Perform Levene's test for homogeneity of variance}
+\NormalTok{car}\OperatorTok{::}\KeywordTok{leveneTest}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(job_sat), }\DataTypeTok{data =}\NormalTok{ employees)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Levene's Test for Homogeneity of Variance (center = median)
+##         Df F value Pr(>F)
+## group    3  0.3293 0.8042
+##       1466
+\end{verbatim}
+
+The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since \texttt{p\ \textgreater{}\ .05}, we fail to reject this null hypothesis and can assume equal variances.
+
+ANOVA can be performed using the \texttt{aov()} function, followed by the \texttt{summary()} function to display model output:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# One-way ANOVA investigating mean differences in annual comp by job satisfaction}
+\NormalTok{one.way <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+\KeywordTok{summary}\NormalTok{(one.way)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
+## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
+## Residuals   1468 2.613e+12 1.780e+09                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\textbf{Two-Way ANOVA}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Two-way ANOVA investigating mean differences in annual comp by job satisfaction and dept}
+\NormalTok{two.way <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
+\KeywordTok{summary}\NormalTok{(two.way)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
+## job_sat        1 1.337e+10 1.337e+10   7.502 0.00624 **
+## dept           2 1.375e+09 6.874e+08   0.386 0.67995   
+## Residuals   1466 2.612e+12 1.782e+09                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept}
+\NormalTok{interaction <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{*}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
+\KeywordTok{summary}\NormalTok{(interaction)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                Df    Sum Sq   Mean Sq F value Pr(>F)   
+## job_sat         1 1.337e+10 1.337e+10   7.514 0.0062 **
+## dept            2 1.375e+09 6.874e+08   0.386 0.6795   
+## job_sat:dept    2 7.762e+09 3.881e+09   2.182 0.1132   
+## Residuals    1464 2.604e+12 1.779e+09                  
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+\hypertarget{post-hoc-tests}{%
+\subsection{Post-Hoc Tests}\label{post-hoc-tests}}
+
+\textbf{Tukey's Honest Significant Difference (HSD)} test
+
+\textbf{Scheffe}
+
+\textbf{Bonferroni}
+
 \hypertarget{practical-significance}{%
 \section{Practical Significance}\label{practical-significance}}
 
@@ -4624,7 +4825,7 @@ Cohen's \(d\) can be produced using the \texttt{cohen.d()} function from the \te
 \hypertarget{cliffs-delta}{%
 \subsection{Cliff's Delta}\label{cliffs-delta}}
 
-\textbf{Cliff's delta} provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a Wilcoxon-Mann-Whitney test is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
+\textbf{Cliff's delta} provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
 
 Some (e.g., Vargha \& Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
@@ -4862,11 +5063,15 @@ Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). 
 
 Kuhn, M., \& Johnson, K. (2013). Applied predictive modeling. New York: Springer.
 
+Levene, H. (1960). Robust Tests for Equality of Variances. In: Olkin, I., Ed., Contributions to Probability and Statistics. Palo Alto: Stanford University Press. pp.~278-292.
+
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 
 Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Processes. Blue Bell, PA: Kappa Research, LLC.
 
 Roethlisberger, F. J., \& Dickson, W. J. (1939). Management and the worker. Harvard Univ. Press.
+
+Shapiro, S. S., \& Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). Biometrika, 52(3--4), 591--611. \url{https://doi.org/10.1093/biomet/52.3-4.591}
 
 Vargha, A. \& Delaney, H. D. (2000). A Critique and Improvement of the CL Common Language Effect Size Statistics of McGraw and Wong. Journal of Educational and Behavioral Statistics 25(2), 101--132.
 
