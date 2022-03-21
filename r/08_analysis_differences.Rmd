@@ -5,12 +5,6 @@
 
 
 
-## Differences of Means
-
-
-## Differences of Medians
-
-
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -46,8 +40,34 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
   **Chi-Square Test**
 
 
+### Practical Significance
+
+
+  **Cohen's d**
+
+  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
+  
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
+  
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  
+  * **Small** = 0.2
+  * **Medium** = 0.5
+  * **Large** = 0.8
+
+
+  **Cliff's Delta**
+
+  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  
+  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 ## Comparing 3+ Groups
+
 
 
 ### Analysis of Variance (ANOVA)
@@ -66,23 +86,70 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
   2. Compute the **between-group variance**. This represents how different the group means are from one another.
   3. Produce the $F$-statistic, which is the *within-group variance* / *between-group variance*.
   
-  Beyond the data screening procedures outlined in Chapter \@ref(data-wrang-prep), such as addressing any outliers, ANOVA has two key assumptions:
+  Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing any outliers), ANOVA has three key assumptions:
   
-  1. **Independent and Identically Distributed (IID) Random Variables**: Observations in each group are independent of each other (independence), and all observations are taken from the same probability distribution (identically distributed)
+  1. **Independence**: Observations within each group are independent of each other
   2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
+  3. **Normality**: Residuals must be normally distributed (with mean of 0) within each group
   
   **One-Way ANOVA**
   
   To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.
   
-  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. It is important to note that the assumption of normality *does not* apply to the distribution of random variables' data but to *normality of residuals*. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV. The assumption of normality requires that the residuals are distributed normally (with a mean = 0) across each of the levels of the categorical IV. In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed; the more skewed the data, the larger the average distance of each DV value from the mean.
+  Each observation in `employees` represents a unique employee, and a given employee can only have one job satisfaction score and one annual compensation value. The assumption of independence is met since each record exists independent of one another and each job satisfaction group is comprised of different employees.
   
-  We will leverage this plot again in Chapter \@ref(lm) to test assumptions of linear models. We will use the `ggqqplot()` function from the `ggpubr` library after building a simple linear model via the `lm()` function:
-
+  Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the `leveneTest()` function from the `car` package:
+  
 ```{r, message = FALSE, warning = FALSE}
 
-# Load library for normality plots
+# Load library for Levene's test
+library(car)
+
+# Perform Levene's test for homogeneity of variance
+car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
+
+```  
+  
+  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p > .05$, we fail to reject this null hypothesis and can assume equal variances.
+  
+  Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
+  
+```{r comp-dist, fig.cap = "Annual Compensation Distribution by Job Satisfaction Level", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load data viz library
+library(ggplot2)
 library(ggpubr)
+
+# Create function to visualize distribution
+dist.viz <- function(data, x) {
+  
+viz <- ggplot2::ggplot() + 
+       ggplot2::aes(data) + 
+       ggplot2::labs(title = paste("Job Sat = ", x), x = "annual comp", y = "frequency") + 
+       ggplot2::geom_histogram(fill = "#414141") +
+       ggplot2::theme_bw() +
+       ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+  return(viz)
+}
+
+# Call UDF to build annual comp histogram for each job satisfaction level
+viz_1 <- dist.viz(data = unlist(subset(employees, job_sat == 1, select = annual_comp)), x = 1)
+viz_2 <- dist.viz(data = unlist(subset(employees, job_sat == 2, select = annual_comp)), x = 2)
+viz_3 <- dist.viz(data = unlist(subset(employees, job_sat == 3, select = annual_comp)), x = 3)
+viz_4 <- dist.viz(data = unlist(subset(employees, job_sat == 4, select = annual_comp)), x = 4)
+
+# Display distribution visualizations
+ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
+          ncol = 2, nrow = 2)
+
+``` 
+  
+  As we can see, annual compensation is not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.
+  
+  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. We can use the `lm()` function to construct a linear model in order to produce the residuals; linear models will be covered in depth in Chapter \@ref(lm). We can then use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
+
+```{r qq-plot, fig.cap = "Q-Q Plot of Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Build a linear model
 model <- lm(annual_comp ~ job_sat, data = employees)
@@ -92,7 +159,9 @@ ggpubr::ggqqplot(residuals(model))
 
 ``` 
 
-  An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro & Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function in R can be used to perform this test:
+  To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure \@ref(fig:qq-plot), there is a clear departure from normality at both ends of the theoretical range.
+  
+  An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro & Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to perform this test in R using the model residuals:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -101,13 +170,13 @@ shapiro.test(residuals(model))
 
 ``` 
 
-  Since `p < .05`, we reject the null hypothesis, indicating that there is insufficient evidence for the assumption of normality. This should not be surprising based on the deviation from normality we observed in the Q-Q plot.
+  Since $p < .05$, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
   
-  Because the assumption of normality is violated, we have two main options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA, which are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests about the *median* rather than *mean* centers.
+  Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA; these are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters such as a normal distribution defined by a mean and standard deviation. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests are about the *median* rather than *mean* centers.
   
-  Let's try several data transformations and then examine the resulting Q-Q plots:
+  Let's first try several common data transformations and then examine the resulting Q-Q plots:
 
-```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed DVs", fig.align = 'center', message = FALSE, warning = FALSE}
+```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Build a linear model using the natural logarithm of annual comp
 ln.model <- lm(log(annual_comp) ~ job_sat, data = employees)
@@ -129,19 +198,25 @@ ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
 
 ``` 
 
-  Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the `leveneTest()` function from the `car` package:
-  
+  Even with these transformations, there is still a clear S-shaped curve about the residuals. 
+
+  The **Kruskal Wallis H Test** is the nonparametric alternative to a one-way ANOVA (Daniel, 1990). This test can be performed using the `kruskal.test()` function in R:
+
 ```{r, message = FALSE, warning = FALSE}
 
-# Load library for Levene's test
-library(car)
+# Nonparametric Kruskal one-way ANOVA investigating median differences in annual comp by job satisfaction
+kruskal.test(annual_comp ~ job_sat, data = employees)
 
-# Perform Levene's test for homogeneity of variance
-car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
+```
 
-```  
-  
-  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since `p > .05`, we fail to reject this null hypothesis and can assume equal variances.
+  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different.
+
+```{r, message = FALSE, warning = FALSE}
+
+pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method = "BH")
+
+```
+
   
   ANOVA can be performed using the `aov()` function, followed by the `summary()` function to display model output:
     
@@ -179,31 +254,7 @@ summary(interaction)
   
   **Bonferroni**
 
-## Practical Significance
-
-
-### Cohen's d
-
-  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
-  
-  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
-  
-  where $s_p$ represents the pooled standard deviation defined by:
-  
-  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
-  
-  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
-  
-  * **Small** = 0.2
-  * **Medium** = 0.5
-  * **Large** = 0.8
-
-
-### Cliff's Delta
-
-  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
-  
-  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
-  
 
 ## Exercises
+
+1. 
