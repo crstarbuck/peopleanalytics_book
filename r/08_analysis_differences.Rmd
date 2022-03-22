@@ -1,11 +1,17 @@
 # Analysis of Differences {#aod}
 
+  There are many statistical tests that can be used to test for differences within or between two or more groups. This chapter will cover the most common types of differences in people analytics and the tests applicable to each.
 
 ## Parametric vs. Nonparametric Tests
 
+  In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. However, the assumptions of parametric tests are not always met.
+  
+  **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. While useful when data are nonnormal, it is important to note that nonparametric tests are not only less powerful than their parametric equivalents, they also require hypothesis modification since most nonparametric tests are about the *median* rather than *mean* centers.
+  
+## Statistical vs. Practical Significance
 
-
-
+  In addition to testing for statistical significance, which is often tied to a null hypothesis related to equal means across groups, it is important to understand the magnitude of any observed differences. A statistically significant difference may be too small to matter, just as a large difference may not be significant due to the spread of data across groups. This chapter will cover many tests for quantifying the strength or effect of differences (i.e., practical significance).
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Load employee data
@@ -13,9 +19,35 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
 
 ```
 
-## Comparing 2 Groups
 
-### Comparing 2 Independent Groups
+```{r continuous-tests, out.width = "75%", echo = FALSE, fig.cap = 'Continuous Data: Parametric & Nonparametric Tests of Differences', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
+
+```
+
+```{r discrete-tests, out.width = "75%", echo = FALSE, fig.cap = 'Discrete Data: Criteria for Chi-Square & Fisher Exact Tests', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+
+```
+
+## Differences in Discrete Data
+
+
+
+  **Chi-Square Test**
+
+  The most common strength test when a significant Chi-Square statistic is observed is Cramer’s V. 
+  
+  **Fischer Exact Test**
+  
+
+## Differences in Continuous Data
+
+
+
+### 2 Groups
 
   **Independent Samples T-Test**
 
@@ -25,52 +57,9 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
   
   **Wilcoxon Signed-Rank Test**
 
-
-### Comparing 2 Related Groups
-
   **Paired Samples T-Test**
-  
-  
 
-### Comparing Proportions
-
-  **Two Proportion Z-Test**
-  
-  
-  **Chi-Square Test**
-
-
-### Practical Significance
-
-
-  **Cohen's d**
-
-  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
-  
-  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
-  
-  where $s_p$ represents the pooled standard deviation defined by:
-  
-  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
-  
-  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
-  
-  * **Small** = 0.2
-  * **Medium** = 0.5
-  * **Large** = 0.8
-
-
-  **Cliff's Delta**
-
-  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
-  
-  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
-
-## Comparing 3+ Groups
-
-
-
-### Analysis of Variance (ANOVA)
+### More Than 2 Groups
 
   **Analysis of Variance (ANOVA)** is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
   
@@ -172,7 +161,7 @@ shapiro.test(residuals(model))
 
   Since $p < .05$, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
   
-  Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. We can also leverage nonparametric alternatives to ANOVA; these are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters such as a normal distribution defined by a mean and standard deviation. While useful when data are nonnormal and resistant to transformation, it is important to note that nonparametric tests are usually less powerful than their parametric counterparts and also require modification of hypotheses since most nonparametric tests are about the *median* rather than *mean* centers.
+  Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.
   
   Let's first try several common data transformations and then examine the resulting Q-Q plots:
 
@@ -217,7 +206,6 @@ pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method =
 
 ```
 
-  
   ANOVA can be performed using the `aov()` function, followed by the `summary()` function to display model output:
     
 ```{r, message = FALSE, warning = FALSE}
@@ -254,6 +242,30 @@ summary(interaction)
   
   **Bonferroni**
 
+
+### Practical Significance
+
+  **Cohen's d**
+
+  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
+  
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
+  
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  
+  * **Small** = 0.2
+  * **Medium** = 0.5
+  * **Large** = 0.8
+
+  **Cliff's Delta**
+
+  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  
+  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 ## Exercises
 
