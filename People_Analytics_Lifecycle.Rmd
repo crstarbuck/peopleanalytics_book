@@ -1,5 +1,5 @@
 --- 
-title: "A Practitioner's Guide through the People Analytics Lifecycle"
+title: "An Introduction to the People Analytics Lifecycle"
 author: "Craig Starbuck"
 date: "`r Sys.Date()`"
 output: pdf_document
@@ -9,7 +9,7 @@ fig-caption: yes
 github-repo: crstarbuck/peopleanalytics-lifecycle-book
 link-citations: yes
 bibliography: book.bib
-pagetitle: "A Practitioner's Guide through the People Analytics Lifecycle: With Applications in R"
+pagetitle: "An Introduction to the People Analytics Lifecycle: With Applications in R"
 site: bookdown::bookdown_site
 subtitle: With Applications in R
 always_allow_html: yes
@@ -47,7 +47,7 @@ December 2021 <br /><br />
 
 <!--chapter:end:r/introduction.Rmd-->
 
-# Project Planning {#planning}
+# Getting Started {#getting-started}
 
   Nothing in this book will increase the value of an analysis no one needs. Analyses should always have a strong value proposition -- a clear expectation of how an analysis will support a General Manager, People Partner, Salesperson, or other member of the organization. Curiosity is not a business reason, and this chapter will cover a set of guiding principles as well as a project management framework that will help ensure analytics are anchored in well-defined problem statements with meaningful ROI.
   
@@ -103,6 +103,44 @@ December 2021 <br /><br />
   Please note that while R basics are covered, this is not a book on how to code. It is assumed that you already understand programming fundamentals. If this is not the case, an introductory programming course is highly recommended; this is one of the best investments you can make for a successful career in analytics. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses. Coding is to analytics professionals what typing was for Baby Boomers decades ago; a lack of coding proficiency is a major limiting factor on one's potential in this field.
   
   The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.
+  
+### Data
+
+  The primary data set used in this book is `employees`, which contains information on active and terminated employees. Fields are defined in the data dictionary provided below:
+  
+  * `employee_id`: Unique identifier for each employee
+  * `active`: Flag set to *Yes* for active employees and *No* for inactive employees
+  * `stock_opt_lvl`: Stock option level
+  * `trainings`: Number of trainings completed within the past year
+  * `age`: Employee age in years
+  * `commute_dist`: Commute distance in miles
+  * `ed_lvl`: Education level, where 1 = *High School*, 2 = *Associate Degree*, 3 = *Bachelor's Degree*, 4 = *Master's Degree*, and 5 = *Doctoral Degree*
+  * `ed_field`: Education field associated with most recent degree
+  * `gender`: Gender self-identification
+  * `marital_sts`: Marital status
+  * `dept`: Department of which an employee is a member
+  * `engagement`: Employee engagement score measured on a 4-point Likert scale, where 1 = *Highly Disengaged* and 4 = *Highly Engaged*
+  * `job_lvl`: Job level, where 1 = *Junior* and 5 = *Senior*
+  * `job_title`: Job title
+  * `overtime`: Flag set to *Yes* if the employee is nonexempt and works overtime and *No* if the employee does not work overtime
+  * `business_travel`: Business travel frequency
+  * `hourly_rate`: Hourly rate calculated irrespective of hourly/salaried employees
+  * `daily_comp`: Hourly rate * 8
+  * `monthly_comp`: Hourly rate * 2080 / 12
+  * `annual_comp`:  Hourly rate * 2080
+  * `standard_hrs`: Expected working hours over a two-week payroll cycle
+  * `salary_hike_pct`: The percent increase in salary for the employee's most recent compensation adjustment (whether due to a standard merit increase, off-cycle adjustment, or promotion)
+  * `perf_rating`: Most recent performance rating, where 1 = *Needs Improvement*, 2 = *Core Contributor*, 3 = *Noteworthy*, and 4 = *Exceptional*
+  * `prior_emplr_cnt`: Number of prior employers
+  * `env_sat`: Environment satisfaction score measured on a 4-point Likert scale, where 1 = *Highly Dissatisfied* and 4 = *Highly Satisfied* 
+  * `job_sat`: Job satisfaction score measured on a 4-point Likert scale, where 1 = *Highly Dissatisfied* and 4 = *Highly Satisfied* 
+  * `rel_sat`: Colleague relationship satisfaction score measured on a 4-point Likert scale, where 1 = *Highly Dissatisfied* and 4 = *Highly Satisfied* 
+  * `wl_balance`: Work-life balance score measured on a 4-point Likert scale, where 1 = *Poor Balance* and 4 = *Excellent Balance* 
+  * `work_exp`: Total years of work experience
+  * `org_tenure`: Years at current company
+  * `job_tenure`: Years in current job
+  * `last_promo`: Years since last promotion
+  * `mgr_tenure`: Years under current manager
 
 ## 4D Framework
 
@@ -180,7 +218,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, warning = FALSE, message = FALSE}
 
-install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf", "caret"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
+install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf", "caret", "car"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
 ```
 
@@ -191,6 +229,12 @@ install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGall
   **Help**
   
   Documentation for functions is available via the `?` command. This can be inserted prior to any function to access the function's documentation. For example, `?mean` will display the documentation, including its required and optional arguments, for the `mean()` function.
+  
+```{r r-help, out.width = "100%", echo = FALSE, fig.cap = 'Documentation for Arithmetic Mean Function', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/r_help.png")
+
+```
   
   **Objects**
   
@@ -479,6 +523,22 @@ dim(mtrx_num)
 
 ``` 
 
+  The `head()` and `tail()` functions return the first and last pieces of data, respectively. For large matrices (or other types of objects), this can be helpful for previewing the data:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return the first five rows of the matrix
+head(matrix(1:10000, 1000, 10), 5)
+
+``` 
+
+```{r, warning = FALSE, message = FALSE}
+
+# Return the last five rows of the matrix
+tail(matrix(1:10000, 1000, 10), 5)
+
+``` 
+
 ## Factors
 
   A **factor** is a data structure containing a finite number of categorical values. Each categorical value of a factor is known as a **level**, and the levels can be either ordered or unordered. This data structure is a requirement for several statistical models we will cover in later chapters.
@@ -532,6 +592,24 @@ df
 str(df)
 
 ``` 
+
+  Specific columns in the data frame can be referenced using the `$` symbol between the data frame and column names:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Return data in column x in df
+df$x
+
+```   
+
+  Another method that allows for efficient subsetting of rows and/or columns is the `subset()` function. The example below illustrates how to subset `df` using conditions on `x` and `y` while only displaying `z` in the output:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Return z values for rows where x is at least 7 OR y is a, b, or c.
+subset(df, x >= 7 | y == c('a','b','c'), select = z)
+
+```
 
 ## Lists
 
@@ -630,6 +708,8 @@ library(ggplot2)
 
 ```
 
+  When working with functions beyond what is available in base R, entering `::` between the library and function name is a best practice for efficient coding. R Studio will provide a menu of available functions within the specified library upon typing `library_name::`.
+  
   The `ggplot2` library contains many types of visualizations. For example, we can build a line chart to show how the values of vector `x` relate to values of vector `y` in a data frame named `data`:
 
 ```{r, message = FALSE}
@@ -640,8 +720,8 @@ y <- (1:10)^2
 data <- as.data.frame(cbind(x, y))
 
 # Produce line chart
-ggplot(data, aes(x = x, y = y)) +
-  geom_line()
+ggplot2::ggplot(data, aes(x = x, y = y)) +
+ggplot2::geom_line()
 
 ``` 
 
@@ -650,13 +730,13 @@ ggplot(data, aes(x = x, y = y)) +
 ```{r, message = FALSE}
 
 # Produce line chart
-ggplot(data, aes(x = x, y = y)) +
-  geom_line(size = .4, colour = "blue") + # Reduce line thickness and change color to blue
-  theme_bw() + # Remove the default grey background
-  ggtitle("Plot Title \n Split between Two Lines") + # Assign a title
-  xlab("Variable x Name") + # Label the x-axis
-  ylab("Variable y Name") + # Label the y-axis
-  theme(plot.title = element_text(hjust = 0.5)) # Center plot title
+ggplot2::ggplot(data, aes(x = x, y = y)) +
+ggplot2::geom_line(size = .4, colour = "blue") + # Reduce line thickness and change color to blue
+ggplot2::theme_bw() + # Remove the default grey background
+ggplot2::ggtitle("Plot Title \n Split between Two Lines") + # Assign a title
+ggplot2::xlab("Variable x Name") + # Label the x-axis
+ggplot2::ylab("Variable y Name") + # Label the y-axis
+ggplot2::theme(plot.title = element_text(hjust = 0.5)) # Center plot title
 
 ```  
 
@@ -921,15 +1001,15 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Set seed for reproducible results
 set.seed(1234)
 
 # Sample 10 employees randomly
 n = 10
-sample(demographics$employee_id, n, replace = F)
+sample(employees$employee_id, n, replace = F)
 
 ```
   
@@ -943,29 +1023,29 @@ sample(demographics$employee_id, n, replace = F)
   
   To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30% of all employees are in the Engineering department, the researcher could *randomly* select a calculated number of employees from the Engineering department such that 30% of employees in the sample come from this department.
 
-  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each location. First, we can review counts of employees for each division using the group_by() and summarise() functions from the `dplyr` library:
+  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each department. First, we can review counts of employees for each department using the group_by() and summarise() functions from the `dplyr` library. Note that `dplyr` functions are chained together using a `%>%` symbol:
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Return employee counts by location
-demographics %>%
-group_by(location) %>%
+# Return employee counts by department
+employees %>%
+group_by(dept) %>%
 summarise(n = n())
 
 ```
 
-  Next, we will randomly select $\frac{1}{2}$ of employees within each location using the group_by() and sample_frac() functions from the `dplyr` library. We will store the selected employees' records to a data frame and then query it to validate that the counts are roughly $\frac{1}{2}$ the total count observed for each location.
+  Next, we will randomly select $\frac{1}{2}$ of employees within each department using the group_by() and sample_frac() functions from the `dplyr` library. We will store the selected employees' records in a data frame and then query it to validate that the counts are roughly $\frac{1}{2}$ the total count observed for each department.
 
 ```{r, warning = FALSE, message = FALSE}
 
 # Obtain and store stratified random sample
-strat_sample <- demographics %>%
-                group_by(location) %>%
+strat_sample <- employees %>%
+                group_by(dept) %>%
                 sample_frac(size = .5)
 
-# Return sample counts by location
+# Return sample counts by department
 strat_sample %>%
-group_by(location) %>%
+group_by(dept) %>%
 summarise(n = n())
 
 ```
@@ -981,14 +1061,17 @@ summarise(n = n())
 ```{r, warning = FALSE, message = FALSE}
 
 # Randomly assign each employee to 1 of 10 clusters (groups)
-demographics$cluster <- sample(1:10, size = nrow(demographics), replace = T)
+employees$cluster <- sample(1:10, size = nrow(employees), replace = T)
 
 # Randomly select 5 clusters
-clusters <- sample(unique(demographics$cluster), size = 5, replace = F)
+clusters <- sample(unique(employees$cluster), size = 5, replace = F)
 
 # Store cluster sample
-clust_sample <- demographics %>%
+clust_sample <- employees %>%
                 filter(cluster %in% clusters)
+
+# Display dimensions of the cluster sample object
+dim(clust_sample)
 
 ```
 
@@ -1006,7 +1089,7 @@ clust_sample <- demographics %>%
 n = 100
 
 # Determine population size
-N = nrow(demographics)
+N = nrow(employees)
 
 # Compute sampling interval, rounding up to nearest whole number via the ceiling() function
 si = ceiling(N/n)
@@ -1018,7 +1101,7 @@ strt = sample(1:si, 1)
 index = seq(strt, strt + si * (n - 1), si)
 
 # Store systematic sample
-syst_sample <- demographics[index, ]
+syst_sample <- employees[index, ]
 
 ```
 
@@ -1199,15 +1282,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 <!--chapter:end:r/04_research_fundamentals.Rmd-->
 
-# Univariate & Bivariate Analysis {#uni-bi-stats}
+# Descriptive Statistics {#desc-stats}
 
-This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book.
+  This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book. Univariate and bivariate analyses can be either descriptive or inferential, and this chapter will cover descriptive techniques while Chapter \@ref(inf-stats) will cover inferential methods.
 
 ## Univariate Analysis
 
-**Descriptive statistics** are rudimentary analysis techniques that help describe and summarize data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+  **Univariate analysis** is the simplest form of statistical analysis, which explores each variable independently. 
+  
+  **Descriptive statistics** are rudimentary analysis techniques that help describe and summarize a variable's data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
 
-There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
+  There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
 
 ### Measures of Central Tendency
 
@@ -1333,11 +1418,11 @@ In people analytics, there are many conventional descriptive metrics -- largely 
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Calculate sample variance for annual compensation
-var(demographics$annual_comp)
+var(employees$annual_comp)
 
 ```
 
@@ -1346,10 +1431,10 @@ var(demographics$annual_comp)
 ```{r, message = FALSE}
 
 # Store number of observations
-n = length(demographics$annual_comp)
+n = length(employees$annual_comp)
 
 # Calculate population variance for annual compensation
-var(demographics$annual_comp) * (n - 1) / n
+var(employees$annual_comp) * (n - 1) / n
 
 ```
 
@@ -1372,7 +1457,7 @@ var(demographics$annual_comp) * (n - 1) / n
 ```{r, message = FALSE}
 
 # Calculate sample standard deviation for annual compensation
-sd(demographics$annual_comp)
+sd(employees$annual_comp)
 
 ```
 
@@ -1381,7 +1466,7 @@ sd(demographics$annual_comp)
 ```{r, message = FALSE}
 
 # Calculate population standard deviation for annual compensation
-sd(demographics$annual_comp) * sqrt((n - 1) / n)
+sd(employees$annual_comp) * sqrt((n - 1) / n)
 
 ```
 
@@ -1396,24 +1481,21 @@ sd(demographics$annual_comp) * sqrt((n - 1) / n)
 ```{r, message = FALSE}
 
 # Return quartiles for annual compensation
-quantile(demographics$annual_comp)
+quantile(employees$annual_comp)
 
 ```
 
-  Based on this output, we know that 25% of people in our data earn annual compensation of 87,946 USD or less, 125,522 USD is the median annual compensation, and 75% of people earn annual compensation of 163,263 USD or less.
+  Based on this output, we know that 25% of people in our data earn annual compensation of 99,840 USD or less, 137,280 USD is the median annual compensation, and 75% of people earn annual compensation of 174,200 USD or less.
   
   **Boxplots** are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the `ggplot2` library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the ggplot() function:
   
 ```{r, message = FALSE}
 
-# Load library for data viz
-library(ggplot2)
-
-# Produce boxplots to visualize compensation distribution by education and gender
-ggplot(demographics, aes(x = as.factor(education), y = annual_comp, color = gender)) +
-  labs(x = "Education", y = "Annual Compensation") + 
-  theme_bw() +
-  geom_boxplot()
+# Produce boxplots to visualize compensation distribution by education level and gender
+ggplot2::ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
+ggplot2::labs(x = "Education Level", y = "Annual Compensation") + 
+ggplot2::theme_bw() +
+ggplot2::geom_boxplot()
 
 ```  
   
@@ -1429,7 +1511,7 @@ ggplot(demographics, aes(x = as.factor(education), y = annual_comp, color = gend
 ```{r, message = FALSE}
 
 # Return 80th percentile annual compensation value
-quantile(demographics$annual_comp, probs = .8)
+quantile(employees$annual_comp, probs = .8)
 
 ```
 
@@ -1438,7 +1520,7 @@ quantile(demographics$annual_comp, probs = .8)
 ```{r, message = FALSE}
 
 # Return common descriptives
-summary(demographics$annual_comp)
+summary(employees$annual_comp)
 
 ```
 
@@ -1468,7 +1550,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable's scale. Alternatively, we can simply evaluate this using the coefficient of skewness:
   
-  * If skewness is between -0.5 - 0.5, the data are symmetrical.
+  * If skewness is between -0.5 - 0.5, the data are considered symmetrical.
   * If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
   * If skewness is < -1 or > 1, the data are highly skewed.
   
@@ -1479,8 +1561,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 # Load library
 library(moments)
 
-# Calculate skewness for org tenure, rounded to three significant figures
-round(skewness(demographics$org_tenure), 3)
+# Calculate skewness for org tenure, rounded to two significant figures via the round() function
+round(moments::skewness(employees$org_tenure), 2)
 
 ```
 
@@ -1491,27 +1573,27 @@ round(skewness(demographics$org_tenure), 3)
 ```{r, message = FALSE}
 
 # Store components of skewness calculation
-n = length(demographics$org_tenure)
-x = demographics$org_tenure
-x_bar = mean(demographics$org_tenure)
-s = sd(demographics$org_tenure)
+n = length(employees$org_tenure)
+x = employees$org_tenure
+x_bar = mean(employees$org_tenure)
+s = sd(employees$org_tenure)
 
-# Calculate skewness manually, rounded to three significant figures
-round(1/n * (sum((x - x_bar)^3) / s^3), 3)
+# Calculate skewness manually, rounded to two significant figures via the round() function
+round(1/n * (sum((x - x_bar)^3) / s^3), 2)
 
 ```
 
-  A skewness coefficient of .562 indicates that organization tenure is moderately and positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+  A skewness coefficient of 2.27 indicates that organization tenure is positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
 
 ```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Produce histogram to visualize sample distribution
-ggplot() + 
-  aes(demographics$org_tenure) + 
-  labs(x = "Organization Tenure", y = "Density") + 
-  geom_histogram(aes(y = ..density..), fill = "#414141") +
-  geom_density(fill = "#ADD8E6", alpha = 0.6) +
-  theme_bw()
+ggplot2::ggplot() + 
+ggplot2::aes(employees$org_tenure) + 
+ggplot2::labs(x = "Organization Tenure", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
 
 ```
 
@@ -1539,8 +1621,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```{r, message = FALSE}
 
-# Calculate kurtosis for org tenure, rounded to two significant figures
-round(kurtosis(demographics$org_tenure), 2)
+# Calculate kurtosis for org tenure, rounded to one significant figure
+round(moments::kurtosis(employees$org_tenure), 1)
 
 ```
 
@@ -1548,14 +1630,18 @@ round(kurtosis(demographics$org_tenure), 2)
 
 ```{r, message = FALSE}
 
-# Calculate kurtosis manually, rounded to two significant figures
-round(1/n * (sum((x - x_bar)^4) / s^4), 2)
+# Calculate kurtosis manually, rounded to one significant figure
+round(1/n * (sum((x - x_bar)^4) / s^4), 1)
 
 ```
 
-  As we saw in Figure \@ref(fig:org-tenure-distribution), there is a long right tail about the organization tenure distribution. However, due to the moderate skew, there is no left tail. Therefore, our kurtosis coefficient is < 3 since the presence of the right tail is offset by the lack of a left tail. This is why it is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
+  Our kurtosis coefficient of 13.4 indicates a leptokurtic distribution which is supported by the visual in Figure \@ref(fig:org-tenure-distribution).
+  
+  It is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
   
 ## Bivariate Analysis  
+
+  While univariate analysis explores each variable independently, **bivariate analysis** explores statistical relationships between two variables.
 
 ### Covariance
   
@@ -1572,18 +1658,18 @@ round(1/n * (sum((x - x_bar)^4) / s^4), 2)
 ```{r, message = FALSE}
 
 # Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
-cov(demographics$annual_comp, demographics$age, use = "complete.obs")
+cov(employees$annual_comp, employees$age, use = "complete.obs")
 
 ```
   
-  In this example, using the default Pearson method, the covariance between annual compensation and age is 453179.1. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+  In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
   Just as we multiplied the sample variance by $(n - 1) / n$ to obtain the population variance, we can apply the same approach to convert the sample covariance returned by cov() to the population covariance:
   
 ```{r, message = FALSE}
 
 # Calculate population covariance between annual compensation and age
-cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) / n
+cov(employees$annual_comp, employees$age, use = "complete.obs") * (n - 1) / n
 
 ```
 
@@ -1591,8 +1677,8 @@ cov(demographics$annual_comp, demographics$age, use = "complete.obs") * (n - 1) 
 
 ```{r, message = FALSE}
 
-# Generate a correlation matrix among continuous variables
-cov(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+# Generate a covariance matrix among select continuous variables
+cov(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
 
 ```
 
@@ -1601,11 +1687,11 @@ cov(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "
 ```{r, message = FALSE}
 
 # Return sample variance for age
-var(demographics$age)
+var(employees$age)
 
 ```
 
-  As expected, the variance for age ($s^{2} = 168.39$) matches the value found in the age x age cell of the covariance matrix.
+  As expected, the variance for age ($s^{2} = 83.5$) matches the value found in the age x age cell of the covariance matrix.
 
 ### Correlation
 
@@ -1618,11 +1704,11 @@ var(demographics$age)
 ```{r, message = FALSE}
 
 # Calculate the correlation between annual compensation and age
-cor(demographics$annual_comp, demographics$age, use = "complete.obs")
+cor(employees$annual_comp, employees$age, use = "complete.obs")
 
 ```
 
-  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .81 indicates that the strength of the positive association is strong ($r$ = 1 is perfectly positive). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
+  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .02 indicates that the strength of the positive association is weak ($r$ = 0 represents the absence of a relationship). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
   
   * Weak = Absolute value of correlation coefficients between 0 and .3
   * Moderate = Absolute value of correlation coefficients between .4 and .6
@@ -1651,11 +1737,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r corr-lvl-ed, message = FALSE}
 
 # Calculate the correlation between job level and education level using Spearman's method
-cor(demographics$job_level, demographics$education, method = "spearman", use = "complete.obs")
+cor(employees$job_lvl, employees$ed_lvl, method = "spearman", use = "complete.obs")
 
 ```
 
-  The $\rho$ coefficient of .67 indicates that the positive association we observed between job level and education level is moderate-to-strong. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
+  The $\rho$ coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass `method = "kendall"` to this cor() function to implement Kendall's $\tau$.
   
   The **Phi Coefficient** ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
   
@@ -1673,48 +1759,42 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for Phi Coefficient
-library(psych)
-
 # Set females to 1 and everything else to 0
-demographics$gender_code <- ifelse(demographics$gender == 'Female', 1, 0)
+employees$gender_code <- ifelse(employees$gender == 'Female', 1, 0)
 
-# Set high performers (3 and above) to 1 and everything else to 0
-demographics$performance_code <- ifelse(demographics$performance < 3, 0, 1)
+# Set stock options to 1 if level > 0
+employees$stock_option_code <- ifelse(employees$stock_opt_lvl > 0, 1, 0)
 
 # Create a 2x2 contingency table
-contingency_tbl <- table(demographics$gender_code, demographics$performance_code)
+contingency_tbl <- table(employees$gender_code, employees$stock_option_code)
 
 # Calculate the Phi Coefficient between dichotomous variables
-phi(contingency_tbl)
+psych::phi(contingency_tbl)
 
 ``` 
   
-  $\phi$ is essentially 0, which means performance ratings are distributed equitably across gender categories (good news!).
+  $\phi$ is essentially 0, which means stock options are distributed equitably across gender categories (good news!). While there are not differences in the proportion of males and females who receive at least some stock options, examining whether there is equity in the amount of stock grants and refreshes may be a good next step.
   
   A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the cor() function:
   
 ```{r, message = FALSE}
 
-# Generate a correlation matrix among continuous variables
-cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+# Generate a correlation matrix among select continuous variables
+cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
 
 ```
 
-  Based on this correlation matrix, there are several moderate and strong pairwise associations in the data. The values down the diagonal are 1 because these represent the correlation between each variable and itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between `org_tenure` and `job_tenure` ($r = .7$). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
   A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
   
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for correlation visuals
-library(corrplot)
-
 # Store correlation matrix to object M
-M <- cor(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")], use = "complete.obs")
+M <- cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
 
 # Visualize correlation matrix
-corrplot.mixed(M, order = 'AOE')
+corrplot::corrplot.mixed(M, order = 'AOE')
 
 ```
 
@@ -1722,15 +1802,12 @@ corrplot.mixed(M, order = 'AOE')
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Load library for correlation visuals
-library(GGally)
-
 # Visualize correlation matrix
-ggpairs(demographics[, c("annual_comp", "age", "org_tenure", "job_tenure")])
+GGally::ggpairs(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")))
 
 ```
 
-  As shown in these visuals, there are strong linear associations between variable pairs, such as age and org tenure -- but only for certain values. For example, age is positively correlated with org tenure but beyond about 45 years-old, org tenure varies widely. We may find that these bivariate associations look quite different for certain business areas or jobs, assuming business units, divisions, and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \@ref(lm).
+  We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \@ref(lm).
 
   It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. 
   
@@ -1812,7 +1889,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    <br />A. True
    <br />B. False
 
-<!--chapter:end:r/05_univariate_bivariate_analysis.Rmd-->
+<!--chapter:end:r/05_descriptive_statistics.Rmd-->
 
 # Inferential Statistics {#inf-stats}
 
@@ -1835,11 +1912,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 # Load library for data wrangling
 library(dplyr)
 
-# Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Produce descriptive stats for org tenure
-summary(demographics$org_tenure)
+summary(employees$org_tenure)
 
 ```
 
@@ -1851,16 +1928,13 @@ summary(demographics$org_tenure)
 
 ```{r org-tenure-dist, fig.cap = "Org Tenure Distribution", fig.align = 'center', message = FALSE}
 
-# Load library for data visualization
-library(ggplot2)
-
 # Visualize org tenure distribution
-ggplot() + 
-  aes(demographics$org_tenure) + 
-  labs(x = "Org Tenure", y = "Density") + 
-  geom_histogram(aes(y = ..density..), fill = "#414141") +
-  geom_density(fill = "#ADD8E6", alpha = 0.6) +
-  theme_bw()
+ggplot2::ggplot() + 
+ggplot2::aes(employees$org_tenure) + 
+ggplot2::labs(x = "Org Tenure", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
 
 ```
 
@@ -1917,9 +1991,6 @@ geometric_dist <- rgeom(1000, prob = .2)
 
 ```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', warning = FALSE, message = FALSE}
 
-# Load library for arranging visuals
-library(ggpubr)
-
 # Create user-defined function (UDF) to simplify probability distribution visualization
 # Function arguments: (1) data = object containing random distribution values; (2) type = 'discrete' or 'continuous' probability distribution; and (3) title = name of distribution
 dist.viz <- function(data, type, title) {
@@ -1927,23 +1998,23 @@ dist.viz <- function(data, type, title) {
   if (type == "discrete"){
     
     # Discrete distribution
-    viz <- ggplot() + 
-           aes(data) + 
-           labs(title = paste(title), x = "x", y = "count") + 
-           geom_histogram(fill = "#414141") +
-           theme_bw() +
-           theme(plot.title = element_text(hjust = 0.5))
+    viz <- ggplot2::ggplot() + 
+           ggplot2::aes(data) + 
+           ggplot2::labs(title = paste(title), x = "x", y = "count") + 
+           ggplot2::geom_histogram(fill = "#414141") +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
     
   } else {
     
     # Continuous distribution
-    viz <- ggplot() + 
-           aes(data) + 
-           labs(title = paste(title), x = "x", y = "density") + 
-           geom_histogram(aes(y = ..density..), fill = "#414141") +
-           geom_density(fill = "#ADD8E6", alpha = 0.6) +
-           theme_bw() +
-           theme(plot.title = element_text(hjust = 0.5))
+    viz <- ggplot2::ggplot() + 
+           ggplot2::aes(data) + 
+           ggplot2::labs(title = paste(title), x = "x", y = "density") + 
+           ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+           ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
   }
 
   return(viz)
@@ -1958,7 +2029,7 @@ p_poisson <- dist.viz(data = poisson_dist, type = "discrete", title = "Poisson")
 p_geometric <- dist.viz(data = geometric_dist, type = "discrete", title = "Geometric")
   
 # Display distribution visualizations
-ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,
+ggpubr::ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,
           ncol = 3, nrow = 2)
 
 ```
@@ -2019,7 +2090,7 @@ p_chisq <- dist.viz(chisq_dist, "continuous", "Chi-Square")
 p_f <- dist.viz(f_dist, "continuous", "F")
 
 # Display distribution visualizations
-ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
+ggpubr::ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
           ncol = 3, nrow = 2)
 
 ```
@@ -2165,12 +2236,12 @@ var(rand.unif) * (N - 1) / N
 ```{r, fig.cap = "Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
 
 # Produce histogram to visualize population distribution
-ggplot() + 
-  aes(rand.unif) + 
-  labs(x = "x", y = "Density") + 
-  geom_histogram(aes(y = ..density..), fill = "#414141") +
-  geom_density(fill = "#ADD8E6", alpha = 0.6) +
-  theme_bw()
+ggplot2::ggplot() + 
+ggplot2::aes(rand.unif) + 
+ggplot2::labs(x = "x", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
 
 ```
 
@@ -2205,13 +2276,13 @@ for (n in sample_n) {
 }
 
 # Produce histograms to visualize distributions of sample means, grouped by n-count
-sample_means %>% ggplot() + 
-  aes(x = x_bar, fill = n) + 
-  labs(x = "x-bar", y = "Density") + 
-  geom_histogram(aes(y = ..density..), fill = "#414141") +
-  geom_density(fill = "#ADD8E6", alpha = 0.6) +
-  theme_bw() +
-  facet_wrap(~n)
+sample_means %>% ggplot2::ggplot() + 
+                 ggplot2::aes(x = x_bar, fill = n) + 
+                 ggplot2::labs(x = "x-bar", y = "Density") + 
+                 ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+                 ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+                 ggplot2::theme_bw() +
+                 ggplot2::facet_wrap(~n)
 
 ```
 
@@ -2223,9 +2294,9 @@ sample_means %>% ggplot() +
 
   A **Confidence Interval (CI)** is a range of values that likely contains the value of an unknown population parameter. These unknown population parameters are often $\mu$ or $\sigma$, though we will also leverage CIs in later chapters for regression coefficients, proportions, rates, and differences.
   
-  If we draw random samples from a population, we can compute a CI for each sample. Building on the CLT, for a given confidence level (usually 95%, though 99% or 90% are sometimes used), the specified percent of sample intervals is expected to include the estimated population parameter. For example, for a 95% CI we would expect 19 in every 20 (or 95 in every 100) intervals across the samples to include the true population parameter. This is illustrated in Figure \@ref(fig:cis):
+  If we draw random samples from a population, we can compute a CI for each sample. Building on the CLT, for a given confidence level (usually 95%, though 99% or 90% are sometimes used), the specified percent of sample intervals is expected to include the estimated population parameter. For example, for a 95% CI we would expect 19 in every 20 (or 95 in every 100) intervals across the samples to include the true population parameter. This is illustrated in Figure \@ref(fig:conf-int):
   
-```{r cis, out.width = "75%", echo = FALSE, fig.cap = 'Intervals for 95% Confidence Level', fig.align = 'center'}
+```{r conf-int, out.width = "75%", echo = FALSE, fig.cap = 'Intervals for 95 Percent Confidence Level', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/confidence_intervals.png")
 
@@ -2248,7 +2319,7 @@ x_bars <- sample_means[sample_means$n == 50, "x_bar"]
 n <- length(x_bars)
 
 # Calculate percent of sample means within +/- 2 SEs
-length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars)]) / n * 100
+length(subset(x_bars, x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars))) / n * 100
 
 ```
 
@@ -2257,7 +2328,7 @@ length(x_bars[x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2
 ```{r, message = FALSE}
 
 # Calculate percent of sample means within +/- 3 SEs
-length(x_bars[x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars)]) / n * 100
+length(subset(x_bars, x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars))) / n * 100
 
 ```
 
@@ -2473,18 +2544,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these "adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference." The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
 
-## Parametric vs. Nonparametric Tests
-
-  **Parametric statistics** assume the population is normally distributed. **Nonparametric statistics** do not assume anything about the population parameters or distribution and are, therefore, often referred to as distribution free tests. Assuming the normality assumption holds, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations.
-
-  Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate.
-  
-  In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
-
-  Spearman's correlation coefficient, which we used to evaluate the relationship between job level and education in Chapter \@ref(uni-bi-stats), is a nonparametric test since ordinal data are usually not normally distributed in the population. There is a nonparametric equivalent for each parametric test, and these will be reviewed in detail in Chapter \@ref(aod).
-
-  It's important to remember that the normal distribution properties under the CLT relate to the sampling distribution of means -- not to the distribution of the population or to the data for one individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be leveraged.
-
 ## Exercises
 
 1. Which of the following is an example of a null hypothesis, where $\mu$ reflects the mean of a population?
@@ -2543,23 +2602,71 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 # Data Wrangling and Preparation {#data-wrang-prep}
 
-  To begin a data analysis, we must first access the requisite data. This often involves extracting data from either source systems in which the data are generated or downstream environments such as a *data lake*, *data warehouse*, or *data mart*.
+  To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for the majority of the work analytics professionals do.
+  
+```{r ds-tasks, out.width = "75%", echo = FALSE, fig.cap = 'What Data Scientists Really Do', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/data_scientist_tasks.jpeg")
+
+```
+  
+## Data Management
+  
+  Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*.
   
   A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
   
-  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
+  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
   
-  A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+  Figure \@ref(fig:dw-schema) illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
+  
+```{r dw-schema, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
 
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_schema.png")
+
+```
+
+  Tables in a DW are related using a set of keys. Each table needs a **Primary Key (PK)**, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a *composite key*. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A **Foreign Key (FK)** is a column whose values correspond to the values of a PK in another table. **Referential integrity** is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
+  
+  Figure \@ref(fig:dw-erd) shows an **Entity Relationship Diagram (ERD)** that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \@ref(fig:dw-schema) is listed as a FK.
+  
+```{r dw-erd, out.width = "75%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd.png")
+
+```
+
+  A DW may contain many different types of tables, but the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  
+  Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
+  
+  Note that the combination of `end_date = '12/31/9999'` and `current_record = 'Y'` indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent the *last known attributes* along with `current_record = 'Y'`:
+  
+```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_2_table.png")
+
+```
+
+  While we could select rows where `current_record = 'Y'` to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
+
+```{r type-1-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 1 SCD', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table.png")
+
+```
+
+  A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+  
 ## SQL
 
   **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
   
-  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should filter to this subset on the database side rather than load data on the entire workforce into R before filtering to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
   
   **Basics**
   
-  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently utilized.
+  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently needed.
   
   * **SELECT**: Specifies the columns to include in the output
   * **FROM**: Specifies the table(s) in which the relevant data are contained
@@ -2575,24 +2682,30 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
   
-  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is univeral.
+  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is universal.
   
-  First, let's load the `sqldf` library and store data to a data frame named `demographics`:
+  First, let's load the data sets:
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Load SQL library
-library(sqldf)
-
-# Read employee demographics data
-demographics <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_lifecycle_book/master/data/files/employee_demographics.csv")
+# Load data sets
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+status <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv")
+benefits <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv")
+demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv")
+job <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv")
+payroll <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv")
+performance <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv")
+prior_employment <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv")
+survey_response <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv")
+tenure <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv")
 
 # Return row and column counts
-dim(demographics)
+dim(employees)
 
 ```
 
-  Next, we will apply the `sqldf` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 4,875$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
+  Next, we will apply the `sqldf()` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 1,470$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
   
   A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
 
@@ -2602,21 +2715,21 @@ dim(demographics)
 sql_string <- paste("SELECT
                       employee_id
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      dept = 'Research & Development'
                     LIMIT 10")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
-  This query returned a list of employee ids for the 496 employees on the Social Marketing team. 
+  This query returned a list of employee ids for employees in the Research & Development department. 
   
   **Aggregate Functions**
   
-  Next, let's take a look at the average organization tenure by job for those on the Social Marketing team:
+  Next, let's take a look at average organization tenure by job for those in the Research & Development department:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -2625,20 +2738,20 @@ sql_string <- paste("SELECT
                       job_title,
                       AVG(org_tenure)
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
-  There are 10 distinct job titles among employees on the Social Marketing team, and the average organization tenure for these ranges from `7.5` to `10`.
+  There are 7 distinct job titles among employees in the Research & Development department, and the average organization tenure for these ranges from `5` to `13.7` years.
   
-  Since there could be few employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job on the Social Marketing team. We will also utilize aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We will also apply column aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -2648,22 +2761,22 @@ sql_string <- paste("SELECT
                       COUNT(*) AS employee_cnt,
                       AVG(org_tenure) AS avg_org_tenure
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     ORDER BY
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
-  The output shows that there are only 2 Vice Presidents and 10 Directors on the Social Marketing team, while other job titles are much more common. 
+  The output shows that there are only 2 Vice Presidents in the Research & Development department, while other job titles are much more prevalent. 
   
-  Since relatively few employees are Vice Presidents or Directors, let's use the `HAVING` clause to only show average organization tenure for Social Marketing team jobs with more than 10 employees:
+  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees. We can also use the `ROUND()` function to truncate average organization tenure to one significant digit:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -2671,11 +2784,11 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure
                     FROM
-                      demographics
+                      employees
                     WHERE
-                      team = 'Social Marketing'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -2684,81 +2797,126 @@ sql_string <- paste("SELECT
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
   **Joins**
   
-  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. This is done using a **Primary Key (PK)**, which is a unique identifier that can be used to relate records from one table to corresponding records in another.
-  
-  To illustrate how this works, let's partition the fields used in the previous SQL queries into three separate data frames. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will ensure the employee_id column is present in each of the three data frames to facilitate subsequent joins:
-  
-```{r, message = FALSE, warning = FALSE}
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
 
-# Partition select columns into three data frames
-job_df <- demographics[, c("employee_id", "job_title")]
-tenure_df <- demographics[, c("employee_id", "org_tenure")]
-team_df <- demographics[, c("employee_id", "team")]
+```{r sql-joins, out.width = "100%", echo = FALSE, fig.cap = 'Types of SQL Joins', fig.align = 'center'}
 
-```  
-
-  Next, we will query our three new dataframes to return the average organization tenure for Social Marketing team jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `job_df` and `tenure_df` for a particular employee id, but there is no team designation for it in `team_df`, that employee id would not be included in the output.
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
-                    FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      team_df
-                        ON
-                      job_df.employee_id = team_df.employee_id
-                    WHERE
-                      team = 'Social Marketing'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf(sql_string)
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins.png")
 
 ```
 
-  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure_df` and `team_df` were joined to `job_df` via the `employee_id` column. We could have instead joined `job_df` to `team_df` and achieved the same result since all employee ids exist in all three data frames in this case.
+  The structure of SQL queries containing each type of join is represented below:
+
+  **LEFT INCLUSIVE**
   
-  If it were possible for all employee ids to exist in `job_df` but not in either `tenure_df` or `team_df`, we could leverage a `LEFT JOIN` to ensure all records from `job_df` are included in the output irrespective of whether they have matches in `tenure_df` or `team_df`:
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
   
+```
+
+  **LEFT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE B.Key IS NULL
+
+```
+
+  **FULL OUTER INCLUSIVE**
+  
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **FULL OUTER EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL OR B.Key IS NULL  
+
+```
+
+  **RIGHT INCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  RIGHT OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **RIGHT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL
+
+```
+
+  **INNER JOIN**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  INNER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
+  
+  Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
+
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
-                      job_df
-                        LEFT JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        LEFT JOIN
-                      team_df
-                        ON
-                      job_df.employee_id = team_df.employee_id
+                        demographics
+                      INNER JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      INNER JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
                     WHERE
-                      team = 'Social Marketing'
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -2767,31 +2925,92 @@ sql_string <- paste("SELECT
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
+```
+
+  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure` and `job` were joined to `demographics` via the `employee_id` column. We could have instead joined `job` to `tenure` since we joined `tenure` to `demographics`; this would have achieved the same result since all employee ids exist in each of the three data frames.
+  
+  If it were possible for all employee ids to exist in `demographics` but not in either `tenure` or `job`, we could leverage a `LEFT JOIN` to ensure all records from `demographics` are included in the output irrespective of whether they have matches in `tenure` or `job`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
+                    FROM
+                        demographics
+                      LEFT JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  In this case, if demographics is the base data set which contains all employee ids (i.e., the 'LEFT' dataset), it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
+
+  When integrating data within R, the `tidyverse` provides a more efficient and parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single `employees` data frame using a left join on the `employee_id` column:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load tidyverse
+library(tidyverse)
+
+employees <- list(demographics,
+                  status,
+                  benefits,
+                  job,
+                  payroll,
+                  performance,
+                  prior_employment,
+                  survey_response,
+                  tenure) %>%
+                  reduce(left_join, by = "employee_id")
+                  
 ```
 
   **Subqueries**
   
-  **Subqueries** are nested SQL queries that allow us to pass results from an inner query to the main outer query. 
+  **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
   
-  For example, instead of applying the `team = 'Social Marketing` condition in the `WHERE` clause, we can use a subquery to pass a list of Social Marketing employee ids into the outer query for filtering. In this case, we would not need to include `team_df` in the join conditions of our main query:
+  For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include `tenure` in the join conditions of our main query:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
+# Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
-                      job_df
-                        LEFT JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
                     WHERE
-                      job_df.employee_id IN (SELECT employee_id FROM team_df WHERE team = 'Social Marketing')
+                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure > 1)
+                      AND 
+                        dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -2800,13 +3019,13 @@ sql_string <- paste("SELECT
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
-  **Derived Tables**
+  **Virtual Tables**
   
-  An alternative to a subquery is creating a **derived table** in the `FROM` clause using a SQL statement. When using an `INNER JOIN` to connect `job_df` and `tenure_df` to the derived table containing Social Marketing employee ids, any records in `job_df` or `tenure_df` that do not relate to Social Marketing employees will be dropped. With this approach, we would not need a `WHERE` clause:
+  An alternative to a subquery is creating a **virtual table** in the `FROM` clause. When using an `INNER JOIN` to connect `demographics` to the virtual table `ids`, which provides a list of employee ids for those with more than a year of organization tenure, any records in `demographics` or `job` that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a `LEFT JOIN` is used to join `job` to `demographics` since records in `demographics` will be filtered based on `employee_id` matches in the virtual table. With this approach, our `WHERE` clause is limited to the `department = 'Research & Development'` condition:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -2814,17 +3033,19 @@ sqldf(sql_string)
 sql_string <- paste("SELECT
                       job_title,
                       COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
                     FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      dept = 'Research & Development'
                     GROUP BY
                       job_title
                     HAVING
@@ -2833,78 +3054,88 @@ sql_string <- paste("SELECT
                       job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
+
+  As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
 
   **Window Functions**
   
-  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
+  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
   
-  For example, we can assign an organization tenure rank by Social Marketing job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
+  For example, we can assign an organization tenure rank by Research & Development job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
 # Limit output to 10 records since query does not collapse records
-# Since employee_id is a column in multiple tables used in this query, we need to indicate a specific table in order to include employee_id in the output
 sql_string <- paste("SELECT
-                      job_df.employee_id,
+                      demographics.employee_id,
                       job_title,
-                      org_tenure,
-                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
+                      commute_dist,
+                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
                     FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      dept = 'Research & Development'
                     ORDER BY
                       job_title,
-                      org_tenure_rank
+                      commute_dist_rank
                     LIMIT 10")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
 
-  Notice that in the case of organization tenure ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest tenure value.
+  Notice that in the case of commute distance ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.
   
-  We can also treat this query as a derived table, and then filter on the derived `org_tenure_rank` field to return a list of Social Marketing employees with the highest tenure for each job. The `*` symbol in the `SELECT` clause will return all columns from the specified table:
+  We can also treat this query as a virtual table, and then filter on the derived `commute_dist_rank` field to return the highest commute distance for each job. We can add a `DISTINCT()` function in the `SELECT` clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the `COUNT(*)` function:
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Store SQL query as a character string
-sql_string <- paste("SELECT tbl.*
-                    FROM
-                    (SELECT
-                      job_df.employee_id,
-                      job_title,
-                      org_tenure,
-                      RANK () OVER (PARTITION BY job_title ORDER BY org_tenure DESC) AS org_tenure_rank
-                    FROM
-                      job_df
-                        INNER JOIN
-                      tenure_df
-                        ON
-                      job_df.employee_id = tenure_df.employee_id
-                        INNER JOIN
-                      (SELECT employee_id FROM team_df WHERE team = 'Social Marketing') social_mktg_ids
-                        ON
-                      job_df.employee_id = social_mktg_ids.employee_id
-                    ORDER BY
-                      job_title,
-                      org_tenure_rank) tbl
-                    WHERE
-                      tbl.org_tenure_rank = 1")
+sql_string <- paste("SELECT
+                        DISTINCT(job_title) AS job_title,
+                        COUNT(*) AS employee_count,
+                        commute_dist
+                     FROM
+                        (SELECT
+                          demographics.employee_id,
+                          job_title,
+                          commute_dist,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
+                        FROM
+                            demographics
+                          LEFT JOIN
+                            job
+                          ON
+                            demographics.employee_id = job.employee_id
+                          INNER JOIN
+                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                          ON
+                            demographics.employee_id = ids.employee_id
+                        WHERE
+                          dept = 'Research & Development'
+                        ORDER BY
+                          job_title,
+                          commute_dist_rank) tbl
+                      WHERE
+                        tbl.commute_dist_rank = 1
+                      GROUP BY
+                        job_title")
 
 # Execute SQL query
-sqldf(sql_string)
+sqldf::sqldf(sql_string)
 
 ```
   
@@ -2917,33 +3148,36 @@ sqldf(sql_string)
 ```{r, message = FALSE, warning = FALSE}
 
 # Summarize df
-summary(demographics)
+summary(employees)
 
 ```
 
-  Note that fields with `NA's` contain missing values. Also, by default `employee_id` and `manager_id` are both treated as integers in R, which is why descriptive statistics appropriate for numeric data are provided. `employee_id` and `manager_id` should actually be treated as character strings since we will not perform any arithmetic operations using these ids.
+  Note that fields with `NA's` contain missing values. Also, by default `employee_id` is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. `employee_id` should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
   
   **Missingness**
 
   Before considering whether and how to handle missing data, it is important to distinguish between *structural missingness* and *informative missingness* (Kuhn & Johnson, 2013). 
   
-  **Structural missingness** relates to data that is missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, we would not want to address missing values in these cases.
+  **Structural missingness** relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.
   
   **Informative missingness** relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
   
-  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets.
+  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of a large number of impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns. 
   
-  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+  **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
   
-  Let's evaluate the `demographics` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
+  Let's evaluate the `employees` data frame for missing `annual_comp` values using the logical `is.na()` function, and return values of variables relevant in determining one's annual compensation:
 
 ```{r, message = FALSE, warning = FALSE}
 
+# Store original annual comp for sample employee
+orig_comp <- subset(employees, employee_id == '2176', select = annual_comp)
+
 # Force a NA in lieu of annual comp for illustrative purposes
-demographics[demographics$employee_id == '4305', 'annual_comp'] <- NA
+employees[employees$employee_id == '2176', 'annual_comp'] <- NA
 
 # Return relevant employee characteristics where annual comp is missing
-demographics[is.na(demographics$annual_comp), c("employee_id", "job_title", "location", "job_level")]
+subset(employees, is.na(annual_comp), select = c(employee_id, job_title, job_lvl))
 
 ```
 
@@ -2952,23 +3186,23 @@ demographics[is.na(demographics$annual_comp), c("employee_id", "job_title", "loc
 ```{r, message = FALSE, warning = FALSE}
 
 # Return average annual comp for employees with similar characteristics, excluding employees with missing comp values
-imputed_comp <- mean(demographics[demographics$job_title == 'Manager' & demographics$location == 'HQ 1 - Austin' & demographics$job_level == 7, 'annual_comp'], na.rm = TRUE)
+imputed_comp <- sapply(subset(employees, job_title == 'Manufacturing Director' & job_lvl == 2, select = annual_comp), mean, na.rm = TRUE)
 
 # Impute missing comp for relevant segment
-demographics[demographics$employee_id == '4305', 'annual_comp'] <- imputed_comp
+employees[employees$employee_id == '2176', 'annual_comp'] <- imputed_comp
 
-# Display imputed comp
-demographics[demographics$employee_id == '4305', 'annual_comp']
+# Display absolute difference between original and imputed comp
+round(abs(orig_comp - subset(employees, employee_id == '2176', select = annual_comp)), 0)
 
 ```
 
-  While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. These models will be covered in detail in later chapters.
+  While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. *Linear regression* and *K-Nearest Neighbor (KNN)* models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. **Multiple imputation** combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.
 
   **Outliers**
 
   The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated. As discussed in Chapter \@ref(uni-bi-stats), a common method of outlier detection is identifying values which fall outside the following interval:
   
-  $$I = [Q1 - 1.5 * IQR; Q3 + 1.5 * IQR]$$
+  $$I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR$$
 
   **Low Variability**
   
@@ -2976,29 +3210,47 @@ demographics[demographics$employee_id == '4305', 'annual_comp']
   
   When working with survey data, checking for **straightlining** should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing "I plan to be here in a year" to "I do not plan to be here in a year"), which we expect to be inversely related, this gives added support for discarding these responses.
   
-  Fields with low variability can be easily identified using descriptive statistics from the `summary()` function. If the `Min` and `Max` values are equal, there is no variability in the field's values.
+  Fields with low variability can be easily identified using descriptive statistics from the `summary()` function. If the `Min` and `Max` values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove `standard_hrs` from the data:
   
+```{r, message = FALSE, warning = FALSE}
+
+# Return descriptives to understand distribution of standard hours
+summary(employees$standard_hrs)
+
+```
+
+  Given that the data dictionary in Chapter \@ref(getting-started) indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return descriptives to understand distribution of standard hours
+summary(employees$perf_rating)
+
+```
+
+  Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that will likely bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.
+
   **Inconsistent Categories**
   
   **Inconsistent categories** impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.
   
   Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.
   
-  Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This will either warrant a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream to avoid duplicative data cleaning procedures across downstream applications.
+  Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a clean and well-defined set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This warrants either a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream (e.g., in the source system) to avoid duplicative data cleaning procedures across downstream applications.
 
   **Data Binning**
   
-  **Data binning** refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, very granular categories should be avoided – especially when there is no theoretical basis for such categories facilitating a project’s objectives or deepening insights. Where the $n$-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. A variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level “High School Not Completed” and “High School Completed” bins.
+  **Data binning** refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, extremely granular categories should be avoided – especially when there is no theoretical basis for such categories facilitating a project’s objectives or deepening insights. Where the $n$-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. For example, a variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level “High School Not Completed” and “High School Completed” bins.
   
-  For modeling applications, it is important to let the model determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of 'Less Than 1 Year', '1-5 Years', and 'More Than 5 Years' will likely result in information loss. Any variability *within* these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
+  For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of 'Less Than 1 Year', '1-5 Years', and 'More Than 5 Years' will likely result in information loss. Any variability *within* these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
 
 ## One-Hot Encoding
 
-  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, dummy coding is not required, as metrics such as counts and percentages can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications categorical variables must be converted into $k-1$ variables, where $k$ is the number of categories, using binary (1/0) coding.
+  **One-hot encoding**, also known as **dummy coding**, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, this is not required, as counts and percent of total metrics can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications, categorical variables must be converted into $k-1$ variables, where $k$ is the number of categories, using binary (1/0) coding.
   
-  Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with "Remote" or "Non-Remote" values, we could code "Remote" values as 1 and "Non-Remote" values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables. 
+  Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with "Remote" or "Non-Remote" values, we may code "Remote" values as 1 and "Non-Remote" values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables. 
   
-  If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \@ref(lm), one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields would be perfectly correlated with the others; when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \@ref(fig:onehot-encoding), by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+  If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \@ref(lm), one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others. That is, when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \@ref(fig:onehot-encoding), by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
   
 ```{r onehot-encoding, out.width = "75%", echo = FALSE, fig.cap = 'One-Hot Encoding', fig.align = 'center'}
 
@@ -3006,9 +3258,71 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
+  For a categorical variable with only two values, the `ifelse()` function can be leveraged to assign values:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return unique values of gender field
+unique(employees$gender)
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Gender one-hot encoding
+employees$gender_ohe <- ifelse(employees$gender == 'Female', 1, 0)
+
+# Preview records
+head(subset(employees, select = c(employee_id, gender_ohe)))
+
+```
+
+  For variables with more than 2 categories, we can leverage the `model.matrix()` function for one-hot encoding. Let's illustrate be encoding locations.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return counts by department
+employees %>% count(dept, sort = TRUE)
+
+```
+
+  By default, the `model.matrix()` function will produce a matrix of 1/0 values for $k-1$ categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using `-1` in the first argument passed to `model.matrix()` and then choose the reference group for the analysis in a subsequent step.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Department one-hot encoding
+dept_ohe <- model.matrix(~dept-1, data = employees)
+
+# Preview data
+head(dept_ohe)
+
+```
+
+  We will drop the department with the lowest $n$ rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either $1$ or $0$, we can use the `colSums()` function to sum each column and the `which.min()` function to identify which has the lowest sum (i.e., smallest department by employee count).
+
+```{r, message = FALSE, warning = FALSE}
+
+# Drop department with lowest sum (lowest n-count)
+dept_ohe <- dept_ohe[, -which.min(colSums(dept_ohe))]
+
+# Preview refined one-hot encoded data
+head(dept_ohe)
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Combine employees and matrix containing one-hot encoded departments
+employees <- cbind(employees, dept_ohe)
+
+# Drop original department field
+employees <- subset(employees, select = -c(dept))
+
+```
+
 ## Feature Engineering
 
-  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information:
+  Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information. This can be easily accomplished using the arithmetic functions we've covered.
 
   + Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
   + Office/remote worker (binary variable dummy coded as 1/0)
@@ -3032,36 +3346,312 @@ headcount over x months)
 
 1. What are the differences between data lakes, data warehouses, and data marts?
 
-2. What two clauses must always be present in a SQL query?
+2. What is the difference between a Type 1 and Type 2 table in a DW?
 
-3. How do aggregate functions differ from window functions in SQL?
+3. What two clauses must always be present in a SQL query?
 
-4. What is a subquery?
+4. How do aggregate functions differ from window functions in SQL?
 
-5. What is the difference between an INNER JOIN and LEFT JOIN?
+5. What is a subquery?
 
-6. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+6. What is the difference between an INNER JOIN and LEFT JOIN?
 
-7. How can missing values be addressed when impacted records cannot be eliminated from a data set?
+7. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
 
-8. When is one-hot encoding required for categorical variables?
+8. How can missing values be addressed when impacted records cannot be eliminated from a data set?
 
-9. Why should variables with low to no variability be dropped?
+9. When is one-hot encoding required for categorical variables?
 
-10. What is the role of feature engineering?
+10. Why should variables with low to no variability be dropped?
 
 <!--chapter:end:r/07_data_wrangling_preparation.Rmd-->
 
 # Analysis of Differences {#aod}
 
-## Comparing 2 Distributions
+  There are many statistical tests that can be used to test for differences within or between two or more groups. This chapter will cover the most common types of differences in people analytics and the tests applicable to each.
+
+## Parametric vs. Nonparametric Tests
+
+  In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
+  
+  Assuming the assumptions of parametric tests hold, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations. Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate. Just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
+  
+  In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
+  
+  You may be wondering whether the magical elixir that is the CLT we covered in Chapter \@ref(inf-stats) influences our ability to utilize parametric tests. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
+  
+## Statistical vs. Practical Significance
+
+  In addition to testing for statistical significance, which is often tied to a null hypothesis related to equal means across groups, it is important to understand the magnitude of any observed differences. A statistically significant difference may be too small to matter, just as a large difference may not be significant due to the spread of data across groups. This chapter will cover many tests for quantifying the strength or effect of differences (i.e., practical significance).
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+```
+
+## Differences in Discrete Data
 
 
 
-## Comparing 3+ Distributions
+  **Chi-Square Test**
 
+  The most common strength test when a significant Chi-Square statistic is observed is Cramer’s V. 
+  
+  **Fischer Exact Test**
+  
+
+```{r discrete-tests, out.width = "75%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+
+```
+
+## Differences in Continuous Data
+
+
+  Figure \@ref(fig:continuous-tests) provides a side-by-side of parametric and corresponding nonparametric tests of differences for continuous data.
+  
+```{r continuous-tests, out.width = "75%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
+
+```
+
+
+### 2 Groups
+
+  **Independent Samples T-Test**
+
+  **Mann-Whitney U Test**
+  
+  **Wilcoxon Rank-Sum Test**
+  
+  **Wilcoxon Signed-Rank Test**
+
+  **Paired Samples T-Test**
+
+### More Than 2 Groups
+
+  **Analysis of Variance (ANOVA)** is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
+  
+  It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, in order to reject $H_0$ in ANOVA, at least one of the possible contrasts must be different. As a result, we may find a significant $F$-statistic but no significant differences between pairwise means.
+  
+  In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \@ref(inf-stats), multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+  
+  ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A **one-way ANOVA** is used to determine how one categorical IV influences a continuous DV. A **two-way ANOVA** is used to determine how two categorical IVs influence a continuous DV, while a **three-way ANOVA** is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a **factorial ANOVA**. As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+  
+  ANOVA is not a test, per se, but a $F$-test underpins it. The mathematical procedure behind the $F$-test is relatively straightforward:
+  
+  1. Compute the **within-group variance**, which is also known as residual variance. Simply put, this tells us how different each member of the group is from the average.
+  2. Compute the **between-group variance**. This represents how different the group means are from one another.
+  3. Produce the $F$-statistic, which is the *within-group variance* / *between-group variance*.
+  
+  Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing any outliers), ANOVA has three key assumptions:
+  
+  1. **Independence**: Observations within each group are independent of each other
+  2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
+  3. **Normality**: Residuals must be normally distributed (with mean of 0) within each group
+  
+  **One-Way ANOVA**
+  
+  To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.
+  
+  Each observation in `employees` represents a unique employee, and a given employee can only have one job satisfaction score and one annual compensation value. The assumption of independence is met since each record exists independent of one another and each job satisfaction group is comprised of different employees.
+  
+  Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the `leveneTest()` function from the `car` package:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library for Levene's test
+library(car)
+
+# Perform Levene's test for homogeneity of variance
+car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
+
+```  
+  
+  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p > .05$, we fail to reject this null hypothesis and can assume equal variances.
+  
+  Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
+  
+```{r comp-dist, fig.cap = "Annual Compensation Distribution by Job Satisfaction Level", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load data viz library
+library(ggplot2)
+library(ggpubr)
+
+# Create function to visualize distribution
+dist.viz <- function(data, x) {
+  
+viz <- ggplot2::ggplot() + 
+       ggplot2::aes(data) + 
+       ggplot2::labs(title = paste("Job Sat = ", x), x = "Annual Compensation", y = "Frequency") + 
+       ggplot2::geom_histogram(fill = "#414141") +
+       ggplot2::theme_bw() +
+       ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+  return(viz)
+}
+
+# Produce annual compensation vectors for each job satisfaction level
+# Unlist() is needed to convert the default object from subset() into a numeric vector
+group_1 <- unlist(subset(employees, job_sat == 1, select = annual_comp))
+group_2 <- unlist(subset(employees, job_sat == 2, select = annual_comp))
+group_3 <- unlist(subset(employees, job_sat == 3, select = annual_comp))
+group_4 <- unlist(subset(employees, job_sat == 4, select = annual_comp))
+
+# Call UDF to build annual comp histogram for each job satisfaction level
+viz_1 <- dist.viz(data = group_1, x = 1)
+viz_2 <- dist.viz(data = group_2, x = 2)
+viz_3 <- dist.viz(data = group_3, x = 3)
+viz_4 <- dist.viz(data = group_4, x = 4)
+
+# Display distribution visualizations
+ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
+          ncol = 2, nrow = 2)
+
+``` 
+  
+  As we can see, annual compensation is not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.
+  
+  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. After partitioning annual compensation into groups differentiated by job satisfaction level, we can use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
+
+```{r qq-plot, fig.cap = "Q-Q Plot of Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Generate residuals for each group
+residuals <- c(group_1 - mean(group_1), group_2 - mean(group_2), group_3 - mean(group_3), group_4 - mean(group_4))
+
+# Create a Q-Q plot of residuals
+ggpubr::ggqqplot(residuals)
+
+``` 
+
+  To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure \@ref(fig:qq-plot), there is a clear departure from normality at both ends of the theoretical range.
+
+  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit** test (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S)** test (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk** test (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
+  
+  Let's test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to run this test in R using the model residuals:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(residuals)
+
+``` 
+
+  Since $p < .05$, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
+  
+  Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.
+  
+  Let's first try several common data transformations and then examine the resulting Q-Q plots:
+
+```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Build a linear model using the natural logarithm of annual comp
+ln.model <- lm(log(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the log base 10 of annual comp
+log10.model <- lm(log10(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the square root of annual comp
+sqrt.model <- lm(sqrt(annual_comp) ~ job_sat, data = employees)
+
+# Store Q-Q plots to viz objects
+ln.viz <- ggpubr::ggqqplot(residuals(ln.model)) + ggtitle("Natural Log")
+log10.viz <- ggpubr::ggqqplot(residuals(log10.model)) + ggtitle("Log Base 10")
+sqrt.viz <- ggpubr::ggqqplot(residuals(sqrt.model)) + ggtitle("Square Root")
+
+# Display Q-Q plots of residuals
+ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
+          ncol = 3, nrow = 1)
+
+``` 
+
+  Even with these transformations, there is still a clear S-shaped curve about the residuals. 
+
+  The **Kruskal Wallis H Test** is the nonparametric alternative to a one-way ANOVA (Daniel, 1990). This test can be performed using the `kruskal.test()` function in R:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Nonparametric Kruskal one-way ANOVA investigating median differences in annual comp by job satisfaction
+kruskal.test(annual_comp ~ job_sat, data = employees)
+
+```
+
+  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different.
+
+```{r, message = FALSE, warning = FALSE}
+
+pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method = "BH")
+
+```
+
+  ANOVA can be performed using the `aov()` function, followed by the `summary()` function to display model output:
+    
+```{r, message = FALSE, warning = FALSE}
+
+# One-way ANOVA investigating mean differences in annual comp by job satisfaction
+one.way <- aov(annual_comp ~ job_sat, data = employees)
+summary(one.way)
+
+```
+  
+  **Two-Way ANOVA**
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Two-way ANOVA investigating mean differences in annual comp by job satisfaction and dept
+two.way <- aov(annual_comp ~ job_sat + dept, data = employees)
+summary(two.way)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
+# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept
+interaction <- aov(annual_comp ~ job_sat * dept, data = employees)
+summary(interaction)
+
+```
+
+### Post-Hoc Tests
+  
+  **Tukey's Honest Significant Difference (HSD)** test
+  
+  **Scheffe**
+  
+  **Bonferroni**
+
+
+### Practical Significance
+
+  **Cohen's d**
+
+  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
+  
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
+  
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  
+  * **Small** = 0.2
+  * **Medium** = 0.5
+  * **Large** = 0.8
+
+  **Cliff's Delta**
+
+  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  
+  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 ## Exercises
+
+1. 
 
 <!--chapter:end:r/08_analysis_differences.Rmd-->
 
@@ -3298,9 +3888,13 @@ Baron, R. M., & Kenny, D. A. (1986). The moderator–mediator variable distincti
 
 Bartlett, R. (2013). A Practitioner's Guide to Business Analytics: Using Data Analysis Tools to Improve Your Organization's Decision Making and Strategy. New York, NY: McGraw-Hill.
 
+Chakravarti, I. M., Laha, R. G., & Roy, J. (1967). Handbook of methods of applied statistics. New York: Wiley.
+
 Creswell, J. W., & Creswell, J. D. (2018). Research Design: Qualitative, Quantitative, and Mixed Methods Approaches (5th ed.). Los Angeles: Sage.
 
 Cronbach, L. J., & Meehl, P. E. (1955). Construct validity in psychological tests. Psychological Bulletin, 52(4), 281–302. https://doi.org/10.1037/h0040957
+
+Daniel, W. W. (1990). Kruskal–Wallis one-way analysis of variance by ranks. Applied Nonparametric Statistics (2nd ed.). Boston: PWS-Kent. pp. 226–234.
 
 Daw, R. H., & Pearson, E. S. (1972). Studies in the History of Probability and Statistics. XXX. Abraham De Moivre’s 1733 Derivation of the Normal Curve: A Bibliographical Note. Biometrika, 59(3), 677–680. https://doi.org/10.2307/2334818
 
@@ -3316,11 +3910,19 @@ Kerlinger, F., & Lee, H. (2000). Foundations of behavioral research (4th ed.). M
 
 Kuhn, M., & Johnson, K. (2013). Applied predictive modeling. New York: Springer.
 
+Levene, H. (1960). Robust Tests for Equality of Variances. In: Olkin, I., Ed., Contributions to Probability and Statistics. Palo Alto: Stanford University Press. pp. 278-292.
+
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 
 Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Processes. Blue Bell, PA: Kappa Research, LLC.
 
 Roethlisberger, F. J., & Dickson, W. J. (1939). Management and the worker. Harvard Univ. Press.
+
+Shapiro, S. S., & Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). Biometrika, 52(3–4), 591–611. https://doi.org/10.1093/biomet/52.3-4.591
+
+Snedecor, G. W., & Cochran, W. G. (1980). Statistical methods (7th ed.). Ames, Iowa: Iowa State University Press.
+
+Vargha, A. & Delaney, H. D. (2000). A Critique and Improvement of the CL Common Language Effect Size Statistics of McGraw and Wong. Journal of Educational and Behavioral Statistics 25(2), 101–132.
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 
@@ -3514,13 +4116,56 @@ Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New Yor
 
 8. A $CI$ represents the range of values we expect to include an unknown population parameter (often the mean) for a specified degree of confidence.
    <br />A. True
-   <br />B. False   
    
 9. When population parameters are unknown, which of the following tests is most appropriate for testing $\mu_A = \mu_B$?
    <br />B. T-Test
    
 10. According to the Empirical Rule, 95% of normally distributed data lie within how many standard deviations of the mean?
    <br />B. 2
+
+
+** Data Wrangling and Preparation**
+
+1. What are the differences between data lakes, data warehouses, and data marts?
+
+  The main difference between a data lake and data warehouse is the type of data they are designed to store. A data lake stores myriad types of data -- both structured and unstructured -- in its native format until needed. A data warehouse (DW) is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. A data mart is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case.
+
+2. What is the difference between a Type 1 and Type 2 table in a DW?
+
+   A Type 1 table is overwritten on a regular cadence (usually daily) and contains no history -- only current values. A Type 2 table is a table in which a new record is inserted when a change occurs for one or more specified dimensions.
+
+3. What two clauses must always be present in a SQL query?
+
+  The `SELECT` and `FROM` clauses are required in a SQL query.
+
+4. How do aggregate functions differ from window functions in SQL?
+
+  Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation was performed.
+
+5. What is a subquery?
+
+  Subqueries are queries nested within other queries.
+
+6. What is the difference between an INNER JOIN and LEFT JOIN?
+
+  Inner joins result in the intersection of two tables, whereas outer joins result in the union of two tables.
+
+7. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+
+  There may be a logical reason for missing data, or the missing data may be informative regarding an outcome of interest. Addressing missing values without an understanding of the underlying data generative process, or missingness patterning, could result in improper handling that could bias analyses.
+
+8. How can missing values be addressed when impacted records cannot be eliminated from a data set?
+
+  Data imputation is a common way to address missing data, which involves replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data.
+
+9. When is one-hot encoding required for categorical variables?
+
+  For statistical and ML modeling applications, categorical variables must be converted into $k-1$ variables, where $k$ is the number of categories, using binary (1/0) coding.
+
+10. Why should variables with low to no variability be dropped?
+
+  Variables with low variability often do not provide sufficient information for identifying patterns in data. When working with survey data, constant responses across all survey items (i.e., straightlining) may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey.
+  
 
 ## 4D Framework
 

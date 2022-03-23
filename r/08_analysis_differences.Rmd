@@ -4,9 +4,13 @@
 
 ## Parametric vs. Nonparametric Tests
 
-  In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. However, the assumptions of parametric tests are not always met.
+  In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
   
-  **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. While useful when data are nonnormal, it is important to note that nonparametric tests are not only less powerful than their parametric equivalents, they also require hypothesis modification since most nonparametric tests are about the *median* rather than *mean* centers.
+  Assuming the assumptions of parametric tests hold, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations. Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate. Just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
+  
+  In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
+  
+  You may be wondering whether the magical elixir that is the CLT we covered in Chapter \@ref(inf-stats) influences our ability to utilize parametric tests. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
   
 ## Statistical vs. Practical Significance
 
@@ -16,19 +20,6 @@
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
-
-```
-
-
-```{r continuous-tests, out.width = "75%", echo = FALSE, fig.cap = 'Continuous Data: Parametric & Nonparametric Tests of Differences', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
-
-```
-
-```{r discrete-tests, out.width = "75%", echo = FALSE, fig.cap = 'Discrete Data: Criteria for Chi-Square & Fisher Exact Tests', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
 
 ```
 
@@ -43,8 +34,22 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   **Fischer Exact Test**
   
 
+```{r discrete-tests, out.width = "75%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+
+```
+
 ## Differences in Continuous Data
 
+
+  Figure \@ref(fig:continuous-tests) provides a side-by-side of parametric and corresponding nonparametric tests of differences for continuous data.
+  
+```{r continuous-tests, out.width = "75%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
+
+```
 
 
 ### 2 Groups
@@ -101,7 +106,7 @@ car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
   
   The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p > .05$, we fail to reject this null hypothesis and can assume equal variances.
   
-  Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
+  Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
   
 ```{r comp-dist, fig.cap = "Annual Compensation Distribution by Job Satisfaction Level", fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -114,7 +119,7 @@ dist.viz <- function(data, x) {
   
 viz <- ggplot2::ggplot() + 
        ggplot2::aes(data) + 
-       ggplot2::labs(title = paste("Job Sat = ", x), x = "annual comp", y = "frequency") + 
+       ggplot2::labs(title = paste("Job Sat = ", x), x = "Annual Compensation", y = "Frequency") + 
        ggplot2::geom_histogram(fill = "#414141") +
        ggplot2::theme_bw() +
        ggplot2::theme(plot.title = element_text(hjust = 0.5))
@@ -122,11 +127,18 @@ viz <- ggplot2::ggplot() +
   return(viz)
 }
 
+# Produce annual compensation vectors for each job satisfaction level
+# Unlist() is needed to convert the default object from subset() into a numeric vector
+group_1 <- unlist(subset(employees, job_sat == 1, select = annual_comp))
+group_2 <- unlist(subset(employees, job_sat == 2, select = annual_comp))
+group_3 <- unlist(subset(employees, job_sat == 3, select = annual_comp))
+group_4 <- unlist(subset(employees, job_sat == 4, select = annual_comp))
+
 # Call UDF to build annual comp histogram for each job satisfaction level
-viz_1 <- dist.viz(data = unlist(subset(employees, job_sat == 1, select = annual_comp)), x = 1)
-viz_2 <- dist.viz(data = unlist(subset(employees, job_sat == 2, select = annual_comp)), x = 2)
-viz_3 <- dist.viz(data = unlist(subset(employees, job_sat == 3, select = annual_comp)), x = 3)
-viz_4 <- dist.viz(data = unlist(subset(employees, job_sat == 4, select = annual_comp)), x = 4)
+viz_1 <- dist.viz(data = group_1, x = 1)
+viz_2 <- dist.viz(data = group_2, x = 2)
+viz_3 <- dist.viz(data = group_3, x = 3)
+viz_4 <- dist.viz(data = group_4, x = 4)
 
 # Display distribution visualizations
 ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
@@ -136,26 +148,28 @@ ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
   
   As we can see, annual compensation is not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.
   
-  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. We can use the `lm()` function to construct a linear model in order to produce the residuals; linear models will be covered in depth in Chapter \@ref(lm). We can then use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
+  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. After partitioning annual compensation into groups differentiated by job satisfaction level, we can use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
 
 ```{r qq-plot, fig.cap = "Q-Q Plot of Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Build a linear model
-model <- lm(annual_comp ~ job_sat, data = employees)
+# Generate residuals for each group
+residuals <- c(group_1 - mean(group_1), group_2 - mean(group_2), group_3 - mean(group_3), group_4 - mean(group_4))
 
 # Create a Q-Q plot of residuals
-ggpubr::ggqqplot(residuals(model))
+ggpubr::ggqqplot(residuals)
 
 ``` 
 
   To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure \@ref(fig:qq-plot), there is a clear departure from normality at both ends of the theoretical range.
+
+  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit** test (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S)** test (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk** test (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
   
-  An alternative to a visual inspection of normality is the Shapiro-Wilk test (Shapiro & Wilk, 1965). The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to perform this test in R using the model residuals:
+  Let's test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to run this test in R using the model residuals:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Compute Shapiro-Wilk test of normality
-shapiro.test(residuals(model))
+shapiro.test(residuals)
 
 ``` 
 
