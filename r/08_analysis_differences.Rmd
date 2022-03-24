@@ -10,16 +10,38 @@
   
   In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume **homogeneity of variance** and **independence**. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
   
-  You may be wondering whether the magical elixir that is the CLT we covered in Chapter \@ref(inf-stats) influences our ability to utilize parametric tests. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
-  
-## Statistical vs. Practical Significance
+  You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \@ref(inf-stats), influences our ability to utilize parametric tests. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
 
-  In addition to testing for statistical significance, which is often tied to a null hypothesis related to equal means across groups, it is important to understand the magnitude of any observed differences. A statistically significant difference may be too small to matter, just as a large difference may not be significant due to the spread of data across groups. This chapter will cover many tests for quantifying the strength or effect of differences (i.e., practical significance).
-  
 ```{r, message = FALSE, warning = FALSE}
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+```
+
+
+
+
+```{r, message = FALSE, warning = FALSE}
+
+# Set seed for reproducible random numbers
+set.seed(123)
+
+# Draw random numbers from normal distribution per defined parameters
+a <- data.frame(x = rnorm(100000, 100, .5))
+b <- data.frame(x = rnorm(100000, 101, .5))
+
+# Label groups and combine within single df
+a$group <- 'a'
+b$group <- 'b'
+ab <- rbind(a, b)
+
+# Visualize distributions
+ggplot2::ggplot(ab, aes(x, fill = group)) + 
+ggplot2::labs(title = "Mean Difference = 1 (p < .001)", x = "x", y = "Density") + 
+ggplot2::geom_density(alpha = 0.6) +
+ggplot2::scale_fill_manual( values = c("skyblue","lightgrey")) +
+ggplot2::theme_bw()
 
 ```
 
@@ -34,7 +56,7 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
   **Fischer Exact Test**
   
 
-```{r discrete-tests, out.width = "75%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
 
@@ -45,7 +67,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   Figure \@ref(fig:continuous-tests) provides a side-by-side of parametric and corresponding nonparametric tests of differences for continuous data.
   
-```{r continuous-tests, out.width = "75%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
+```{r continuous-tests, out.width = "100%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
 
@@ -63,6 +85,104 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   **Wilcoxon Signed-Rank Test**
 
   **Paired Samples T-Test**
+  
+  
+  
+  In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. Comparing unstandardized mean differences between groups isn't too helpful, as the magnitude of difference is scale-dependent. For example, we can observe a small mean difference between two groups that is statistically significant, while a relatively large mean difference between other groups may not be statistically significant due to the spread of data. 
+  
+  The examples in Figure \@ref(fig:mean-group-diff) illustrate differences between unstandardized group means for random numbers sampled from normal distributions with very different parameters.
+
+```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Unstandardized Mean Differences of Independent Samples', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Set seed for reproducible random numbers
+set.seed(123)
+
+### Example 1 ###
+
+# Define sample size
+n1 = 50
+
+# Draw random numbers from normal distribution per defined parameters
+a1 <- data.frame(x = rnorm(n1, 100, .5))
+b1 <- data.frame(x = rnorm(n1, 101, .5))
+
+# Label groups and combine within single df
+a1$group <- 'a'
+b1$group <- 'b'
+ab1 <- rbind(a1, b1)
+
+# Calculate absolute mean difference
+xbar_delta_1 <- abs(round(mean(ab1[ab1$group == 'b', 'x']) - mean(ab1[ab1$group == 'a', 'x']), 0))
+t_test_1 <- t.test(ab1[ab1$group == 'a', 'x'], ab1[ab1$group == 'b', 'x'])
+
+# Store viz to object
+p1 <- ggplot2::ggplot(ab1, aes(x, fill = group)) + 
+      ggplot2::labs(title = paste0("MD = ", xbar_delta_1, "\n(n = ", n1, ", ", ifelse(t_test_1$p.value < .05, "p < .05", "p > .05"), ")"),
+                    x = "x", y = "Density") + 
+      ggplot2::scale_x_continuous(limits = c(95, 105)) +
+      ggplot2::geom_density(alpha = 0.6) +
+      ggplot2::scale_fill_manual( values = c("skyblue","lightgrey")) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+### Example 2 ###
+
+# Define sample size
+n2 = 50
+
+# Draw random numbers from normal distribution per defined parameters
+a2 <- data.frame(x = rnorm(n2, 200, 90))
+b2 <- data.frame(x = rnorm(n2, 150, 90))
+
+# Label groups and combine within single df
+a2$group <- 'a'
+b2$group <- 'b'
+ab2 <- rbind(a2, b2)
+
+# Calculate absolute mean difference
+xbar_delta_2 <- abs(round(mean(ab2[ab2$group == 'b', 'x']) - mean(ab2[ab2$group == 'a', 'x']), 0))
+t_test_2 <- t.test(ab2[ab2$group == 'a', 'x'], ab2[ab2$group == 'b', 'x'])
+
+# Store viz to object
+p2 <- ggplot2::ggplot(ab2, aes(x, fill = group)) + 
+      ggplot2::labs(title = paste0("MD = ", xbar_delta_2, "\n(n = ", n2, ", ", ifelse(t_test_2$p.value < .05, "p < .05", "p > .05"), ")"),
+                    x = "x", y = "Density") + 
+      ggplot2::scale_x_continuous(limits = c(0, 500)) +
+      ggplot2::geom_density(alpha = 0.6) +
+      ggplot2::scale_fill_manual( values = c("skyblue","lightgrey")) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+### Plot ###
+
+# Visualize density plots side-by-side
+ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+
+```
+
+  There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
+
+  **Cohen's d**
+
+  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
+  
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
+  
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  
+  * **Small** = 0.2
+  * **Medium** = 0.5
+  * **Large** = 0.8
+
+  **Cliff's Delta**
+
+  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  
+  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 ### More Than 2 Groups
 
@@ -256,30 +376,6 @@ summary(interaction)
   
   **Bonferroni**
 
-
-### Practical Significance
-
-  **Cohen's d**
-
-  **Cohen's d** is a standardized measure of the difference between two means. Cohen's $d$ is defined by:
-  
-  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
-  
-  where $s_p$ represents the pooled standard deviation defined by:
-  
-  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
-  
-  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
-  
-  * **Small** = 0.2
-  * **Medium** = 0.5
-  * **Large** = 0.8
-
-  **Cliff's Delta**
-
-  **Cliff's delta** provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
-  
-  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
 ## Exercises
 
