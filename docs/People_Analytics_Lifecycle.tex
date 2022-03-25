@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-24}
+\date{2022-03-25}
 
 \begin{document}
 \maketitle
@@ -390,17 +390,6 @@ Libraries from several R packages will be utilized in this book. The line of cod
 \KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-## 
-##   There is a binary version available but the source version is later:
-##          binary source needs_compilation
-## corrplot   0.89   0.92             FALSE
-## 
-## 
-## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpfwsp6F/downloaded_packages
-\end{verbatim}
 
 \textbf{Case Sensitivity}
 
@@ -4563,39 +4552,27 @@ You may be wondering whether the magical elixir that is the CLT, which we covere
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Set seed for reproducible random numbers}
-\KeywordTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
-
-\CommentTok{# Draw random numbers from normal distribution per defined parameters}
-\NormalTok{a <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{rnorm}\NormalTok{(}\DecValTok{100000}\NormalTok{, }\DecValTok{100}\NormalTok{, }\FloatTok{.5}\NormalTok{))}
-\NormalTok{b <-}\StringTok{ }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{rnorm}\NormalTok{(}\DecValTok{100000}\NormalTok{, }\DecValTok{101}\NormalTok{, }\FloatTok{.5}\NormalTok{))}
-
-\CommentTok{# Label groups and combine within single df}
-\NormalTok{a}\OperatorTok{$}\NormalTok{group <-}\StringTok{ 'a'}
-\NormalTok{b}\OperatorTok{$}\NormalTok{group <-}\StringTok{ 'b'}
-\NormalTok{ab <-}\StringTok{ }\KeywordTok{rbind}\NormalTok{(a, b)}
-
-\CommentTok{# Visualize distributions}
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{(ab, }\KeywordTok{aes}\NormalTok{(x, }\DataTypeTok{fill =}\NormalTok{ group)) }\OperatorTok{+}\StringTok{ }
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{title =} \StringTok{"Mean Difference = 1 (p < .001)"}\NormalTok{, }\DataTypeTok{x =} \StringTok{"x"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{scale_fill_manual}\NormalTok{( }\DataTypeTok{values =} \KeywordTok{c}\NormalTok{(}\StringTok{"skyblue"}\NormalTok{,}\StringTok{"lightgrey"}\NormalTok{)) }\OperatorTok{+}
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
-\end{Highlighting}
-\end{Shaded}
-
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-136-1.pdf}
-
 \hypertarget{differences-in-discrete-data}{%
 \section{Differences in Discrete Data}\label{differences-in-discrete-data}}
 
+Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the \emph{Chi-square test} and \emph{Fischer's exact test}. Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table} 
+
+}
+
+\caption{2x2 Contingency Table of Promotions for Remote and Non-Remote Workers}\label{fig:contingency-tbl}
+\end{figure}
+
 \textbf{Chi-Square Test}
+
+The \textbf{Chi-square test} evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance.
 
 The most common strength test when a significant Chi-Square statistic is observed is Cramer's V.
 
-\textbf{Fischer Exact Test}
+\textbf{Fischer's Exact Test}
 
 \begin{figure}
 
@@ -4620,22 +4597,21 @@ Figure \ref{fig:continuous-tests} provides a side-by-side of parametric and corr
 \caption{Parametric and Nonparametric Tests of Differences for Continuous Data}\label{fig:continuous-tests}
 \end{figure}
 
-\hypertarget{groups}{%
-\subsection{2 Groups}\label{groups}}
+\#\#\# Independent Samples \(t\)-Test
 
-\textbf{Independent Samples T-Test}
+\#\#\# Welch's \(t\)-Test
 
-\textbf{Mann-Whitney U Test}
+\#\#\# Mann-Whitney U Test
 
-\textbf{Wilcoxon Rank-Sum Test}
+\#\#\# Wilcoxon Rank-Sum Test
 
-\textbf{Wilcoxon Signed-Rank Test}
+\#\#\# Wilcoxon Signed-Rank Test
 
-\textbf{Paired Samples T-Test}
+\#\#\# Paired Samples T-Test
 
-In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. Comparing unstandardized mean differences between groups isn't too helpful, as the magnitude of difference is scale-dependent. For example, we can observe a small mean difference between two groups that is statistically significant, while a relatively large mean difference between other groups may not be statistically significant due to the spread of data.
+In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. Comparing unstandardized mean differences between groups is dangerous, as the magnitude of difference is scale-dependent.
 
-The examples in Figure \ref{fig:mean-group-diff} illustrate differences between unstandardized group means for random numbers sampled from normal distributions with very different parameters.
+Figure \ref{fig:mean-group-diff} illustrates the danger in comparing differences between unstandardized group means. The data were sampled from normal distributions with very different parameters, and the magnitude of differences is visually deceptive given the vastly different measurement scales for these data. The mean difference between distributions shown in Figure A is statistically significant, albeit small (\(MD = 1\)). The sample means shown in Figure B are not statistically different, though the difference is relatively large (\(MD = 87\)).
 
 \begin{figure}
 
@@ -4643,14 +4619,16 @@ The examples in Figure \ref{fig:mean-group-diff} illustrate differences between 
 
 }
 
-\caption{Unstandardized Mean Differences of Independent Samples}\label{fig:mean-group-diff}
+\caption{Deceptive Density Plots: 
+ Figure A: Statistically significant mean differences (MD = 1, n = 50, p < .05) 
+ Figure B: Statistically insignificant mean differences (MD = 87, n = 50, p > .05)}\label{fig:mean-group-diff}
 \end{figure}
 
 There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
 
-\textbf{Cohen's d}
+\#\#\# Cohen's \(d\)
 
-\textbf{Cohen's d} is a standardized measure of the difference between two means. Cohen's \(d\) is defined by:
+\textbf{Cohen's} \(\textbf d\) is a standardized measure of the difference between two means. Cohen's \(d\) is defined by:
 
 \[ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  \]
 
@@ -4670,14 +4648,13 @@ Cohen's \(d\) can be produced using the \texttt{cohen.d()} function from the \te
   \textbf{Large} = 0.8
 \end{itemize}
 
-\textbf{Cliff's Delta}
+\#\#\# Cliff's Delta
 
 \textbf{Cliff's delta} provides the effect size for ordinal variables. Simply put, Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
 
 Some (e.g., Vargha \& Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's d.
 
-\hypertarget{more-than-2-groups}{%
-\subsection{More Than 2 Groups}\label{more-than-2-groups}}
+\#\#\# Analysis of Variance (ANOVA)
 
 \textbf{Analysis of Variance (ANOVA)} is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
 
@@ -4929,13 +4906,13 @@ ANOVA can be performed using the \texttt{aov()} function, followed by the \textt
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
-\textbf{Two-Way ANOVA}
+\textbf{Factorial ANOVA}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Two-way ANOVA investigating mean differences in annual comp by job satisfaction and dept}
-\NormalTok{two.way <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
-\KeywordTok{summary}\NormalTok{(two.way)}
+\CommentTok{# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and dept}
+\NormalTok{factorial <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
+\KeywordTok{summary}\NormalTok{(factorial)}
 \end{Highlighting}
 \end{Shaded}
 

@@ -1,0 +1,706 @@
+# Statistical Inference {#inf-stats}
+
+  The objective of **inferential statistics** is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts are fundamental to this goal and will be covered here.
+
+## Introduction to Probability
+
+  Randomness and uncertainty exist all around us. In **probability theory**, random phenomena refer to events or experiments whose outcomes cannot be predicted with certainty (Pishro-Nik, 2014). If you've taken a course in probability, there is a good chance you have considered the case of a fair coin flip -- one of the most intuitive applications of probability. In the absence of information on how the coin is flipped, we cannot be certain of the outcome. What we can be certain of is that with a large number of coin flips, the proportion of heads will become increasingly close to 50%, or $\frac{1}{2}$. 
+
+  The **Law of Large Numbers (LLN)** is an important theorem for building an intuitive understanding of how probability relates to the statistical inference concepts we will cover. In the case of a fair coin flip, it is possible to observe many consecutive heads by chance. This is because small samples can lend to anomalies. However, as the number of flips increases, we will undoubtedly observe an increasing number of tails; we expect a roughly equal number of heads and tails with a large enough number of flips.
+  
+### Probability Distributions
+
+  **Probability distributions** are statistical functions that yield the probability of obtaining possible values for a random variable. Probabilities range from 0 to 1, where the probability of a definite event is 1 and the probability of an impossible event is 0. The **empirical probability (or experimental probability)** of an event is the fraction of times it occurred relative to the total number of repetitions. Since a probability distribution defines the likelihood of observing all possible outcomes of an event or experiment, the sum of all probabilities for all possible values must equal 1.
+
+  For example, let's look at how org tenure is distributed across employees. We can understand the general shape of the distribution using descriptive statistics:
+  
+```{r, fig.align = 'center', message = FALSE}
+
+# Load library for data wrangling
+library(dplyr)
+
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Produce descriptive stats for org tenure
+summary(employees$org_tenure)
+
+```
+
+  <br />
+  
+  Comparing the higher mean value of 9.2 to the median value of 8 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
+  
+  Beyond descriptives, visuals are often helpful in understanding a variable's distribution. As shown in Figure \@ref(fig:org-tenure-dist), it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:
+
+```{r org-tenure-dist, fig.cap = "Org Tenure Distribution", fig.align = 'center', message = FALSE}
+
+# Visualize org tenure distribution
+ggplot2::ggplot() + 
+ggplot2::aes(employees$org_tenure) + 
+ggplot2::labs(x = "Org Tenure", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
+
+```
+
+  <br />
+  
+  You can likely image the shape of probability distributions for many common events. If we consider the probability of employees exiting an organization, the outcome is binary. That is, employees either leave or stay; there are no options between these extremes. However, the distribution of performance scores will look quite different. Most organizations have expected -- or even forced -- distributions in which an average rating is awarded most frequently and low and high performance ratings less frequently. This would start to look more like a bell curve as the number of performance levels increases.
+  
+  Just as we grouped variables into disrete and continuous categories in Chapter \@ref(measure-sampl), this is also how probability distributions are categorized. If you read Chapter \@ref(measure-sampl), you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
+  
+  The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread). These probability distributions underpin the many types of statistical tests covered in this book.
+  
+  **Discrete Probability Distributions**
+  
+  **Discrete probability distributions**, also known as **Probability Mass Functions (PMF)**, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:
+  
+  * **Bernoulli**: probability of success or failure for a *single* trial with two outcomes
+  * **Binomial**: number of successes and failures in a *sequence* of independent trials with two outcomes (collection of Bernoulli trials)
+  * **Multinomial**: generalization of the binomial distribution for experiements with more than two outcomes
+  * **Negative Binomial (Pascal)**: a version of the binomial distribution for a *fixed* number of trials (this is positively skewed despite what the name might suggest)
+  * **Poisson**: probability of a given number of events occurring over a specified period
+  * **Geometric**: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
+  
+  A number of functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate differences in the general shape of each. First, let's simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:
+  
+```{r, fig.align = 'center', message = FALSE}
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Simulate bernoulli distribution
+bernoulli_dist <- rbinom(1000, 1, prob = .5)
+
+# Simulate binomial distribution
+# Notice the important difference relative to the Bernoulli simulation (100 trials vs. 1)
+binomial_dist <- rbinom(1000, 100, prob = .5) 
+
+# Simulate negative binomial distribution
+nbinomial_dist <- rnbinom(1000, 100, prob = .5) 
+
+# Simulate multinomial distribution with varying probabilities per level
+multinomial_dist <- rmultinom(1000, 4, prob = c(.4, .3, .2, .6))
+
+# Simulate poisson distribution
+poisson_dist <- rpois(1000, 10) 
+
+# Simulate geometric distribution
+geometric_dist <- rgeom(1000, prob = .2) 
+
+```
+
+  <br />
+  
+  Next, we will visualize each distribution:
+
+```{r discrete-dist, fig.cap = "Discrete Probability Distributions", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Create user-defined function (UDF) to simplify probability distribution visualization
+# Function arguments: (1) data = object containing random distribution values; (2) type = 'discrete' or 'continuous' probability distribution; and (3) title = name of distribution
+dist.viz <- function(data, type, title) {
+  
+  if (type == "discrete"){
+    
+    # Discrete distribution
+    viz <- ggplot2::ggplot() + 
+           ggplot2::aes(data) + 
+           ggplot2::labs(title = paste(title), x = "x", y = "count") + 
+           ggplot2::geom_histogram(fill = "#414141") +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
+    
+  } else {
+    
+    # Continuous distribution
+    viz <- ggplot2::ggplot() + 
+           ggplot2::aes(data) + 
+           ggplot2::labs(title = paste(title), x = "x", y = "density") + 
+           ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+           ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
+  }
+
+  return(viz)
+}
+
+# Call UDF to build visualizations and store to objects
+p_bernoulli <- dist.viz(data = bernoulli_dist, type = "discrete", title = "Bernoulli")
+p_binomial <- dist.viz(data = binomial_dist, type = "discrete", title = "Binomial")
+p_nbinomial <- dist.viz(data = nbinomial_dist, type = "discrete", title = "Negative Binomial")
+p_multinomial <- dist.viz(data = multinomial_dist, type = "discrete", title = "Multinomial")
+p_poisson <- dist.viz(data = poisson_dist, type = "discrete", title = "Poisson")
+p_geometric <- dist.viz(data = geometric_dist, type = "discrete", title = "Geometric")
+  
+# Display distribution visualizations
+ggpubr::ggarrange(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,
+          ncol = 3, nrow = 2)
+
+```
+  
+  <br />
+    
+  **Continuous Probability Distributions**
+  
+  **Continuous probability distributions**, also known as **Probability Density Functions (PDF)**, can be leveraged to model different types of interval and ratio variables. Some common continuous distributions include:
+  
+  * **Normal (Gaussian)**: distribution characterized by a mean and standard deviation for which the mean, median, and mode are equal
+  * **Uniform**: values of a random variable with equal probabilities of occurring
+  * **Log-Normal**: normal distribution of log-transformed values
+  * **Student's T**: similar to the normal distribution but with thicker tails (approaches normal as $n$ increases)
+  * **Chi-Square**: similar to the t distribution in that the shape approaches normal as $n$ increases
+  * **F**: developed to examine variances from random samples taken from two independent normal populations
+
+  A number of functions are available in R to simulate PDFs. While the precise shape of a distribution depends on the parameters, we will simulate and visualize these common PDFs to illustrate differences in the general shape of each. Let's first draw 1,000 random values from each distribution with a specified set of parameters:
+
+```{r, fig.align = 'center', message = FALSE}
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Simulate normal distribution
+normal_dist <- rnorm(1000, mean = 50, sd = 5)
+
+# Simulate log-normal distribution
+lnormal_dist <- rlnorm(1000, meanlog = 0, sdlog = 1)
+
+# Simulate uniform distribution
+uniform_dist <- runif(1000, min = 1, max = 100) 
+
+# Simulate student's t distribution
+t_dist <- rt(1000, df = 5)
+
+# Simulate chi-square distribution
+chisq_dist <- rchisq(1000, df = 5)
+
+# Simulate F distribution
+f_dist <- rf(1000, df1 = 5, df2 = 200)
+
+```
+
+  <br />
+  
+  Next, we will visualize each distribution. Since these continuous distributions are probability *density* functions, we will superimpose density plots over each:
+
+```{r continous-dist, fig.cap = "Continuous Probability Distributions", fig.align = 'center', message = FALSE}
+
+# Call UDF to build visualizations and store to objects
+# Note that as long as the arguments are in the order specified in the function (see our UDF definition above), the argument names do not need to be specified. To illustrate, we will drop the argument names from these function calls:
+p_normal <- dist.viz(normal_dist, "continuous", "Normal")
+p_lnormal <- dist.viz(lnormal_dist, "continuous", "Log-Normal")
+p_uniform <- dist.viz(uniform_dist, "continuous", "Uniform")
+p_t <- dist.viz(t_dist, "continuous", "Student's T")
+p_chisq <- dist.viz(chisq_dist, "continuous", "Chi-Square")
+p_f <- dist.viz(f_dist, "continuous", "F")
+
+# Display distribution visualizations
+ggpubr::ggarrange(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,
+          ncol = 3, nrow = 2)
+
+```
+
+  <br />
+  
+  The distribution of data is critically important in statistics. The accuracy of many statistical tests is based on assumptions rooted in underlying data distributions, and violating these assumptions can result in serious errors due to misaligned probability distributions. Though there are many more discrete and continuous probability distributions, we will leverage several of these common types to assess the likelihood of differences, effects, and associations in later chapters of this book.
+
+### Conditional Probability
+
+  **Conditional probability** reflects the probability conditioned on the occurrence of a previous event or outcome. For example, we may find that the proportion of heads is greater or less than $\frac{1}{2}$ with a large number of fair coin flips when the coin is consistently heads up when flipped. The outcome is, therefore, conditioned on the fixed -- rather than random -- positioning of the coin when flipped.
+
+  Formally, **Bayes' Theorem (alternatively, Bayes' Rule)** states that for any two events A and B wherein the probability of A is not 0 ($P(A) \neq 0$):
+
+  $$ P(A \vert B) = \frac{P(B \vert A) P(A)}{P(B)}, $$
+
+  where:
+  
+  * $A$ = an event
+  * $B$ = another event
+  * $P(A|B)$ = conditional probability that event A occurs, given event B occurs (posterior)
+  * $P(B|A)$ = conditional probability that event B occurs, given event A occurs (likelihood)
+  * $P(B)$ = normalizing constant, constraining the probability distribution to sum to 1 (evidence)
+  * $P(A)$ = probability event A occurs before knowing if event B occurs (prior)
+ 
+  Bayes' Rule allows us to predict the outcome more accurately by conditioning the probability on known factors rather than assuming all events operate under the same conditions. Bayes' Rule is pervasive in people analytics, as the probability of outcomes can vary widely when conditioned on a person's age, tenure, education, job, perceptions, relationships, and many other factors. For example, if we consider a company with 100 terminations over a 12-month period and average headcount of 1,000, the probability of attrition not conditioned on any other factor is 10%, or $\frac{1}{10}$. Aside from trending this probability over time to identify if overall attrition is becoming more or less of a concern, this isn't too helpful at the company level. However, if we condition the probability of attrition on an event -- such as a recent manager exit -- and find that the probability of attrition among those whose manager has left in the last six months is 70%, or $\frac{7}{10}$, this is far more actionable (and concerning).
+  
+  The **Monty Hall Problem** is an excellent example of how our intuition is often at odds with the laws of conditional probability.
+  
+  In the classic game show, Let's Make a Deal, Monty Hall asks contestants to choose one of three closed doors. Behind one door is a prize while the other two doors contain nothing. After the contestant selects a door, Monty opens one of the other two doors which does not contain a prize. At this point, there are two closed doors: the door the contestant selected and another for which the content remains unknown. All that is known at this point is that the prize is behind one of the two closed doors.
+  
+  It is at this juncture that Monty introduces a twist by asking if the contestant would like to switch doors. Most assume that the two closed doors have an equal (50/50) chance of containing the prize, because we generally think of probabilities as independent, random events. However, this is incorrect. Contestants who switch from their original selection have a 66% chance (rather than 50%) of winning. This may be counterintuitive, because the brain wants to reduce the problem to a simple coin flip. There is a major difference between the Monty Hall problem and a coin flip; for two outcomes to have the same probability, randomness and independence are required. In the case of the Monty Hall problem, neither assumption is satisfied.
+  
+  When all three doors are closed, each has the same probability of being selected. The probability of choosing the door with a prize is .33. Monty's knowledge of the door containing the prize does not impact the probability of selecting the winning door. This is because the choice is completely random given we have no information that would increase the probability of a door containing the prize. The process is no longer random when Monty uses his insider knowledge about the prize's location and opens a door he knows does not contain the prize. The probabilities change. Since Monty will never show the door containing the prize, he is careful to always open a door that has nothing behind it. If he was not constrained by the requirement to not reveal the prize’s location and instead chose to open one of the remaining doors at random, the probabilities would be equal (and he may end up opening the door that contains the prize).
+  
+  Seeing is believing, so let's prove this with a simulation in R:
+  
+```{r, message = FALSE}
+
+# Set seed for reproducible simulations
+set.seed(12345)
+
+# Set number of simulations
+trials = 10000
+
+# Store switch/keep decisions
+decisions = c("switch", "keep")
+
+# Store integer for each door
+doors = 1:3
+
+# Initialize empty data frame for results
+results = NULL
+
+for (n in 1:trials){
+  
+  for (decision in decisions){
+    
+    # Select correct door
+    correct_door <- sample(doors, 1, replace = T)
+
+    # Contestant chooses a door at random
+    selected_door <- sample(doors, 1, replace = T)
+  
+    # Open door that was neither selected by the contestant nor contains the prize
+    # Choose one door to open if multiple remain without the prize (i.e., the contestant didn't initially select the door containing the prize)
+    remaining_doors <- which(!doors == correct_door & !doors == selected_door)
+    open_door <- sample(remaining_doors, 1, replace = T) 
+  
+    # Contestant makes decision to switch doors or keep with the originally selected door
+    selected_door <- ifelse(decision == "switch", which(!doors == selected_door & !doors == open_door), selected_door)
+    
+    # Store results in data frame
+    results <- rbind(results, cbind.data.frame(
+                     trial = n,
+                     decision = decision,
+                     result = ifelse(correct_door == selected_door, "win", "lose")))
+  }
+}
+
+# Calculate percentage difference in wins for switch vs. keep decisions
+switch_wins <- nrow(results[results$decision == "switch" & results$result == "win", ]) / nrow(results) * 100
+keep_wins <- nrow(results[results$decision == "keep" & results$result == "win", ]) / nrow(results) * 100
+round((switch_wins - keep_wins) / keep_wins * 100, 0)
+
+```  
+
+  <br />
+  
+  As we can see, wins occur nearly 50% more often when contestants switch doors. This exercise hopefully demonstrates the importance of conditional probability and statistical assumptions like randomness. Also, if ever you find yourself playing Let's Make a Deal, switch doors.
+
+## Central Limit Theorem
+
+  The **Central Limit Theorem (CLT)** is a mainstay of statistics and probability and fundamental to understanding the mechanics of multivariate inferential analysis techniques we will cover later in this book. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s. While initially unpopular, it was later reintroduced and attracted new interest from theorists and academics (Daw & Pearson, 1972).
+
+  The CLT states that the average of independent random variables, when increased in number, tend to follow a normal (or Gaussian) distribution. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
+
+  <br />
+
+```{r emp-rule, out.width = "75%", echo = FALSE, fig.cap = 'The Empirical Rule', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/normal_distribution.png")
+
+```
+
+  <br />
+
+  Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- based on the "fun" factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
+
+  Instinctively, we already know the statisticians will be more fun than the other group. However, let's assume we need the mean fun score and standard deviation of these two groups for this example. The group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
+
+  Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a 'reasonably sized' sample of statisticians with average funness so extremely different from the population average. 
+
+  Because small samples lend to anomalies, we could -- by chance -- select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
+
+  Let's now see the CLT in action by simulating a random uniform population distribution from which we can draw random samples. Remember, the shape of the population distribution does not matter; we could simulate an Exponential, Gamma, Poisson, Binomial, or other distribution and observe the same behavior.
+
+```{r, warning = FALSE, message = FALSE}
+
+# Set seed for reproducible random distribution
+set.seed(1234)
+
+# Generate uniform population distribution with 1000 values ranging from 1 to 100
+rand.unif <- runif(1000, min = 1, max = 100)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate population mean
+mean(rand.unif)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate population variance
+N = length(rand.unif)
+var(rand.unif) * (N - 1) / N
+
+```
+
+```{r, fig.cap = "Uniform Population Distribution (N = 1000)", fig.align = 'center', message = FALSE}
+
+# Produce histogram to visualize population distribution
+ggplot2::ggplot() + 
+ggplot2::aes(rand.unif) + 
+ggplot2::labs(x = "x", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
+
+```
+
+  <br />
+
+  As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
+
+```{r, fig.cap = "Distribution of 10,000 Sample Means of Varied Size", fig.align = 'center', message = FALSE}
+
+# Define number of samples to draw from population distribution
+samples <- 10000
+
+# Populate vector with sample sizes
+sample_n <- c(1:5,10,25,50)
+
+# Initialize empty data frame to hold sample means
+sample_means = NULL
+
+# Set seed for reproducible random samples
+set.seed(456)
+
+# For each n, draw random samples
+for (n in sample_n) {
+  
+  for (draw in 1:samples) {
+    
+      # Store sample means in data frame
+      sample_means <- rbind(sample_means, cbind.data.frame(
+                            n = n, 
+                            x_bar = mean(sample(rand.unif, n, replace = TRUE, prob = NULL))))
+  }
+}
+
+# Produce histograms to visualize distributions of sample means, grouped by n-count
+sample_means %>% ggplot2::ggplot() + 
+                 ggplot2::aes(x = x_bar, fill = n) + 
+                 ggplot2::labs(x = "x-bar", y = "Density") + 
+                 ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+                 ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+                 ggplot2::theme_bw() +
+                 ggplot2::facet_wrap(~n)
+
+```
+
+  <br />
+
+  Per the CLT, we can see that as n increases, the sample means become more normally distributed.
+
+## Confidence Intervals
+
+  A **Confidence Interval (CI)** is a range of values that likely contains the value of an unknown population parameter. These unknown population parameters are often $\mu$ or $\sigma$, though we will also leverage CIs in later chapters for regression coefficients, proportions, rates, and differences.
+  
+  If we draw random samples from a population, we can compute a CI for each sample. Building on the CLT, for a given confidence level (usually 95%, though 99% or 90% are sometimes used), the specified percent of sample intervals is expected to include the estimated population parameter. For example, for a 95% CI we would expect 19 in every 20 (or 95 in every 100) intervals across the samples to include the true population parameter. This is illustrated in Figure \@ref(fig:conf-int):
+  
+```{r conf-int, out.width = "75%", echo = FALSE, fig.cap = 'Intervals for 95 Percent Confidence Level', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/confidence_intervals.png")
+
+```
+  
+  It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to *population parameters*. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exist, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!
+  
+  A related concept that is fundamental to estimating CIs is the **standard error (SE)**, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
+  
+  $$ SE = \frac{\sigma}{\sqrt{n}} $$
+  
+  Since the CLT is fundamental to inferential statistics, let's validate that our simulated distribution of sample means adheres to the properties of normally distributed data per the Empirical Rule:
+  
+```{r, message = FALSE}
+
+# Store sample means with n = 50
+x_bars <- sample_means[sample_means$n == 50, "x_bar"]
+
+# Store sample size
+n <- length(x_bars)
+
+# Calculate percent of sample means within +/- 2 SEs
+length(subset(x_bars, x_bars < mean(x_bars) + 2 * sd(x_bars) & x_bars > mean(x_bars) - 2 * sd(x_bars))) / n * 100
+
+```
+
+  95% of sample means are within 2 SEs, which is what we expect per the characteristics of the normal distribution. 
+  
+```{r, message = FALSE}
+
+# Calculate percent of sample means within +/- 3 SEs
+length(subset(x_bars, x_bars < mean(x_bars) + 3 * sd(x_bars) & x_bars > mean(x_bars) - 3 * sd(x_bars))) / n * 100
+
+```
+
+  Nearly all of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean 'from the same population' that falls outside this interval.
+  
+  Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both $\mu$ and $\sigma$ are known and our sample size $n$ is at least 30; therefore, we can use a **Z-Test** to calculate the 95% CI. A $z$ score of 1.96 corresponds to the 95% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95% CI represents the range of values we would expect to include $\mu$ in at least 95 of 100 random samples taken from the population.
+
+  The CI in this case is defined by:
+  
+  $$ CI = \bar{x} \pm z_{\alpha/_2} \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's randomly take $n$ = 100 from the population, and compute sample statistics to estimate the 95% CI:
+
+```{r, message = FALSE}
+
+# Set seed for reproducible random samples
+set.seed(456)
+
+# Sample 100 values from uniform population distribution
+x <- sample(rand.unif, 100, replace = TRUE, prob = NULL)
+
+# Calculate 95% CI
+ci95_lower_bound <- mean(x) - 1.96 * (sd(x) / sqrt(100))
+ci95_upper_bound <- mean(x) + 1.96 * (sd(x) / sqrt(100))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 95% CI
+ci95_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 95% CI
+ci95_upper_bound
+
+```
+
+  Our known $\mu$ is 51.2, which is covered by our 95% CI (47.9 - 59.0). Per the CLT, in less than 5% of cases would we expect to draw a random sample from the population that results in a 95% CI which does not include $\mu$. Note that our CI narrows with larger samples since our confidence that the range includes $\mu$ increases with more data.
+  
+  Next, let's look at a 99% CI. We will enter 2.576 for $z$:
+
+```{r, message = FALSE}
+
+# Calculate 99% CI
+ci99_lower_bound <- mean(x) - 2.576 * (sd(x) / sqrt(100))
+ci99_upper_bound <- mean(x) + 2.576 * (sd(x) / sqrt(100))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 99% CI
+ci99_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 99% CI
+ci99_upper_bound
+
+```
+  
+  Like the 95% CI, this slightly wider 99% CI (46.2 - 60.7) also includes our $\mu$ of 51.2.
+  
+  If $\sigma$ is not known, and/or we have a small sample ($n$ < 30), we need to use a **T-Test** to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
+  
+  As we will see, the T-Test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \@ref(fig:t-distribution), the $t$ distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the sampling distribution of means for smaller samples we observed in our CLT example. Specifically, **degrees of freedom (df)** is used to determine the shape of the probability distribution. Degrees of freedom represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size ($n - 1$). For example, if we could choose 1 of 5 projects to work on each day between Monday and Friday, we would only be able to *choose* 4 out of the 5 days; on Friday, only 1 project would remain to be selected, so our degrees of freedom (the number of days in which we have a choice between projects) would be 4.
+  
+  <br />
+  
+```{r t-distribution, out.width = "75%", echo = FALSE, fig.cap = paste("t Distribution Shape by Degrees of Freedom"), fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t_distribution.png")
+
+```
+  
+  <br />
+  
+  When estimating the CI for smaller samples, we need to leverage the wider, more platykurtic $t$ distribution to achieve greater accuracy. Therefore, the CI for a two-tailed test in this case is defined by:
+  
+  $$ CI = \bar{x} \pm t_{\alpha/_2} \frac{\sigma}{\sqrt{n}} $$
+  
+  Let's compare CIs calculated using a T-Test to those calculated using the Z-Test. While a fixed $z$ score can be used for each CI level when $n$ > 30, the $t$ statistic varies based on both the CI level and $df$. Though R will determine the correct $t$ statistic for us, let's reference the table shown in Figure \@ref(fig:t-crit) to manually lookup the $t$ statistic:
+  
+  <br />
+  
+```{r t-crit, out.width = "50%", echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/t-table.png")
+
+```
+
+  <br />
+
+  For illustrative purposes, let's draw a smaller sample of $n$ = 25 from our uniform population distribution and calculate the 95% CI using the $t$ statistic from the table ($df$ = 24). The $t$ statistic for this CI and $df$ is 2.064:
+
+```{r, message = FALSE}
+
+# Set seed for reproducible random samples
+set.seed(456)
+
+# Sample 25 values from uniform population distribution
+x <- sample(rand.unif, 25, replace = TRUE, prob = NULL)
+
+# Calculate 95% CI
+ci95_lower_bound <- mean(x) - 2.064 * (sd(x) / sqrt(25))
+ci95_upper_bound <- mean(x) + 2.064 * (sd(x) / sqrt(25))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 95% CI
+ci95_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 95% CI
+ci95_upper_bound
+
+```
+
+  As expected, the 95% CI using the $t$ statistic is much wider (35.2 - 59.6), acknowledging the increased uncertainty in estimating population parameters given the limited information in this smaller sample. To increase our confidence to the 99% level, the interval widens even further (30.9 - 63.9):
+
+```{r, message = FALSE}
+
+# Calculate 99% CI
+ci99_lower_bound <- mean(x) - 2.797 * (sd(x) / sqrt(25))
+ci99_upper_bound <- mean(x) + 2.797 * (sd(x) / sqrt(25))
+
+```
+
+```{r, message = FALSE}
+
+# Print lower bound for 99% CI
+ci99_lower_bound
+
+```
+
+```{r, message = FALSE}
+
+# Print upper bound for 99% CI
+ci99_upper_bound
+
+```
+
+### Hypothesis Testing
+
+**Hypothesis testing** is how we leverage CIs to test whether a significant difference or relationship exists in the data. Sir Ronald Fisher invented what is known as the null hypothesis, which states that there is no relationship/difference; disprove me if you can! The null hypothesis is defined by:
+
+$$ H_0: \mu_A = \mu_B $$
+
+  The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is 'nothing' of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
+
+  An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly 'larger' or 'smaller' average value than Population B; Variable A is 'positively' or 'negatively' related to Variable B). Therefore, alternative hypotheses are defined by:
+
+$$ H_A: \mu_A \neq \mu_B $$
+
+$$ H_A: \mu_A < \mu_B $$
+
+$$ H_A: \mu_A > \mu_B $$
+
+### Alpha
+
+  The **alpha** level of a hypothesis test, denoted by $\alpha$, represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, $\alpha$ is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
+  
+  $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01, depending upon the context and tolerance for error. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). With non-directional alternative hypotheses, we must divide $\alpha$ by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized. 
+  
+  At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. While we could observe more extreme values by chance with repeated attempts, in less than 1 in every 20 times would we expect a 95% CI that does not capture $\mu$. Moreover, in less than 1 in every 100 times should we expect a sample with a 99% CI that does not capture $\mu$.
+
+### Beta
+  
+  Another key value is **Beta**, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$. At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the T-Test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how extremely different values of $x$ must be to observe non-overlapping CIs.
+  
+### Type I & II Errors
+
+  A **Type I Error** is a false positive, wherein we conclude that there is a significant difference or relationship when there is not. A **Type II Error** is a false negative, wherein we fail to capture a significant finding. $\alpha$ represents our chance of making a Type I Error, while $\beta$ represents our chance of making a Type II Error. I once had a professor explain that committing a Type I error is a shame, while committing a Type II error is a pity, and I've found this to be a helpful way to remember what each type of error represents.
+
+  <br />
+
+```{r hyp-errs, out.width = "50%", echo = FALSE, fig.cap = 'Type I and II Errors', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/hypothesis_testing_errors.png")
+
+```
+
+  <br />
+
+### P-Values
+  
+  In statistical tests, the **p-value** is referenced to determine whether the null hypothesis can be rejected. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if $p$ < .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship was unlikely a chance observation.
+
+  While statistical significance helps us understand the probability of observing results by chance when there is no difference or effect in the population, it does not tell us anything about the size of the difference or effect. Analysis should never be reduced to inspecting p-values; in fact, p-values have been the subject of much controversy among researchers and practitioners in recent years. Later chapters will cover how to interpret results of statistical tests to surface the story and determine if there is anything 'practically' significant among statistically significant findings.
+  
+### Bonferroni Correction
+  
+  One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equivalent to the number of tests performed. It's important to note that there is not agreement among statisticians about how (or even whether) the p-value threshold for statistical significance needs to be adjusted to account for this increased risk. Nevertheless, we will cover this conservative approach for mitigating this risk.
+  
+  Thus far, we have only discussed statistical significance in the context of a **per analysis error rate** -- that is, the probability of committing a Type I error for a single statistical test. However, when two or more tests are being conducted on the same sample, the **familywise error rate** is an important factor in determining statistical significance. The familywise error rate reflects the fact that as we conduct more and more analyses on the same sample, the probability of a Type I error across the set (or family) of analyses increases. The familywise error rate can be calculated by:
+  
+  $$ \alpha_{FW} = 1 - (1 - \alpha_{PC})^C,  $$
+
+  where $c$ is equal to the number of comparisons (or statistical tests) performed, and $\alpha_{PC}$ is equal to the specified per analysis error rate (usually .05). For example, if $\alpha$ = .05 per analysis, the probability of a Type I error with three tests on the same data increases from 5% to 14.3%: $1 - (1 - .05)^3 = .143$.
+  
+  The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the **Bonferroni Correction**. To implement this correction, we can simply divide $\alpha$ by the number of analyses performed on the dataset -- such as $\alpha / 3 = .017$ in the case of three analyses with $\alpha = .05$. This means that for each statistical test, we must achieve $p < .017$ to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis p-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive $p = .014$, $p = .047$, and $p = .125$, we would achieve one significant result with the first method ($p < .017$) as well as with the alternative since the first statistical test satisfies the per analysis error rate ($p < .05$): $p = .014 * 3 = .042$.
+  
+  Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these "adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference." The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
+
+## Exercises
+
+1. Which of the following is an example of a null hypothesis, where $\mu$ reflects the mean of a population?
+   <br />A. $\mu_A = \mu_B$
+   <br />B. $\mu_A \neq \mu_B$
+   <br />C. $\mu_A < \mu_B$
+   <br />D. $\mu_A > \mu_B$
+   <br />E. None of the above; all are examples of alternative hypotheses.
+   
+2. Which of the following describes a Type I Error?
+   <br />A. Failing to reject the null hypothesis when it is false
+   <br />B. Rejecting the null hypothesis when it is true
+   <br />C. Reporting something as significant when nothing of significance is present (a shame)
+   <br />D. Failing to detect something of significance (a pity)
+   <br />E. Both B and C
+   <br />F. Both A and D
+
+3. The primary purpose of inferential statistics is to make inferences about a population based on sample data. Inferential statistics allows these inferences to be made with defined levels of confidence that what is observed in a sample is also characteristic of the larger population.
+   <br />A. True
+   <br />B. False
+
+4. A T-Test should be used when $\sigma$ is unknown and/or $n$ < 30.
+   <br />A. True
+   <br />B. False
+   
+5. Randomness is essential to probabilistic methods.
+   <br />A. True
+   <br />B. False
+
+6. Which of the following is characteristic of the Bonferroni Correction?
+   <br />A. Reducing the risk of a Type I Error
+   <br />B. Increasing the risk of a Type II Error
+   <br />C. Reducing the familywise error rate
+   
+7. Tolerance for a wider interval is an important tradeoff decision when increasing the level of confidence that a range of values contains an unknown population parameter.
+   <br />A. True
+   <br />B. False
+
+8. A $CI$ represents the range of values we expect to include an unknown population parameter (often the mean) for a specified degree of confidence.
+   <br />A. True
+   <br />B. False   
+   
+9. When population parameters are unknown, which of the following tests is most appropriate for testing $\mu_A = \mu_B$?
+   <br />A. Z-Test
+   <br />B. T-Test
+   <br />C. Bayes' Theorem
+   <br />D. P-Test
+   
+10. According to the Empirical Rule, 95% of normally distributed data lie within how many standard deviations of the mean?
+   <br />A. 1
+   <br />B. 2
+   <br />C. 3
+   <br />D. 4
