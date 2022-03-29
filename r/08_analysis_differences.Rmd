@@ -21,7 +21,7 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
 
 ## Differences in Discrete Data
 
-  Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the *Chi-square test* and *Fischer's exact test*. Both tests organize data within 2x2 **contingency tables** which enables us to understand interrelations between variables.
+  Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the *Chi-square test* and *Fischer's exact test*. Both tests organize data within 2x2 **contingency tables** which enables us to understand interrelations between variables. Figure \@ref(fig:contingency-tbl) illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
 
 ```{r contingency-tbl, out.width = "100%", echo = FALSE, fig.cap = '2x2 Contingency Table of Promotions for Remote and Non-Remote Workers', fig.align = 'center'}
 
@@ -47,6 +47,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ## Differences in Continuous Data
 
 
+
   Figure \@ref(fig:continuous-tests) provides a side-by-side of parametric and corresponding nonparametric tests of differences for continuous data.
   
 ```{r continuous-tests, out.width = "100%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
@@ -57,7 +58,107 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   ### Independent Samples $t$-Test
   
-  ### Welch's $t$-Test
+  When evaluating differences between two independent samples, social psychology researchers generally select from two tests: *Student's* $t$*-test* and *Welch's* $t$*-test*. There are other less common alternatives, such as *Yuen's* $t$*-test* and a *bootstrapped* $t$*-test*, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
+  
+  The **Student's** $t$**-test** is a parametric test whose assumptions of equal variances seldom hold in people analytics. **Welch's** $t$**-test** is generally preferred to the Student's $t$-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met while losing little robustness (e.g., Delacre, Lakens, & Leys, 2017). When $n$ is equal between groups, the Student's $t$-test is known to be robust to violations of the equal variance assumption, as long as $n$ is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
+  
+  To perform Welch's $t$-test in R, we can simply pass into the `t.test()` function a numeric vector for each of the two groups.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create compensation vectors for two jobs
+comp_mgr <- unlist(subset(employees, job_title == 'Manager', select = annual_comp))
+comp_rsci <- unlist(subset(employees, job_title == 'Research Scientist', select = annual_comp))
+
+# Run Welch's t-test
+t.test(comp_mgr, comp_rsci)
+
+``` 
+
+  As we can see, $\bar{x} = 139,901$ for Managers and $\bar{x} = 138,755$ for Research Scientists, and these are not statistically different ($t(159.55) = .23, p = .82$). Note that you can access specific metrics from this output by storing results to an object and then referencing specific elements:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store results of Welch's t-test to object
+t_rslts <- t.test(comp_mgr, comp_rsci)
+
+t_rslts$statistic # t-statistic
+t_rslts$parameter # df
+t_rslts$p.value # p-value
+t_rslts$method # type of t-test
+
+```   
+  
+  You may be wondering how $df$ is calculated for Welch's $t$-test given that thus far, we have only discussed the basic $df$ calculation outlined in Chapter \@ref(inf-stats); namely, $df = n - 1$. The Welch test uses the **Welch-Satterthwaite equation** for $df$ (Satterthwaite, 1946; Welch, 1947). This equation approximates $df$ for a linear combination of independent sample variances; therefore, if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by: 
+  
+  $$ df = \frac {(\frac{s^2_1}{n_1} + \frac{s^2_2}{n_2})^2} {\frac{1}{n_1 - 1} (\frac{s^2_1}{n_1})^2 + \frac{1}{n_2 - 1} (\frac{s^2_2}{n_2})^2} $$
+
+  Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a standard normal distribution with larger $df$; this increases the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p > .05$). You may also notice that as the absolute value of the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
+
+```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1000, and 10000 (rows) and standard deviations of 25, 50, and 75. Dashed vertical lines represent distribution means.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+library(ggplot2)
+
+# Set seed for reproducible random numbers
+set.seed(123)
+
+# Fill sample size vector
+n_counts <- c(100, 1000, 10000)
+
+# Fill standard deviation vector
+sds <- c(25, 50, 75)
+
+# Initialize lists
+p = list()
+t_test = list()
+
+# Initialize index
+i = 1
+
+for (n in n_counts){
+  
+  for (sd in sds){
+    
+    # Draw random numbers from normal distribution per defined parameters
+    a <- data.frame(x = rnorm(n, 100, sd))
+    b <- data.frame(x = rnorm(n, 120, sd))
+
+    # Label groups and combine within single df
+    a$group <- 'a'
+    b$group <- 'b'
+    ab <- rbind(a, b)
+
+    # Store mean values in df
+    mean_df <- ab %>%
+               group_by(group) %>%
+               summarize(mean = mean(x))
+
+    # Calculate absolute mean difference
+    xbar_delta <- abs(round(mean(ab[ab$group == 'b', 'x']) - mean(ab[ab$group == 'a', 'x']), 0))
+    t_test <- t.test(ab[ab$group == 'a', 'x'], ab[ab$group == 'b', 'x'])
+
+    # Store viz to object
+    p[[i]] <- ggplot2::ggplot(ab, aes(x, fill = group)) + 
+              ggplot2::labs(title = paste0("MD = ", xbar_delta, "\n t = ", round(t_test$statistic, 1), ifelse(t_test$p.value < .05, ", p < .05", ", p > .05")), x = "x", y = "Density") +  
+              ggplot2::geom_density(alpha = 0.6) +
+              ggplot2::scale_fill_manual(values = c("skyblue", "lightgrey")) +
+              ggplot2::geom_vline(data = mean_df, aes(xintercept = mean), colour = c("blue", "#3D3D3D"), size = .5, linetype = "dashed") +
+              ggplot2::theme_bw() +
+              ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
+              ggplot2::theme(legend.position = "none")
+    
+    # Increment counter variable by 1
+    i = i + 1
+  }
+}
+
+# Visualize density plots side-by-side
+ggpubr::ggarrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]], p[[7]], p[[8]], p[[9]],
+                  ncol = 3, nrow = 3)
+
+```
 
   ### Mann-Whitney U Test
   
@@ -69,91 +170,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   
   
-  In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. Comparing unstandardized mean differences between groups is dangerous, as the magnitude of difference is scale-dependent.
-  
-  Figure \@ref(fig:mean-group-diff) illustrates the danger in comparing differences between unstandardized group means. The data were sampled from normal distributions with very different parameters, and the magnitude of differences is visually deceptive given the vastly different measurement scales for these data. The mean difference between distributions shown in Figure A is statistically significant, albeit small ($MD$ = 1). The sample means shown in Figure B are not statistically different, though the difference is relatively large ($MD$ = 87).
-
-```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Deceptive Density Plots. Figure A: Statistically significant mean differences (MD = 1, n = 50, p < .05). Figure B: Statistically insignificant mean differences (MD = 87, n = 50, p > .05).', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Load library
-library(dplyr)
-library(ggplot2)
-
-# Set seed for reproducible random numbers
-set.seed(123)
-
-### Example 1 ###
-
-# Define sample size
-n1 = 50
-
-# Draw random numbers from normal distribution per defined parameters
-a1 <- data.frame(x = rnorm(n1, 100, .5))
-b1 <- data.frame(x = rnorm(n1, 101, .5))
-
-# Label groups and combine within single df
-a1$group <- 'a'
-b1$group <- 'b'
-ab1 <- rbind(a1, b1)
-
-# Store mean values in df
-mean_df1 <- ab1 %>%
-            group_by(group) %>%
-            summarize(mean = mean(x))
-
-# Calculate absolute mean difference
-xbar_delta_1 <- abs(round(mean(ab1[ab1$group == 'b', 'x']) - mean(ab1[ab1$group == 'a', 'x']), 0))
-t_test_1 <- t.test(ab1[ab1$group == 'a', 'x'], ab1[ab1$group == 'b', 'x'])
-
-# Store viz to object
-p1 <- ggplot2::ggplot(ab1, aes(x, fill = group)) + 
-      ggplot2::labs(title = "Figure A", x = "x", y = "Density") +  
-      ggplot2::geom_density(alpha = 0.6) +
-      ggplot2::scale_fill_manual(values = c("skyblue", "lightgrey")) +
-      ggplot2::geom_vline(data = mean_df1, aes(xintercept = mean), colour = c("blue", "#3D3D3D"), size = .5, linetype = "dashed") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(plot.title = element_text(hjust = 0.5))
-
-### Example 2 ###
-
-# Define sample size
-n2 = 50
-
-# Draw random numbers from normal distribution per defined parameters
-a2 <- data.frame(x = rnorm(n2, 200, 400))
-b2 <- data.frame(x = rnorm(n2, 170, 400))
-
-# Label groups and combine within single df
-a2$group <- 'a'
-b2$group <- 'b'
-ab2 <- rbind(a2, b2)
-
-# Store mean values in df
-mean_df2 <- ab2 %>%
-            group_by(group) %>%
-            summarize(mean = mean(x))
-
-# Calculate absolute mean difference
-xbar_delta_2 <- abs(round(mean(ab2[ab2$group == 'b', 'x']) - mean(ab2[ab2$group == 'a', 'x']), 0))
-t_test_2 <- t.test(ab2[ab2$group == 'a', 'x'], ab2[ab2$group == 'b', 'x'])
-
-# Store viz to object
-p2 <- ggplot2::ggplot(ab2, aes(x, fill = group)) + 
-      ggplot2::labs(title = "Figure B", x = "x", y = "Density") + 
-      ggplot2::geom_density(alpha = 0.6) +
-      ggplot2::scale_fill_manual(values = c("skyblue", "lightgrey")) +
-      ggplot2::geom_vline(data = mean_df2, aes(xintercept = mean), colour = c("blue", "#3D3D3D"), size = .5, linetype = "dashed") +
-      ggplot2::theme_bw() +
-      ggplot2::theme(plot.title = element_text(hjust = 0.5))
-
-### Plot ###
-
-# Visualize density plots side-by-side
-ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
-
-```
-
-  There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
+  In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. We must compare standardized mean differences between groups, as the magnitude of difference is scale-dependent. There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
 
   ### Cohen's $d$
 
