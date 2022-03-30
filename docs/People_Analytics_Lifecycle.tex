@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-25}
+\date{2022-03-30}
 
 \begin{document}
 \maketitle
@@ -390,6 +390,17 @@ Libraries from several R packages will be utilized in this book. The line of cod
 \KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{verbatim}
+## 
+##   There is a binary version available but the source version is later:
+##          binary source needs_compilation
+## corrplot   0.89   0.92             FALSE
+## 
+## 
+## The downloaded binary packages are in
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpLE9tdo/downloaded_packages
+\end{verbatim}
 
 \textbf{Case Sensitivity}
 
@@ -866,6 +877,36 @@ The \texttt{head()} and \texttt{tail()} functions return the first and last piec
 ## [1000,] 1000 2000 3000 4000 5000 6000 7000 8000 9000 10000
 \end{verbatim}
 
+Using vectorization, we can easily perform matrix multiplication.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create 3x3 matrix}
+\KeywordTok{matrix}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    1    4    7
+## [2,]    2    5    8
+## [3,]    3    6    9
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Multiply each matrix value by 2}
+\KeywordTok{matrix}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{9}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{) }\OperatorTok{*}\StringTok{ }\DecValTok{2}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    2    8   14
+## [2,]    4   10   16
+## [3,]    6   12   18
+\end{verbatim}
+
 \hypertarget{factors}{%
 \section{Factors}\label{factors}}
 
@@ -1144,7 +1185,7 @@ The \texttt{ggplot2} library contains many types of visualizations. For example,
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-49-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-51-1.pdf}
 
 Furthermore, we can use \texttt{ggplot} parameters and themes to adjust the aesthetics of visuals:
 
@@ -1161,7 +1202,7 @@ Furthermore, we can use \texttt{ggplot} parameters and themes to adjust the aest
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-50-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-52-1.pdf}
 
 \hypertarget{exercises}{%
 \section{Exercises}\label{exercises}}
@@ -2108,12 +2149,13 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \CommentTok{# Produce boxplots to visualize compensation distribution by education level and gender}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{(employees, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{as.factor}\NormalTok{(ed_lvl), }\DataTypeTok{y =}\NormalTok{ annual_comp, }\DataTypeTok{color =}\NormalTok{ gender)) }\OperatorTok{+}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"Education Level"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Annual Compensation"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{guides}\NormalTok{(}\DataTypeTok{col =} \KeywordTok{guide_legend}\NormalTok{(}\StringTok{"Gender"}\NormalTok{)) }\OperatorTok{+}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{() }\OperatorTok{+}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_boxplot}\NormalTok{()}
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-66-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-68-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -2532,7 +2574,7 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-80-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-82-1.pdf}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
@@ -2543,7 +2585,7 @@ The GGally library produces a variety of useful information, including correlati
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-81-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-83-1.pdf}
 
 We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
 
@@ -2638,7 +2680,7 @@ In addition, covariance and correlation alone are not sufficient for determining
 \end{enumerate}
 
 \hypertarget{inf-stats}{%
-\chapter{Inferential Statistics}\label{inf-stats}}
+\chapter{Statistical Inference}\label{inf-stats}}
 
 The objective of \textbf{inferential statistics} is to make inferences -- with some degree of confidence -- about a population based on available sample data. Several related concepts are fundamental to this goal and will be covered here.
 
@@ -3054,11 +3096,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-89-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-91-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-89}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-91}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -3102,11 +3144,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-90-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-92-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-90}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-92}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -4539,7 +4581,20 @@ There are many statistical tests that can be used to test for differences within
 
 In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and \(n\) is large, \textbf{parametric tests} are preferred as they generally have more statistical power. \textbf{Nonparametric tests} are \textbf{distribution-free tests} that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
 
-Assuming the assumptions of parametric tests hold, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations. Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that \(\mu\) and \(\sigma\) are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers. If outliers are present in the data, the median may be a better way of representing the central tendency of data; in this case, nonparametric tests may be more appropriate. Just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for \emph{median} -- rather than \emph{mean} -- centers.
+Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \ref{data-wrang-prep} (e.g., addressing concerning outliers), parametric tests of differences generally feature three key assumptions:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Independence}: Observations within each group are independent of each other
+\item
+  \textbf{Homogeneity of Variance}: Variances of populations from which samples were drawn are equal
+\item
+  \textbf{Normality}: Residuals must be normally distributed (with mean of 0) within each group
+\end{enumerate}
+
+Assuming the assumptions of parametric tests hold, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations. Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that \(\mu\) and \(\sigma\) are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the central tendency of data. In this case, nonparametric tests may be more appropriate. Just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for \emph{median} -- rather than \emph{mean} -- centers.
 
 In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume \textbf{homogeneity of variance} and \textbf{independence}. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
 
@@ -4555,7 +4610,7 @@ You may be wondering whether the magical elixir that is the CLT, which we covere
 \hypertarget{differences-in-discrete-data}{%
 \section{Differences in Discrete Data}\label{differences-in-discrete-data}}
 
-Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the \emph{Chi-square test} and \emph{Fischer's exact test}. Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables.
+Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the \emph{Chi-square test} and \emph{Fischer's exact test}. Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables. Figure \ref{fig:contingency-tbl} illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
 
 \begin{figure}
 
@@ -4586,7 +4641,7 @@ The most common strength test when a significant Chi-Square statistic is observe
 \hypertarget{differences-in-continuous-data}{%
 \section{Differences in Continuous Data}\label{differences-in-continuous-data}}
 
-Figure \ref{fig:continuous-tests} provides a side-by-side of parametric and corresponding nonparametric tests of differences for continuous data.
+A variety of parametric and nonparametric tests are available for evaluating differences between variables measured on a continuous scale. Figure \ref{fig:continuous-tests} provides a side-by-side of these parametric and corresponding nonparametric tests of differences.
 
 \begin{figure}
 
@@ -4599,7 +4654,161 @@ Figure \ref{fig:continuous-tests} provides a side-by-side of parametric and corr
 
 \#\#\# Independent Samples \(t\)-Test
 
-\#\#\# Welch's \(t\)-Test
+When evaluating differences between two independent samples, social psychology researchers generally select from two tests: \emph{Student's} \(t\)\emph{-test} and \emph{Welch's} \(t\)\emph{-test}. There are other less common alternatives, such as \emph{Yuen's} \(t\)\emph{-test} and a \emph{bootstrapped} \(t\)\emph{-test}, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
+
+The \textbf{Student's} \(t\)\textbf{-test} is a parametric test whose assumptions of equal variances seldom hold in people analytics. \textbf{Welch's} \(t\)\textbf{-test} is generally preferred to the Student's \(t\)-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, \& Leys, 2017). When \(n\) is equal between groups, the Student's \(t\)-test is known to be robust to violations of the equal variance assumption, as long as \(n\) is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
+
+Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:mean-group-diff} illustrates mean differences (\(MD\)) for nine Welch's \(t\)-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large \(n\), as \(t\) distributions approximate a standard normal distribution with larger \(df\). In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both \(MD\) and \(n\) are relatively small, mean differences are not statistically significant (\(p > .05\)). You may also notice that as the absolute value of the \(t\)-statistic approaches 0, statistical differences become less likely since a smaller \(t\)-statistic indicates a smaller difference between mean values.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/mean-group-diff-1} 
+
+}
+
+\caption{Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1000, and 10000 (rows) and standard deviations of 25, 50, and 75. Dashed vertical lines represent distribution means.}\label{fig:mean-group-diff}
+\end{figure}
+
+Next, we will walk through the steps involved in performing Welch's \(t\)-test. Let's first visualize the distribution of data for each group using boxplots:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/comp-job-boxplots-1} 
+
+}
+
+\caption{Annual Compensation Distributions for Managers and Research Scientists}\label{fig:comp-job-boxplots}
+\end{figure}
+
+While the median -- rather than the mean which is being evaluated with Welch's \(t\)-test -- is shown in these boxplots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups. We could of course use density plots as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title. However, these distributions appear to be roughly similar.
+
+Next, let's test whether the slight differences we observed visually are statistically significant. To perform Welch's \(t\)-test in R, we can simply pass into the \texttt{t.test()} function a numeric vector for each of the two groups.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create compensation vectors for two jobs}
+\NormalTok{comp_mgr <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, job_title }\OperatorTok{==}\StringTok{ 'Manager'}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ annual_comp))}
+\NormalTok{comp_rsci <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, job_title }\OperatorTok{==}\StringTok{ 'Research Scientist'}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ annual_comp))}
+
+\CommentTok{# Run Welch's t-test}
+\KeywordTok{t.test}\NormalTok{(comp_mgr, comp_rsci)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Welch Two Sample t-test
+## 
+## data:  comp_mgr and comp_rsci
+## t = 0.22623, df = 159.55, p-value = 0.8213
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -8860.685 11153.244
+## sample estimates:
+## mean of x mean of y 
+##  139900.8  138754.5
+\end{verbatim}
+
+Baesd on this output, we can see that \(\bar{x} = 139,901\) for Managers and \(\bar{x} = 138,755\) for Research Scientists, and these are not statistically different (\(t(159.55) = .23, p = .82\)).
+
+Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# This assigns each element of results from Welch's t-test to an indexed position in the object}
+\NormalTok{t_rslts <-}\StringTok{ }\KeywordTok{t.test}\NormalTok{(comp_mgr, comp_rsci)}
+
+\NormalTok{t_rslts}\OperatorTok{$}\NormalTok{statistic }\CommentTok{# t-statistic}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##         t 
+## 0.2262262
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts}\OperatorTok{$}\NormalTok{parameter }\CommentTok{# df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       df 
+## 159.5544
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts}\OperatorTok{$}\NormalTok{p.value }\CommentTok{# p-value}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 0.8213151
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts}\OperatorTok{$}\NormalTok{method }\CommentTok{# type of t-test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Welch Two Sample t-test"
+\end{verbatim}
+
+When object elements are referenced by index, the element name is displayed in the output to clarify what the metric represents:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts[}\DecValTok{1}\NormalTok{] }\CommentTok{# t-statistic}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $statistic
+##         t 
+## 0.2262262
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts[}\DecValTok{2}\NormalTok{] }\CommentTok{# df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $parameter
+##       df 
+## 159.5544
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts[}\DecValTok{3}\NormalTok{] }\CommentTok{# p-value}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $p.value
+## [1] 0.8213151
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{t_rslts[}\DecValTok{9}\NormalTok{] }\CommentTok{# type of t-test}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $method
+## [1] "Welch Two Sample t-test"
+\end{verbatim}
+
+Given \(df = 159.55\), you may be wondering how \(df\) is calculated for Welch's \(t\)-test given that thus far, we have only discussed the basic \(df\) calculation outlined in Chapter \ref{inf-stats}; namely, \(df = n - 1\). Welch's \(t\)-test uses the \textbf{Welch-Satterthwaite equation} for \(df\) (Satterthwaite, 1946; Welch, 1947). This equation approximates \(df\) for a linear combination of independent sample variances; which means that if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by:
+
+\[ df = \frac {(\frac{s^2_1}{n_1} + \frac{s^2_2}{n_2})^2} {\frac{1}{n_1 - 1} (\frac{s^2_1}{n_1})^2 + \frac{1}{n_2 - 1} (\frac{s^2_2}{n_2})^2} \]
 
 \#\#\# Mann-Whitney U Test
 
@@ -4609,22 +4818,7 @@ Figure \ref{fig:continuous-tests} provides a side-by-side of parametric and corr
 
 \#\#\# Paired Samples T-Test
 
-In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. Comparing unstandardized mean differences between groups is dangerous, as the magnitude of difference is scale-dependent.
-
-Figure \ref{fig:mean-group-diff} illustrates the danger in comparing differences between unstandardized group means. The data were sampled from normal distributions with very different parameters, and the magnitude of differences is visually deceptive given the vastly different measurement scales for these data. The mean difference between distributions shown in Figure A is statistically significant, albeit small (\(MD = 1\)). The sample means shown in Figure B are not statistically different, though the difference is relatively large (\(MD = 87\)).
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/mean-group-diff-1} 
-
-}
-
-\caption{Deceptive Density Plots: 
- Figure A: Statistically significant mean differences (MD = 1, n = 50, p < .05) 
- Figure B: Statistically insignificant mean differences (MD = 87, n = 50, p > .05)}\label{fig:mean-group-diff}
-\end{figure}
-
-There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
+In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. We must compare standardized mean differences between groups, as the magnitude of difference is scale-dependent. There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
 
 \#\#\# Cohen's \(d\)
 
@@ -4675,19 +4869,6 @@ ANOVA is not a test, per se, but a \(F\)-test underpins it. The mathematical pro
   Compute the \textbf{between-group variance}. This represents how different the group means are from one another.
 \item
   Produce the \(F\)-statistic, which is the \emph{within-group variance} / \emph{between-group variance}.
-\end{enumerate}
-
-Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \ref{data-wrang-prep} (e.g., addressing any outliers), ANOVA has three key assumptions:
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\tightlist
-\item
-  \textbf{Independence}: Observations within each group are independent of each other
-\item
-  \textbf{Homogeneity of Variance}: Variances of populations from which samples were drawn are equal
-\item
-  \textbf{Normality}: Residuals must be normally distributed (with mean of 0) within each group
 \end{enumerate}
 
 \textbf{One-Way ANOVA}
@@ -5183,6 +5364,8 @@ Daniel, W. W. (1990). Kruskal--Wallis one-way analysis of variance by ranks. App
 
 Daw, R. H., \& Pearson, E. S. (1972). Studies in the History of Probability and Statistics. XXX. Abraham De Moivre's 1733 Derivation of the Normal Curve: A Bibliographical Note. Biometrika, 59(3), 677--680. \url{https://doi.org/10.2307/2334818}
 
+Delacre, M., Lakens, D., \& Leys, C. (2017). Why Psychologists Should by Default Use Welch's t-test Instead of Student's t-test. International Review of Social Psychology, 30(1), 92--101. DOI: \url{http://doi.org/10.5334/irsp.82}
+
 DeVellis, R. F. (2012). Scale development: Theory and applications. Thousand Oaks, Calif: Sage.
 
 Edmondson, A. (1999). Psychological safety and learning behavior in work teams. Administrative Science Quarterly, 44(2), 350-383.
@@ -5203,11 +5386,15 @@ Pishro-Nik, H. (2014). Introduction to Probability: Statistics and Random Proces
 
 Roethlisberger, F. J., \& Dickson, W. J. (1939). Management and the worker. Harvard Univ. Press.
 
+Satterthwaite, F. E. (1946). An Approximate Distribution of Estimates of Variance Components. Biometrics Bulletin, 2(6), 110--114. \url{https://doi.org/10.2307/3002019}
+
 Shapiro, S. S., \& Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). Biometrika, 52(3--4), 591--611. \url{https://doi.org/10.1093/biomet/52.3-4.591}
 
 Snedecor, G. W., \& Cochran, W. G. (1980). Statistical methods (7th ed.). Ames, Iowa: Iowa State University Press.
 
 Vargha, A. \& Delaney, H. D. (2000). A Critique and Improvement of the CL Common Language Effect Size Statistics of McGraw and Wong. Journal of Educational and Behavioral Statistics 25(2), 101--132.
+
+Welch, B. L. (1947). The Generalization of `Student's' Problem when Several Different Population Variances are Involved. Biometrika, 34(1/2), 28--35. \url{https://doi.org/10.2307/2332510}
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-03-25" />
+<meta name="date" content="2022-03-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -202,7 +202,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="7.3" data-path="desc-stats.html"><a href="desc-stats.html#exercises-3"><i class="fa fa-check"></i><b>7.3</b> Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="8" data-path="inf-stats.html"><a href="inf-stats.html"><i class="fa fa-check"></i><b>8</b> Inferential Statistics</a><ul>
+<li class="chapter" data-level="8" data-path="inf-stats.html"><a href="inf-stats.html"><i class="fa fa-check"></i><b>8</b> Statistical Inference</a><ul>
 <li class="chapter" data-level="8.1" data-path="inf-stats.html"><a href="inf-stats.html#introduction-to-probability"><i class="fa fa-check"></i><b>8.1</b> Introduction to Probability</a><ul>
 <li class="chapter" data-level="8.1.1" data-path="inf-stats.html"><a href="inf-stats.html#probability-distributions"><i class="fa fa-check"></i><b>8.1.1</b> Probability Distributions</a></li>
 <li class="chapter" data-level="8.1.2" data-path="inf-stats.html"><a href="inf-stats.html#conditional-probability"><i class="fa fa-check"></i><b>8.1.2</b> Conditional Probability</a></li>
@@ -391,34 +391,34 @@ Figure 9.5: Type 1 SCD
 <p>When implementing aggregate functions in a <code>SELECT</code> clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the <code>GROUP BY</code> clause.</p>
 <p>Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the <code>sqldf</code> library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The <code>sqldf</code> library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is universal.</p>
 <p>First, let’s load the data sets:</p>
-<div class="sourceCode" id="cb195"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb195-1" data-line-number="1"><span class="co"># Load data sets</span></a>
-<a class="sourceLine" id="cb195-2" data-line-number="2">employees &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-3" data-line-number="3">status &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-4" data-line-number="4">benefits &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-6" data-line-number="6">job &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-7" data-line-number="7">payroll &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-8" data-line-number="8">performance &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-9" data-line-number="9">prior_employment &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-10" data-line-number="10">survey_response &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-11" data-line-number="11">tenure &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv&quot;</span>)</a>
-<a class="sourceLine" id="cb195-12" data-line-number="12"></a>
-<a class="sourceLine" id="cb195-13" data-line-number="13"><span class="co"># Return row and column counts</span></a>
-<a class="sourceLine" id="cb195-14" data-line-number="14"><span class="kw">dim</span>(employees)</a></code></pre></div>
+<div class="sourceCode" id="cb200"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb200-1" data-line-number="1"><span class="co"># Load data sets</span></a>
+<a class="sourceLine" id="cb200-2" data-line-number="2">employees &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-3" data-line-number="3">status &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-4" data-line-number="4">benefits &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-5" data-line-number="5">demographics &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-6" data-line-number="6">job &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-7" data-line-number="7">payroll &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-8" data-line-number="8">performance &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-9" data-line-number="9">prior_employment &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-10" data-line-number="10">survey_response &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-11" data-line-number="11">tenure &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv&quot;</span>)</a>
+<a class="sourceLine" id="cb200-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb200-13" data-line-number="13"><span class="co"># Return row and column counts</span></a>
+<a class="sourceLine" id="cb200-14" data-line-number="14"><span class="kw">dim</span>(employees)</a></code></pre></div>
 <pre><code>## [1] 1470   33</code></pre>
 <p>Next, we will apply the <code>sqldf()</code> function to our data frame to extract specific rows and columns. In addition to the <code>SELECT</code>, <code>FROM</code>, and <code>WHERE</code> clauses, we will use the <code>LIMIT</code> clause to limit the number of rows that are displayed given the data frame’s size (<span class="math inline">\(n = 1,470\)</span>). In a practical setting, the <code>LIMIT</code> clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.</p>
 <p>A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:</p>
-<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb197-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
-<a class="sourceLine" id="cb197-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb197-3" data-line-number="3"><span class="st">                      employee_id</span></a>
-<a class="sourceLine" id="cb197-4" data-line-number="4"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb197-5" data-line-number="5"><span class="st">                      employees</span></a>
-<a class="sourceLine" id="cb197-6" data-line-number="6"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb197-7" data-line-number="7"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb197-8" data-line-number="8"><span class="st">                    LIMIT 10&quot;</span>)</a>
-<a class="sourceLine" id="cb197-9" data-line-number="9"></a>
-<a class="sourceLine" id="cb197-10" data-line-number="10"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb197-11" data-line-number="11">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb202-1" data-line-number="1"><span class="co"># Store SQL query as a character string using the paste() function</span></a>
+<a class="sourceLine" id="cb202-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb202-3" data-line-number="3"><span class="st">                      employee_id</span></a>
+<a class="sourceLine" id="cb202-4" data-line-number="4"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb202-5" data-line-number="5"><span class="st">                      employees</span></a>
+<a class="sourceLine" id="cb202-6" data-line-number="6"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb202-7" data-line-number="7"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb202-8" data-line-number="8"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb202-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb202-10" data-line-number="10"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb202-11" data-line-number="11">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##    employee_id
 ## 1         1002
 ## 2         1003
@@ -433,19 +433,19 @@ Figure 9.5: Type 1 SCD
 <p>This query returned a list of employee ids for employees in the Research &amp; Development department.</p>
 <p><strong>Aggregate Functions</strong></p>
 <p>Next, let’s take a look at average organization tenure by job for those in the Research &amp; Development department:</p>
-<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb199-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb199-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb199-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb199-4" data-line-number="4"><span class="st">                      AVG(org_tenure)</span></a>
-<a class="sourceLine" id="cb199-5" data-line-number="5"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb199-6" data-line-number="6"><span class="st">                      employees</span></a>
-<a class="sourceLine" id="cb199-7" data-line-number="7"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb199-8" data-line-number="8"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb199-9" data-line-number="9"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb199-10" data-line-number="10"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb199-11" data-line-number="11"></a>
-<a class="sourceLine" id="cb199-12" data-line-number="12"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb199-13" data-line-number="13">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb204-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb204-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb204-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb204-4" data-line-number="4"><span class="st">                      AVG(org_tenure)</span></a>
+<a class="sourceLine" id="cb204-5" data-line-number="5"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb204-6" data-line-number="6"><span class="st">                      employees</span></a>
+<a class="sourceLine" id="cb204-7" data-line-number="7"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb204-8" data-line-number="8"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb204-9" data-line-number="9"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb204-10" data-line-number="10"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb204-11" data-line-number="11"></a>
+<a class="sourceLine" id="cb204-12" data-line-number="12"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb204-13" data-line-number="13">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title AVG(org_tenure)
 ## 1 Healthcare Representative        8.618321
 ## 2     Laboratory Technician        5.019305
@@ -456,22 +456,22 @@ Figure 9.5: Type 1 SCD
 ## 7            Vice President        9.500000</code></pre>
 <p>There are 7 distinct job titles among employees in the Research &amp; Development department, and the average organization tenure for these ranges from <code>5</code> to <code>13.7</code> years.</p>
 <p>Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the <code>COUNT(*)</code> function to count the number of rows for each group. In this case, <code>COUNT(*)</code> will return the number of employees in each job in the Research &amp; Development department. We will also apply column aliases via <code>AS</code> in the <code>SELECT</code> clause to assign different names to the output fields:</p>
-<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb201-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb201-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb201-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb201-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb201-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb201-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb201-7" data-line-number="7"><span class="st">                      employees</span></a>
-<a class="sourceLine" id="cb201-8" data-line-number="8"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb201-9" data-line-number="9"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb201-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb201-11" data-line-number="11"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb201-12" data-line-number="12"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb201-13" data-line-number="13"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb201-14" data-line-number="14"></a>
-<a class="sourceLine" id="cb201-15" data-line-number="15"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb201-16" data-line-number="16">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb206-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb206-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb206-5" data-line-number="5"><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb206-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb206-7" data-line-number="7"><span class="st">                      employees</span></a>
+<a class="sourceLine" id="cb206-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb206-9" data-line-number="9"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb206-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb206-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb206-12" data-line-number="12"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb206-13" data-line-number="13"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb206-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb206-15" data-line-number="15"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb206-16" data-line-number="16">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_org_tenure
 ## 1 Healthcare Representative          131       8.618321
 ## 2     Laboratory Technician          259       5.019305
@@ -482,24 +482,24 @@ Figure 9.5: Type 1 SCD
 ## 7            Vice President            2       9.500000</code></pre>
 <p>The output shows that there are only 2 Vice Presidents in the Research &amp; Development department, while other job titles are much more prevalent.</p>
 <p>Since relatively few employees are Vice Presidents, let’s use the <code>HAVING</code> clause to only show average organization tenure for Research &amp; Development department jobs with more than 10 employees. We can also use the <code>ROUND()</code> function to truncate average organization tenure to one significant digit:</p>
-<div class="sourceCode" id="cb203"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb203-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb203-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb203-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb203-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb203-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure</span></a>
-<a class="sourceLine" id="cb203-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb203-7" data-line-number="7"><span class="st">                      employees</span></a>
-<a class="sourceLine" id="cb203-8" data-line-number="8"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb203-9" data-line-number="9"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb203-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb203-11" data-line-number="11"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb203-12" data-line-number="12"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb203-13" data-line-number="13"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb203-14" data-line-number="14"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb203-15" data-line-number="15"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb203-16" data-line-number="16"></a>
-<a class="sourceLine" id="cb203-17" data-line-number="17"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb203-18" data-line-number="18">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb208-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb208-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure</span></a>
+<a class="sourceLine" id="cb208-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb208-7" data-line-number="7"><span class="st">                      employees</span></a>
+<a class="sourceLine" id="cb208-8" data-line-number="8"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb208-9" data-line-number="9"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb208-10" data-line-number="10"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb208-11" data-line-number="11"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb208-12" data-line-number="12"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb208-13" data-line-number="13"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb208-14" data-line-number="14"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb208-15" data-line-number="15"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb208-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb208-17" data-line-number="17"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb208-18" data-line-number="18">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_org_tenure
 ## 1 Healthcare Representative          131            8.6
 ## 2     Laboratory Technician          259            5.0
@@ -517,72 +517,72 @@ Figure 9.6: Types of SQL Joins
 </div>
 <p>The structure of SQL queries containing each type of join is represented below:</p>
 <p><strong>LEFT INCLUSIVE</strong></p>
-<div class="sourceCode" id="cb205"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb205-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
-<a class="sourceLine" id="cb205-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb205-3" data-line-number="3"><span class="co">#  LEFT OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb205-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
-<p><strong>LEFT EXCLUSIVE</strong></p>
-<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb206-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
-<a class="sourceLine" id="cb206-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb206-3" data-line-number="3"><span class="co">#  LEFT OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb206-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
-<a class="sourceLine" id="cb206-5" data-line-number="5"><span class="co">#  WHERE B.Key IS NULL</span></a></code></pre></div>
-<p><strong>FULL OUTER INCLUSIVE</strong></p>
-<div class="sourceCode" id="cb207"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb207-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
-<a class="sourceLine" id="cb207-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb207-3" data-line-number="3"><span class="co">#  FULL OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb207-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
-<p><strong>FULL OUTER EXCLUSIVE</strong></p>
-<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb208-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
-<a class="sourceLine" id="cb208-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb208-3" data-line-number="3"><span class="co">#  FULL OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb208-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
-<a class="sourceLine" id="cb208-5" data-line-number="5"><span class="co">#  WHERE A.Key IS NULL OR B.Key IS NULL  </span></a></code></pre></div>
-<p><strong>RIGHT INCLUSIVE</strong></p>
-<div class="sourceCode" id="cb209"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb209-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
-<a class="sourceLine" id="cb209-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb209-3" data-line-number="3"><span class="co">#  RIGHT OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb209-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
-<p><strong>RIGHT EXCLUSIVE</strong></p>
 <div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb210-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
 <a class="sourceLine" id="cb210-2" data-line-number="2"><span class="co">#  FROM A </span></a>
 <a class="sourceLine" id="cb210-3" data-line-number="3"><span class="co">#  LEFT OUTER JOIN B</span></a>
-<a class="sourceLine" id="cb210-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
-<a class="sourceLine" id="cb210-5" data-line-number="5"><span class="co">#  WHERE A.Key IS NULL</span></a></code></pre></div>
-<p><strong>INNER JOIN</strong></p>
+<a class="sourceLine" id="cb210-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
+<p><strong>LEFT EXCLUSIVE</strong></p>
 <div class="sourceCode" id="cb211"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb211-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
 <a class="sourceLine" id="cb211-2" data-line-number="2"><span class="co">#  FROM A </span></a>
-<a class="sourceLine" id="cb211-3" data-line-number="3"><span class="co">#  INNER JOIN B</span></a>
-<a class="sourceLine" id="cb211-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
+<a class="sourceLine" id="cb211-3" data-line-number="3"><span class="co">#  LEFT OUTER JOIN B</span></a>
+<a class="sourceLine" id="cb211-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
+<a class="sourceLine" id="cb211-5" data-line-number="5"><span class="co">#  WHERE B.Key IS NULL</span></a></code></pre></div>
+<p><strong>FULL OUTER INCLUSIVE</strong></p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb212-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
+<a class="sourceLine" id="cb212-2" data-line-number="2"><span class="co">#  FROM A </span></a>
+<a class="sourceLine" id="cb212-3" data-line-number="3"><span class="co">#  FULL OUTER JOIN B</span></a>
+<a class="sourceLine" id="cb212-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
+<p><strong>FULL OUTER EXCLUSIVE</strong></p>
+<div class="sourceCode" id="cb213"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb213-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
+<a class="sourceLine" id="cb213-2" data-line-number="2"><span class="co">#  FROM A </span></a>
+<a class="sourceLine" id="cb213-3" data-line-number="3"><span class="co">#  FULL OUTER JOIN B</span></a>
+<a class="sourceLine" id="cb213-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
+<a class="sourceLine" id="cb213-5" data-line-number="5"><span class="co">#  WHERE A.Key IS NULL OR B.Key IS NULL  </span></a></code></pre></div>
+<p><strong>RIGHT INCLUSIVE</strong></p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
+<a class="sourceLine" id="cb214-2" data-line-number="2"><span class="co">#  FROM A </span></a>
+<a class="sourceLine" id="cb214-3" data-line-number="3"><span class="co">#  RIGHT OUTER JOIN B</span></a>
+<a class="sourceLine" id="cb214-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
+<p><strong>RIGHT EXCLUSIVE</strong></p>
+<div class="sourceCode" id="cb215"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb215-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
+<a class="sourceLine" id="cb215-2" data-line-number="2"><span class="co">#  FROM A </span></a>
+<a class="sourceLine" id="cb215-3" data-line-number="3"><span class="co">#  LEFT OUTER JOIN B</span></a>
+<a class="sourceLine" id="cb215-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a>
+<a class="sourceLine" id="cb215-5" data-line-number="5"><span class="co">#  WHERE A.Key IS NULL</span></a></code></pre></div>
+<p><strong>INNER JOIN</strong></p>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb216-1" data-line-number="1"><span class="co">#  SELECT [Output Field List]</span></a>
+<a class="sourceLine" id="cb216-2" data-line-number="2"><span class="co">#  FROM A </span></a>
+<a class="sourceLine" id="cb216-3" data-line-number="3"><span class="co">#  INNER JOIN B</span></a>
+<a class="sourceLine" id="cb216-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
 <p>To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated <code>employees</code> data set we have been using: <code>job</code>, <code>tenure</code>, and <code>demographics</code>. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will use the <code>employee_id</code> column in each of the three data frames to facilitate joins:</p>
 <p>Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research &amp; Development department, grouped by jobs with more than 10 employees. For this, we will leverage an <code>INNER JOIN</code>, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in <code>demographics</code> and <code>tenure</code> for a particular employee id, but there is no corresponding record in <code>job</code>, that employee id would not be included in the output.</p>
-<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb212-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb212-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb212-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb212-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb212-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></a>
-<a class="sourceLine" id="cb212-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
-<a class="sourceLine" id="cb212-7" data-line-number="7"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb212-8" data-line-number="8"><span class="st">                        demographics</span></a>
-<a class="sourceLine" id="cb212-9" data-line-number="9"><span class="st">                      INNER JOIN</span></a>
-<a class="sourceLine" id="cb212-10" data-line-number="10"><span class="st">                        tenure</span></a>
-<a class="sourceLine" id="cb212-11" data-line-number="11"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb212-12" data-line-number="12"><span class="st">                        demographics.employee_id = tenure.employee_id</span></a>
-<a class="sourceLine" id="cb212-13" data-line-number="13"><span class="st">                      INNER JOIN</span></a>
-<a class="sourceLine" id="cb212-14" data-line-number="14"><span class="st">                        job</span></a>
-<a class="sourceLine" id="cb212-15" data-line-number="15"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb212-16" data-line-number="16"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb212-17" data-line-number="17"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb212-18" data-line-number="18"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb212-19" data-line-number="19"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb212-20" data-line-number="20"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb212-21" data-line-number="21"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb212-22" data-line-number="22"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb212-23" data-line-number="23"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb212-24" data-line-number="24"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb212-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb212-26" data-line-number="26"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb212-27" data-line-number="27">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb217-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb217-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb217-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb217-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb217-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></a>
+<a class="sourceLine" id="cb217-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
+<a class="sourceLine" id="cb217-7" data-line-number="7"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb217-8" data-line-number="8"><span class="st">                        demographics</span></a>
+<a class="sourceLine" id="cb217-9" data-line-number="9"><span class="st">                      INNER JOIN</span></a>
+<a class="sourceLine" id="cb217-10" data-line-number="10"><span class="st">                        tenure</span></a>
+<a class="sourceLine" id="cb217-11" data-line-number="11"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb217-12" data-line-number="12"><span class="st">                        demographics.employee_id = tenure.employee_id</span></a>
+<a class="sourceLine" id="cb217-13" data-line-number="13"><span class="st">                      INNER JOIN</span></a>
+<a class="sourceLine" id="cb217-14" data-line-number="14"><span class="st">                        job</span></a>
+<a class="sourceLine" id="cb217-15" data-line-number="15"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb217-16" data-line-number="16"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb217-17" data-line-number="17"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb217-18" data-line-number="18"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb217-19" data-line-number="19"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb217-20" data-line-number="20"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb217-21" data-line-number="21"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb217-22" data-line-number="22"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb217-23" data-line-number="23"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb217-24" data-line-number="24"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb217-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb217-26" data-line-number="26"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb217-27" data-line-number="27">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_org_tenure avg_commute_dist
 ## 1 Healthcare Representative          131            8.6              9.8
 ## 2     Laboratory Technician          259            5.0              9.4
@@ -592,33 +592,33 @@ Figure 9.6: Types of SQL Joins
 ## 6        Research Scientist          292            5.1              9.0</code></pre>
 <p>Note that the <code>INNER JOIN</code> in this SQL query was structured such that both <code>tenure</code> and <code>job</code> were joined to <code>demographics</code> via the <code>employee_id</code> column. We could have instead joined <code>job</code> to <code>tenure</code> since we joined <code>tenure</code> to <code>demographics</code>; this would have achieved the same result since all employee ids exist in each of the three data frames.</p>
 <p>If it were possible for all employee ids to exist in <code>demographics</code> but not in either <code>tenure</code> or <code>job</code>, we could leverage a <code>LEFT JOIN</code> to ensure all records from <code>demographics</code> are included in the output irrespective of whether they have matches in <code>tenure</code> or <code>job</code>:</p>
-<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb214-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb214-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb214-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb214-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb214-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></a>
-<a class="sourceLine" id="cb214-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
-<a class="sourceLine" id="cb214-7" data-line-number="7"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb214-8" data-line-number="8"><span class="st">                        demographics</span></a>
-<a class="sourceLine" id="cb214-9" data-line-number="9"><span class="st">                      LEFT JOIN</span></a>
-<a class="sourceLine" id="cb214-10" data-line-number="10"><span class="st">                        tenure</span></a>
-<a class="sourceLine" id="cb214-11" data-line-number="11"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb214-12" data-line-number="12"><span class="st">                        demographics.employee_id = tenure.employee_id</span></a>
-<a class="sourceLine" id="cb214-13" data-line-number="13"><span class="st">                      LEFT JOIN</span></a>
-<a class="sourceLine" id="cb214-14" data-line-number="14"><span class="st">                        job</span></a>
-<a class="sourceLine" id="cb214-15" data-line-number="15"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb214-16" data-line-number="16"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb214-17" data-line-number="17"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb214-18" data-line-number="18"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb214-19" data-line-number="19"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb214-20" data-line-number="20"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb214-21" data-line-number="21"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb214-22" data-line-number="22"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb214-23" data-line-number="23"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb214-24" data-line-number="24"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb214-25" data-line-number="25"></a>
-<a class="sourceLine" id="cb214-26" data-line-number="26"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb214-27" data-line-number="27">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb219-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb219-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb219-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb219-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb219-5" data-line-number="5"><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></a>
+<a class="sourceLine" id="cb219-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
+<a class="sourceLine" id="cb219-7" data-line-number="7"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb219-8" data-line-number="8"><span class="st">                        demographics</span></a>
+<a class="sourceLine" id="cb219-9" data-line-number="9"><span class="st">                      LEFT JOIN</span></a>
+<a class="sourceLine" id="cb219-10" data-line-number="10"><span class="st">                        tenure</span></a>
+<a class="sourceLine" id="cb219-11" data-line-number="11"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb219-12" data-line-number="12"><span class="st">                        demographics.employee_id = tenure.employee_id</span></a>
+<a class="sourceLine" id="cb219-13" data-line-number="13"><span class="st">                      LEFT JOIN</span></a>
+<a class="sourceLine" id="cb219-14" data-line-number="14"><span class="st">                        job</span></a>
+<a class="sourceLine" id="cb219-15" data-line-number="15"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb219-16" data-line-number="16"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb219-17" data-line-number="17"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb219-18" data-line-number="18"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb219-19" data-line-number="19"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb219-20" data-line-number="20"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb219-21" data-line-number="21"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb219-22" data-line-number="22"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb219-23" data-line-number="23"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb219-24" data-line-number="24"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb219-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb219-26" data-line-number="26"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb219-27" data-line-number="27">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_org_tenure avg_commute_dist
 ## 1 Healthcare Representative          131            8.6              9.8
 ## 2     Laboratory Technician          259            5.0              9.4
@@ -628,47 +628,47 @@ Figure 9.6: Types of SQL Joins
 ## 6        Research Scientist          292            5.1              9.0</code></pre>
 <p>In this case, if demographics is the base data set which contains all employee ids (i.e., the ‘LEFT’ dataset), it is important for <code>tenure</code> and <code>job</code> to be joined to it. Joining <code>job</code> to <code>tenure</code> may result in information loss if an employee id exists in <code>demographics</code> and <code>job</code> but not in the intermediate <code>tenure</code> data set.</p>
 <p>When integrating data within R, the <code>tidyverse</code> provides a more efficient and parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single <code>employees</code> data frame using a left join on the <code>employee_id</code> column:</p>
-<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb216-1" data-line-number="1"><span class="co"># Load tidyverse</span></a>
-<a class="sourceLine" id="cb216-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
-<a class="sourceLine" id="cb216-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb216-4" data-line-number="4">employees &lt;-<span class="st"> </span><span class="kw">list</span>(demographics,</a>
-<a class="sourceLine" id="cb216-5" data-line-number="5">                  status,</a>
-<a class="sourceLine" id="cb216-6" data-line-number="6">                  benefits,</a>
-<a class="sourceLine" id="cb216-7" data-line-number="7">                  job,</a>
-<a class="sourceLine" id="cb216-8" data-line-number="8">                  payroll,</a>
-<a class="sourceLine" id="cb216-9" data-line-number="9">                  performance,</a>
-<a class="sourceLine" id="cb216-10" data-line-number="10">                  prior_employment,</a>
-<a class="sourceLine" id="cb216-11" data-line-number="11">                  survey_response,</a>
-<a class="sourceLine" id="cb216-12" data-line-number="12">                  tenure) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb216-13" data-line-number="13"><span class="st">                  </span><span class="kw">reduce</span>(left_join, <span class="dt">by =</span> <span class="st">&quot;employee_id&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb221-1" data-line-number="1"><span class="co"># Load tidyverse</span></a>
+<a class="sourceLine" id="cb221-2" data-line-number="2"><span class="kw">library</span>(tidyverse)</a>
+<a class="sourceLine" id="cb221-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb221-4" data-line-number="4">employees &lt;-<span class="st"> </span><span class="kw">list</span>(demographics,</a>
+<a class="sourceLine" id="cb221-5" data-line-number="5">                  status,</a>
+<a class="sourceLine" id="cb221-6" data-line-number="6">                  benefits,</a>
+<a class="sourceLine" id="cb221-7" data-line-number="7">                  job,</a>
+<a class="sourceLine" id="cb221-8" data-line-number="8">                  payroll,</a>
+<a class="sourceLine" id="cb221-9" data-line-number="9">                  performance,</a>
+<a class="sourceLine" id="cb221-10" data-line-number="10">                  prior_employment,</a>
+<a class="sourceLine" id="cb221-11" data-line-number="11">                  survey_response,</a>
+<a class="sourceLine" id="cb221-12" data-line-number="12">                  tenure) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb221-13" data-line-number="13"><span class="st">                  </span><span class="kw">reduce</span>(left_join, <span class="dt">by =</span> <span class="st">&quot;employee_id&quot;</span>)</a></code></pre></div>
 <p><strong>Subqueries</strong></p>
 <p><strong>Subqueries</strong> are queries nested within other queries. Subqueries are often referred to as <strong>inner queries</strong>, while the main queries are referred to as <strong>outer queries</strong>.</p>
 <p>For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include <code>tenure</code> in the join conditions of our main query:</p>
-<div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb217-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb217-2" data-line-number="2"><span class="co"># Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it</span></a>
-<a class="sourceLine" id="cb217-3" data-line-number="3">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb217-4" data-line-number="4"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb217-5" data-line-number="5"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb217-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
-<a class="sourceLine" id="cb217-7" data-line-number="7"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb217-8" data-line-number="8"><span class="st">                        demographics</span></a>
-<a class="sourceLine" id="cb217-9" data-line-number="9"><span class="st">                      LEFT JOIN</span></a>
-<a class="sourceLine" id="cb217-10" data-line-number="10"><span class="st">                        job</span></a>
-<a class="sourceLine" id="cb217-11" data-line-number="11"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb217-12" data-line-number="12"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb217-13" data-line-number="13"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb217-14" data-line-number="14"><span class="st">                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1)</span></a>
-<a class="sourceLine" id="cb217-15" data-line-number="15"><span class="st">                      AND </span></a>
-<a class="sourceLine" id="cb217-16" data-line-number="16"><span class="st">                        dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb217-17" data-line-number="17"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb217-18" data-line-number="18"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb217-19" data-line-number="19"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb217-20" data-line-number="20"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb217-21" data-line-number="21"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb217-22" data-line-number="22"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb217-23" data-line-number="23"></a>
-<a class="sourceLine" id="cb217-24" data-line-number="24"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb217-25" data-line-number="25">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb222-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb222-2" data-line-number="2"><span class="co"># Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it</span></a>
+<a class="sourceLine" id="cb222-3" data-line-number="3">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb222-4" data-line-number="4"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb222-5" data-line-number="5"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb222-6" data-line-number="6"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
+<a class="sourceLine" id="cb222-7" data-line-number="7"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb222-8" data-line-number="8"><span class="st">                        demographics</span></a>
+<a class="sourceLine" id="cb222-9" data-line-number="9"><span class="st">                      LEFT JOIN</span></a>
+<a class="sourceLine" id="cb222-10" data-line-number="10"><span class="st">                        job</span></a>
+<a class="sourceLine" id="cb222-11" data-line-number="11"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb222-12" data-line-number="12"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb222-13" data-line-number="13"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb222-14" data-line-number="14"><span class="st">                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1)</span></a>
+<a class="sourceLine" id="cb222-15" data-line-number="15"><span class="st">                      AND </span></a>
+<a class="sourceLine" id="cb222-16" data-line-number="16"><span class="st">                        dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb222-17" data-line-number="17"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb222-18" data-line-number="18"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb222-19" data-line-number="19"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb222-20" data-line-number="20"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb222-21" data-line-number="21"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb222-22" data-line-number="22"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb222-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb222-24" data-line-number="24"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb222-25" data-line-number="25">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_commute_dist
 ## 1 Healthcare Representative          118              9.7
 ## 2     Laboratory Technician          198              9.6
@@ -678,32 +678,32 @@ Figure 9.6: Types of SQL Joins
 ## 6        Research Scientist          238              9.2</code></pre>
 <p><strong>Virtual Tables</strong></p>
 <p>An alternative to a subquery is creating a <strong>virtual table</strong> in the <code>FROM</code> clause. When using an <code>INNER JOIN</code> to connect <code>demographics</code> to the virtual table <code>ids</code>, which provides a list of employee ids for those with more than a year of organization tenure, any records in <code>demographics</code> or <code>job</code> that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a <code>LEFT JOIN</code> is used to join <code>job</code> to <code>demographics</code> since records in <code>demographics</code> will be filtered based on <code>employee_id</code> matches in the virtual table. With this approach, our <code>WHERE</code> clause is limited to the <code>department = 'Research &amp; Development'</code> condition:</p>
-<div class="sourceCode" id="cb219"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb219-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb219-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb219-3" data-line-number="3"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb219-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
-<a class="sourceLine" id="cb219-5" data-line-number="5"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
-<a class="sourceLine" id="cb219-6" data-line-number="6"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb219-7" data-line-number="7"><span class="st">                        demographics</span></a>
-<a class="sourceLine" id="cb219-8" data-line-number="8"><span class="st">                      LEFT JOIN</span></a>
-<a class="sourceLine" id="cb219-9" data-line-number="9"><span class="st">                        job</span></a>
-<a class="sourceLine" id="cb219-10" data-line-number="10"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb219-11" data-line-number="11"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb219-12" data-line-number="12"><span class="st">                      INNER JOIN</span></a>
-<a class="sourceLine" id="cb219-13" data-line-number="13"><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
-<a class="sourceLine" id="cb219-14" data-line-number="14"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb219-15" data-line-number="15"><span class="st">                        demographics.employee_id = ids.employee_id</span></a>
-<a class="sourceLine" id="cb219-16" data-line-number="16"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb219-17" data-line-number="17"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb219-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
-<a class="sourceLine" id="cb219-19" data-line-number="19"><span class="st">                      job_title</span></a>
-<a class="sourceLine" id="cb219-20" data-line-number="20"><span class="st">                    HAVING</span></a>
-<a class="sourceLine" id="cb219-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
-<a class="sourceLine" id="cb219-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb219-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb219-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb219-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb219-26" data-line-number="26">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb224"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb224-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb224-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb224-3" data-line-number="3"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb224-4" data-line-number="4"><span class="st">                      COUNT(*) AS employee_cnt,</span></a>
+<a class="sourceLine" id="cb224-5" data-line-number="5"><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></a>
+<a class="sourceLine" id="cb224-6" data-line-number="6"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb224-7" data-line-number="7"><span class="st">                        demographics</span></a>
+<a class="sourceLine" id="cb224-8" data-line-number="8"><span class="st">                      LEFT JOIN</span></a>
+<a class="sourceLine" id="cb224-9" data-line-number="9"><span class="st">                        job</span></a>
+<a class="sourceLine" id="cb224-10" data-line-number="10"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb224-11" data-line-number="11"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb224-12" data-line-number="12"><span class="st">                      INNER JOIN</span></a>
+<a class="sourceLine" id="cb224-13" data-line-number="13"><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
+<a class="sourceLine" id="cb224-14" data-line-number="14"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb224-15" data-line-number="15"><span class="st">                        demographics.employee_id = ids.employee_id</span></a>
+<a class="sourceLine" id="cb224-16" data-line-number="16"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb224-17" data-line-number="17"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb224-18" data-line-number="18"><span class="st">                    GROUP BY</span></a>
+<a class="sourceLine" id="cb224-19" data-line-number="19"><span class="st">                      job_title</span></a>
+<a class="sourceLine" id="cb224-20" data-line-number="20"><span class="st">                    HAVING</span></a>
+<a class="sourceLine" id="cb224-21" data-line-number="21"><span class="st">                      COUNT(*) &gt; 10</span></a>
+<a class="sourceLine" id="cb224-22" data-line-number="22"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb224-23" data-line-number="23"><span class="st">                      job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb224-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb224-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb224-26" data-line-number="26">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_cnt avg_commute_dist
 ## 1 Healthcare Representative          118              9.7
 ## 2     Laboratory Technician          198              9.6
@@ -715,32 +715,32 @@ Figure 9.6: Types of SQL Joins
 <p><strong>Window Functions</strong></p>
 <p><strong>Window functions</strong> are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we’ve covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.</p>
 <p>For example, we can assign an organization tenure rank by Research &amp; Development job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause. The <code>PARTITION BY</code> argument functions like a <code>GROUP BY</code> clause but without collapsing rows, while the <code>ORDER BY</code> argument sorts the records in ascending (<code>ASC</code>) or descending (<code>DESC</code>) order for proper ranking:</p>
-<div class="sourceCode" id="cb221"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb221-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb221-2" data-line-number="2"><span class="co"># Limit output to 10 records since query does not collapse records</span></a>
-<a class="sourceLine" id="cb221-3" data-line-number="3">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb221-4" data-line-number="4"><span class="st">                      demographics.employee_id,</span></a>
-<a class="sourceLine" id="cb221-5" data-line-number="5"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb221-6" data-line-number="6"><span class="st">                      commute_dist,</span></a>
-<a class="sourceLine" id="cb221-7" data-line-number="7"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></a>
-<a class="sourceLine" id="cb221-8" data-line-number="8"><span class="st">                    FROM</span></a>
-<a class="sourceLine" id="cb221-9" data-line-number="9"><span class="st">                        demographics</span></a>
-<a class="sourceLine" id="cb221-10" data-line-number="10"><span class="st">                      LEFT JOIN</span></a>
-<a class="sourceLine" id="cb221-11" data-line-number="11"><span class="st">                        job</span></a>
-<a class="sourceLine" id="cb221-12" data-line-number="12"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb221-13" data-line-number="13"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb221-14" data-line-number="14"><span class="st">                      INNER JOIN</span></a>
-<a class="sourceLine" id="cb221-15" data-line-number="15"><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
-<a class="sourceLine" id="cb221-16" data-line-number="16"><span class="st">                      ON</span></a>
-<a class="sourceLine" id="cb221-17" data-line-number="17"><span class="st">                        demographics.employee_id = ids.employee_id</span></a>
-<a class="sourceLine" id="cb221-18" data-line-number="18"><span class="st">                    WHERE</span></a>
-<a class="sourceLine" id="cb221-19" data-line-number="19"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb221-20" data-line-number="20"><span class="st">                    ORDER BY</span></a>
-<a class="sourceLine" id="cb221-21" data-line-number="21"><span class="st">                      job_title,</span></a>
-<a class="sourceLine" id="cb221-22" data-line-number="22"><span class="st">                      commute_dist_rank</span></a>
-<a class="sourceLine" id="cb221-23" data-line-number="23"><span class="st">                    LIMIT 10&quot;</span>)</a>
-<a class="sourceLine" id="cb221-24" data-line-number="24"></a>
-<a class="sourceLine" id="cb221-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb221-26" data-line-number="26">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb226"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb226-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb226-2" data-line-number="2"><span class="co"># Limit output to 10 records since query does not collapse records</span></a>
+<a class="sourceLine" id="cb226-3" data-line-number="3">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb226-4" data-line-number="4"><span class="st">                      demographics.employee_id,</span></a>
+<a class="sourceLine" id="cb226-5" data-line-number="5"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb226-6" data-line-number="6"><span class="st">                      commute_dist,</span></a>
+<a class="sourceLine" id="cb226-7" data-line-number="7"><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></a>
+<a class="sourceLine" id="cb226-8" data-line-number="8"><span class="st">                    FROM</span></a>
+<a class="sourceLine" id="cb226-9" data-line-number="9"><span class="st">                        demographics</span></a>
+<a class="sourceLine" id="cb226-10" data-line-number="10"><span class="st">                      LEFT JOIN</span></a>
+<a class="sourceLine" id="cb226-11" data-line-number="11"><span class="st">                        job</span></a>
+<a class="sourceLine" id="cb226-12" data-line-number="12"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb226-13" data-line-number="13"><span class="st">                        demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb226-14" data-line-number="14"><span class="st">                      INNER JOIN</span></a>
+<a class="sourceLine" id="cb226-15" data-line-number="15"><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
+<a class="sourceLine" id="cb226-16" data-line-number="16"><span class="st">                      ON</span></a>
+<a class="sourceLine" id="cb226-17" data-line-number="17"><span class="st">                        demographics.employee_id = ids.employee_id</span></a>
+<a class="sourceLine" id="cb226-18" data-line-number="18"><span class="st">                    WHERE</span></a>
+<a class="sourceLine" id="cb226-19" data-line-number="19"><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb226-20" data-line-number="20"><span class="st">                    ORDER BY</span></a>
+<a class="sourceLine" id="cb226-21" data-line-number="21"><span class="st">                      job_title,</span></a>
+<a class="sourceLine" id="cb226-22" data-line-number="22"><span class="st">                      commute_dist_rank</span></a>
+<a class="sourceLine" id="cb226-23" data-line-number="23"><span class="st">                    LIMIT 10&quot;</span>)</a>
+<a class="sourceLine" id="cb226-24" data-line-number="24"></a>
+<a class="sourceLine" id="cb226-25" data-line-number="25"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb226-26" data-line-number="26">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##    employee_id                 job_title commute_dist commute_dist_rank
 ## 1         2325 Healthcare Representative           29                 1
 ## 2         1414 Healthcare Representative           28                 2
@@ -754,39 +754,39 @@ Figure 9.6: Types of SQL Joins
 ## 10        1164 Healthcare Representative           24                10</code></pre>
 <p>Notice that in the case of commute distance ties, the <code>RANK()</code> function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.</p>
 <p>We can also treat this query as a virtual table, and then filter on the derived <code>commute_dist_rank</code> field to return the highest commute distance for each job. We can add a <code>DISTINCT()</code> function in the <code>SELECT</code> clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the <code>COUNT(*)</code> function:</p>
-<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb223-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
-<a class="sourceLine" id="cb223-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
-<a class="sourceLine" id="cb223-3" data-line-number="3"><span class="st">                        DISTINCT(job_title) AS job_title,</span></a>
-<a class="sourceLine" id="cb223-4" data-line-number="4"><span class="st">                        COUNT(*) AS employee_count,</span></a>
-<a class="sourceLine" id="cb223-5" data-line-number="5"><span class="st">                        commute_dist</span></a>
-<a class="sourceLine" id="cb223-6" data-line-number="6"><span class="st">                     FROM</span></a>
-<a class="sourceLine" id="cb223-7" data-line-number="7"><span class="st">                        (SELECT</span></a>
-<a class="sourceLine" id="cb223-8" data-line-number="8"><span class="st">                          demographics.employee_id,</span></a>
-<a class="sourceLine" id="cb223-9" data-line-number="9"><span class="st">                          job_title,</span></a>
-<a class="sourceLine" id="cb223-10" data-line-number="10"><span class="st">                          commute_dist,</span></a>
-<a class="sourceLine" id="cb223-11" data-line-number="11"><span class="st">                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></a>
-<a class="sourceLine" id="cb223-12" data-line-number="12"><span class="st">                        FROM</span></a>
-<a class="sourceLine" id="cb223-13" data-line-number="13"><span class="st">                            demographics</span></a>
-<a class="sourceLine" id="cb223-14" data-line-number="14"><span class="st">                          LEFT JOIN</span></a>
-<a class="sourceLine" id="cb223-15" data-line-number="15"><span class="st">                            job</span></a>
-<a class="sourceLine" id="cb223-16" data-line-number="16"><span class="st">                          ON</span></a>
-<a class="sourceLine" id="cb223-17" data-line-number="17"><span class="st">                            demographics.employee_id = job.employee_id</span></a>
-<a class="sourceLine" id="cb223-18" data-line-number="18"><span class="st">                          INNER JOIN</span></a>
-<a class="sourceLine" id="cb223-19" data-line-number="19"><span class="st">                            (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
-<a class="sourceLine" id="cb223-20" data-line-number="20"><span class="st">                          ON</span></a>
-<a class="sourceLine" id="cb223-21" data-line-number="21"><span class="st">                            demographics.employee_id = ids.employee_id</span></a>
-<a class="sourceLine" id="cb223-22" data-line-number="22"><span class="st">                        WHERE</span></a>
-<a class="sourceLine" id="cb223-23" data-line-number="23"><span class="st">                          dept = &#39;Research &amp; Development&#39;</span></a>
-<a class="sourceLine" id="cb223-24" data-line-number="24"><span class="st">                        ORDER BY</span></a>
-<a class="sourceLine" id="cb223-25" data-line-number="25"><span class="st">                          job_title,</span></a>
-<a class="sourceLine" id="cb223-26" data-line-number="26"><span class="st">                          commute_dist_rank) tbl</span></a>
-<a class="sourceLine" id="cb223-27" data-line-number="27"><span class="st">                      WHERE</span></a>
-<a class="sourceLine" id="cb223-28" data-line-number="28"><span class="st">                        tbl.commute_dist_rank = 1</span></a>
-<a class="sourceLine" id="cb223-29" data-line-number="29"><span class="st">                      GROUP BY</span></a>
-<a class="sourceLine" id="cb223-30" data-line-number="30"><span class="st">                        job_title&quot;</span>)</a>
-<a class="sourceLine" id="cb223-31" data-line-number="31"></a>
-<a class="sourceLine" id="cb223-32" data-line-number="32"><span class="co"># Execute SQL query</span></a>
-<a class="sourceLine" id="cb223-33" data-line-number="33">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
+<div class="sourceCode" id="cb228"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb228-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
+<a class="sourceLine" id="cb228-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
+<a class="sourceLine" id="cb228-3" data-line-number="3"><span class="st">                        DISTINCT(job_title) AS job_title,</span></a>
+<a class="sourceLine" id="cb228-4" data-line-number="4"><span class="st">                        COUNT(*) AS employee_count,</span></a>
+<a class="sourceLine" id="cb228-5" data-line-number="5"><span class="st">                        commute_dist</span></a>
+<a class="sourceLine" id="cb228-6" data-line-number="6"><span class="st">                     FROM</span></a>
+<a class="sourceLine" id="cb228-7" data-line-number="7"><span class="st">                        (SELECT</span></a>
+<a class="sourceLine" id="cb228-8" data-line-number="8"><span class="st">                          demographics.employee_id,</span></a>
+<a class="sourceLine" id="cb228-9" data-line-number="9"><span class="st">                          job_title,</span></a>
+<a class="sourceLine" id="cb228-10" data-line-number="10"><span class="st">                          commute_dist,</span></a>
+<a class="sourceLine" id="cb228-11" data-line-number="11"><span class="st">                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></a>
+<a class="sourceLine" id="cb228-12" data-line-number="12"><span class="st">                        FROM</span></a>
+<a class="sourceLine" id="cb228-13" data-line-number="13"><span class="st">                            demographics</span></a>
+<a class="sourceLine" id="cb228-14" data-line-number="14"><span class="st">                          LEFT JOIN</span></a>
+<a class="sourceLine" id="cb228-15" data-line-number="15"><span class="st">                            job</span></a>
+<a class="sourceLine" id="cb228-16" data-line-number="16"><span class="st">                          ON</span></a>
+<a class="sourceLine" id="cb228-17" data-line-number="17"><span class="st">                            demographics.employee_id = job.employee_id</span></a>
+<a class="sourceLine" id="cb228-18" data-line-number="18"><span class="st">                          INNER JOIN</span></a>
+<a class="sourceLine" id="cb228-19" data-line-number="19"><span class="st">                            (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></a>
+<a class="sourceLine" id="cb228-20" data-line-number="20"><span class="st">                          ON</span></a>
+<a class="sourceLine" id="cb228-21" data-line-number="21"><span class="st">                            demographics.employee_id = ids.employee_id</span></a>
+<a class="sourceLine" id="cb228-22" data-line-number="22"><span class="st">                        WHERE</span></a>
+<a class="sourceLine" id="cb228-23" data-line-number="23"><span class="st">                          dept = &#39;Research &amp; Development&#39;</span></a>
+<a class="sourceLine" id="cb228-24" data-line-number="24"><span class="st">                        ORDER BY</span></a>
+<a class="sourceLine" id="cb228-25" data-line-number="25"><span class="st">                          job_title,</span></a>
+<a class="sourceLine" id="cb228-26" data-line-number="26"><span class="st">                          commute_dist_rank) tbl</span></a>
+<a class="sourceLine" id="cb228-27" data-line-number="27"><span class="st">                      WHERE</span></a>
+<a class="sourceLine" id="cb228-28" data-line-number="28"><span class="st">                        tbl.commute_dist_rank = 1</span></a>
+<a class="sourceLine" id="cb228-29" data-line-number="29"><span class="st">                      GROUP BY</span></a>
+<a class="sourceLine" id="cb228-30" data-line-number="30"><span class="st">                        job_title&quot;</span>)</a>
+<a class="sourceLine" id="cb228-31" data-line-number="31"></a>
+<a class="sourceLine" id="cb228-32" data-line-number="32"><span class="co"># Execute SQL query</span></a>
+<a class="sourceLine" id="cb228-33" data-line-number="33">sqldf<span class="op">::</span><span class="kw">sqldf</span>(sql_string)</a></code></pre></div>
 <pre><code>##                   job_title employee_count commute_dist
 ## 1 Healthcare Representative              1           29
 ## 2     Laboratory Technician              6           29
@@ -800,8 +800,8 @@ Figure 9.6: Types of SQL Joins
 <h2><span class="header-section-number">9.3</span> Data Screening &amp; Cleaning</h2>
 <p>The initial data review process is sometimes referred to as <strong>exporatory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.</p>
 <p>A handy function in base R for initial data screening is <code>summary()</code>:</p>
-<div class="sourceCode" id="cb225"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb225-1" data-line-number="1"><span class="co"># Summarize df</span></a>
-<a class="sourceLine" id="cb225-2" data-line-number="2"><span class="kw">summary</span>(employees)</a></code></pre></div>
+<div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb230-1" data-line-number="1"><span class="co"># Summarize df</span></a>
+<a class="sourceLine" id="cb230-2" data-line-number="2"><span class="kw">summary</span>(employees)</a></code></pre></div>
 <pre><code>##   employee_id        age         commute_dist        ed_lvl     
 ##  Min.   :1001   Min.   :18.00   Min.   : 1.000   Min.   :1.000  
 ##  1st Qu.:1368   1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000  
@@ -866,25 +866,25 @@ Figure 9.6: Types of SQL Joins
 <p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of a large number of impacted records – even with a sufficiently large sample – may bias analyses if there are missingness patterns.</p>
 <p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
 <p>Let’s evaluate the <code>employees</code> data frame for missing <code>annual_comp</code> values using the logical <code>is.na()</code> function, and return values of variables relevant in determining one’s annual compensation:</p>
-<div class="sourceCode" id="cb227"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb227-1" data-line-number="1"><span class="co"># Store original annual comp for sample employee</span></a>
-<a class="sourceLine" id="cb227-2" data-line-number="2">orig_comp &lt;-<span class="st"> </span><span class="kw">subset</span>(employees, employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="dt">select =</span> annual_comp)</a>
-<a class="sourceLine" id="cb227-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb227-4" data-line-number="4"><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></a>
-<a class="sourceLine" id="cb227-5" data-line-number="5">employees[employees<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
-<a class="sourceLine" id="cb227-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb227-7" data-line-number="7"><span class="co"># Return relevant employee characteristics where annual comp is missing</span></a>
-<a class="sourceLine" id="cb227-8" data-line-number="8"><span class="kw">subset</span>(employees, <span class="kw">is.na</span>(annual_comp), <span class="dt">select =</span> <span class="kw">c</span>(employee_id, job_title, job_lvl))</a></code></pre></div>
+<div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb232-1" data-line-number="1"><span class="co"># Store original annual comp for sample employee</span></a>
+<a class="sourceLine" id="cb232-2" data-line-number="2">orig_comp &lt;-<span class="st"> </span><span class="kw">subset</span>(employees, employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="dt">select =</span> annual_comp)</a>
+<a class="sourceLine" id="cb232-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb232-4" data-line-number="4"><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></a>
+<a class="sourceLine" id="cb232-5" data-line-number="5">employees[employees<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span><span class="ot">NA</span></a>
+<a class="sourceLine" id="cb232-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb232-7" data-line-number="7"><span class="co"># Return relevant employee characteristics where annual comp is missing</span></a>
+<a class="sourceLine" id="cb232-8" data-line-number="8"><span class="kw">subset</span>(employees, <span class="kw">is.na</span>(annual_comp), <span class="dt">select =</span> <span class="kw">c</span>(employee_id, job_title, job_lvl))</a></code></pre></div>
 <pre><code>##      employee_id              job_title job_lvl
 ## 1176        2176 Manufacturing Director       2</code></pre>
 <p>Next, we can impute the average value of <code>annual_comp</code> based on employees with the same values for the relevant variables:</p>
-<div class="sourceCode" id="cb229"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb229-1" data-line-number="1"><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></a>
-<a class="sourceLine" id="cb229-2" data-line-number="2">imputed_comp &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">subset</span>(employees, job_title <span class="op">==</span><span class="st"> &#39;Manufacturing Director&#39;</span> <span class="op">&amp;</span><span class="st"> </span>job_lvl <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">select =</span> annual_comp), mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
-<a class="sourceLine" id="cb229-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb229-4" data-line-number="4"><span class="co"># Impute missing comp for relevant segment</span></a>
-<a class="sourceLine" id="cb229-5" data-line-number="5">employees[employees<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span>imputed_comp</a>
-<a class="sourceLine" id="cb229-6" data-line-number="6"></a>
-<a class="sourceLine" id="cb229-7" data-line-number="7"><span class="co"># Display absolute difference between original and imputed comp</span></a>
-<a class="sourceLine" id="cb229-8" data-line-number="8"><span class="kw">round</span>(<span class="kw">abs</span>(orig_comp <span class="op">-</span><span class="st"> </span><span class="kw">subset</span>(employees, employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="dt">select =</span> annual_comp)), <span class="dv">0</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb234"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb234-1" data-line-number="1"><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></a>
+<a class="sourceLine" id="cb234-2" data-line-number="2">imputed_comp &lt;-<span class="st"> </span><span class="kw">sapply</span>(<span class="kw">subset</span>(employees, job_title <span class="op">==</span><span class="st"> &#39;Manufacturing Director&#39;</span> <span class="op">&amp;</span><span class="st"> </span>job_lvl <span class="op">==</span><span class="st"> </span><span class="dv">2</span>, <span class="dt">select =</span> annual_comp), mean, <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</a>
+<a class="sourceLine" id="cb234-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb234-4" data-line-number="4"><span class="co"># Impute missing comp for relevant segment</span></a>
+<a class="sourceLine" id="cb234-5" data-line-number="5">employees[employees<span class="op">$</span>employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] &lt;-<span class="st"> </span>imputed_comp</a>
+<a class="sourceLine" id="cb234-6" data-line-number="6"></a>
+<a class="sourceLine" id="cb234-7" data-line-number="7"><span class="co"># Display absolute difference between original and imputed comp</span></a>
+<a class="sourceLine" id="cb234-8" data-line-number="8"><span class="kw">round</span>(<span class="kw">abs</span>(orig_comp <span class="op">-</span><span class="st"> </span><span class="kw">subset</span>(employees, employee_id <span class="op">==</span><span class="st"> &#39;2176&#39;</span>, <span class="dt">select =</span> annual_comp)), <span class="dv">0</span>)</a></code></pre></div>
 <pre><code>##      annual_comp
 ## 1176        1169</code></pre>
 <p>While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. <em>Linear regression</em> and <em>K-Nearest Neighbor (KNN)</em> models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. <strong>Multiple imputation</strong> combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.</p>
@@ -895,13 +895,13 @@ Figure 9.6: Types of SQL Joins
 <p>Variables with <strong>low variability</strong> often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.</p>
 <p>When working with survey data, checking for <strong>straightlining</strong> should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases – especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing “I plan to be here in a year” to “I do not plan to be here in a year”), which we expect to be inversely related, this gives added support for discarding these responses.</p>
 <p>Fields with low variability can be easily identified using descriptive statistics from the <code>summary()</code> function. If the <code>Min</code> and <code>Max</code> values are equal, there is no variability in the field’s values. Based on the following descriptives, we should remove <code>standard_hrs</code> from the data:</p>
-<div class="sourceCode" id="cb231"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb231-1" data-line-number="1"><span class="co"># Return descriptives to understand distribution of standard hours</span></a>
-<a class="sourceLine" id="cb231-2" data-line-number="2"><span class="kw">summary</span>(employees<span class="op">$</span>standard_hrs)</a></code></pre></div>
+<div class="sourceCode" id="cb236"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb236-1" data-line-number="1"><span class="co"># Return descriptives to understand distribution of standard hours</span></a>
+<a class="sourceLine" id="cb236-2" data-line-number="2"><span class="kw">summary</span>(employees<span class="op">$</span>standard_hrs)</a></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##      80      80      80      80      80      80</code></pre>
 <p>Given that the data dictionary in Chapter <a href="getting-started.html#getting-started">3</a> indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:</p>
-<div class="sourceCode" id="cb233"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb233-1" data-line-number="1"><span class="co"># Return descriptives to understand distribution of standard hours</span></a>
-<a class="sourceLine" id="cb233-2" data-line-number="2"><span class="kw">summary</span>(employees<span class="op">$</span>perf_rating)</a></code></pre></div>
+<div class="sourceCode" id="cb238"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb238-1" data-line-number="1"><span class="co"># Return descriptives to understand distribution of standard hours</span></a>
+<a class="sourceLine" id="cb238-2" data-line-number="2"><span class="kw">summary</span>(employees<span class="op">$</span>perf_rating)</a></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   3.000   3.000   3.000   3.154   3.000   4.000</code></pre>
 <p>Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that will likely bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.</p>
@@ -925,14 +925,14 @@ Figure 9.7: One-Hot Encoding
 </p>
 </div>
 <p>For a categorical variable with only two values, the <code>ifelse()</code> function can be leveraged to assign values:</p>
-<div class="sourceCode" id="cb235"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb235-1" data-line-number="1"><span class="co"># Return unique values of gender field</span></a>
-<a class="sourceLine" id="cb235-2" data-line-number="2"><span class="kw">unique</span>(employees<span class="op">$</span>gender)</a></code></pre></div>
+<div class="sourceCode" id="cb240"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb240-1" data-line-number="1"><span class="co"># Return unique values of gender field</span></a>
+<a class="sourceLine" id="cb240-2" data-line-number="2"><span class="kw">unique</span>(employees<span class="op">$</span>gender)</a></code></pre></div>
 <pre><code>## [1] &quot;Female&quot; &quot;Male&quot;</code></pre>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb237-1" data-line-number="1"><span class="co"># Gender one-hot encoding</span></a>
-<a class="sourceLine" id="cb237-2" data-line-number="2">employees<span class="op">$</span>gender_ohe &lt;-<span class="st"> </span><span class="kw">ifelse</span>(employees<span class="op">$</span>gender <span class="op">==</span><span class="st"> &#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
-<a class="sourceLine" id="cb237-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb237-4" data-line-number="4"><span class="co"># Preview records</span></a>
-<a class="sourceLine" id="cb237-5" data-line-number="5"><span class="kw">head</span>(<span class="kw">subset</span>(employees, <span class="dt">select =</span> <span class="kw">c</span>(employee_id, gender_ohe)))</a></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb242-1" data-line-number="1"><span class="co"># Gender one-hot encoding</span></a>
+<a class="sourceLine" id="cb242-2" data-line-number="2">employees<span class="op">$</span>gender_ohe &lt;-<span class="st"> </span><span class="kw">ifelse</span>(employees<span class="op">$</span>gender <span class="op">==</span><span class="st"> &#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb242-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb242-4" data-line-number="4"><span class="co"># Preview records</span></a>
+<a class="sourceLine" id="cb242-5" data-line-number="5"><span class="kw">head</span>(<span class="kw">subset</span>(employees, <span class="dt">select =</span> <span class="kw">c</span>(employee_id, gender_ohe)))</a></code></pre></div>
 <pre><code>##   employee_id gender_ohe
 ## 1        1001          1
 ## 2        1002          0
@@ -941,18 +941,18 @@ Figure 9.7: One-Hot Encoding
 ## 5        1005          0
 ## 6        1006          0</code></pre>
 <p>For variables with more than 2 categories, we can leverage the <code>model.matrix()</code> function for one-hot encoding. Let’s illustrate be encoding locations.</p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb239-1" data-line-number="1"><span class="co"># Return counts by department</span></a>
-<a class="sourceLine" id="cb239-2" data-line-number="2">employees <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(dept, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb244-1" data-line-number="1"><span class="co"># Return counts by department</span></a>
+<a class="sourceLine" id="cb244-2" data-line-number="2">employees <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">count</span>(dept, <span class="dt">sort =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
 <pre><code>##                     dept   n
 ## 1 Research &amp; Development 961
 ## 2                  Sales 446
 ## 3        Human Resources  63</code></pre>
 <p>By default, the <code>model.matrix()</code> function will produce a matrix of 1/0 values for <span class="math inline">\(k-1\)</span> categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using <code>-1</code> in the first argument passed to <code>model.matrix()</code> and then choose the reference group for the analysis in a subsequent step.</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb241-1" data-line-number="1"><span class="co"># Department one-hot encoding</span></a>
-<a class="sourceLine" id="cb241-2" data-line-number="2">dept_ohe &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span>dept<span class="dv">-1</span>, <span class="dt">data =</span> employees)</a>
-<a class="sourceLine" id="cb241-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb241-4" data-line-number="4"><span class="co"># Preview data</span></a>
-<a class="sourceLine" id="cb241-5" data-line-number="5"><span class="kw">head</span>(dept_ohe)</a></code></pre></div>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb246-1" data-line-number="1"><span class="co"># Department one-hot encoding</span></a>
+<a class="sourceLine" id="cb246-2" data-line-number="2">dept_ohe &lt;-<span class="st"> </span><span class="kw">model.matrix</span>(<span class="op">~</span>dept<span class="dv">-1</span>, <span class="dt">data =</span> employees)</a>
+<a class="sourceLine" id="cb246-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb246-4" data-line-number="4"><span class="co"># Preview data</span></a>
+<a class="sourceLine" id="cb246-5" data-line-number="5"><span class="kw">head</span>(dept_ohe)</a></code></pre></div>
 <pre><code>##   deptHuman Resources deptResearch &amp; Development deptSales
 ## 1                   0                          0         1
 ## 2                   0                          1         0
@@ -961,11 +961,11 @@ Figure 9.7: One-Hot Encoding
 ## 5                   0                          1         0
 ## 6                   0                          1         0</code></pre>
 <p>We will drop the department with the lowest <span class="math inline">\(n\)</span> rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span>, we can use the <code>colSums()</code> function to sum each column and the <code>which.min()</code> function to identify which has the lowest sum (i.e., smallest department by employee count).</p>
-<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb243-1" data-line-number="1"><span class="co"># Drop department with lowest sum (lowest n-count)</span></a>
-<a class="sourceLine" id="cb243-2" data-line-number="2">dept_ohe &lt;-<span class="st"> </span>dept_ohe[, <span class="op">-</span><span class="kw">which.min</span>(<span class="kw">colSums</span>(dept_ohe))]</a>
-<a class="sourceLine" id="cb243-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb243-4" data-line-number="4"><span class="co"># Preview refined one-hot encoded data</span></a>
-<a class="sourceLine" id="cb243-5" data-line-number="5"><span class="kw">head</span>(dept_ohe)</a></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb248-1" data-line-number="1"><span class="co"># Drop department with lowest sum (lowest n-count)</span></a>
+<a class="sourceLine" id="cb248-2" data-line-number="2">dept_ohe &lt;-<span class="st"> </span>dept_ohe[, <span class="op">-</span><span class="kw">which.min</span>(<span class="kw">colSums</span>(dept_ohe))]</a>
+<a class="sourceLine" id="cb248-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb248-4" data-line-number="4"><span class="co"># Preview refined one-hot encoded data</span></a>
+<a class="sourceLine" id="cb248-5" data-line-number="5"><span class="kw">head</span>(dept_ohe)</a></code></pre></div>
 <pre><code>##   deptResearch &amp; Development deptSales
 ## 1                          0         1
 ## 2                          1         0
@@ -973,11 +973,11 @@ Figure 9.7: One-Hot Encoding
 ## 4                          1         0
 ## 5                          1         0
 ## 6                          1         0</code></pre>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb245-1" data-line-number="1"><span class="co"># Combine employees and matrix containing one-hot encoded departments</span></a>
-<a class="sourceLine" id="cb245-2" data-line-number="2">employees &lt;-<span class="st"> </span><span class="kw">cbind</span>(employees, dept_ohe)</a>
-<a class="sourceLine" id="cb245-3" data-line-number="3"></a>
-<a class="sourceLine" id="cb245-4" data-line-number="4"><span class="co"># Drop original department field</span></a>
-<a class="sourceLine" id="cb245-5" data-line-number="5">employees &lt;-<span class="st"> </span><span class="kw">subset</span>(employees, <span class="dt">select =</span> <span class="op">-</span><span class="kw">c</span>(dept))</a></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb250-1" data-line-number="1"><span class="co"># Combine employees and matrix containing one-hot encoded departments</span></a>
+<a class="sourceLine" id="cb250-2" data-line-number="2">employees &lt;-<span class="st"> </span><span class="kw">cbind</span>(employees, dept_ohe)</a>
+<a class="sourceLine" id="cb250-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb250-4" data-line-number="4"><span class="co"># Drop original department field</span></a>
+<a class="sourceLine" id="cb250-5" data-line-number="5">employees &lt;-<span class="st"> </span><span class="kw">subset</span>(employees, <span class="dt">select =</span> <span class="op">-</span><span class="kw">c</span>(dept))</a></code></pre></div>
 </div>
 <div id="feature-engineering" class="section level2">
 <h2><span class="header-section-number">9.5</span> Feature Engineering</h2>
