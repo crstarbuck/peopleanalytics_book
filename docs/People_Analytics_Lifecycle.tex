@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-03-30}
+\date{2022-04-01}
 
 \begin{document}
 \maketitle
@@ -399,7 +399,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpLE9tdo/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpdnTHIX/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1367,6 +1367,14 @@ While high response rates may reduce nonresponse bias, this isn't always somethi
 While survey participation should be strongly encouraged since higher response rates can mitigate the risk of certain types of bias and increase confidence that the survey is representative of the collective organization's sentiments, incentivizing participation can be dangerous.
 
 \textbf{Measurement Error}
+
+The measurement method can affect observed data either by changing the underlying construct of interest, or by distorting the measurement process without impacting the construct itself (Spector, 2006).
+
+\textbf{Common method variance (CMV)}, also known as \textbf{monomethod bias}, relates to a widely held belief that relationships between variables measured using the same method are inflated. The idea that the measurement method itself introduces a degree of variance in measures has been cited in organizational papers for decades, and it is raised almost exclusively when cross-sectional, self-reported surveys are utilized. Though controversial, there is generally a consensus that where it is possible to do so, it is preferrable to leverage multiple measurement methods.
+
+My doctoral dissertation research explored how implicit voice theories, which are deep-seated beliefs about the risks involved in speaking up to those higher in the organizational hierarchy (e.g., negative career consequences), influenced the extent to which individual contributors actually speak up in prosocial ways to their leaders (Starbuck, 2016). Since the individual contributors are best placed to provide information on the implicit beliefs they maintain, data for the IV were collected using cross-sectional self-reports. At the same time, I surveyed their immediate supervisors and asked them to rate each of their direct reports using a leader-directed voice scale; these supervisor-reports of leader-directed voice were used as the DV in this study. To investigate CMV, which was a tangential interest to the primary research objective, I also included the leader-directed voice scale (using self-reported language) on the survey administered to individual contributors.
+
+For the 1,032 employees from whom I collected data in an investment firm context (individual contributors: \(n\) = 696; supervisors: \(n\) = 336), I was surprised to find only a weak correlation between self-reported voice and supervisor-reported voice (\(r\) = .26, \(p\) \textless{} .01). On average, self-reported voice was higher with less variation (\(\bar{x}\) = 5.91, \(s\) = 1.15) relative to supervisor-reported voice (\(\bar{x}\) = 5.69, \(s\) = 1.34). Interestingly, there was support for almost none of the hypothesized relationships when supervisor-reported voice was positioned as the DV, though most were supported when self-reported voice was substituted as the DV in post-hoc analyses. Given the prevalence of monomethod self-reports in the social sciences, the influence of CMV is an important consideration.
 
 \textbf{Measurement error} relates to errors stemming from confusing questions, survey fatigue, and low-quality scales used to measure multidimensional psychological constructs. The field of \textbf{psychometrics} is a vast scientific discipline concerned with the development of assessment tools, measurement instruments, and formalized models to understand latent psychological constructs such as engagement, belonging, purpose, and wellbeing using observable indicators.
 
@@ -2570,7 +2578,12 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)), }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
 
 \CommentTok{# Visualize correlation matrix}
-\NormalTok{corrplot}\OperatorTok{::}\KeywordTok{corrplot.mixed}\NormalTok{(M, }\DataTypeTok{order =} \StringTok{'AOE'}\NormalTok{)}
+\NormalTok{corrplot}\OperatorTok{::}\KeywordTok{corrplot}\NormalTok{(M, }\DataTypeTok{method =} \StringTok{"color"}\NormalTok{,  }
+                   \DataTypeTok{type =} \StringTok{"upper"}\NormalTok{, }\DataTypeTok{order =} \StringTok{"hclust"}\NormalTok{, }\CommentTok{# Apply hierarchical clustering for ordering coefficients above the diagonal}
+                   \DataTypeTok{addCoef.col =} \StringTok{"black"}\NormalTok{, }\CommentTok{# Add correlation coefficient}
+                   \DataTypeTok{tl.col=}\StringTok{"grey"}\NormalTok{, }\DataTypeTok{tl.srt =} \DecValTok{45}\NormalTok{, }\CommentTok{# Label color and rotation}
+                   \DataTypeTok{diag =} \OtherTok{FALSE} \CommentTok{# Hide correlation coefficient on the principal diagonal}
+\NormalTok{                   )}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4579,9 +4592,9 @@ There are many statistical tests that can be used to test for differences within
 \hypertarget{parametric-vs.nonparametric-tests}{%
 \section{Parametric vs.~Nonparametric Tests}\label{parametric-vs.nonparametric-tests}}
 
-In the context of continuous (quantitative) data, we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and \(n\) is large, \textbf{parametric tests} are preferred as they generally have more statistical power. \textbf{Nonparametric tests} are \textbf{distribution-free tests} that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
+In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and \(n\) is large, \textbf{parametric tests} are preferred as they generally have more statistical power. \textbf{Nonparametric tests} are \textbf{distribution-free tests} that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
 
-Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \ref{data-wrang-prep} (e.g., addressing concerning outliers), parametric tests of differences generally feature three key assumptions:
+Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \ref{data-wrang-prep} (e.g., addressing concerning outliers), parametric tests of differences \emph{generally} feature three key assumptions:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -4594,11 +4607,11 @@ Beyond ensuring the data were generated from a random and representative process
   \textbf{Normality}: Residuals must be normally distributed (with mean of 0) within each group
 \end{enumerate}
 
-Assuming the assumptions of parametric tests hold, parametric tests generally have more power than their nonparametric counterparts. This means that with a nonparametric test, we are less likely to reject the null hypothesis when it is false if the data come from normally distributed populations. Since the mean (expected value) is the most common measure of central tendency, parametric tests usually focus on comparing the mean or variance of data. You may recall that \(\mu\) and \(\sigma\) are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the central tendency of data. In this case, nonparametric tests may be more appropriate. Just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for \emph{median} -- rather than \emph{mean} -- centers.
+\begin{verbatim}
+While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
+\end{verbatim}
 
-In addition to normally distributed data in the population, and ensuring outliers are not materially influencing the mean, parametric tests also assume \textbf{homogeneity of variance} and \textbf{independence}. Homogeneity of variance assumes the variances across multiple groups are equal, though parametric tests are generally robust to violations of equal variances when the sample sizes are large. The assumption of independence requires observations to be randomly sampled from the population and independent of one another; that is, the value of one observation does not influence or depend on the value of another.
-
-You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \ref{inf-stats}, influences our ability to utilize parametric tests. It's important to remember that the normal distribution properties under the CLT relate to the \emph{sampling distribution of means} -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \ref{desc-stats} to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
+You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \ref{inf-stats}, influences our ability to utilize parametric tests with respect to the assumption of normality. It's important to remember that the normal distribution properties under the CLT relate to the \emph{sampling distribution of means} -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \ref{desc-stats} to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4614,7 +4627,7 @@ Discrete data require nonparametric tests since these data do not come from norm
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table} 
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table} 
 
 }
 
@@ -4666,7 +4679,7 @@ Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:
 
 }
 
-\caption{Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1000, and 10000 (rows) and standard deviations of 25, 50, and 75. Dashed vertical lines represent distribution means.}\label{fig:mean-group-diff}
+\caption{Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1000, and 10000 (rows) and standard deviations of 25, 50, and 75 (columns). Dashed vertical lines represent distribution means.}\label{fig:mean-group-diff}
 \end{figure}
 
 Next, we will walk through the steps involved in performing Welch's \(t\)-test. Let's first visualize the distribution of data for each group using boxplots:
@@ -4709,7 +4722,7 @@ Next, let's test whether the slight differences we observed visually are statist
 ##  139900.8  138754.5
 \end{verbatim}
 
-Baesd on this output, we can see that \(\bar{x} = 139,901\) for Managers and \(\bar{x} = 138,755\) for Research Scientists, and these are not statistically different (\(t(159.55) = .23, p = .82\)).
+Baesd on this output, we can see that \(\bar{x}\) = 139,901 for Managers and \(\bar{x}\) = 138,755 for Research Scientists, and these are not statistically different (\(t(159.55)\) = .23, \(p\) = .82).
 
 Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:
 
@@ -4806,13 +4819,40 @@ When object elements are referenced by index, the element name is displayed in t
 ## [1] "Welch Two Sample t-test"
 \end{verbatim}
 
-Given \(df = 159.55\), you may be wondering how \(df\) is calculated for Welch's \(t\)-test given that thus far, we have only discussed the basic \(df\) calculation outlined in Chapter \ref{inf-stats}; namely, \(df = n - 1\). Welch's \(t\)-test uses the \textbf{Welch-Satterthwaite equation} for \(df\) (Satterthwaite, 1946; Welch, 1947). This equation approximates \(df\) for a linear combination of independent sample variances; which means that if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by:
+Given \(df\) = 159.55, you may be wondering how \(df\) is calculated for Welch's \(t\)-test given that thus far, we have only discussed the basic \(df\) calculation outlined in Chapter \ref{inf-stats}; namely, \(df = n - 1\). Welch's \(t\)-test uses the \textbf{Welch-Satterthwaite equation} for \(df\) (Satterthwaite, 1946; Welch, 1947). This equation approximates \(df\) for a linear combination of independent sample variances; which means that if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by:
 
 \[ df = \frac {(\frac{s^2_1}{n_1} + \frac{s^2_2}{n_2})^2} {\frac{1}{n_1 - 1} (\frac{s^2_1}{n_1})^2 + \frac{1}{n_2 - 1} (\frac{s^2_2}{n_2})^2} \]
 
 \#\#\# Mann-Whitney U Test
 
-\#\#\# Wilcoxon Rank-Sum Test
+A popular nonparametric (distribution-free) alternative to Welch's \(t\)-test is the \textbf{Mann-Whitney U Test}, sometimes referred to as the \textbf{Wilcoxon Rank-Sum Test}. Rather than comparing the mean between two groups, like the Student's \(t\)-test or Welch's \(t\)-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the \emph{ranks} are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.
+
+The \texttt{wilcox.test()} function is used to run this test in R. Let's illustrate by examining whether engagement (an ordinal variable) is significantly different between those who have been promoted and those who have not:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create dummy-coded promotion variable}
+\NormalTok{employees}\OperatorTok{$}\NormalTok{promo <-}\StringTok{ }\KeywordTok{ifelse}\NormalTok{(employees}\OperatorTok{$}\NormalTok{last_promo }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{1}\NormalTok{)}
+
+\CommentTok{# Create numeric engagement vectors for promo groups}
+\NormalTok{no_promo <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, promo }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ engagement))}
+\NormalTok{promo <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, promo }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ engagement))}
+
+\CommentTok{# Perform the Mann-Whitney U test}
+\KeywordTok{wilcox.test}\NormalTok{(no_promo, promo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Wilcoxon rank sum test with continuity correction
+## 
+## data:  no_promo and promo
+## W = 258030, p-value = 0.9745
+## alternative hypothesis: true location shift is not equal to 0
+\end{verbatim}
+
+Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions (\(W\) = 258,030, \(p\) = .97). Note the reference to continuity correction in the output. \textbf{Continuity correction} is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.
 
 \#\#\# Wilcoxon Signed-Rank Test
 
@@ -5391,6 +5431,10 @@ Satterthwaite, F. E. (1946). An Approximate Distribution of Estimates of Varianc
 Shapiro, S. S., \& Wilk, M. B. (1965). An analysis of variance test for normality (complete samples). Biometrika, 52(3--4), 591--611. \url{https://doi.org/10.1093/biomet/52.3-4.591}
 
 Snedecor, G. W., \& Cochran, W. G. (1980). Statistical methods (7th ed.). Ames, Iowa: Iowa State University Press.
+
+Spector, P. E. (2006). Method Variance in Organizational Research: Truth or Urban Legend? Organizational Research Methods, 9(2), 221-232.
+
+Starbuck, C. R. (2016). Managing insidious barriers to upward communication in organizations: An empirical investigation of relationships among implicit voice theories, power distance orientation, self-efficacy, and leader-directed voice (Doctoral dissertation, Regent University).
 
 Vargha, A. \& Delaney, H. D. (2000). A Critique and Improvement of the CL Common Language Effect Size Statistics of McGraw and Wong. Journal of Educational and Behavioral Statistics 25(2), 101--132.
 
