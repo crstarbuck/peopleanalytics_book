@@ -136,6 +136,7 @@ ggpubr::ggarrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]], p[[7]], p[[8]]
 
 # Load library
 library(ggplot2)
+library(ggpubr)
 
 # Subset data
 data <- subset(employees, job_title %in% c('Manager', 'Research Scientist'), select = c(annual_comp, job_title))
@@ -164,7 +165,7 @@ t.test(comp_mgr, comp_rsci)
 
 ``` 
 
-  Baesd on this output, we can see that $\bar{x}$ = 139,901 for Managers and $\bar{x}$ = 138,755 for Research Scientists, and these are not statistically different ($t(159.55)$ = .23, $p$ = .82).
+  Based on this output, we can see that $\bar{x}$ = 139,901 for Managers and $\bar{x}$ = 138,755 for Research Scientists, and these are not statistically different ($t(159.55)$ = .23, $p$ = .82).
   
   Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:
   
@@ -199,28 +200,136 @@ t_rslts[9] # type of t-test
   
   A popular nonparametric (distribution-free) alternative to Welch's $t$-test is the **Mann-Whitney U Test**, sometimes referred to as the **Wilcoxon Rank-Sum Test**. Rather than comparing the mean between two groups, like the Student's $t$-test or Welch's $t$-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the *ranks* are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.
   
-  The `wilcox.test()` function is used to run this test in R. Let's illustrate by examining whether engagement (an ordinal variable) is significantly different between those who have been promoted and those who have not:
+  The `wilcox.test()` function is used to run this test in R. Let's illustrate by examining whether engagement (an ordinal variable in our dataset) is significantly different between those who have been promoted in the past year and those who have not:
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Create dummy-coded promotion variable
-employees$promo <- ifelse(employees$last_promo == 0, 0, 1)
+employees$promo <- ifelse(employees$last_promo == 1, 1, 0)
 
 # Create numeric engagement vectors for promo groups
 no_promo <- unlist(subset(employees, promo == 0, select = engagement))
 promo <- unlist(subset(employees, promo == 1, select = engagement))
 
-# Perform the Mann-Whitney U test
+# Perform the Mann-Whitney U (aka Wilcoxon rank sum) test
 wilcox.test(no_promo, promo)
 
 ```  
 
-  Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions ($W$ = 258,030, $p$ = .97). Note the reference to continuity correction in the output. **Continuity correction** is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.
+  Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions ($W$ = 196,056, $p$ = .67). Note the reference to continuity correction in the output. **Continuity correction** is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.
+  
+  ### Paired Samples $t$-Test
+  
+  A **Paired Samples $t$-Test** is used to compare means between pairs of measurements. This test is known by many other names, such as a **dependent samples** $t$**-test**, **paired-difference** $t$**-test**, **matched pairs** $t$**-test**, and **repeated-samples** $t$**-test**. We can run a paired samples $t$-test in R by passing `paired = TRUE` as an argument to the same `t.test()` function used for the independent samples $t$-test. 
+  
+  The assumption of normality in the context of a paired samples $t$-test relates to normally distributed paired differences. This is important, as the $p$-value for the test statistic will not be valid if this assumption is violated.
+  
+  To illustrate, let's design an experiment. Let's assume morale has declined for employees who travel frequently, and a number of actions have been proposed by a task force to help address this. The task force has decided to pilot a new flexible work benefit over a six-month period to determine if it has a meaningful effect on morale. This new benefit is piloted to a random sample of frequent travelers, and our task is to test whether the outcomes warrant a broader rollout to frequent travelers.
+  
+  Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).
+  
+  While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \@ref(research) that this would be a weak design with material shortcomings. There could be alternative explanations for any observed increases in happiness that are unrelated to the intevention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanationss should be reflected in any pre/post changes observed for the control group.
+  
+  **Difference-in-differences (DiD)** estimation is a quasi-experimental approach that originated from econometrics for this same purpose, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
+  
+  Let's prepare the data for this experiment. Since `employees` is a cross-sectional dataset (single point-in-time), we will generate simulated data for the post-intervention comparison.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Set seed for reproducible results
+set.seed(1234)
+
+# Derive happiness index from survey variables
+employees$happiness_ind <- (employees$engagement + employees$env_sat + employees$job_sat + employees$rel_sat) / 4
+
+# Sample size of frequent travelers
+n = nrow(subset(employees, business_travel == 'Travel_Frequently', select = employee_id))
+
+# Randomly assign half of frequent travelers to treatment and control groups
+treat_ids <- sample(unlist(subset(employees, business_travel == 'Travel_Frequently', select = employee_id)), floor(n * .5))
+ctrl_ids <- unlist(subset(employees, business_travel == 'Travel_Frequently' & !employee_id %in% treat_ids, select = employee_id))
+
+# Initialize dfs for pre/post metrics
+treat_metrics = data.frame(pre_ind = numeric(length(treat_ids)),
+                           rand_num = rnorm(length(treat_ids), mean = 30, sd = 5) * .001,
+                           post_ind = numeric(length(treat_ids)), 
+                           diff = numeric(length(treat_ids)))
+
+ctrl_metrics = data.frame(pre_ind = numeric(length(ctrl_ids)), 
+                          rand_num = rnorm(length(ctrl_ids), mean = 15, sd = 5) * .001, 
+                          post_ind = numeric(length(ctrl_ids)),
+                          diff = numeric(length(ctrl_ids)))
+
+# Store happiness indices for treatment and control groups
+treat_metrics$pre_ind <- unlist(subset(employees, employee_id %in% treat_ids, select = happiness_ind))
+ctrl_metrics$pre_ind <- unlist(subset(employees, employee_id %in% ctrl_ids, select = happiness_ind))
+
+# Create vectors with artificially inflated post-intervention happiness indices
+treat_metrics$post_ind <- treat_metrics$pre_ind + treat_metrics$rand_num
+ctrl_metrics$post_ind <- ctrl_metrics$pre_ind + ctrl_metrics$rand_num
+
+# Force an upper bound of 4 to adjusted index scores (variables were measured using a 4-point Likert scale)
+treat_metrics$post_ind <- if(treat_metrics$post_ind > 4) {4} else {treat_metrics$post_ind}
+ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$post_ind}
+
+```    
+
+  It's important to remember that a paired samples $t$-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee must be removed from the data since paired measurements would not be available.
+  
+  Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an *approximately* continuous variable. There are $2^n - n - 1$ combinations of scores, where $n$ is the number of variables (not observations). For our happiness index, there are $2^4 - 4 - 1 = 11$ combinations.
+
+```{r pre-post-diff, fig.cap = "Pre/Post Differences for Treatment and Control Groups", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Calculate pre/post differences
+treat_metrics$diff <- treat_metrics$post_ind - treat_metrics$pre_ind
+ctrl_metrics$diff <- ctrl_metrics$post_ind - ctrl_metrics$pre_ind
+
+# Histogram for distribution of pre/post treatment group differences
+p_treat <- ggplot2::ggplot() + 
+           ggplot2::aes(treat_metrics$diff) + 
+           ggplot2::labs(title = "Treatment Group", x = "Happiness Index Differences", y = "Frequency") + 
+           ggplot2::geom_histogram(fill = "#414141") +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Histogram for distribution of pre/post control group differences
+p_ctrl <- ggplot2::ggplot() + 
+          ggplot2::aes(ctrl_metrics$diff) + 
+          ggplot2::labs(title = "Control Group", x = "Happiness Index Differences", y = "Frequency") + 
+          ggplot2::geom_histogram(fill = "#414141") +
+          ggplot2::theme_bw() +
+          ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Display histograms side-by-side
+ggpubr::ggarrange(p_treat, p_ctrl, ncol = 2, nrow = 1)
+
+``` 
+
+  Based on a visual inspection, differences appear to be somewhat normally distributed. Some semblance of normality should not be surprising given random values were sampled from normal distributions to derive post-intervention happiness indices.
+  
+  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit** test (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S)** test (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk** test (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
+  
+  Let's test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to run this test in R using the model residuals:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(treat_metrics$diff)
+shapiro.test(ctrl_metrics$diff)
+
+```
+  
+  Since $p$ > .05 for both tests, the assumption of normally distributed differences is not satisfied. Given the data generative process implemented for this example, the departure from normality likely would have been resolved with a slightly larger sample. Since this key assumption is violated, we will need to leverage a nonparametric alternative to the paired samples $t$-test.
   
   ### Wilcoxon Signed-Rank Test
-
-  ### Paired Samples T-Test
   
+```{r, message = FALSE, warning = FALSE}
+
+
+
+```  
+
+
   
   
   In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. We must compare standardized mean differences between groups, as the magnitude of difference is scale-dependent. There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
@@ -338,10 +447,8 @@ ggpubr::ggqqplot(residuals)
 ``` 
 
   To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure \@ref(fig:qq-plot), there is a clear departure from normality at both ends of the theoretical range.
-
-  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit** test (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S)** test (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk** test (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
   
-  Let's test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to run this test in R using the model residuals:
+  Let's test for normality using the Shapiro-Wilk test:
 
 ```{r, message = FALSE, warning = FALSE}
 
