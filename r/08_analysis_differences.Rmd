@@ -12,7 +12,7 @@
   2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
   3. **Normality**: Residuals must be normally distributed (with mean of 0) within each group
   
-    While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
+  While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
   
   You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \@ref(inf-stats), influences our ability to utilize parametric tests with respect to the assumption of normality. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
 
@@ -220,7 +220,7 @@ wilcox.test(no_promo, promo)
   
   ### Paired Samples $t$-Test
   
-  A **Paired Samples $t$-Test** is used to compare means between pairs of measurements. This test is known by many other names, such as a **dependent samples** $t$**-test**, **paired-difference** $t$**-test**, **matched pairs** $t$**-test**, and **repeated-samples** $t$**-test**. We can run a paired samples $t$-test in R by passing `paired = TRUE` as an argument to the same `t.test()` function used for the independent samples $t$-test. 
+  A **Paired Samples $t$-Test** is used to compare means between pairs of measurements. This test is known by many other names, such as a **dependent samples** $t$**-test**, **paired-difference** $t$**-test**, **matched pairs** $t$**-test**, and **repeated-samples** $t$**-test**.
   
   The assumption of normality in the context of a paired samples $t$-test relates to normally distributed paired differences. This is important, as the $p$-value for the test statistic will not be valid if this assumption is violated.
   
@@ -251,12 +251,12 @@ ctrl_ids <- unlist(subset(employees, business_travel == 'Travel_Frequently' & !e
 
 # Initialize dfs for pre/post metrics
 treat_metrics = data.frame(pre_ind = numeric(length(treat_ids)),
-                           rand_num = rnorm(length(treat_ids), mean = 30, sd = 5) * .001,
+                           rand_num = rnorm(length(treat_ids), mean = 15, sd = 5) * .001,
                            post_ind = numeric(length(treat_ids)), 
                            diff = numeric(length(treat_ids)))
 
 ctrl_metrics = data.frame(pre_ind = numeric(length(ctrl_ids)), 
-                          rand_num = rnorm(length(ctrl_ids), mean = 15, sd = 5) * .001, 
+                          rand_num = rnorm(length(ctrl_ids), mean = 0, sd = 1) * .001, 
                           post_ind = numeric(length(ctrl_ids)),
                           diff = numeric(length(ctrl_ids)))
 
@@ -305,11 +305,11 @@ ggpubr::ggarrange(p_treat, p_ctrl, ncol = 2, nrow = 1)
 
 ``` 
 
-  Based on a visual inspection, differences appear to be somewhat normally distributed. Some semblance of normality should not be surprising given random values were sampled from normal distributions to derive post-intervention happiness indices.
+  Based on a visual inspection, the distributions of differences appear to be roughly normal. This should not be surprising given random values were sampled from normal distributions to derive post-intervention happiness indices.
   
   There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit** test (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S)** test (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk** test (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
   
-  Let's test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed. The `shapiro.test()` function can be used to run this test in R using the model residuals:
+  We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high $p$-value indicates that the assumption of normality is satisfied. The `shapiro.test()` function can be used to run this test in R using a vector of differences:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -319,17 +319,51 @@ shapiro.test(ctrl_metrics$diff)
 
 ```
   
-  Since $p$ > .05 for both tests, the assumption of normally distributed differences is not satisfied. Given the data generative process implemented for this example, the departure from normality likely would have been resolved with a slightly larger sample. Since this key assumption is violated, we will need to leverage a nonparametric alternative to the paired samples $t$-test.
+  Since $p$ > .05 for both tests, the assumption of normally distributed differences is met, as we fail to reject the null hypothesis of normality. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We have the greenlight to perform the paired samples $t$-test.
   
-  ### Wilcoxon Signed-Rank Test
+  We can run a paired samples $t$-test in R by passing `paired = TRUE` as an argument to the same `t.test()` function used for the independent samples $t$-test. Since we are investigating whether the average post-intervention happiness index is significantly *greater* than the average pre-intervention happiness index, we also need the `alternative = "greater"` argument since the default two-tailed test should only test whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).
   
 ```{r, message = FALSE, warning = FALSE}
 
-
+# Perform one-tailed paired samples t-test for treatment group
+t.test(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE, alternative = "greater")
 
 ```  
 
+  These results indicate that the post-intervention happiness index is significantly larger than the pre-intervention happiness index. This is encouraging with respect to the potential efficacy of the flexible work pilot, but the question about whether the control group experienced a commensurate improvement over the observation period remains unanswered.
+  
+  Let's run the same paired samples $t$-test using the control group indices:
 
+```{r, message = FALSE, warning = FALSE}
+
+# Perform one-tailed paired samples t-test for control group
+t.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE, alternative = "greater")
+
+``` 
+
+  Since $p$ > .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit.
+
+  ### Wilcoxon Signed-Rank Test
+  
+  The **Wilcoxon Signed-Rank Test** is the nonparametric alternative to the paired samples $t$-test. This distribution-free test does not require normally distributed differences.
+  
+  The matched Wilcoxon Signed-Rank test is performed in R using the same `wilcox.test()` function used to perform the unmatched Wilcoxon Rank-Sum test. Though we can use a paired samples $t$-test to test differences for our flexible work benefit study, let's run a Wilcoxon Signed-Rank test for demonstrative purposes:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Wilcoxon Signed-Rank test
+wilcox.test(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Wilcoxon Signed-Rank test
+wilcox.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE)
+
+```  
+
+  Consistent with the results of the paired samples $t$-tests, significantly higher post-intervention happiness indices were observed for the treatment group but not for the control group. 
   
   
   In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. We must compare standardized mean differences between groups, as the magnitude of difference is scale-dependent. There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
