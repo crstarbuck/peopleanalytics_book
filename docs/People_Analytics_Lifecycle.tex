@@ -29,7 +29,7 @@
 }
 \usepackage{hyperref}
 \hypersetup{
-            pdftitle={The People Analytics Companion: An End-to-End Guide through the People Analytics Lifecycle},
+            pdftitle={The People Analytics Companion},
             pdfauthor={Craig Starbuck},
             pdfborder={0 0 0},
             breaklinks=true}
@@ -115,11 +115,11 @@
 \usepackage[]{natbib}
 \bibliographystyle{plainnat}
 
-\title{The People Analytics Companion: An End-to-End Guide through the People Analytics Lifecycle}
+\title{The People Analytics Companion}
 \providecommand{\subtitle}[1]{}
-\subtitle{With Applications in R}
+\subtitle{An End-to-End Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-04-03}
+\date{2022-04-04}
 
 \begin{document}
 \maketitle
@@ -399,7 +399,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpp1Rc5j/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpPaHj5h/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -4621,7 +4621,18 @@ You may be wondering whether the magical elixir that is the CLT, which we covere
 \hypertarget{differences-in-discrete-data}{%
 \section{Differences in Discrete Data}\label{differences-in-discrete-data}}
 
-Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the \emph{Chi-square test} and \emph{Fischer's exact test}. Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables. Figure \ref{fig:contingency-tbl} illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
+Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the \emph{Chi-square test} and \emph{Fischer's exact test}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table} 
+
+}
+
+\caption{Chi-Square and Fisher Exact Test Criteria for Discrete Data}\label{fig:discrete-tests}
+\end{figure}
+
+Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables. Figure \ref{fig:contingency-tbl} illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
 
 \begin{figure}
 
@@ -4634,20 +4645,104 @@ Discrete data require nonparametric tests since these data do not come from norm
 
 \textbf{Chi-Square Test}
 
-The \textbf{Chi-square test} evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance.
+The \textbf{Chi-Square Test of Independence} evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance. The Chi-square statistic is defined by:
 
-The most common strength test when a significant Chi-Square statistic is observed is Cramer's V.
+\({\chi}^2 = \sum\frac{(O_i - E_i)^2}{E_i},\)
 
-\textbf{Fischer's Exact Test}
+where \(O_i\) is the observed value, and \(E_i\) is the expected value.
+
+\(H_0\) states that each variable is independent of one other (i.e., there is no relationship). In addition to the test statistic, \({\chi}^2\), \(df\) for the contingency table -- defined by \(df = (rows - 1) * (columns - 1)\) -- is required to determine whether we reject or fail to reject \(H_0\).
+
+While there is not consensus on the minimum sample size for this test, it is important to note that the \({\chi}^2\) statistic follows a chi-square distribution \emph{asymptotically}. This means we can only calculate accurate \(p\)-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small \(n\)-counts is illustrated in Figure \ref{fig:chisq-dist}; the chi-square distribution approaches a vertical line as \(df\) drops below 5.
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table} 
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/chisq-dist-1} 
 
 }
 
-\caption{Chi-Square and Fisher Exact Test Criteria for Discrete Data}\label{fig:discrete-tests}
+\caption{Chi-Square Distributions by Degrees of Freedom (df)}\label{fig:chisq-dist}
 \end{figure}
+
+We will demonstrate how to perform a chi-square test of independence by evaluating whether exit rates are independent of whether an employee works overtime. Let's first construct a 2x2 contingency table:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Create contingency table}
+\NormalTok{cont_tbl <-}\StringTok{ }\KeywordTok{table}\NormalTok{(employees}\OperatorTok{$}\NormalTok{active, employees}\OperatorTok{$}\NormalTok{overtime)}
+\NormalTok{cont_tbl}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      
+##        No Yes
+##   No  110 127
+##   Yes 944 289
+\end{verbatim}
+
+A \textbf{mosaic plot} is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced by using the \texttt{mosaicplot()} function from the \texttt{graphics} library:
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{People_Analytics_Lifecycle_files/figure-latex/mosaic-plot-1} 
+
+}
+
+\caption{Mosaic Plot of Residuals for Overtime x Active Status}\label{fig:mosaic-plot}
+\end{figure}
+
+In Figure \ref{fig:mosaic-plot}, blue indicates that the observed value is higher than the expected value. Red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful departures from expected values in both the high and low directions.
+
+Let's run the chi-square test of independence to determine whether these residuals are significant. This test can be performed in R using the \texttt{chisq.test()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Perform chi-square test of independence}
+\KeywordTok{chisq.test}\NormalTok{(cont_tbl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Pearson's Chi-squared test with Yates' continuity correction
+## 
+## data:  cont_tbl
+## X-squared = 87.564, df = 1, p-value < 2.2e-16
+\end{verbatim}
+
+Based on the results, exit rates are not independent of overtime (\({\chi}^2(1) = 87.56, p < .05\)). Therefore, there is a relationship between an employee working overtime and the rate at which they change from an active to inactive status.
+
+The most common strength test when a significant Chi-Square statistic is observed is Cramer's V.
+
+\textbf{Fisher's Exact Test}
+
+When the sample size is small, \textbf{Fisher's Exact Test} can be used to calculate the \emph{exact} \(p\)-value rather than an approximation -- as with many statistical tests, such as the chi-square test.
+
+\(H_0\) for Fisher's exact test is the same as \(H_0\) for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the \texttt{fisher.test()} function in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Perform Fisher's exact test}
+\KeywordTok{fisher.test}\NormalTok{(cont_tbl)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Fisher's Exact Test for Count Data
+## 
+## data:  cont_tbl
+## p-value < 2.2e-16
+## alternative hypothesis: true odds ratio is not equal to 1
+## 95 percent confidence interval:
+##  0.1969101 0.3572582
+## sample estimates:
+## odds ratio 
+##  0.2654384
+\end{verbatim}
+
+Based on results from Fisher's exact test, which are consistent with the chi-square test of independence, we reject the null hypothesis and conclude that exit rates are related to working overtime.
 
 \hypertarget{differences-in-continuous-data}{%
 \section{Differences in Continuous Data}\label{differences-in-continuous-data}}
@@ -4914,6 +5009,9 @@ Next, we will evaluate whether paired differences are normally distributed using
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(ggpubr)}
+
 \CommentTok{# Calculate pre/post differences}
 \NormalTok{treat_metrics}\OperatorTok{$}\NormalTok{diff <-}\StringTok{ }\NormalTok{treat_metrics}\OperatorTok{$}\NormalTok{post_ind }\OperatorTok{-}\StringTok{ }\NormalTok{treat_metrics}\OperatorTok{$}\NormalTok{pre_ind}
 \NormalTok{ctrl_metrics}\OperatorTok{$}\NormalTok{diff <-}\StringTok{ }\NormalTok{ctrl_metrics}\OperatorTok{$}\NormalTok{post_ind }\OperatorTok{-}\StringTok{ }\NormalTok{ctrl_metrics}\OperatorTok{$}\NormalTok{pre_ind}
@@ -5033,7 +5131,7 @@ Let's run the same paired samples \(t\)-test using the control group indices:
 ##            4.953658e-05
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional (but not conclusive) support for the effectiveness of the flexible work benefit.
+Since \(p\) \textgreater{} .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit.
 
 \#\#\# Wilcoxon Signed-Rank Test
 

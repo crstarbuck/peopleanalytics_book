@@ -25,7 +25,15 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
 
 ## Differences in Discrete Data
 
-  Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the *Chi-square test* and *Fischer's exact test*. Both tests organize data within 2x2 **contingency tables** which enables us to understand interrelations between variables. Figure \@ref(fig:contingency-tbl) illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
+  Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze discrete variables are the *Chi-square test* and *Fischer's exact test*.
+  
+```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+
+```
+  
+  Both tests organize data within 2x2 **contingency tables** which enables us to understand interrelations between variables. Figure \@ref(fig:contingency-tbl) illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
 
 ```{r contingency-tbl, out.width = "75%", echo = FALSE, fig.cap = '2x2 Contingency Table of Promotions for Remote and Non-Remote Workers', fig.align = 'center'}
 
@@ -35,18 +43,88 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Chi-Square Test**
 
-  The **Chi-square test** evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance. 
+  The **Chi-Square Test of Independence** evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance. The Chi-square statistic is defined by:
+  
+  ${\chi}^2 = \sum\frac{(O_i - E_i)^2}{E_i},$
+  
+  where $O_i$ is the observed value, and $E_i$ is the expected value. 
+  
+  $H_0$ states that each variable is independent of one other (i.e., there is no relationship). In addition to the test statistic, ${\chi}^2$, $df$ for the contingency table -- defined by $df = (rows - 1) * (columns - 1)$ -- is required to determine whether we reject or fail to reject $H_0$.
+  
+  While there is not consensus on the minimum sample size for this test, it is important to note that the ${\chi}^2$ statistic follows a chi-square distribution *asymptotically*. This means we can only calculate accurate $p$-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small $n$-counts is illustrated in Figure \@ref(fig:chisq-dist); the chi-square distribution approaches a vertical line as $df$ drops below 5.
+  
+```{r chisq-dist, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square Distributions by Degrees of Freedom (df)', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Sample from chi-square distribution for various df
+chisq <- data.frame(dens = c(rchisq(1:1000000, df = 5), rchisq(1:1000000, df = 10), rchisq(1:1000000, df = 15)),
+                    df = rep(c("df = 5", "df = 10", "df = 15"), each = 1000000))
+
+# Order data by df for plotting
+chisq$df <- with(chisq, reorder(df, dens))
+
+# Plot chi-square distributions
+ggplot2::ggplot(chisq, aes(x = dens, fill = df)) + 
+ggplot2::labs(x = "x", y = "Density") +  
+ggplot2::geom_density(alpha = 0.6) +
+ggplot2::scale_fill_manual(values = c("#0099FF", "0066FF", "0033FF")) +
+ggplot2::theme_bw()
+
+```
+
+  We will demonstrate how to perform a chi-square test of independence by evaluating whether exit rates are independent of whether an employee works overtime. Let's first construct a 2x2 contingency table:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create contingency table
+cont_tbl <- table(employees$active, employees$overtime)
+cont_tbl
+
+```   
+
+  A **mosaic plot** is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced by using the `mosaicplot()` function from the `graphics` library:
+
+```{r mosaic-plot, out.width = "75%", echo = FALSE, fig.cap = 'Mosaic Plot of Residuals for Overtime x Active Status', fig.align = 'center',}
+
+# Load library for mosaic plot
+library("graphics")
+
+# Build mosaic plot of contingency table residuals
+mosaicplot(cont_tbl, shade = TRUE, main = NULL, xlab = "Overtime", ylab = "Active")
+
+``` 
+
+  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value. Red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful departures from expected values in both the high and low directions.
+
+  Let's run the chi-square test of independence to determine whether these residuals are significant. This test can be performed in R using the `chisq.test()` function:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform chi-square test of independence
+chisq.test(cont_tbl)
+
+```   
+
+  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a relationship between an employee working overtime and the rate at which they change from an active to inactive status.
 
   The most common strength test when a significant Chi-Square statistic is observed is Cramer’s V. 
   
-  **Fischer's Exact Test**
+  **Fisher's Exact Test**
   
+  When the sample size is small, **Fisher's Exact Test** can be used to calculate the *exact* $p$-value rather than an approximation -- as with many statistical tests, such as the chi-square test.
+  
+  $H_0$ for Fisher's exact test is the same as $H_0$ for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the `fisher.test()` function in R:
+  
+```{r, message = FALSE, warning = FALSE}
 
-```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+# Perform Fisher's exact test
+fisher.test(cont_tbl)
 
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+```    
 
-```
+  Based on results from Fisher's exact test, which are consistent with the chi-square test of independence, we reject the null hypothesis and conclude that exit rates are related to working overtime.
 
 ## Differences in Continuous Data
 
@@ -133,10 +211,6 @@ ggpubr::ggarrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]], p[[7]], p[[8]]
   Next, we will walk through the steps involved in performing Welch's $t$-test. Let's first visualize the distribution of data for each group using boxplots:
   
 ```{r comp-job-boxplots, out.width = "100%", echo = FALSE, fig.cap = 'Annual Compensation Distributions for Managers and Research Scientists', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Load library
-library(ggplot2)
-library(ggpubr)
 
 # Subset data
 data <- subset(employees, job_title %in% c('Manager', 'Research Scientist'), select = c(annual_comp, job_title))
@@ -279,6 +353,9 @@ ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$po
   Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an *approximately* continuous variable. There are $2^n - n - 1$ combinations of scores, where $n$ is the number of variables (not observations). For our happiness index, there are $2^4 - 4 - 1 = 11$ combinations.
 
 ```{r pre-post-diff, fig.cap = "Pre/Post Differences for Treatment and Control Groups", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Load library
+library(ggpubr)
 
 # Calculate pre/post differences
 treat_metrics$diff <- treat_metrics$post_ind - treat_metrics$pre_ind
