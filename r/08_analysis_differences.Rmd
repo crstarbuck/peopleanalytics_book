@@ -6,7 +6,7 @@
 
   In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
   
-  Beyond ensuring the data were generated from a random and representative process, as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
+  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
   
   1. **Independence**: Observations within each group are independent of each other
   2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
@@ -49,7 +49,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   where $O_i$ is the observed value, and $E_i$ is the expected value. 
   
-  $H_0$ states that each variable is independent of one other (i.e., there is no relationship). In addition to the test statistic, ${\chi}^2$, $df$ for the contingency table -- defined by $df = (rows - 1) * (columns - 1)$ -- is required to determine whether we reject or fail to reject $H_0$.
+  $H_0$ states that each variable is independent of one other (i.e., there is no relationship). In addition to the ${\chi}^2$ test statistic, $df$ for the contingency table -- defined by $df = (rows - 1) * (columns - 1)$ -- is required to determine whether we reject or fail to reject $H_0$.
   
   While there is not consensus on the minimum sample size for this test, it is important to note that the ${\chi}^2$ statistic follows a chi-square distribution *asymptotically*. This means we can only calculate accurate $p$-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small $n$-counts is illustrated in Figure \@ref(fig:chisq-dist); the chi-square distribution approaches a vertical line as $df$ drops below 5.
   
@@ -86,7 +86,7 @@ cont_tbl
 
   A **mosaic plot** is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced by using the `mosaicplot()` function from the `graphics` library:
 
-```{r mosaic-plot, out.width = "75%", echo = FALSE, fig.cap = 'Mosaic Plot of Residuals for Overtime x Active Status', fig.align = 'center',}
+```{r mosaic-plot, out.width = "100%", echo = FALSE, fig.cap = 'Mosaic Plot of Residuals for Overtime x Active Status', fig.align = 'center',}
 
 # Load library for mosaic plot
 library("graphics")
@@ -96,9 +96,9 @@ mosaicplot(cont_tbl, shade = TRUE, main = NULL, xlab = "Overtime", ylab = "Activ
 
 ``` 
 
-  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value. Red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful departures from expected values in both the high and low directions.
+  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value. Red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime.
 
-  Let's run the chi-square test of independence to determine whether these residuals are significant. This test can be performed in R using the `chisq.test()` function:
+  Let's run the chi-square test of independence to determine whether these residuals are significant. This test can be performed in R by passing the contingency table into the `chisq.test()` function:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -107,9 +107,18 @@ chisq.test(cont_tbl)
 
 ```   
 
-  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a relationship between an employee working overtime and the rate at which they change from an active to inactive status.
+  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a relationship between an employee working overtime and the rate at which they change from an active to inactive status, which was evident in the mosaic plot.
 
-  The most common strength test when a significant Chi-Square statistic is observed is Cramer’s V. 
+  As discussed in Chapter \@ref(desc-stats), we can produce a $\phi$ coefficient to understand the strength of the association by passing the contingency table into the `phi` function from the `psych` library:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Calculate the Phi Coefficient
+psych::phi(cont_tbl)
+
+``` 
+  
+  As expected, the relationship between active status and overtime is negative. The strength of the relationship is weak ($\phi$ = -.25).
   
   **Fisher's Exact Test**
   
@@ -348,7 +357,7 @@ ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$po
 
 ```    
 
-  It's important to remember that a paired samples $t$-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee must be removed from the data since paired measurements would not be available.
+  It's important to remember that a paired samples $t$-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee should be removed from the data since paired measurements will not be available.
   
   Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an *approximately* continuous variable. There are $2^n - n - 1$ combinations of scores, where $n$ is the number of variables (not observations). For our happiness index, there are $2^4 - 4 - 1 = 11$ combinations.
 
@@ -441,7 +450,6 @@ wilcox.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE)
 ```  
 
   Consistent with the results of the paired samples $t$-tests, significantly higher post-intervention happiness indices were observed for the treatment group but not for the control group. 
-  
   
   In addition to testing for statistical significance, it is important to understand the magnitude of any observed differences. We must compare standardized mean differences between groups, as the magnitude of difference is scale-dependent. There are several standardized measures available for quantifying the size of observed differences beyond significance testing.
 
