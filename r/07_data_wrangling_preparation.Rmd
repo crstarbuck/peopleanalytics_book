@@ -12,7 +12,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*.
   
-  A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
+  A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools like Slack; it is difficult to structure this type of data within a set of related tables. 
   
   The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
   
@@ -70,7 +70,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * **FROM**: Specifies the table(s) in which the relevant data are contained
   * **WHERE**: Specifies the rows to search
   
-  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
+  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
   
   Additional clauses are available for grouping and sorting data.
   
@@ -291,7 +291,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
+  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
   
   Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
 
@@ -539,7 +539,7 @@ sqldf::sqldf(sql_string)
   
 ## Data Screening & Cleaning
 
-  The initial data review process is sometimes referred to as **exporatory data analysis (EDA)**. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
+  The initial data review process is sometimes referred to as **exploratory data analysis (EDA)**. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
 
   A handy function in base R for initial data screening is `summary()`:
   
@@ -560,7 +560,7 @@ summary(employees)
   
   **Informative missingness** relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
   
-  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of a large number of impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns. 
+  In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns. 
   
   **Data imputation** refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with *similar characteristics* may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
   
