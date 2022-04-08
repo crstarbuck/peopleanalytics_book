@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-04-05" />
+<meta name="date" content="2022-04-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -256,7 +256,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.3" data-path="glm.html"><a href="glm.html#exercises-8"><i class="fa fa-check"></i><b>12.3</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="13" data-path="surv-anal.html"><a href="surv-anal.html"><i class="fa fa-check"></i><b>13</b> Survival Analysis</a><ul>
-<li class="chapter" data-level="13.1" data-path="surv-anal.html"><a href="surv-anal.html#exercises-9"><i class="fa fa-check"></i><b>13.1</b> Exercises</a></li>
+<li class="chapter" data-level="13.1" data-path="surv-anal.html"><a href="surv-anal.html#kaplan-meier-survival-curve"><i class="fa fa-check"></i><b>13.1</b> Kaplan-Meier Survival Curve</a></li>
+<li class="chapter" data-level="13.2" data-path="surv-anal.html"><a href="surv-anal.html#proportional-hazards"><i class="fa fa-check"></i><b>13.2</b> Proportional Hazards</a></li>
+<li class="chapter" data-level="13.3" data-path="surv-anal.html"><a href="surv-anal.html#exercises-9"><i class="fa fa-check"></i><b>13.3</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="pred-mod.html"><a href="pred-mod.html"><i class="fa fa-check"></i><b>14</b> Predictive Models</a><ul>
 <li class="chapter" data-level="14.1" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>14.1</b> Bias-Variance Trade-Off</a></li>
@@ -354,26 +356,26 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <a class="sourceLine" id="cb162-6" data-line-number="6">ggplot2<span class="op">::</span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb162-7" data-line-number="7">ggplot2<span class="op">::</span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:org-tenure-dist"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/org-tenure-dist-1.png" alt="Org Tenure Distribution" width="672" />
+<img src="The_People_Analytics_Companion_files/figure-html/org-tenure-dist-1.png" alt="Org Tenure Distribution" width="672" />
 <p class="caption">
 Figure 8.1: Org Tenure Distribution
 </p>
 </div>
 <p><br /></p>
 <p>You can likely image the shape of probability distributions for many common events. If we consider the probability of employees exiting an organization, the outcome is binary. That is, employees either leave or stay; there are no options between these extremes. However, the distribution of performance scores will look quite different. Most organizations have expected – or even forced – distributions in which an average rating is awarded most frequently and low and high performance ratings less frequently. This would start to look more like a bell curve as the number of performance levels increases.</p>
-<p>Just as we grouped variables into disrete and continuous categories in Chapter <a href="measure-sampl.html#measure-sampl">5</a>, this is also how probability distributions are categorized. If you read Chapter <a href="measure-sampl.html#measure-sampl">5</a>, you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.</p>
+<p>Just as we grouped variables into discrete and continuous categories in Chapter <a href="measure-sampl.html#measure-sampl">5</a>, this is also how probability distributions are categorized. If you read Chapter <a href="measure-sampl.html#measure-sampl">5</a>, you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.</p>
 <p>The shape of a probability distribution is defined by parameters, which represent its essential properties (e.g., measures of central tendency and spread). These probability distributions underpin the many types of statistical tests covered in this book.</p>
 <p><strong>Discrete Probability Distributions</strong></p>
 <p><strong>Discrete probability distributions</strong>, also known as <strong>Probability Mass Functions (PMF)</strong>, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:</p>
 <ul>
 <li><strong>Bernoulli</strong>: probability of success or failure for a <em>single</em> trial with two outcomes</li>
 <li><strong>Binomial</strong>: number of successes and failures in a <em>sequence</em> of independent trials with two outcomes (collection of Bernoulli trials)</li>
-<li><strong>Multinomial</strong>: generalization of the binomial distribution for experiements with more than two outcomes</li>
+<li><strong>Multinomial</strong>: generalization of the binomial distribution for experiments with more than two outcomes</li>
 <li><strong>Negative Binomial (Pascal)</strong>: a version of the binomial distribution for a <em>fixed</em> number of trials (this is positively skewed despite what the name might suggest)</li>
 <li><strong>Poisson</strong>: probability of a given number of events occurring over a specified period</li>
 <li><strong>Geometric</strong>: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)</li>
 </ul>
-<p>A number of functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate differences in the general shape of each. First, let’s simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:</p>
+<p>Several functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate differences in the general shape of each. First, let’s simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:</p>
 <div class="sourceCode" id="cb163"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb163-1" data-line-number="1"><span class="co"># Set seed for reproducible random distribution</span></a>
 <a class="sourceLine" id="cb163-2" data-line-number="2"><span class="kw">set.seed</span>(<span class="dv">1234</span>)</a>
 <a class="sourceLine" id="cb163-3" data-line-number="3"></a>
@@ -438,7 +440,7 @@ Figure 8.1: Org Tenure Distribution
 <a class="sourceLine" id="cb164-39" data-line-number="39">ggpubr<span class="op">::</span><span class="kw">ggarrange</span>(p_bernoulli, p_binomial, p_nbinomial, p_multinomial, p_poisson, p_geometric,</a>
 <a class="sourceLine" id="cb164-40" data-line-number="40">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:discrete-dist"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/discrete-dist-1.png" alt="Discrete Probability Distributions" width="672" />
+<img src="The_People_Analytics_Companion_files/figure-html/discrete-dist-1.png" alt="Discrete Probability Distributions" width="672" />
 <p class="caption">
 Figure 8.2: Discrete Probability Distributions
 </p>
@@ -490,7 +492,7 @@ Figure 8.2: Discrete Probability Distributions
 <a class="sourceLine" id="cb166-11" data-line-number="11">ggpubr<span class="op">::</span><span class="kw">ggarrange</span>(p_normal, p_lnormal, p_uniform, p_t, p_chisq, p_f,</a>
 <a class="sourceLine" id="cb166-12" data-line-number="12">          <span class="dt">ncol =</span> <span class="dv">3</span>, <span class="dt">nrow =</span> <span class="dv">2</span>)</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:continous-dist"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/continous-dist-1.png" alt="Continuous Probability Distributions" width="672" />
+<img src="The_People_Analytics_Companion_files/figure-html/continous-dist-1.png" alt="Continuous Probability Distributions" width="672" />
 <p class="caption">
 Figure 8.3: Continuous Probability Distributions
 </p>
@@ -605,7 +607,7 @@ Figure 8.4: The Empirical Rule
 <a class="sourceLine" id="cb174-6" data-line-number="6">ggplot2<span class="op">::</span><span class="kw">geom_density</span>(<span class="dt">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="dt">alpha =</span> <span class="fl">0.6</span>) <span class="op">+</span></a>
 <a class="sourceLine" id="cb174-7" data-line-number="7">ggplot2<span class="op">::</span><span class="kw">theme_bw</span>()</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-91"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-91-1.png" alt="Uniform Population Distribution (N = 1000)" width="672" />
+<img src="The_People_Analytics_Companion_files/figure-html/unnamed-chunk-91-1.png" alt="Uniform Population Distribution (N = 1000)" width="672" />
 <p class="caption">
 Figure 8.5: Uniform Population Distribution (N = 1000)
 </p>
@@ -645,7 +647,7 @@ Figure 8.5: Uniform Population Distribution (N = 1000)
 <a class="sourceLine" id="cb175-31" data-line-number="31"><span class="st">                 </span>ggplot2<span class="op">::</span><span class="kw">theme_bw</span>() <span class="op">+</span></a>
 <a class="sourceLine" id="cb175-32" data-line-number="32"><span class="st">                 </span>ggplot2<span class="op">::</span><span class="kw">facet_wrap</span>(<span class="op">~</span>n)</a></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:unnamed-chunk-92"></span>
-<img src="People_Analytics_Lifecycle_files/figure-html/unnamed-chunk-92-1.png" alt="Distribution of 10,000 Sample Means of Varied Size" width="672" />
+<img src="The_People_Analytics_Companion_files/figure-html/unnamed-chunk-92-1.png" alt="Distribution of 10,000 Sample Means of Varied Size" width="672" />
 <p class="caption">
 Figure 8.6: Distribution of 10,000 Sample Means of Varied Size
 </p>
@@ -663,7 +665,7 @@ Figure 8.6: Distribution of 10,000 Sample Means of Varied Size
 Figure 8.7: Intervals for 95 Percent Confidence Level
 </p>
 </div>
-<p>It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to <em>population parameters</em>. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exist, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!</p>
+<p>It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to <em>population parameters</em>. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exists, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!</p>
 <p>A related concept that is fundamental to estimating CIs is the <strong>standard error (SE)</strong>, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:</p>
 <p><span class="math display">\[ SE = \frac{\sigma}{\sqrt{n}} \]</span></p>
 <p>Since the CLT is fundamental to inferential statistics, let’s validate that our simulated distribution of sample means adheres to the properties of normally distributed data per the Empirical Rule:</p>
@@ -903,7 +905,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["People_Analytics_Lifecycle.pdf", "People_Analytics_Lifecycle.epub"],
+"download": ["The_People_Analytics_Companion.pdf", "The_People_Analytics_Companion.epub"],
 "search": {
 "engine": "fuse",
 "options": null

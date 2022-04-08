@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-04-05" />
+<meta name="date" content="2022-04-08" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -256,7 +256,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.3" data-path="glm.html"><a href="glm.html#exercises-8"><i class="fa fa-check"></i><b>12.3</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="13" data-path="surv-anal.html"><a href="surv-anal.html"><i class="fa fa-check"></i><b>13</b> Survival Analysis</a><ul>
-<li class="chapter" data-level="13.1" data-path="surv-anal.html"><a href="surv-anal.html#exercises-9"><i class="fa fa-check"></i><b>13.1</b> Exercises</a></li>
+<li class="chapter" data-level="13.1" data-path="surv-anal.html"><a href="surv-anal.html#kaplan-meier-survival-curve"><i class="fa fa-check"></i><b>13.1</b> Kaplan-Meier Survival Curve</a></li>
+<li class="chapter" data-level="13.2" data-path="surv-anal.html"><a href="surv-anal.html#proportional-hazards"><i class="fa fa-check"></i><b>13.2</b> Proportional Hazards</a></li>
+<li class="chapter" data-level="13.3" data-path="surv-anal.html"><a href="surv-anal.html#exercises-9"><i class="fa fa-check"></i><b>13.3</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="pred-mod.html"><a href="pred-mod.html"><i class="fa fa-check"></i><b>14</b> Predictive Models</a><ul>
 <li class="chapter" data-level="14.1" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>14.1</b> Bias-Variance Trade-Off</a></li>
@@ -334,7 +336,7 @@ Figure 9.1: What Data Scientists Really Do
 <div id="data-management" class="section level2">
 <h2><span class="header-section-number">9.1</span> Data Management</h2>
 <p>Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a <em>data lake</em>, <em>data warehouse</em>, or <em>data mart</em>.</p>
-<p>A <strong>data lake</strong> stores myriad types of data – both structured and unstructured – in its native format until needed. <strong>Structured data</strong> refers to data that fits a predefined data model, such as hire dates formatted as <code>MM/DD/YYYY</code> or zip codes stored as a five-digit string. <strong>Unstructured data</strong> has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messenging tools like Slack; it is difficult to structure this type of data within a set of related tables.</p>
+<p>A <strong>data lake</strong> stores myriad types of data – both structured and unstructured – in its native format until needed. <strong>Structured data</strong> refers to data that fits a predefined data model, such as hire dates formatted as <code>MM/DD/YYYY</code> or zip codes stored as a five-digit string. <strong>Unstructured data</strong> has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools like Slack; it is difficult to structure this type of data within a set of related tables.</p>
 <p>The main difference between a data lake and data warehouse is the type of data they are designed to store. A <strong>data warehouse (DW)</strong> is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a>, data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.</p>
 <p>Figure <a href="data-wrang-prep.html#fig:dw-schema">9.2</a> illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company’s workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:dw-schema"></span>
@@ -380,7 +382,7 @@ Figure 9.5: Type 1 SCD
 <li><strong>FROM</strong>: Specifies the table(s) in which the relevant data are contained</li>
 <li><strong>WHERE</strong>: Specifies the rows to search</li>
 </ul>
-<p>Despite the clauses being ordered as shown above (<code>SELECT</code> then <code>FROM</code> then <code>WHERE</code>), the <code>FROM</code> clause is actually the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The <code>SELECT</code> clause is the last to execute.</p>
+<p>Despite the clauses being ordered as shown above (<code>SELECT</code> then <code>FROM</code> then <code>WHERE</code>), the <code>FROM</code> clause is the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The <code>SELECT</code> clause is the last to execute.</p>
 <p>Additional clauses are available for grouping and sorting data.</p>
 <ul>
 <li><strong>GROUP BY</strong>: Specifies the columns by which data should be grouped when using aggregate functions</li>
@@ -553,7 +555,7 @@ Figure 9.6: Types of SQL Joins
 <a class="sourceLine" id="cb216-2" data-line-number="2"><span class="co">#  FROM A </span></a>
 <a class="sourceLine" id="cb216-3" data-line-number="3"><span class="co">#  INNER JOIN B</span></a>
 <a class="sourceLine" id="cb216-4" data-line-number="4"><span class="co">#  ON A.Key = B.Key</span></a></code></pre></div>
-<p>To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated <code>employees</code> data set we have been using: <code>job</code>, <code>tenure</code>, and <code>demographics</code>. For many people analytics projects, employee id is the PK since this identifer for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will use the <code>employee_id</code> column in each of the three data frames to facilitate joins:</p>
+<p>To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated <code>employees</code> data set we have been using: <code>job</code>, <code>tenure</code>, and <code>demographics</code>. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will use the <code>employee_id</code> column in each of the three data frames to facilitate joins:</p>
 <p>Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research &amp; Development department, grouped by jobs with more than 10 employees. For this, we will leverage an <code>INNER JOIN</code>, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in <code>demographics</code> and <code>tenure</code> for a particular employee id, but there is no corresponding record in <code>job</code>, that employee id would not be included in the output.</p>
 <div class="sourceCode" id="cb217"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb217-1" data-line-number="1"><span class="co"># Store SQL query as a character string</span></a>
 <a class="sourceLine" id="cb217-2" data-line-number="2">sql_string &lt;-<span class="st"> </span><span class="kw">paste</span>(<span class="st">&quot;SELECT</span></a>
@@ -797,7 +799,7 @@ Figure 9.6: Types of SQL Joins
 </div>
 <div id="data-screening-cleaning" class="section level2">
 <h2><span class="header-section-number">9.3</span> Data Screening &amp; Cleaning</h2>
-<p>The initial data review process is sometimes referred to as <strong>exporatory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.</p>
+<p>The initial data review process is sometimes referred to as <strong>exploratory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.</p>
 <p>A handy function in base R for initial data screening is <code>summary()</code>:</p>
 <div class="sourceCode" id="cb230"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb230-1" data-line-number="1"><span class="co"># Summarize df</span></a>
 <a class="sourceLine" id="cb230-2" data-line-number="2"><span class="kw">summary</span>(employees)</a></code></pre></div>
@@ -862,7 +864,7 @@ Figure 9.6: Types of SQL Joins
 <p>Before considering whether and how to handle missing data, it is important to distinguish between <em>structural missingness</em> and <em>informative missingness</em> (Kuhn &amp; Johnson, 2013).</p>
 <p><strong>Structural missingness</strong> relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.</p>
 <p><strong>Informative missingness</strong> relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.</p>
-<p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of a large number of impacted records – even with a sufficiently large sample – may bias analyses if there are missingness patterns.</p>
+<p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records – even with a sufficiently large sample – may bias analyses if there are missingness patterns.</p>
 <p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
 <p>Let’s evaluate the <code>employees</code> data frame for missing <code>annual_comp</code> values using the logical <code>is.na()</code> function, and return values of variables relevant in determining one’s annual compensation:</p>
 <div class="sourceCode" id="cb232"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb232-1" data-line-number="1"><span class="co"># Store original annual comp for sample employee</span></a>
@@ -1066,7 +1068,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["People_Analytics_Lifecycle.pdf", "People_Analytics_Lifecycle.epub"],
+"download": ["The_People_Analytics_Companion.pdf", "The_People_Analytics_Companion.epub"],
 "search": {
 "engine": "fuse",
 "options": null
