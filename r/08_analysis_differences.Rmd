@@ -25,7 +25,7 @@ employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~
 
 ## Differences in Discrete Data
 
-  Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the *Chi-square test* and *Fischer's exact test*.
+  Nonparametric tests are gernerally best when working with data measured on a discrete scale since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the nonparametric *Chi-square test* and *Fischer's exact test*.
   
 ```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
 
@@ -342,7 +342,7 @@ employees$promo <- ifelse(employees$last_promo == 1, 1, 0)
 no_promo <- unlist(subset(employees, promo == 0, select = engagement))
 promo <- unlist(subset(employees, promo == 1, select = engagement))
 
-# Perform the Mann-Whitney U (aka Wilcoxon rank sum) test
+# Perform the Mann-Whitney U (aka Wilcoxon rank-sum) test
 wilcox.test(no_promo, promo)
 
 ```  
@@ -658,26 +658,7 @@ ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
 
 ``` 
 
-  Even with these transformations, there is still a clear S-shaped curve about the residuals. 
-
-  The **Kruskal Wallis H Test** is the nonparametric alternative to a one-way ANOVA (Daniel, 1990). This test can be performed using the `kruskal.test()` function in R:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Nonparametric Kruskal one-way ANOVA investigating median differences in annual comp by job satisfaction
-kruskal.test(annual_comp ~ job_sat, data = employees)
-
-```
-
-  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different.
-
-```{r, message = FALSE, warning = FALSE}
-
-pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method = "BH")
-
-```
-
-  ANOVA can be performed using the `aov()` function, followed by the `summary()` function to display model output:
+  Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA involves the `aov()` function along with the `summary()` function to display model output:
     
 ```{r, message = FALSE, warning = FALSE}
 
@@ -686,21 +667,69 @@ one.way <- aov(annual_comp ~ job_sat, data = employees)
 summary(one.way)
 
 ```
+
+  The **Kruskal Wallis H Test** is the nonparametric alternative to a one-way ANOVA (Daniel, 1990) and an appropriate alternative for investigating median differences in annual comp by job satisfaction in our data. This test can be performed using the `kruskal.test()` function in R:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Nonparametric Kruskal one-way ANOVA
+kruskal.test(annual_comp ~ job_sat, data = employees)
+
+```
+
+  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the `pairwise.wilcox.test()` function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
+
+```{r, message = FALSE, warning = FALSE}
+
+pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method = "BH")
+
+```
+  
+  Based on the results, there are significant pairwise differences in median annual compensation for job satisfaction levels 3 and 4 relative to level 1. 
   
   **Factorial ANOVA**
   
+  **Factorial ANOVA** is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. It is important to understand the hypothesis a factorial design tests. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
+  
 ```{r, message = FALSE, warning = FALSE}
 
-# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and dept
-factorial <- aov(annual_comp ~ job_sat + dept, data = employees)
+# Calculate mean for each IV pair
+combos <- aggregate(annual_comp ~ job_sat + stock_opt_lvl, employees, mean)
+combos
+
+```  
+  
+  As we have already discussed, a difference between one or more of these contrasts may result in a decision to reject $H_0$ in ANOVA. We may also find a significant pairwise difference but a non-significant result from ANOVA since the family-wise error rate adjustment is applied in the context of multiple comparisons which reduces statistical power.
+  
+  Factorial ANOVA can be performed by adding variables with `+` within the same `aov()` function used for one-way ANOVA:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level
+factorial <- aov(annual_comp ~ job_sat + stock_opt_lvl, data = employees)
 summary(factorial)
 
 ```  
 
+  While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \@ref(fig:two-way-factorial).
+
+```{r two-way-factorial, out.width = "100%", echo = FALSE, fig.cap = 'Relationships of Job Satisfaction and Stock Option Level with Annual Compensation', fig.align = 'center'}
+
+ggplot2::ggplot(combos, aes(x = job_sat, y = annual_comp, group = stock_opt_lvl)) +
+ggplot2::geom_line(aes(color = stock_opt_lvl)) +
+ggplot2::labs(x = "Job Satisfaction", y = "Annual Compensation") + 
+ggplot2::guides(col = guide_legend("Stock Option Level")) +
+ggplot2::theme_bw() +
+ggplot2::geom_point(aes(color = stock_opt_lvl))
+
+```
+
+  As we can see, there is a strong negative relationship between job satisfaction level and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction level and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.
+
 ```{r, message = FALSE, warning = FALSE}
 
-# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept
-interaction <- aov(annual_comp ~ job_sat * dept, data = employees)
+# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x stock option level
+interaction <- aov(annual_comp ~ job_sat * stock_opt_lvl, data = employees)
 summary(interaction)
 
 ```

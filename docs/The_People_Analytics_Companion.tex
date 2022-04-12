@@ -119,7 +119,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{An End-to-End Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-04-08}
+\date{2022-04-12}
 
 \begin{document}
 \maketitle
@@ -401,7 +401,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpxBBZrs/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp9NVzrG/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -4646,7 +4646,7 @@ You may be wondering whether the magical elixir that is the CLT, which we covere
 \hypertarget{differences-in-discrete-data}{%
 \section{Differences in Discrete Data}\label{differences-in-discrete-data}}
 
-Discrete data require nonparametric tests since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the \emph{Chi-square test} and \emph{Fischer's exact test}.
+Nonparametric tests are gernerally best when working with data measured on a discrete scale since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the nonparametric \emph{Chi-square test} and \emph{Fischer's exact test}.
 
 \begin{figure}
 
@@ -4657,16 +4657,7 @@ Discrete data require nonparametric tests since these data do not come from norm
 \caption{Chi-Square and Fisher Exact Test Criteria for Discrete Data}\label{fig:discrete-tests}
 \end{figure}
 
-Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables. Figure \ref{fig:contingency-tbl} illustrates a 2x2 contingency table for promotion frequency between remote and non-remote workers:
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table} 
-
-}
-
-\caption{2x2 Contingency Table of Promotions for Remote and Non-Remote Workers}\label{fig:contingency-tbl}
-\end{figure}
+Both tests organize data within 2x2 \textbf{contingency tables} which enables us to understand interrelations between variables.
 
 \textbf{Chi-Square Test}
 
@@ -4676,7 +4667,7 @@ The \textbf{Chi-Square Test of Independence} evaluates patterns of observations 
 
 where \(O_i\) is the observed value, and \(E_i\) is the expected value.
 
-\(H_0\) states that each variable is independent of one other (i.e., there is no relationship). In addition to the \({\chi}^2\) test statistic, \(df\) for the contingency table -- defined by \(df = (rows - 1) * (columns - 1)\) -- is required to determine whether we reject or fail to reject \(H_0\).
+\(H_0\) states that each variable is independent of one another (i.e., there is no relationship). In addition to the \({\chi}^2\) test statistic, \(df\) for the contingency table, defined by \(df = (rows - 1) * (columns - 1)\), is required to determine whether we reject or fail to reject \(H_0\).
 
 While there is not consensus on the minimum sample size for this test, it is important to note that the \({\chi}^2\) statistic follows a chi-square distribution \emph{asymptotically}. This means we can only calculate accurate \(p\)-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small \(n\)-counts is illustrated in Figure \ref{fig:chisq-dist}; the chi-square distribution approaches a vertical line as \(df\) drops below 5.
 
@@ -4717,7 +4708,7 @@ A \textbf{mosaic plot} is a great way to visualize the delta between expected an
 \caption{Mosaic Plot of Residuals for Overtime x Active Status}\label{fig:mosaic-plot}
 \end{figure}
 
-In Figure \ref{fig:mosaic-plot}, blue indicates that the observed value is higher than the expected value. Red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
+In Figure \ref{fig:mosaic-plot}, blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
 
 Let's run the chi-square test of independence to determine whether these residuals are statistically significant. This test can be performed in R by passing the contingency table into the \texttt{chisq.test()} function:
 
@@ -4740,7 +4731,7 @@ Based on the results, exit rates are not independent of overtime (\({\chi}^2(1) 
 
 \textbf{Fisher's Exact Test}
 
-When the sample size is small, \textbf{Fisher's Exact Test} can be used to calculate the \emph{exact} \(p\)-value rather than an approximation -- as with many statistical tests, such as the chi-square test.
+When the sample size is small, \textbf{Fisher's Exact Test} can be used to calculate the \emph{exact} \(p\)-value rather than an approximation, which is the case with many statistical tests such as the chi-square test.
 
 \(H_0\) for Fisher's exact test is the same as \(H_0\) for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the \texttt{fisher.test()} function in R:
 
@@ -4765,7 +4756,22 @@ When the sample size is small, \textbf{Fisher's Exact Test} can be used to calcu
 ##  0.2654384
 \end{verbatim}
 
-Based on results from Fisher's exact test, which are consistent with the chi-square test of independence, we reject the null hypothesis and conclude that exit rates are related to working overtime.
+Note the \emph{odds ratio} shown in this output. The \textbf{odds ratio} represents the ratio of positive to negative cases, which is the ratio of overtime for active and inactive workers in this example. The odds ratio is defined by:
+
+\[OR = \frac{a*d}{b*c}\]
+
+An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \ref{fig:contingency-tbl} illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table} 
+
+}
+
+\caption{2x2 Contingency Table of Overtime for Active and Inactive Workers}\label{fig:contingency-tbl}
+\end{figure}
+
+Since the 95\% \(CI\) for the odds ratio does not include 1, we reject the null hypothesis and conclude that exit rates are related to working overtime; this is consistent with results from the chi-square test of independence. Since overtime was indicated far more often for inactive workers than for active workers, it is no surprise that the denominator of our ratio is larger than the numerator (i.e., \(OR\) \textless{} 1).
 
 As discussed in Chapter \ref{desc-stats}, we can produce a \(\phi\) coefficient to understand the strength of the association by passing the contingency table into the \texttt{phi} function from the \texttt{psych} library:
 
@@ -4798,13 +4804,13 @@ A variety of parametric and nonparametric tests are available for evaluating dif
 \caption{Parametric and Nonparametric Tests of Differences for Continuous Data}\label{fig:continuous-tests}
 \end{figure}
 
-\#\#\# Independent Samples \(t\)-Test
+\textbf{Independent Samples }\(\textbf t\)\textbf{-Test}
 
 When evaluating differences between two independent samples, social psychology researchers generally select from two tests: \emph{Student's} \(t\)\emph{-test} and \emph{Welch's} \(t\)\emph{-test}. There are other alternatives, such as \emph{Yuen's} \(t\)\emph{-test} and a \emph{bootstrapped} \(t\)\emph{-test}, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
 
 The \textbf{Student's} \(t\)\textbf{-test}, which was introduced in Chapter \ref{inf-stats}, is a parametric test whose assumptions of equal variances seldom hold in people analytics. \textbf{Welch's} \(t\)\textbf{-test} is generally preferred to the Student's \(t\)-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, \& Leys, 2017). When \(n\) is equal between groups, the Student's \(t\)-test is known to be robust to violations of the equal variance assumption, as long as \(n\) is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
 
-Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:mean-group-diff} illustrates mean differences (\(MD\)) for nine Welch's \(t\)-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large \(n\), as \(t\) distributions approximate a standard normal distribution with larger \(df\). In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both \(MD\) and \(n\) are relatively small, mean differences are not statistically significant (\(p > .05\)). You may also notice that as the absolute value of the \(t\)-statistic approaches 0, statistical differences become less likely since a smaller \(t\)-statistic indicates a smaller difference between mean values.
+Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:mean-group-diff} illustrates mean differences (\(MD\)) for nine Welch's \(t\)-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large \(n\), as \(t\) distributions approximate a standard normal distribution with larger \(df\). In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both \(MD\) and \(n\) are relatively small, mean differences are not statistically significant (\(p > .05\)). You may also notice that as the \(t\)-statistic approaches 0, statistical differences become less likely since a smaller \(t\)-statistic indicates a smaller difference between mean values.
 
 \begin{figure}
 
@@ -4826,9 +4832,44 @@ Next, we will walk through the steps involved in performing Welch's \(t\)-test. 
 \caption{Annual Compensation Distributions for Managers and Research Scientists}\label{fig:comp-job-boxplots}
 \end{figure}
 
-While the median -- rather than the mean which is being evaluated with Welch's \(t\)-test -- is shown in these boxplots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups. We could of course use density plots as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title. However, these distributions appear to be roughly similar.
+While the median -- rather than the mean which is being evaluated with Welch's \(t\)-test -- is shown in these boxplots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.
 
-Next, let's test whether the slight differences we observed visually are statistically significant. To perform Welch's \(t\)-test in R, we can simply pass into the \texttt{t.test()} function a numeric vector for each of the two groups.
+There are several alternatives to a visual inspection of normality, such as the \({\chi}^2\) \textbf{Goodness-of-Fit test} (Snedecor \& Cochran, 1980), \textbf{Kolmogorov-Smirnov (K-S) test} (Chakravarti, Laha, \& Roy, 1967), or \textbf{Shapiro-Wilk test} (Shapiro \& Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The \({\chi}^2\) Goodness-of-Fit test compares the \emph{count} of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed \emph{cumulative} distribution compares to the properties of a normal \emph{cumulative} distribution. The Shapiro-Wilk test is based on \emph{correlations} between observed and expected data.
+
+We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high \(p\)-value indicates that the assumption of normality is satisfied (i.e., failure to reject the null hypothesis of normally distributed data). We can use the \texttt{with()} function together with the \texttt{shapiro.test()} function to run this test in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Compute Shapiro-Wilk test of normality for each group}
+\KeywordTok{with}\NormalTok{(employees, }\KeywordTok{shapiro.test}\NormalTok{(annual_comp[job_title }\OperatorTok{==}\StringTok{ 'Manager'}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  annual_comp[job_title == "Manager"]
+## W = 0.93546, p-value = 0.000103
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{with}\NormalTok{(employees, }\KeywordTok{shapiro.test}\NormalTok{(annual_comp[job_title }\OperatorTok{==}\StringTok{ 'Research Scientist'}\NormalTok{]))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  annual_comp[job_title == "Research Scientist"]
+## W = 0.96002, p-value = 3.427e-07
+\end{verbatim}
+
+Based on these tests, the distribution of annual compensation for Managers and Research Scientists are significantly different from normally distributed data (\(p\) \textless{} .05).
+
+While we should not proceed with performing Welch's \(t\)-test due to unequal variances, let's do so merely to illustrate how the test is implemented in R. To perform Welch's \(t\)-test in R, we can simply pass into the \texttt{t.test()} function a numeric vector for each of the two groups.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4855,7 +4896,7 @@ Next, let's test whether the slight differences we observed visually are statist
 ##  139900.8  138754.5
 \end{verbatim}
 
-Based on this output, we can see that \(\bar{x}\) = 139,901 for Managers and \(\bar{x}\) = 138,755 for Research Scientists, and these are not statistically different (\(t(159.55)\) = .23, \(p\) = .82).
+If the data adhered to the assumptions of Welch's \(t\)-test, we would conclude that the mean difference between annual compensation for Managers (\(\bar{x}\) = 139,901) and Research Scientists (\(\bar{x}\) = 138,755) is not significant (\(t(159.55)\) = .23, \(p\) = .82).
 
 Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:
 
@@ -4998,9 +5039,9 @@ Cohen's \(d\) can be produced using the \texttt{cohen.d()} function from the \te
 
 Not only are the differences statistically insignificant, Cohen's \(d\) = .03 indicates a negligible difference. Therefore, there is nothing of interest based on these statistical and practical significance tests.
 
-\#\#\# Mann-Whitney U Test
+\textbf{Mann-Whitney U Test}
 
-A popular nonparametric (distribution-free) alternative to Welch's \(t\)-test is the \textbf{Mann-Whitney U Test}, sometimes referred to as the \textbf{Wilcoxon Rank-Sum Test}. Rather than comparing the mean between two groups, like the Student's \(t\)-test or Welch's \(t\)-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the \emph{ranks} are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.
+A popular nonparametric (distribution-free) alternative to Welch's \(t\)-test is the \textbf{Mann-Whitney U Test}, also referred to as the \textbf{Wilcoxon Rank-Sum Test}. Rather than comparing the mean between two groups, like the Student's \(t\)-test or Welch's \(t\)-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the \emph{ranks} are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.
 
 The \texttt{wilcox.test()} function is used to run this test in R. Let's illustrate by examining whether engagement (an ordinal variable in our dataset) is significantly different between those who have been promoted in the past year and those who have not:
 
@@ -5013,7 +5054,7 @@ The \texttt{wilcox.test()} function is used to run this test in R. Let's illustr
 \NormalTok{no_promo <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, promo }\OperatorTok{==}\StringTok{ }\DecValTok{0}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ engagement))}
 \NormalTok{promo <-}\StringTok{ }\KeywordTok{unlist}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, promo }\OperatorTok{==}\StringTok{ }\DecValTok{1}\NormalTok{, }\DataTypeTok{select =}\NormalTok{ engagement))}
 
-\CommentTok{# Perform the Mann-Whitney U (aka Wilcoxon rank sum) test}
+\CommentTok{# Perform the Mann-Whitney U (aka Wilcoxon rank-sum) test}
 \KeywordTok{wilcox.test}\NormalTok{(no_promo, promo)}
 \end{Highlighting}
 \end{Shaded}
@@ -5029,7 +5070,7 @@ The \texttt{wilcox.test()} function is used to run this test in R. Let's illustr
 
 Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions (\(W\) = 196,056, \(p\) = .67). Note the reference to continuity correction in the output. \textbf{Continuity correction} is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.
 
-As Cohen's \(d\) is used to measure the magnitude of difference between a pair of means, \textbf{Cliff's delta} can be leveraged to evaluate the size of differences between ordinal variables. Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
+Just as Cohen's \(d\) is used to measure the magnitude of difference between a pair of means, \textbf{Cliff's delta} can be leveraged to evaluate the size of differences between ordinal variables. Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the \texttt{cliff.delta()} function from the \texttt{effsize} package in R.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5052,7 +5093,7 @@ Some (e.g., Vargha \& Delaney, 2000) have endeavored to categorize the Cliff's d
 
 \#\#\# Paired Samples \(t\)-Test
 
-A \textbf{Paired Samples \(t\)-Test} is used to compare means between pairs of measurements. This test is known by many other names, such as a \textbf{dependent samples} \(t\)\textbf{-test}, \textbf{paired-difference} \(t\)\textbf{-test}, \textbf{matched pairs} \(t\)\textbf{-test}, and \textbf{repeated-samples} \(t\)\textbf{-test}.
+A \textbf{Paired Samples }\(\textbf t\)\textbf{-Test} is used to compare means between pairs of measurements. This test is known by many other names, such as a \textbf{dependent samples} \(\textbf t\)\textbf{-test}, \textbf{paired-difference} \(\textbf t\)\textbf{-test}, \textbf{matched pairs} \(\textbf t\)\textbf{-test}, and \textbf{repeated-samples} \(\textbf t\)\textbf{-test}.
 
 The assumption of normality in the context of a paired samples \(t\)-test relates to normally distributed paired differences. This is important, as the \(p\)-value for the test statistic will not be valid if this assumption is violated.
 
@@ -5060,11 +5101,11 @@ To illustrate, let's design an experiment. Let's assume morale has declined for 
 
 Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).
 
-While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \ref{research} that this would be a weak design with material shortcomings. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.
+While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \ref{research} that this would be a weak design that may lead to inaccurate conclusions. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.
 
 \textbf{Difference-in-differences (DiD)} estimation is a quasi-experimental approach that originated from econometrics for this same purpose, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
 
-Let's prepare the data for this experiment. Since \texttt{employees} is a cross-sectional dataset (single point-in-time), we will generate simulated data for the post-intervention comparison.
+Let's prepare the data for this experiment. Since \texttt{employees} is a cross-sectional dataset (single point-in-time), we will generate simulated data for repeated measures (i.e., post-intervention scores).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5107,6 +5148,8 @@ Let's prepare the data for this experiment. Since \texttt{employees} is a cross-
 \end{Shaded}
 
 It's important to remember that a paired samples \(t\)-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee should be removed from the data since paired measurements will not be available.
+
+The variance is not assumed to be equal for a paired test; therefore, the homogeneity of variance assumption is not applicable in this context.
 
 Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an \emph{approximately} continuous variable. There are \(2^p - p - 1\) combinations of scores, where \(p\) is the number of variables. For our happiness index, there are \(2^4 - 4 - 1 = 11\) combinations.
 
@@ -5151,9 +5194,7 @@ Next, we will evaluate whether paired differences are normally distributed using
 
 Based on a visual inspection, the distributions of differences appear to be roughly normal. This should not be surprising given random values were sampled from normal distributions to derive artificial post-intervention happiness indices.
 
-There are several alternatives to a visual inspection of normality, such as the \({\chi}^2\) \textbf{Goodness-of-Fit test} (Snedecor \& Cochran, 1980), \textbf{Kolmogorov-Smirnov (K-S) test} (Chakravarti, Laha, \& Roy, 1967), or \textbf{Shapiro-Wilk test} (Shapiro \& Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The \({\chi}^2\) Goodness-of-Fit test compares the \emph{count} of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed \emph{cumulative} distribution compares to the properties of a normal \emph{cumulative} distribution. The Shapiro-Wilk test is based on \emph{correlations} between observed and expected data.
-
-We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high \(p\)-value indicates that the assumption of normality is satisfied. The \texttt{shapiro.test()} function can be used to run this test in R using a vector of differences:
+Let's test for normality by performing the Shapiro-Wilk test on vectors of differences:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5184,7 +5225,7 @@ We will test for normality using the Shapiro-Wilk test. The null hypothesis for 
 ## W = 0.99096, p-value = 0.5134
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05 for both tests, the assumption of normally distributed differences is met, as we fail to reject the null hypothesis of normality. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples \(t\)-test.
+Since \(p\) \textgreater{} .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples \(t\)-test.
 
 We can run a paired samples \(t\)-test in R by passing \texttt{paired\ =\ TRUE} as an argument to the same \texttt{t.test()} function used for the independent samples \(t\)-test. Since we are investigating whether the average post-intervention happiness index is significantly \emph{greater} than the average pre-intervention happiness index, we also need the \texttt{alternative\ =\ "greater"} argument since the default two-tailed test only evaluates whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).
 
@@ -5234,7 +5275,7 @@ Let's run the same paired samples \(t\)-test using the control group indices:
 ##            4.953658e-05
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. Chapter \ref{lm} will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
+Since \(p\) \textgreater{} .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. Chapter \ref{lm} will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
 
 We can evaluate the magnitude of mean differences for these paired samples by passing the \texttt{paired\ =\ TRUE} argument to the same \texttt{cohen.d()} function used for independent samples:
 
@@ -5257,11 +5298,11 @@ We can evaluate the magnitude of mean differences for these paired samples by pa
 
 Though pre/post indices are statistically significant for the treatment group, the size of the difference is negligible (\(d\) = .03).
 
-\#\#\# Wilcoxon Signed-Rank Test
+\textbf{Wilcoxon Signed-Rank Test}
 
 The \textbf{Wilcoxon Signed-Rank Test} is the nonparametric alternative to the paired samples \(t\)-test. This distribution-free test does not require normally distributed differences.
 
-The matched Wilcoxon Signed-Rank test is performed in R using the same \texttt{wilcox.test()} function used to perform the unmatched Wilcoxon Rank-Sum test. Though we can use a paired samples \(t\)-test to test differences for our flexible work benefit study, let's run a Wilcoxon Signed-Rank test for demonstrative purposes:
+The matched Wilcoxon Signed-Rank test is performed in R using the same \texttt{wilcox.test()} function used to perform the unmatched Wilcoxon Rank-Sum test. Though we can use a paired samples \(t\)-test to test differences for our flexible work benefit study since the assumption of normally distributed differences is met, let's run a Wilcoxon Signed-Rank test for demonstrative purposes:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5318,7 +5359,7 @@ We can evaluate the magnitude of differences for these paired samples by passing
 
 With Cliff's delta, we observe a small difference between pre/post indices for the treatment group (delta estimate = .15).
 
-\#\#\# Analysis of Variance (ANOVA)
+\textbf{Analysis of Variance (ANOVA)}
 
 \textbf{Analysis of Variance (ANOVA)} is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
 
@@ -5326,7 +5367,7 @@ It is important to understand that \(H_0\) in ANOVA not only requires all group 
 
 In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \ref{inf-stats}, multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
 
-ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A \textbf{one-way ANOVA} is used to determine how one categorical IV influences a continuous DV. A \textbf{two-way ANOVA} is used to determine how two categorical IVs influence a continuous DV, while a \textbf{three-way ANOVA} is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a \textbf{factorial ANOVA}. As discussed in Chapter \ref{getting-started}, it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A \textbf{one-way ANOVA} is used to determine how one categorical IV influences a continuous DV. A \textbf{two-way ANOVA} is used to determine how two categorical IVs influence a continuous DV. A \textbf{three-way ANOVA} is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a \textbf{factorial ANOVA}. As discussed in Chapter \ref{getting-started}, it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
 
 ANOVA is not a test, per se, but a \(F\)-test underpins it. The mathematical procedure behind the \(F\)-test is relatively straightforward:
 
@@ -5338,7 +5379,7 @@ ANOVA is not a test, per se, but a \(F\)-test underpins it. The mathematical pro
 \item
   Compute the \textbf{between-group variance}. This represents how different the group means are from one another.
 \item
-  Produce the \(F\)-statistic, which is the \emph{within-group variance} / \emph{between-group variance}.
+  Produce the \(F\)-statistic, which is the ratio of \emph{within-group variance} to \emph{between-group variance}.
 \end{enumerate}
 
 \textbf{One-Way ANOVA}
@@ -5347,13 +5388,10 @@ To illustrate how to perform a one-way ANOVA, we will test the hypothesis that m
 
 Each observation in \texttt{employees} represents a unique employee, and a given employee can only have one job satisfaction score and one annual compensation value. The assumption of independence is met since each record exists independent of one another and each job satisfaction group is comprised of different employees.
 
-Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption. This can be performed in R using the \texttt{leveneTest()} function from the \texttt{car} package:
+Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption -- even with non-normal distributions. This can be performed in R using the \texttt{leveneTest()} function from the \texttt{car} package:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Load library for Levene's test}
-\KeywordTok{library}\NormalTok{(car)}
-
 \CommentTok{# Perform Levene's test for homogeneity of variance}
 \NormalTok{car}\OperatorTok{::}\KeywordTok{leveneTest}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(job_sat), }\DataTypeTok{data =}\NormalTok{ employees)}
 \end{Highlighting}
@@ -5496,13 +5534,29 @@ Let's first try several common data transformations and then examine the resulti
 \caption{Q-Q Plots of Transformed Annual Compensation Residuals}\label{fig:qq-plots-trans}
 \end{figure}
 
-Even with these transformations, there is still a clear S-shaped curve about the residuals.
-
-The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way ANOVA (Daniel, 1990). This test can be performed using the \texttt{kruskal.test()} function in R:
+Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA involves the \texttt{aov()} function along with the \texttt{summary()} function to display model output:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Nonparametric Kruskal one-way ANOVA investigating median differences in annual comp by job satisfaction}
+\CommentTok{# One-way ANOVA investigating mean differences in annual comp by job satisfaction}
+\NormalTok{one.way <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
+\KeywordTok{summary}\NormalTok{(one.way)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
+## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
+## Residuals   1468 2.613e+12 1.780e+09                   
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+\end{verbatim}
+
+The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way ANOVA (Daniel, 1990) and an appropriate alternative for investigating median differences in annual comp by job satisfaction in our data. This test can be performed using the \texttt{kruskal.test()} function in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Nonparametric Kruskal one-way ANOVA}
 \KeywordTok{kruskal.test}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
 \end{Highlighting}
 \end{Shaded}
@@ -5515,7 +5569,7 @@ The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way
 ## Kruskal-Wallis chi-squared = 8.3242, df = 3, p-value = 0.03977
 \end{verbatim}
 
-Since \(p < .05\), we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different.
+Since \(p < .05\), we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the \texttt{pairwise.wilcox.test()} function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -5537,57 +5591,88 @@ Since \(p < .05\), we can conclude that there are significant differences in med
 ## P value adjustment method: BH
 \end{verbatim}
 
-ANOVA can be performed using the \texttt{aov()} function, followed by the \texttt{summary()} function to display model output:
+Based on the results, there are significant pairwise differences in median annual compensation for job satisfaction levels 3 and 4 relative to level 1.
+
+\textbf{Factorial ANOVA}
+
+\textbf{Factorial ANOVA} is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. It is important to understand the hypothesis a factorial design tests. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# One-way ANOVA investigating mean differences in annual comp by job satisfaction}
-\NormalTok{one.way <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat, }\DataTypeTok{data =}\NormalTok{ employees)}
-\KeywordTok{summary}\NormalTok{(one.way)}
+\CommentTok{# Calculate mean for each IV pair}
+\NormalTok{combos <-}\StringTok{ }\KeywordTok{aggregate}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{stock_opt_lvl, employees, mean)}
+\NormalTok{combos}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
-## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
-## Residuals   1468 2.613e+12 1.780e+09                   
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+##    job_sat stock_opt_lvl annual_comp
+## 1        1             0    141254.0
+## 2        2             0    138753.3
+## 3        3             0    132159.2
+## 4        4             0    132227.0
+## 5        1             1    141763.9
+## 6        2             1    135494.5
+## 7        3             1    135235.7
+## 8        4             1    135569.0
+## 9        1             2    146240.0
+## 10       2             2    146432.0
+## 11       3             2    145080.0
+## 12       4             2    143019.3
+## 13       1             3    154844.4
+## 14       2             3    144254.1
+## 15       3             3    135672.7
+## 16       4             3    127102.9
 \end{verbatim}
 
-\textbf{Factorial ANOVA}
+As we have already discussed, a difference between one or more of these contrasts may result in a decision to reject \(H_0\) in ANOVA. We may also find a significant pairwise difference but a non-significant result from ANOVA since the family-wise error rate adjustment is applied in the context of multiple comparisons which reduces statistical power.
+
+Factorial ANOVA can be performed by adding variables with \texttt{+} within the same \texttt{aov()} function used for one-way ANOVA:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and dept}
-\NormalTok{factorial <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
+\CommentTok{# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level}
+\NormalTok{factorial <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{+}\StringTok{ }\NormalTok{stock_opt_lvl, }\DataTypeTok{data =}\NormalTok{ employees)}
 \KeywordTok{summary}\NormalTok{(factorial)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
-## job_sat        1 1.337e+10 1.337e+10   7.502 0.00624 **
-## dept           2 1.375e+09 6.874e+08   0.386 0.67995   
-## Residuals   1466 2.612e+12 1.782e+09                   
+##                 Df    Sum Sq   Mean Sq F value  Pr(>F)   
+## job_sat          1 1.337e+10 1.337e+10   7.523 0.00617 **
+## stock_opt_lvl    1 6.840e+09 6.840e+09   3.850 0.04995 * 
+## Residuals     1467 2.606e+12 1.777e+09                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
+While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \ref{fig:two-way-factorial}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/two-way-factorial-1} 
+
+}
+
+\caption{Relationships of Job Satisfaction and Stock Option Level with Annual Compensation}\label{fig:two-way-factorial}
+\end{figure}
+
+As we can see, there is a strong negative relationship between job satisfaction level and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction level and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.
+
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x dept}
-\NormalTok{interaction <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{*}\StringTok{ }\NormalTok{dept, }\DataTypeTok{data =}\NormalTok{ employees)}
+\CommentTok{# ANOVA investigating interaction between mean differences in annual comp by job satisfaction x stock option level}
+\NormalTok{interaction <-}\StringTok{ }\KeywordTok{aov}\NormalTok{(annual_comp }\OperatorTok{~}\StringTok{ }\NormalTok{job_sat }\OperatorTok{*}\StringTok{ }\NormalTok{stock_opt_lvl, }\DataTypeTok{data =}\NormalTok{ employees)}
 \KeywordTok{summary}\NormalTok{(interaction)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##                Df    Sum Sq   Mean Sq F value Pr(>F)   
-## job_sat         1 1.337e+10 1.337e+10   7.514 0.0062 **
-## dept            2 1.375e+09 6.874e+08   0.386 0.6795   
-## job_sat:dept    2 7.762e+09 3.881e+09   2.182 0.1132   
-## Residuals    1464 2.604e+12 1.779e+09                  
+##                         Df    Sum Sq   Mean Sq F value  Pr(>F)   
+## job_sat                  1 1.337e+10 1.337e+10   7.519 0.00618 **
+## stock_opt_lvl            1 6.840e+09 6.840e+09   3.847 0.05001 . 
+## job_sat:stock_opt_lvl    1 2.952e+08 2.952e+08   0.166 0.68371   
+## Residuals             1466 2.606e+12 1.778e+09                   
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
