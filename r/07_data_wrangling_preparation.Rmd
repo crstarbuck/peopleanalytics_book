@@ -109,6 +109,9 @@ dim(employees)
 
 ```{r, message = FALSE, warning = FALSE}
 
+# Load SQL library
+library(sqldf)
+
 # Store SQL query as a character string using the paste() function
 sql_string <- paste("SELECT
                       employee_id
@@ -537,6 +540,50 @@ sqldf::sqldf(sql_string)
 
 ```
   
+  An alternative approach is to use a **common table expression (CTE)**, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("WITH max_commute_job
+                     AS
+                        (SELECT
+                          demographics.employee_id,
+                          job_title,
+                          commute_dist,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
+                        FROM
+                            demographics
+                          LEFT JOIN
+                            job
+                          ON
+                            demographics.employee_id = job.employee_id
+                          INNER JOIN
+                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                          ON
+                            demographics.employee_id = ids.employee_id
+                        WHERE
+                          dept = 'Research & Development'
+                        ORDER BY
+                          job_title,
+                          commute_dist_rank)
+                      
+                      SELECT
+                        DISTINCT(job_title) AS job_title,
+                        COUNT(*) AS employee_count,
+                        commute_dist
+                     FROM
+                        max_commute_job
+                      WHERE
+                        commute_dist_rank = 1
+                      GROUP BY
+                        job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+  
 ## Data Screening & Cleaning
 
   The initial data review process is sometimes referred to as **exploratory data analysis (EDA)**. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
@@ -740,7 +787,7 @@ overall)
 headcount over x months)
   + Industry experience (binary or length in years)
 
-## Exercises
+## Review Questions
 
 1. What are the differences between data lakes, data warehouses, and data marts?
 
