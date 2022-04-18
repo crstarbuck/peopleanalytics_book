@@ -1,30 +1,97 @@
 # Linear Regression {#lm}
 
-It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions of future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but I've seen relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning. 
+  It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning. 
 
-This chapter is dedicated to inferential models to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. The following chapter will provide an overview of predictive modeling frameworks.
+  This chapter is dedicated to inferential modeling to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. Chapter \@ref(pred-mod) will provide an overview of predictive modeling frameworks.
 
-Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Before diving into the math to understand the mechanics of regression, let's develop an intuitive understanding.
+  Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Let's first develop an intuitive understanding of the mechanics of regression.
 
-Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, in the absence of any additional information how would you estimate this? Most would likely estimate the <i>average</i> annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large group of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to billions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information about who may walk by.
+  Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the *average* annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.
 
-Let's consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It's also unlikely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.
+  Let's consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It's also unlikely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.
 
-Let's now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be very helpful in reducing the size of the population who could walk by, which should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year.
+  Let's now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be quite helpful in reducing the size of the population who could walk by. This should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year. That an important variable may become unimportant in the presence of another variable is a key feature of regression.
 
-Furthermore, let's consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly <i>within each</i> -- likely making the average compensation amount in each group a more nuanced and reasonable estimate.
+  Furthermore, let's consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly *within each* -- likely making the average compensation in each group a more nuanced and reasonable estimate.
 
-What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured in the larger city label (NYC vs. Boise), and the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.
+  What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs. Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.
 
-What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn annually and should, therefore, not be considered.
+  What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn and should, therefore, not be considered.
 
-You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, location, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. Two people may be similar on hundreds of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
+  You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
 
-While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (n < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
+  While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small ($n$ < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
 
-This is the essence of regression modeling: find a limited number of variables which independently or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In the subsequent sections, we will cover how to identify which variables are important and how to quantify the effect they have on the outcome.
+  This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In the subsequent sections, we will cover how to identify which variables are important and how to quantify the effect they have on the outcome.
 
 ## Simple Linear Regression
+
+  **Simple linear regression** is a simple technique for estimating the value of a quantitative DV, denoted as $Y$, on the basis of a single IV, denoted as $X$. It is assumed that there is an approximately linear relationship between $X$ and $Y$. Often, this relationship is expressed as *regressing* $Y$ on $X$ and is defined mathematically as:
+
+$$ Y = \beta_0 + \beta_1 X + \epsilon, $$
+
+  where $\beta_0$ is the expected value of $Y$ when $X = 0$ (the *intercept*), and $\beta_1$ represents the average change in $Y$ for a one-unit increase in $X$ (the *slope*). $\beta_0$ and $\beta_1$ are unknown *parameters* or *coefficients*. The error term, $\epsilon$, acknowledges that there is variation in $Y$ not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between $X$ and $Y$, as additional variables not included in the model are likely influencing $Y$.
+  
+  Once we estimate the unknown model coefficients, $\beta_0$ and $\beta_1$, we can estimate $Y$ for a particular value of $X$ by calculating:
+  
+$$ \hat{y} = \hat{\beta}_0 + \hat{\beta_1}x, $$
+
+  where $\hat{y}$ represents an estimate of $Y$ for a particular value of $X$ equal to $x$. The $\hat{}$ symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
+  
+  $$\beta_0 = $$
+  
+  $$\beta_1 = $$
+  
+  $$RSS = $$
+
+  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`. Let's fit a linear model to regress YTD sales on engagement:
+
+```{r}
+
+# Load libraries
+library(corrplot)
+library(dplyr)
+library(car)
+library(reshape2)
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Subset employees data frame; sales are only applicable for those in sales positions
+data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representative'))
+
+# Regress YTD sales on engagement
+slm.fit <- lm(ytd_sales ~ engagement, data)
+
+# Output model results
+summary(slm.fit)
+
+```
+
+  The output of this simple linear regression model indicates that for each one-level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to race to a conclusion that employee engagement has a significant influence on business outcomes such as sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales.
+
+  Two elements of the regression output may not be clear: (a) the 'Estimate' is the unstandardized Beta coefficient associated with each of the predictors, and (b) 'Pr(>|t|)' is the p-value representing the probability that the effect was observed by chance (likelihood that no effect actually exists). Based on this output, you should find that several variables do not appear to have statistically significant associations with SALES. However, it would be a mistake to select only the variables that appear to have statistically significant associations with SALES because multicollinearity may be suppressing the effects of strongly associated variables.
+
+  There may, however, be some variables you can immediately exclude based on a review of the descriptive statistics produced above. If there are any variables with no variance (i.e., the min and max values are equal), remove the variables from the 'predictors' vector above and then re-execute that line of code to inform R that the vector has been updated. Be sure to address these before proceeding, if applicable.
+
+## Linear Assumptions & High Leverage Checks
+
+  From the outset, we must determine if a linear model is appropriate for the data at hand. In other words, is there a linear association between the combination of predictors and SALES? If the relationship is not linear, a more sophisticated, non-linear approach must be used. Evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots produced by the code below to evaluate the linear assumptions of homoscedasticity, normality, and linearity. In practice, linear assumptions are never perfectly met, but there must be evidence that the relationships being investigated are 'generally' linear in order to leverage a linear model.
+
+  Also, review the Cook's distance plot to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's d value is considerably higher than that of other observations.
+
+```{r}
+par(mfrow = c(2,2))
+plot(slm.fit, which = c(1:2,4))
+```
+
+Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed SALES values). In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates SALES and there is no difference between estimated and actual values.
+
+```{r}
+hist(slm.fit$resid, main = "Distribution of Model Residuals", xlab = "Sales Estimate Residuals", col = "red", las = 1, breaks = 10)
+```
+
+
 
 
 ### Parameter Estimation
@@ -33,6 +100,86 @@ Ordinary Least Squares (OLS) is the most common method for estimating unknown pa
 
 
 ## Multiple Linear Regression
+
+
+
+$$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
+
+```{r}
+
+# Define a vector of predictors
+predictors <- c("engagement", "job_lvl")
+
+```
+
+**Multicollinearity Diagnostics**
+
+  Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+
+  Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
+
+  1. Execute lines 104-109 below. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B. The code below makes this easy as it orders pairs of predictors based on their absolute correlation (from highest to lowest), so you only need to look at the first row in the output.
+  2. Execute lines 113-114 below to build a correlation matrix for the predictors. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B. The combination of the summary() and abs() functions on line 114 enables an easy evaluation of which predictor is more highly correlated with other predictors (simply compare the `mean` for the predictors of interest).
+  3. If predictor A has a larger average absolute correlation, remove it from the `predictors` vector; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives for this assignment (be sure to reread the overall purpose for this assignment if this is unclear).
+  4. Repeat steps 1-3 until no absolute correlations are >= .7.
+
+  All variables for this assignment are numeric (no categorical variables), which means we can simply evaluate correlations among all without any dummy coding. The code below will create a correlation matrix using the predictors specified in the `predictors` vector initialized at the beginning of this script.
+
+  As you iteratively address multicollinearity issues using the aforementioned approach, simply remove from the `predictors` vector the variable you wish to omit and then execute that line of code again to inform R that the predictors have been updated. You can then re-execute the code below to produce a new correlation matrix with the revised subset of predictors.
+
+```{r}
+
+M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.
+M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).
+M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.
+M1 <- M1[order(-abs(M1$value)),] # Sort order the data.
+colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.
+M1 # Display contents of the matrix.
+
+```
+
+```{r}
+
+M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.
+summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.
+
+```
+
+Once multicollinearity has been addressed (no two predictors have an absolute correlation of .7 or higher), execute the code below to ensure the VIF for remaining predictors is below 5 (a sanity check, as it were).
+
+```{r}
+
+car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))
+
+```
+
+## Fit Linear Model (with Subset of Important Variables)
+
+The following lines of code will fit a linear regression model using the subset of predictors for which no collinearity problems are present (the result of your work from the prior section).
+
+```{r}
+
+mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)
+summary(lm.fit.sub)
+
+```
+
+Next, we need to reduce our model to the subset of predictors with statistically significant relationships with SALES. Backward Stepwise Selection is the simplest of all variable selection procedures, and the approach we will use for this assignment. The steps for this procedure are outlined below:
+
+  1. Remove the predictor with the highest p-value greater than the critical value (.05).
+  2. Refit the model (i.e., modify the 'predictors' vector to exclude the irrelevant variable, and then re-execute lines 122-123 to refit the linear model and display output), and repeat step 1.
+  3. Stop when all p-values are less than the critical value.
+
+When you have reduced the model to a subset of predictors that all have statistically significant associations with SALES and no evidence of problematic collinearity, proceed to the final step below.
+
+We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
+
+```{r}
+
+mlm.fit.sub.scaled <- lm(paste0("scale(ytd_sales) ~ scale(", paste(predictors, collapse = ")+scale("),")"), data)
+summary(mlm.fit.sub.scaled)
+
+```
 
 
 
