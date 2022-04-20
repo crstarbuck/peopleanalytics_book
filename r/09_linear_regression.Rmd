@@ -44,15 +44,16 @@ $$ \hat{y} = \hat{\beta}_0 + \hat{\beta_1}x, $$
   
   $$RSS = $$
 
-  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`. Let's fit a linear model to regress YTD sales on engagement:
+  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`. Let's fit a linear model to regress YTD sales on engagement and use the `flextable` package to present model results in a more elegant tabular summary than the base R default:
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 
 # Load libraries
 library(corrplot)
 library(dplyr)
 library(car)
 library(reshape2)
+library(flextable)
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
@@ -63,40 +64,56 @@ data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representat
 # Regress YTD sales on engagement
 slm.fit <- lm(ytd_sales ~ engagement, data)
 
-# Output model results
-summary(slm.fit)
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(slm.fit)
 
 ```
 
-  The output of this simple linear regression model indicates that for each one-level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to race to a conclusion that employee engagement has a significant influence on business outcomes such as sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales.
+  There are several important pieces of information in this output:
+  
+  * `Estimate`: *Unstandardized* Beta coefficient associated with the respective predictor
+  * `Standard Error`: Average distance between the observed and estimated values per the fitted regression line
+  * `t value`: `Estimate` / `Standard Error`. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.
+  * `Pr(>|t|)`: $p$-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., $x$ has a relationship with $y$)
+  * `Intercept`: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, height, weight, IQ).
+  * `Signif. codes`: Symbols to quickly ascertain whether predictors are significant at key levels, such as $p$ < .001 (***), $p$ < .01 (**), or $p$ < .05 (*).
+  * `Residual standard error`: Measure of model fit which reflects the standard deviation of the residuals ($\sqrt {\sum(y-\hat{y})^2 / df}$)
+  * `Degrees of freedom`: $n$ - $p$, where $n$ is the number of observations and $p$ is the number of predictors
+  * `Multiple R-squared`: Percent of variance in $y$ (when multiplied by 100) explained by the predictors in the model. This is also known as the **Coefficient of Determination**. For simple linear regression, this is simply the squared value of Pearson's $r$ for the bivariate relationship between the predictor and response (execute `cor(data$engagement, data$ytd_sales)^2` to validate).
+  * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
+  * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
+  
+  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to race to a conclusion that employee engagement has a significant influence on business outcomes such as sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, so additional predictors are often needed to capture the complex and nuanced relationships characteristic of people analytics problems.
 
-  Two elements of the regression output may not be clear: (a) the 'Estimate' is the unstandardized Beta coefficient associated with each of the predictors, and (b) 'Pr(>|t|)' is the p-value representing the probability that the effect was observed by chance (likelihood that no effect actually exists). Based on this output, you should find that several variables do not appear to have statistically significant associations with SALES. However, it would be a mistake to select only the variables that appear to have statistically significant associations with SALES because multicollinearity may be suppressing the effects of strongly associated variables.
+  **Linear Assumptions & High Leverage Checks**
 
-  There may, however, be some variables you can immediately exclude based on a review of the descriptive statistics produced above. If there are any variables with no variance (i.e., the min and max values are equal), remove the variables from the 'predictors' vector above and then re-execute that line of code to inform R that the vector has been updated. Be sure to address these before proceeding, if applicable.
+  From the outset, we must determine if a linear model is appropriate for the data at hand. In other words, is there a linear association between the predictor (or combination of predictors) and the response variable? If the relationship is not linear, proceeding with a linear model may result in invalid inferences and conclusions.
+  
+  We can evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots in Figure \@ref(fig:slm-diagnostics) to evaluate the linear assumptions of homoscedasticity, normality, and linearity. In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the relationships being investigated are *generally* linear in order to leverage a linear model.
 
-## Linear Assumptions & High Leverage Checks
+  In addition, we can review the Cook's distance plot in Figure \@ref(fig:slm-diagnostics) to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's $d$ value is considerably higher than that of other observations.
 
-  From the outset, we must determine if a linear model is appropriate for the data at hand. In other words, is there a linear association between the combination of predictors and SALES? If the relationship is not linear, a more sophisticated, non-linear approach must be used. Evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots produced by the code below to evaluate the linear assumptions of homoscedasticity, normality, and linearity. In practice, linear assumptions are never perfectly met, but there must be evidence that the relationships being investigated are 'generally' linear in order to leverage a linear model.
+```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
 
-  Also, review the Cook's distance plot to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's d value is considerably higher than that of other observations.
-
-```{r}
 par(mfrow = c(2,2))
 plot(slm.fit, which = c(1:2,4))
+
 ```
 
-Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed SALES values). In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates SALES and there is no difference between estimated and actual values.
+  Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed YTD sales values). In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, and there is no difference between estimated and observed values.
 
 ```{r}
+
 hist(slm.fit$resid, main = "Distribution of Model Residuals", xlab = "Sales Estimate Residuals", col = "red", las = 1, breaks = 10)
+
 ```
 
 
 
 
-### Parameter Estimation
+  **Parameter Estimation**
 
-Ordinary Least Squares (OLS) is the most common method for estimating unknown parameters in a linear regression model.
+  Ordinary Least Squares (OLS) is the most common method for estimating unknown parameters in a linear regression model.
 
 
 ## Multiple Linear Regression
@@ -149,7 +166,7 @@ Once multicollinearity has been addressed (no two predictors have an absolute co
 
 ```{r}
 
-car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))
+# car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))
 
 ```
 
@@ -159,8 +176,8 @@ The following lines of code will fit a linear regression model using the subset 
 
 ```{r}
 
-mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)
-summary(lm.fit.sub)
+# mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)
+# summary(lm.fit.sub)
 
 ```
 
@@ -176,8 +193,8 @@ We will now produce a standardized Estimate for each predictor to evaluate relat
 
 ```{r}
 
-mlm.fit.sub.scaled <- lm(paste0("scale(ytd_sales) ~ scale(", paste(predictors, collapse = ")+scale("),")"), data)
-summary(mlm.fit.sub.scaled)
+# mlm.fit.sub.scaled <- lm(paste0("scale(ytd_sales) ~ scale(", paste(predictors, collapse = ")+scale("),")"), data)
+# summary(mlm.fit.sub.scaled)
 
 ```
 
