@@ -23,6 +23,54 @@
   While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small ($n$ < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
 
   This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In the subsequent sections, we will cover how to identify which variables are important and how to quantify the effect they have on the outcome.
+  
+  It is important to understand the role of the sample size in achieving accurate estimates for $y$. Figure \@ref(fig:lm-fit-compare) illustrates the impact of fitting a model to too few observations. With $n$ = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points would represent the best model for a larger sample, as there would likely be some distribution of $y$ for values of $x$.
+  
+```{r lm-fit-compare, out.width = "100%", echo = FALSE, fig.cap = 'Left: Least squares regression model fit to n = 2 observations. Right: Least squares regression model fit to n = 20 observations.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Construct basic data frame
+df1 <- data.frame(X = c(25, 75),
+                  Y = c(205, 390))
+
+# Fit simple linear model to data
+lm.fit.1 <- lm(Y ~ X, df1)
+
+# Visualize model fit to observations
+p1 <- ggplot2::ggplot(data = df1, aes(x = X, y = Y)) + 
+      ggplot2::geom_point(color = "black") +
+      ggplot2::geom_function(fun = function(x) {lm.fit.1$coefficients[[2]]*x + lm.fit.1$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+# Generate data with a linear relationship + some noise
+X <- rnorm(20, 50, 10)
+err = rnorm(20, 0, 15)
+Y <- 100 + 4*X + err
+
+# Construct basic data frame
+df2 <- data.frame(X = X, 
+                  Y = Y)
+
+# Fit simple linear model to data
+lm.fit.2 <- lm(Y ~ X, df2)
+
+# Visualize model fit to observations
+p2 <- ggplot2::ggplot(data = df2, aes(x = X, y = Y)) + 
+      ggplot2::geom_point(color = "black") +
+      ggplot2::geom_function(fun = function(x) {lm.fit.2$coefficients[[2]]*x + lm.fit.2$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+# Display distribution visualizations
+ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
+
+```  
 
 ## Simple Linear Regression
 
@@ -83,7 +131,22 @@ flextable::as_flextable(slm.fit)
   * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
-  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to race to a conclusion that employee engagement has a significant influence on business outcomes such as sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, so additional predictors are often needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, so additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  
+  The $R^2$ value indicates that 12.4% of the variance in sales can be explained by the variation in engagement levels. Put differently, this simple model does not account for 87.6% of variation in sales. Since a large portion of the variance in sales is unexplained, we need signal from additional predictors to understand the other dimensions along which sales vary.
+  
+  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 28,002.67$x$ + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at that level. However, for those with higher engagement levels, there is significant spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that needs to be accounted for in the regression equation to achieve more accurate estimates.
+  
+```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 28,002.67x + 2,431.67', fig.align = 'center', message = FALSE, warning = FALSE}
+
+ggplot2::ggplot(data = data, aes(x = engagement, y = ytd_sales)) + 
+ggplot2::labs(x = "Engagement", y = "YTD Sales") +
+ggplot2::geom_point(color = "black") +
+ggplot2::geom_function(fun = function(x) {slm.fit$coefficients[[2]]*x + slm.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+ggplot2::annotate("text", x = 1.4, y = 120000, label = "y = 28,002.67x + 2,431.67", colour = "red") +
+ggplot2::theme_bw()
+
+```
 
   **Linear Assumptions & High Leverage Checks**
 
@@ -102,9 +165,15 @@ plot(slm.fit, which = c(1:2,4))
 
   Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed YTD sales values). In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, and there is no difference between estimated and observed values.
 
-```{r}
+```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
 
-hist(slm.fit$resid, main = "Distribution of Model Residuals", xlab = "Sales Estimate Residuals", col = "red", las = 1, breaks = 10)
+# Produce histogram to visualize distribution of model residuals
+ggplot2::ggplot() + 
+ggplot2::aes(slm.fit$resid) + 
+ggplot2::labs(x = "YTD Sales Residuals", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
 
 ```
 
