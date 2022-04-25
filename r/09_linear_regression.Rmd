@@ -22,9 +22,73 @@
 
   While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small ($n$ < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
 
-  This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In the subsequent sections, we will cover how to identify which variables are important and how to quantify the effect they have on the outcome.
+  This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.
   
-  It is important to understand the role of the sample size in achieving accurate estimates for $y$. Figure \@ref(fig:lm-fit-compare) illustrates the impact of fitting a model to too few observations. With $n$ = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points would represent the best model for a larger sample, as there would likely be some distribution of $y$ for values of $x$.
+
+
+
+
+
+## Simple Linear Regression
+
+  **Simple linear regression** is a simple technique for estimating the value of a quantitative DV, denoted as $Y$, on the basis of a single IV, denoted as $X$. It is assumed that there is an approximately linear relationship between $X$ and $Y$. Often, this relationship is expressed as *regressing* $Y$ on $X$ and is defined mathematically as:
+
+$$ Y = \beta_0 + \beta_1 X + \epsilon, $$
+
+  where $\beta_0$ is the expected value of $Y$ when $X = 0$ (the *intercept*), and $\beta_1$ represents the average change in $Y$ for a one-unit increase in $X$ (the *slope*). $\beta_0$ and $\beta_1$ are unknown *parameters* or *coefficients*. The error term, $\epsilon$, acknowledges that there is variation in $Y$ not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between $X$ and $Y$, as additional variables not included in the model are likely influencing $Y$.
+  
+  Once we estimate the unknown model coefficients, $\beta_0$ and $\beta_1$, we can estimate $Y$ for a particular value of $X$ by calculating:
+  
+$$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, $$
+
+  where $\hat{y}$ represents an estimate of $Y$ for the $i$-ith value of $X$ equal to $x$. The $\hat{}$ symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
+  
+  The earliest form of linear regression is the **least squares** method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, & Tibshirani, 2013). While there are several approaches to fitting a linear regression model, *ordinary* least squares (OLS) is the most common. OLS selects coefficients for $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the residual sum of squares (RSS) defined by:
+  
+  $$RSS = (y_1 - \hat{\beta}_0 - \hat{\beta}_1x_1)^2 + (y_2 - \hat{\beta}_0 - \hat{\beta}_1x_2)^2 + {...} + (y_n - \hat{\beta}_0 - \hat{\beta}_1x_n)^2$$
+  For each value of $X$, OLS fits a model for which the difference between the predicted value ($\hat{\beta}_0 - \hat{\beta}_1x_i)^2$) and actual value ($y_i$) is as small as possible. Figure \@ref(fig:lm-residuals) illustrates the result of minimizing RSS using OLS:
+  
+```{r lm-residuals, out.width = "100%", echo = FALSE, fig.cap = 'Minimizing RSS with Ordinary Least Squares (OLS) Fit', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Generate data with a linear relationship + some noise
+X <- rnorm(20, 50, 10)
+err = rnorm(20, 0, 15)
+Y <- 100 + 4*X + err
+
+# Construct basic data frame
+df2 <- data.frame(X = X, 
+                  Y = Y)
+
+# Fit simple linear model to data
+lm.fit.2 <- lm(Y ~ X, df2)
+
+# Save predicted values and residuals
+df2$predicted <- predict(lm.fit.2)
+df2$residuals <- residuals(lm.fit.2)
+
+# Visualize model fit to observations
+ggplot2::ggplot(data = df2, aes(x = X, y = Y)) + 
+ggplot2::geom_segment(aes(xend = X, yend = predicted)) +
+ggplot2::geom_point(shape = 1) +
+ggplot2::geom_point(aes(y = predicted)) +
+ggplot2::geom_function(fun = function(x) {lm.fit.2$coefficients[[2]]*x + lm.fit.2$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+ggplot2::theme_bw() +
+ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+``` 
+
+  The minimizers for the least squares coefficient estimates are defined by:
+
+  $$\hat\beta_1 = \frac{\displaystyle\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})} {\displaystyle\sum_{i=1}^{n}(x_i - \bar{x})^2}$$
+  
+  $$\hat\beta_0 = \bar{y} - \hat{\beta}_1 \bar{x},$$
+  
+  where $\bar{y}$ and $\bar{x}$ are sample means.
+  
+  It is important to understand the role sample size plays in achieving accurate estimates of $Y$. Figure \@ref(fig:lm-fit-compare) illustrates the impact of fitting a model to too few observations. With $n$ = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points would represent the best model for a larger sample, as there would likely be some distribution of $Y$ for each value of $X$.
   
 ```{r lm-fit-compare, out.width = "100%", echo = FALSE, fig.cap = 'Left: Least squares regression model fit to n = 2 observations. Right: Least squares regression model fit to n = 20 observations.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -62,7 +126,7 @@ lm.fit.2 <- lm(Y ~ X, df2)
 
 # Visualize model fit to observations
 p2 <- ggplot2::ggplot(data = df2, aes(x = X, y = Y)) + 
-      ggplot2::geom_point(color = "black") +
+      ggplot2::geom_point() +
       ggplot2::geom_function(fun = function(x) {lm.fit.2$coefficients[[2]]*x + lm.fit.2$coefficients[[1]]}, colour = "red", linetype = "dashed") +
       ggplot2::theme_bw() +
       ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
@@ -71,26 +135,6 @@ p2 <- ggplot2::ggplot(data = df2, aes(x = X, y = Y)) +
 ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
 
 ```  
-
-## Simple Linear Regression
-
-  **Simple linear regression** is a simple technique for estimating the value of a quantitative DV, denoted as $Y$, on the basis of a single IV, denoted as $X$. It is assumed that there is an approximately linear relationship between $X$ and $Y$. Often, this relationship is expressed as *regressing* $Y$ on $X$ and is defined mathematically as:
-
-$$ Y = \beta_0 + \beta_1 X + \epsilon, $$
-
-  where $\beta_0$ is the expected value of $Y$ when $X = 0$ (the *intercept*), and $\beta_1$ represents the average change in $Y$ for a one-unit increase in $X$ (the *slope*). $\beta_0$ and $\beta_1$ are unknown *parameters* or *coefficients*. The error term, $\epsilon$, acknowledges that there is variation in $Y$ not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between $X$ and $Y$, as additional variables not included in the model are likely influencing $Y$.
-  
-  Once we estimate the unknown model coefficients, $\beta_0$ and $\beta_1$, we can estimate $Y$ for a particular value of $X$ by calculating:
-  
-$$ \hat{y} = \hat{\beta}_0 + \hat{\beta_1}x, $$
-
-  where $\hat{y}$ represents an estimate of $Y$ for a particular value of $X$ equal to $x$. The $\hat{}$ symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
-  
-  $$\beta_0 = $$
-  
-  $$\beta_1 = $$
-  
-  $$RSS = $$
 
   In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`. Let's fit a linear model to regress YTD sales on engagement and use the `flextable` package to present model results in a more elegant tabular summary than the base R default:
 
