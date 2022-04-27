@@ -24,10 +24,19 @@
 
   This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.
   
+  **Assumptions & Diagnostics**
 
-
-
-
+  From the outset, we must determine if a linear model is appropriate for the data at hand. Consistent with the assumptions of parametric tests covered in Chapter \@ref(aod), there are several assumptions that need to be validated to make this decision, and these largely relate to the residuals ($\hat{y}$ - $y$):
+  
+  1. **Independence**: Residuals are independent of each other; consecutive residuals in time series data are unrelated
+  2. **Homoscedasticity**: Variance of residuals is constant across values of $X$
+  3. **Normality**: Residuals must be normally distributed (with mean of 0) across values of $X$
+  4. **Linearity**: Relationship between $X$ and $Y$ is linear
+  
+  In addition to these key assumptions, a couple of additional diagnostics are important to incorporate into the early data screening stage:
+  
+  2. **High-Leverage Observations**: Influential data that significantly changes the model fit
+  1. **Multicollinearity**: Independent variables that are highly correlated (they should be *independent*)
 
 ## Simple Linear Regression
 
@@ -43,10 +52,11 @@ $$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, $$
 
   where $\hat{y}$ represents an estimate of $Y$ for the $i$-ith value of $X$ equal to $x$. The $\hat{}$ symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
   
-  The earliest form of linear regression is the **least squares** method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, & Tibshirani, 2013). While there are several approaches to fitting a linear regression model, *ordinary* least squares (OLS) is the most common. OLS selects coefficients for $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the residual sum of squares (RSS) defined by:
+  The earliest form of linear regression is the *least squares* method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, & Tibshirani, 2013). While there are several approaches to fitting a linear regression model, **ordinary least squares (OLS)** is the most common. OLS selects coefficients for $\hat{\beta}_0$ and $\hat{\beta}_1$ that minimize the residual sum of squares (RSS) defined by:
   
   $$RSS = (y_1 - \hat{\beta}_0 - \hat{\beta}_1x_1)^2 + (y_2 - \hat{\beta}_0 - \hat{\beta}_1x_2)^2 + {...} + (y_n - \hat{\beta}_0 - \hat{\beta}_1x_n)^2$$
-  For each value of $X$, OLS fits a model for which the difference between the predicted value ($\hat{\beta}_0 - \hat{\beta}_1x_i)^2$) and actual value ($y_i$) is as small as possible. Figure \@ref(fig:lm-residuals) illustrates the result of minimizing RSS using OLS:
+  
+  For each value of $X$, OLS fits a model for which the difference between the predicted value ($\hat{\beta}_0 - \hat{\beta}_1x_i)^2$) and actual value ($y_i$) is as small as possible. Figure \@ref(fig:lm-residuals) illustrates the result of minimizing $RSS$ using OLS:
   
 ```{r lm-residuals, out.width = "100%", echo = FALSE, fig.cap = 'Minimizing RSS with Ordinary Least Squares (OLS) Fit', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -88,12 +98,9 @@ ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = elem
   
   where $\bar{y}$ and $\bar{x}$ are sample means.
   
-  It is important to understand the role sample size plays in achieving accurate estimates of $Y$. Figure \@ref(fig:lm-fit-compare) illustrates the impact of fitting a model to too few observations. With $n$ = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points would represent the best model for a larger sample, as there would likely be some distribution of $Y$ for each value of $X$.
+  It is important to understand the role sample size plays in achieving accurate estimates of $Y$. Figure \@ref(fig:lm-fit-compare) illustrates the impact of fitting a model to too few observations. With $n$ = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points represent the best model for a larger sample, as there would likely be some distribution of $Y$ for each value of $X$.
   
 ```{r lm-fit-compare, out.width = "100%", echo = FALSE, fig.cap = 'Left: Least squares regression model fit to n = 2 observations. Right: Least squares regression model fit to n = 20 observations.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Load library
-library(ggplot2)
 
 # Set seed for reproducibility
 set.seed(1234)
@@ -135,17 +142,13 @@ p2 <- ggplot2::ggplot(data = df2, aes(x = X, y = Y)) +
 ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
 
 ```  
-
-  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`. Let's fit a linear model to regress YTD sales on engagement and use the `flextable` package to present model results in a more elegant tabular summary than the base R default:
+  
+  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`: 
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Load libraries
-library(corrplot)
+# Load library
 library(dplyr)
-library(car)
-library(reshape2)
-library(flextable)
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
@@ -155,6 +158,41 @@ data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representat
 
 # Regress YTD sales on engagement
 slm.fit <- lm(ytd_sales ~ engagement, data)
+
+```
+
+  In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the assumptions are *generally* satisfied.
+  
+  We can evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots in Figure \@ref(fig:slm-diagnostics) to evaluate the linear assumptions of *homoscedasticity* and *linearity*.
+  
+  In addition, we can review the Cook's distance plot in Figure \@ref(fig:slm-diagnostics) to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's $d$ value is considerably higher than that of other observations.
+
+```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
+
+par(mfrow = c(2,2))
+plot(slm.fit, which = c(1:2,4))
+
+```
+
+  Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed YTD sales values) to evaluate the assumption of *normality*. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values.
+
+```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
+
+# Produce histogram to visualize distribution of model residuals
+ggplot2::ggplot() + 
+ggplot2::aes(slm.fit$resid) + 
+ggplot2::labs(x = "YTD Sales Residuals", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
+
+```
+
+  Let's use the `flextable` package to present our simple linear model results in an elegant tabular summary:
+
+```{r, message = FALSE, warning = FALSE}
+
+library(flextable)
 
 # Produce tabular summary for model results using flextable
 flextable::as_flextable(slm.fit)
@@ -175,11 +213,11 @@ flextable::as_flextable(slm.fit)
   * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
-  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,003 USD ($\beta$ = 28,003, $t$(407) = 7.58, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, so additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,002.67 USD ($\beta$ = 28,002.67, $t$(407) = 7.58, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
   
   The $R^2$ value indicates that 12.4% of the variance in sales can be explained by the variation in engagement levels. Put differently, this simple model does not account for 87.6% of variation in sales. Since a large portion of the variance in sales is unexplained, we need signal from additional predictors to understand the other dimensions along which sales vary.
   
-  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 28,002.67$x$ + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at that level. However, for those with higher engagement levels, there is significant spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that needs to be accounted for in the regression equation to achieve more accurate estimates.
+  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 28,002.67$x$ + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at these levels. However, for those with higher engagement levels, there is greater spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that need to be accounted for in the regression equation to achieve more accurate estimates.
   
 ```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 28,002.67x + 2,431.67', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -192,45 +230,7 @@ ggplot2::theme_bw()
 
 ```
 
-  **Linear Assumptions & High Leverage Checks**
-
-  From the outset, we must determine if a linear model is appropriate for the data at hand. In other words, is there a linear association between the predictor (or combination of predictors) and the response variable? If the relationship is not linear, proceeding with a linear model may result in invalid inferences and conclusions.
-  
-  We can evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots in Figure \@ref(fig:slm-diagnostics) to evaluate the linear assumptions of homoscedasticity, normality, and linearity. In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the relationships being investigated are *generally* linear in order to leverage a linear model.
-
-  In addition, we can review the Cook's distance plot in Figure \@ref(fig:slm-diagnostics) to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's $d$ value is considerably higher than that of other observations.
-
-```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
-
-par(mfrow = c(2,2))
-plot(slm.fit, which = c(1:2,4))
-
-```
-
-  Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed YTD sales values). In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, and there is no difference between estimated and observed values.
-
-```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
-
-# Produce histogram to visualize distribution of model residuals
-ggplot2::ggplot() + 
-ggplot2::aes(slm.fit$resid) + 
-ggplot2::labs(x = "YTD Sales Residuals", y = "Density") + 
-ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
-ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
-ggplot2::theme_bw()
-
-```
-
-
-
-
-  **Parameter Estimation**
-
-  Ordinary Least Squares (OLS) is the most common method for estimating unknown parameters in a linear regression model.
-
-
 ## Multiple Linear Regression
-
 
 
 $$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
@@ -244,7 +244,7 @@ predictors <- c("engagement", "job_lvl")
 
 **Multicollinearity Diagnostics**
 
-  Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+  **Multicollinearity** diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV. Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
 
   Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
 
@@ -258,6 +258,10 @@ predictors <- c("engagement", "job_lvl")
   As you iteratively address multicollinearity issues using the aforementioned approach, simply remove from the `predictors` vector the variable you wish to omit and then execute that line of code again to inform R that the predictors have been updated. You can then re-execute the code below to produce a new correlation matrix with the revised subset of predictors.
 
 ```{r}
+
+# Load libraries
+library(corrplot)
+library(reshape2)
 
 M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.
 M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).
@@ -278,6 +282,9 @@ summary(abs(M2)) # Display descriptive stats for the absolute value of each biva
 Once multicollinearity has been addressed (no two predictors have an absolute correlation of .7 or higher), execute the code below to ensure the VIF for remaining predictors is below 5 (a sanity check, as it were).
 
 ```{r}
+
+# Load library
+library(car)
 
 # car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))
 
