@@ -143,6 +143,67 @@ ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
 
 ```  
   
+  
+
+```{r high-leverage, out.width = "100%", echo = FALSE, fig.cap = 'Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Simulate n observations
+n <- 20
+X <- runif(n, 0, 5)
+Y <- 1 + 3*X + rnorm(n, 0, 1)
+df.orig <- data.frame(X = X, Y = Y)
+
+# Model data
+model <- lm(Y ~ X)
+summary(model)
+
+# Visualize model fit to observations
+p1 <- ggplot2::ggplot(data = df.orig, aes(x = X, y = Y)) + 
+      ggplot2::geom_point() +
+      ggplot2::geom_function(fun = function(x) {model$coefficients[[2]]*x + model$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+# Model data with non-influential outliers
+x.out <- c(x, 8)
+y.out <- c(y, 25)
+df.out <- data.frame(X = x.out, Y = y.out)
+model.out <- lm(y.out ~ x.out)
+summary(model.out)
+
+# Visualize model fit to observations
+p2 <- ggplot2::ggplot(data = df.out, aes(x = X, y = Y)) + 
+      ggplot2::geom_point(col = ifelse(df.out$X == 8, "red", "black"), size = ifelse(df.out$X == 8, 2, 1)) +
+      ggplot2::geom_function(fun = function(x) {model$coefficients[[2]]*x + model$coefficients[[1]]}, colour = "black", linetype = "solid") +
+      ggplot2::geom_function(fun = function(x) {model.out$coefficients[[2]]*x + model.out$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+# Model data with influential (high leverage) observations
+x.lev <- c(x, 8)
+y.lev <- c(y, 5)
+df.lev <- data.frame(X = x.lev, Y = y.lev)
+model.lev <- lm(y.lev ~ x.lev)
+summary(model.lev)
+
+# Visualize model fit to observations
+p3 <- ggplot2::ggplot(data = df.lev, aes(x = X, y = Y)) + 
+      ggplot2::geom_point(col = ifelse(df.out$X == 8, "red", "black"), size = ifelse(df.out$X == 8, 2, 1)) +
+      ggplot2::geom_function(fun = function(x) {model$coefficients[[2]]*x + model$coefficients[[1]]}, colour = "black", linetype = "solid") +
+      ggplot2::geom_function(fun = function(x) {model.lev$coefficients[[2]]*x + model.lev$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
+
+# Display distribution visualizations
+ggpubr::ggarrange(p2, p3, ncol = 2, nrow = 1)
+
+```
+
+
+  
   In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`: 
 
 ```{r, message = FALSE, warning = FALSE}
@@ -174,7 +235,7 @@ plot(slm.fit, which = c(1:2,4))
 
 ```
 
-  Next, we will produce a histogram to visualize the distribution of model residuals (differences between estimated and observed YTD sales values) to evaluate the assumption of *normality*. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values.
+  Next, we will produce a histogram to visualize the distribution of model residuals ($\hat{y}$ - $y$) to evaluate the assumption of *normality*. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values.
 
 ```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
 
