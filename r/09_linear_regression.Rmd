@@ -33,10 +33,10 @@
   3. **Normality**: Residuals must be normally distributed (with mean of 0) across values of $X$
   4. **Linearity**: Relationship between $X$ and $Y$ is linear
   
-  In addition to these key assumptions, a couple of additional diagnostics are important to incorporate into the early data screening stage:
+  In addition to these key assumptions, additional diagnostics are important to incorporate into the early data screening stage:
   
   2. **High-Leverage Observations**: Influential data that significantly changes the model fit
-  1. **Multicollinearity**: Independent variables that are highly correlated (they should be *independent*)
+  1. **Multicollinearity**: Independent variables that are highly correlated (these should be *independent*)
 
 ## Simple Linear Regression
 
@@ -143,7 +143,30 @@ ggpubr::ggarrange(p1, p2, ncol = 2, nrow = 1)
 
 ```  
   
+  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`: 
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Subset employees data frame; sales are only applicable for those in sales positions
+data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representative'))
+
+# Regress YTD sales on engagement
+slm.fit <- lm(ytd_sales ~ engagement, data)
+
+```
+
+  In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the assumptions are *generally* satisfied.
   
+  Before performing model diagnostics, it is important to note the following:
+  
+  1. Multicollinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
+  2. Outliers are not always an issue, as we discussed in Chapter \@ref(data-wrang-prep). Figure \@ref(fig:high-leverage) illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 
 ```{r high-leverage, out.width = "100%", echo = FALSE, fig.cap = 'Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -168,10 +191,10 @@ p1 <- ggplot2::ggplot(data = df.orig, aes(x = X, y = Y)) +
       ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
 
 # Model data with non-influential outliers
-x.out <- c(x, 8)
-y.out <- c(y, 25)
-df.out <- data.frame(X = x.out, Y = y.out)
-model.out <- lm(y.out ~ x.out)
+X.out <- c(X, 8)
+Y.out <- c(Y, 25)
+df.out <- data.frame(X = X.out, Y = Y.out)
+model.out <- lm(Y.out ~ X.out)
 summary(model.out)
 
 # Visualize model fit to observations
@@ -183,10 +206,10 @@ p2 <- ggplot2::ggplot(data = df.out, aes(x = X, y = Y)) +
       ggplot2::theme(axis.title.y = element_text(face = "italic"), axis.title.x = element_text(face = "italic"))
 
 # Model data with influential (high leverage) observations
-x.lev <- c(x, 8)
-y.lev <- c(y, 5)
-df.lev <- data.frame(X = x.lev, Y = y.lev)
-model.lev <- lm(y.lev ~ x.lev)
+X.lev <- c(X, 8)
+Y.lev <- c(Y, 5)
+df.lev <- data.frame(X = X.lev, Y = Y.lev)
+model.lev <- lm(Y.lev ~ X.lev)
 summary(model.lev)
 
 # Visualize model fit to observations
@@ -201,42 +224,53 @@ p3 <- ggplot2::ggplot(data = df.lev, aes(x = X, y = Y)) +
 ggpubr::ggarrange(p2, p3, ncol = 2, nrow = 1)
 
 ```
-
-
+ 
+  We can conveniently perform linear model diagnostics using the `plot()` function in conjunction with the object holding linear model results (`slm.fit`). This produces the following standard plots shown in Figure \@ref(fig:slm-diagnostics):
   
-  In R, we can build (or *fit*) a simple linear regression model using the `lm()` function. The syntax is `lm(Y ~ X, dataset)`: 
+  * **Residuals vs Fitted**: Shows how residuals ($y$-axis) change across the range of fitted values ($x$-axis)
+  * **Normal Q-Q**: Compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other
+  * **Scale-Location**: Shows how *standardized* residuals ($y$-axis) change across the range of fitted values ($x$-axis)
+  * **Residuals vs Leverage**: Shows the leverage of each data point ($x$-axis) against their standardized residuals ($y$-axis)
 
-```{r, message = FALSE, warning = FALSE}
+```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Linear Regression Model Diagnostics', fig.align = 'center',}
 
-# Load library
-library(dplyr)
-
-# Load employee data
-employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
-
-# Subset employees data frame; sales are only applicable for those in sales positions
-data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representative'))
-
-# Regress YTD sales on engagement
-slm.fit <- lm(ytd_sales ~ engagement, data)
-
-```
-
-  In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the assumptions are *generally* satisfied.
-  
-  We can evaluate the 'Residuals vs Fitted' and 'Normal Q-Q' plots in Figure \@ref(fig:slm-diagnostics) to evaluate the linear assumptions of *homoscedasticity* and *linearity*.
-  
-  In addition, we can review the Cook's distance plot in Figure \@ref(fig:slm-diagnostics) to identify high leverage observations. That is, rows of data that contain different enough values that they may heavily influence the regression line. Cook's distance provides a measure of how much the values our model estimates for all observations changes if the suspect observation is removed from the data; higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage. Since we don't want a single observation to have material impact on our model, these observations need to be addressed if the Cook's $d$ value is considerably higher than that of other observations.
-
-```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
-
+# Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
-plot(slm.fit, which = c(1:2,4))
+plot(slm.fit)
 
 ```
 
-  Next, we will produce a histogram to visualize the distribution of model residuals ($\hat{y}$ - $y$) to evaluate the assumption of *normality*. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values.
+  The *Residuals vs Fitted* and *Scale-Location* plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between $X$ and $Y$, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
+  
+  Cook's distance in the *Residuals vs Leverage* plot provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
 
+  In addition to the visual inspection, we can perform the **Breusch-Pagan test** using the `bptest()` function from the `lmtest` library to test the null hypothesis that the data are homoscedastic. If $p$ < .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.
+
+```{r, message = FALSE}
+
+# Run the Breusch-Pagan test for evaluate homoscedasticity
+lmtest::bptest(slm.fit)
+
+```
+
+  Since $p$ < .05, there is evidence of heteroscedasticity in our data. A common approach to addressing this is transforming the response variable by taking the natural logarithm or square root of the raw data. Let's try addressing heteroscedasticity by log-transforming our response via the `log()` function:
+
+```{r, message = FALSE}
+
+# Log-transform YTD sales and refit model
+slm.fit <- lm(log(ytd_sales) ~ engagement, data)
+
+# Run the Breusch-Pagan test for evaluate homoscedasticity
+lmtest::bptest(slm.fit)
+
+```
+
+  The test statistic for the Breusch-Pagan test is no longer significant ($p$ > .05), indicating the the natural log of YTD sales corrected for the heteroscedasticity observed in the untransformed data. While this is good news, the transformation does result in a less intuitive interpretation of model output which we will cover shortly.
+
+  The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis, and we have some obvious deviations in the lower and upper ends of the theoretical quantile range.
+
+  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
+  
 ```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
 
 # Produce histogram to visualize distribution of model residuals
@@ -246,6 +280,15 @@ ggplot2::labs(x = "YTD Sales Residuals", y = "Density") +
 ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
 ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
 ggplot2::theme_bw()
+
+```
+
+  Based on both the Normal Q-Q Plot and histogram, there are clear departures from normality for these model residuals. We can confirm using the Shapiro-Wilk test:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(slm.fit$residuals)
 
 ```
 
@@ -296,16 +339,9 @@ ggplot2::theme_bw()
 
 $$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
 
-```{r}
-
-# Define a vector of predictors
-predictors <- c("engagement", "job_lvl")
-
-```
-
 **Multicollinearity Diagnostics**
 
-  **Multicollinearity** diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV. Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+  Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
 
   Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
 
@@ -324,19 +360,19 @@ predictors <- c("engagement", "job_lvl")
 library(corrplot)
 library(reshape2)
 
-M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.
-M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).
-M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.
-M1 <- M1[order(-abs(M1$value)),] # Sort order the data.
-colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.
-M1 # Display contents of the matrix.
+# M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.
+# M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).
+# M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.
+# M1 <- M1[order(-abs(M1$value)),] # Sort order the data.
+# colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.
+# M1 # Display contents of the matrix.
 
 ```
 
 ```{r}
 
-M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.
-summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.
+# M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.
+# summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.
 
 ```
 

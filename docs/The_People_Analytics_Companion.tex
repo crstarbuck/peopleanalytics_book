@@ -106,20 +106,29 @@
 \makeatother
 
 \usepackage{booktabs}
+\usepackage{xcolor}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
   \apptocmd{\@title}{\par {\large #1 \par}}{}{}
 }
 \makeatother
+\usepackage{fontspec}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{hhline}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{hyperref}
 \usepackage[]{natbib}
 \bibliographystyle{plainnat}
 
 \title{The People Analytics Companion}
 \providecommand{\subtitle}[1]{}
-\subtitle{An End-to-End Guide through the People Analytics Lifecycle}
+\subtitle{An Applied Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-04-16}
+\date{2022-05-01}
 
 \begin{document}
 \maketitle
@@ -278,6 +287,8 @@ The primary data set used in this book is \texttt{employees}, which contains inf
   \texttt{monthly\_comp}: Hourly rate * 2080 / 12
 \item
   \texttt{annual\_comp}: Hourly rate * 2080
+\item
+  \texttt{ytd\_sales}: Year-to-date (YTD) sales measured in USD for employees in Sales Executive and Sales Representative positions
 \item
   \texttt{standard\_hrs}: Expected working hours over a two-week payroll cycle
 \item
@@ -575,19 +586,20 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ## 
-##   There is a binary version available but the source version is later:
+##   There are binary versions available but the source versions are later:
 ##          binary source needs_compilation
 ## corrplot   0.89   0.92             FALSE
+## caret    6.0-91 6.0-92              TRUE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpnQedPd/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmph0oqNQ/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1708,7 +1720,7 @@ Let's demonstrate how to implement cluster sampling in R:
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 748  34
+## [1] 748  35
 \end{verbatim}
 
 \textbf{Systematic Sampling}
@@ -3787,7 +3799,7 @@ First, let's load the data sets:
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1470   33
+## [1] 1470   34
 \end{verbatim}
 
 Next, we will apply the \texttt{sqldf()} function to our data frame to extract specific rows and columns. In addition to the \texttt{SELECT}, \texttt{FROM}, and \texttt{WHERE} clauses, we will use the \texttt{LIMIT} clause to limit the number of rows that are displayed given the data frame's size (\(n = 1,470\)). In a practical setting, the \texttt{LIMIT} clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
@@ -5865,40 +5877,600 @@ Three-way factorials (and beyond) become difficult to visualize and understand i
 \hypertarget{lm}{%
 \chapter{Linear Regression}\label{lm}}
 
-It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions of future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but I've seen relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning.
+It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning.
 
-This chapter is dedicated to inferential models to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. The following chapter will provide an overview of predictive modeling frameworks.
+This chapter is dedicated to inferential modeling to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. Chapter \ref{pred-mod} will provide an overview of predictive modeling frameworks.
 
-Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Before diving into the math to understand the mechanics of regression, let's develop an intuitive understanding.
+Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Let's first develop an intuitive understanding of the mechanics of regression.
 
-Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, in the absence of any additional information how would you estimate this? Most would likely estimate the average annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large group of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to billions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information about who may walk by.
+Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the \emph{average} annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.
 
 Let's consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It's also unlikely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.
 
-Let's now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be very helpful in reducing the size of the population who could walk by, which should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year.
+Let's now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be quite helpful in reducing the size of the population who could walk by. This should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year. That an important variable may become unimportant in the presence of another variable is a key feature of regression.
 
-Furthermore, let's consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly within each -- likely making the average compensation amount in each group a more nuanced and reasonable estimate.
+Furthermore, let's consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly \emph{within each} -- likely making the average compensation in each group a more nuanced and reasonable estimate.
 
-What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured in the larger city label (NYC vs.~Boise), and the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.
+What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs.~Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.
 
-What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn annually and should, therefore, not be considered.
+What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn and should, therefore, not be considered.
 
-You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, location, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. Two people may be similar on hundreds of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
+You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
 
-While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (n \textless{} 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
+While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (\(n\) \textless{} 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
 
-This is the essence of regression modeling: find a limited number of variables which independently or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In the subsequent sections, we will cover how to identify which variables are important and how to quantify the effect they have on the outcome.
+This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.
+
+\textbf{Assumptions \& Diagnostics}
+
+From the outset, we must determine if a linear model is appropriate for the data at hand. Consistent with the assumptions of parametric tests covered in Chapter \ref{aod}, there are several assumptions that need to be validated to make this decision, and these largely relate to the residuals (\(\hat{y}\) - \(y\)):
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Independence}: Residuals are independent of each other; consecutive residuals in time series data are unrelated
+\item
+  \textbf{Homoscedasticity}: Variance of residuals is constant across values of \(X\)
+\item
+  \textbf{Normality}: Residuals must be normally distributed (with mean of 0) across values of \(X\)
+\item
+  \textbf{Linearity}: Relationship between \(X\) and \(Y\) is linear
+\end{enumerate}
+
+In addition to these key assumptions, additional diagnostics are important to incorporate into the early data screening stage:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  \textbf{High-Leverage Observations}: Influential data that significantly changes the model fit
+\item
+  \textbf{Multicollinearity}: Independent variables that are highly correlated (these should be \emph{independent})
+\end{enumerate}
 
 \hypertarget{simple-linear-regression}{%
 \section{Simple Linear Regression}\label{simple-linear-regression}}
 
-\hypertarget{parameter-estimation}{%
-\subsection{Parameter Estimation}\label{parameter-estimation}}
+\textbf{Simple linear regression} is a simple technique for estimating the value of a quantitative DV, denoted as \(Y\), on the basis of a single IV, denoted as \(X\). It is assumed that there is an approximately linear relationship between \(X\) and \(Y\). Often, this relationship is expressed as \emph{regressing} \(Y\) on \(X\) and is defined mathematically as:
 
-Ordinary Least Squares (OLS) is the most common method for estimating unknown parameters in a linear regression model.
+\[ Y = \beta_0 + \beta_1 X + \epsilon, \]
+
+where \(\beta_0\) is the expected value of \(Y\) when \(X = 0\) (the \emph{intercept}), and \(\beta_1\) represents the average change in \(Y\) for a one-unit increase in \(X\) (the \emph{slope}). \(\beta_0\) and \(\beta_1\) are unknown \emph{parameters} or \emph{coefficients}. The error term, \(\epsilon\), acknowledges that there is variation in \(Y\) not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between \(X\) and \(Y\), as additional variables not included in the model are likely influencing \(Y\).
+
+Once we estimate the unknown model coefficients, \(\beta_0\) and \(\beta_1\), we can estimate \(Y\) for a particular value of \(X\) by calculating:
+
+\[ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, \]
+
+where \(\hat{y}\) represents an estimate of \(Y\) for the \(i\)-ith value of \(X\) equal to \(x\). The \(\hat{}\) symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
+
+The earliest form of linear regression is the \emph{least squares} method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, \& Tibshirani, 2013). While there are several approaches to fitting a linear regression model, \textbf{ordinary least squares (OLS)} is the most common. OLS selects coefficients for \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimize the residual sum of squares (RSS) defined by:
+
+\[RSS = (y_1 - \hat{\beta}_0 - \hat{\beta}_1x_1)^2 + (y_2 - \hat{\beta}_0 - \hat{\beta}_1x_2)^2 + {...} + (y_n - \hat{\beta}_0 - \hat{\beta}_1x_n)^2\]
+
+For each value of \(X\), OLS fits a model for which the difference between the predicted value (\(\hat{\beta}_0 - \hat{\beta}_1x_i)^2\)) and actual value (\(y_i\)) is as small as possible. Figure \ref{fig:lm-residuals} illustrates the result of minimizing \(RSS\) using OLS:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/lm-residuals-1} 
+
+}
+
+\caption{Minimizing RSS with Ordinary Least Squares (OLS) Fit}\label{fig:lm-residuals}
+\end{figure}
+
+The minimizers for the least squares coefficient estimates are defined by:
+
+\[\hat\beta_1 = \frac{\displaystyle\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y})} {\displaystyle\sum_{i=1}^{n}(x_i - \bar{x})^2}\]
+
+\[\hat\beta_0 = \bar{y} - \hat{\beta}_1 \bar{x},\]
+
+where \(\bar{y}\) and \(\bar{x}\) are sample means.
+
+It is important to understand the role sample size plays in achieving accurate estimates of \(Y\). Figure \ref{fig:lm-fit-compare} illustrates the impact of fitting a model to too few observations. With \(n\) = 2, it would be easy to fit a perfect model to the data; that is, one representing a line that connects the two data points. However, it is highly unlikely that these data points represent the best model for a larger sample, as there would likely be some distribution of \(Y\) for each value of \(X\).
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/lm-fit-compare-1} 
+
+}
+
+\caption{Left: Least squares regression model fit to n = 2 observations. Right: Least squares regression model fit to n = 20 observations.}\label{fig:lm-fit-compare}
+\end{figure}
+
+In R, we can build (or \emph{fit}) a simple linear regression model using the \texttt{lm()} function. The syntax is \texttt{lm(Y\ \textasciitilde{}\ X,\ dataset)}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{# Load employee data}
+\NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
+
+\CommentTok{# Subset employees data frame; sales are only applicable for those in sales positions}
+\NormalTok{data <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(employees, job_title }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'Sales Executive'}\NormalTok{, }\StringTok{'Sales Representative'}\NormalTok{))}
+
+\CommentTok{# Regress YTD sales on engagement}
+\NormalTok{slm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(ytd_sales }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
+\end{Highlighting}
+\end{Shaded}
+
+In practice, linear assumptions are rarely -- if ever -- perfectly met, but there must be evidence that the assumptions are \emph{generally} satisfied.
+
+Before performing model diagnostics, it is important to note the following:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Multicollinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
+\item
+  Outliers are not always an issue, as we discussed in Chapter \ref{data-wrang-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
+\end{enumerate}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y ~ X)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.4332 -0.5482 -0.0275  0.2867  2.6413 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   0.4395     0.4084   1.076    0.296    
+## X             3.1303     0.1515  20.659  5.5e-14 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.8829 on 18 degrees of freedom
+## Multiple R-squared:  0.9595, Adjusted R-squared:  0.9573 
+## F-statistic: 426.8 on 1 and 18 DF,  p-value: 5.498e-14
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y.out ~ X.out)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -1.34746 -0.56288 -0.09021  0.29951  2.66197 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)    
+## (Intercept)   0.5224     0.3399   1.537    0.141    
+## X.out         3.0900     0.1077  28.703   <2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 0.863 on 19 degrees of freedom
+## Multiple R-squared:  0.9775, Adjusted R-squared:  0.9763 
+## F-statistic: 823.9 on 1 and 19 DF,  p-value: < 2.2e-16
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = Y.lev ~ X.lev)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -10.3085  -1.8776   0.8556   2.0309   4.8048 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(>|t|)   
+## (Intercept)   3.9645     1.3559   2.924  0.00871 **
+## X.lev         1.4180     0.4295   3.302  0.00375 **
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 3.443 on 19 degrees of freedom
+## Multiple R-squared:  0.3646, Adjusted R-squared:  0.3311 
+## F-statistic:  10.9 on 1 and 19 DF,  p-value: 0.00375
+\end{verbatim}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/high-leverage-1} 
+
+}
+
+\caption{Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers.}\label{fig:high-leverage}
+\end{figure}
+
+We can conveniently perform linear model diagnostics using the \texttt{plot()} function in conjunction with the object holding linear model results (\texttt{slm.fit}). This produces the following standard plots shown in Figure \ref{fig:slm-diagnostics}:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Residuals vs Fitted}: Shows how residuals (\(y\)-axis) change across the range of fitted values (\(x\)-axis)
+\item
+  \textbf{Normal Q-Q}: Compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other
+\item
+  \textbf{Scale-Location}: Shows how \emph{standardized} residuals (\(y\)-axis) change across the range of fitted values (\(x\)-axis)
+\item
+  \textbf{Residuals vs Leverage}: Shows the leverage of each data point (\(x\)-axis) against their standardized residuals (\(y\)-axis)
+\end{itemize}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/slm-diagnostics-1} 
+
+}
+
+\caption{Linear Regression Model Diagnostics}\label{fig:slm-diagnostics}
+\end{figure}
+
+The \emph{Residuals vs Fitted} and \emph{Scale-Location} plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between \(X\) and \(Y\), in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
+
+Cook's distance in the \emph{Residuals vs Leverage} plot provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
+
+In addition to the visual inspection, we can perform the \textbf{Breusch-Pagan test} using the \texttt{bptest()} function from the \texttt{lmtest} library to test the null hypothesis that the data are homoscedastic. If \(p\) \textless{} .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run the Breusch-Pagan test for evaluate homoscedasticity}
+\NormalTok{lmtest}\OperatorTok{::}\KeywordTok{bptest}\NormalTok{(slm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  slm.fit
+## BP = 22.64, df = 1, p-value = 1.953e-06
+\end{verbatim}
+
+Since \(p\) \textless{} .05, there is evidence of heteroscedasticity in our data. A common approach to addressing this is transforming the response variable by taking the natural logarithm or square root of the raw data. Let's try addressing heteroscedasticity by log-transforming our response via the \texttt{log()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Log-transform YTD sales and refit model}
+\NormalTok{slm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(ytd_sales) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
+
+\CommentTok{# Run the Breusch-Pagan test for evaluate homoscedasticity}
+\NormalTok{lmtest}\OperatorTok{::}\KeywordTok{bptest}\NormalTok{(slm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  slm.fit
+## BP = 0.15997, df = 1, p-value = 0.6892
+\end{verbatim}
+
+The test statistic for the Breusch-Pagan test is no longer significant (\(p\) \textgreater{} .05), indicating the the natural log of YTD sales corrected for the heteroscedasticity observed in the untransformed data. While this is good news, the transformation does result in a less intuitive interpretation of model output which we will cover shortly.
+
+The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis, and we have some obvious deviations in the lower and upper ends of the theoretical quantile range.
+
+We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce histogram to visualize distribution of model residuals}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(slm.fit}\OperatorTok{$}\NormalTok{resid) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"YTD Sales Residuals"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-168-1} 
+
+}
+
+\caption{Distribution of Model Residuals}\label{fig:unnamed-chunk-168}
+\end{figure}
+
+Based on both the Normal Q-Q Plot and histogram, there are clear departures from normality for these model residuals. We can confirm using the Shapiro-Wilk test:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Compute Shapiro-Wilk test of normality}
+\KeywordTok{shapiro.test}\NormalTok{(slm.fit}\OperatorTok{$}\NormalTok{residuals)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  slm.fit$residuals
+## W = 0.95731, p-value = 1.645e-09
+\end{verbatim}
+
+Let's use the \texttt{flextable} package to present our simple linear model results in an elegant tabular summary:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(flextable)}
+
+\CommentTok{# Produce tabular summary for model results using flextable}
+\NormalTok{flextable}\OperatorTok{::}\KeywordTok{as_flextable}\NormalTok{(slm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1.5}
+
+\begin{longtable}[c]{|p{1.13in}|p{0.88in}|p{1.29in}|p{0.75in}|p{0.75in}|p{0.75in}}
+
+
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedleft}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\textit{Signif.\ codes:\ 0\ <=\ '***'\ <\ 0.001\ <\ '**'\ <\ 0.01\ <\ '*'\ <\ 0.05\ <\ '.'\ <\ 0.1\ <\ ''\ <\ 1}}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ standard\ error:\ 0.7938\ on\ 407\ degrees\ of\ freedom}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Multiple\ R-squared:\ 0.1249,\ Adjusted\ R-squared:\ 0.1227}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{F-statistic:\ 58.08\ on\ 407\ and\ 1\ DF,\ p-value:\ 0.0000}}}} \\
+
+\endfoot
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{9.819}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.155}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{63.207}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.424}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.056}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{7.621}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+There are several important pieces of information in this output:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{Estimate}: \emph{Unstandardized} Beta coefficient associated with the respective predictor
+\item
+  \texttt{Standard\ Error}: Average distance between the observed and estimated values per the fitted regression line
+\item
+  \texttt{t\ value}: \texttt{Estimate} / \texttt{Standard\ Error}. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.
+\item
+  \texttt{Pr(\textgreater{}\textbar{}t\textbar{})}: \(p\)-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., \(x\) has a relationship with \(y\))
+\item
+  \texttt{Intercept}: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, height, weight, IQ).
+\item
+  \texttt{Signif.\ codes}: Symbols to quickly ascertain whether predictors are significant at key levels, such as \(p\) \textless{} .001 (\emph{\textbf{), \(p\) \textless{} .01 (}), or \(p\) \textless{} .05 (}).
+\item
+  \texttt{Residual\ standard\ error}: Measure of model fit which reflects the standard deviation of the residuals (\(\sqrt {\sum(y-\hat{y})^2 / df}\))
+\item
+  \texttt{Degrees\ of\ freedom}: \(n\) - \(p\), where \(n\) is the number of observations and \(p\) is the number of predictors
+\item
+  \texttt{Multiple\ R-squared}: Percent of variance in \(y\) (when multiplied by 100) explained by the predictors in the model. This is also known as the \textbf{Coefficient of Determination}. For simple linear regression, this is simply the squared value of Pearson's \(r\) for the bivariate relationship between the predictor and response (execute \texttt{cor(data\$engagement,\ data\$ytd\_sales)\^{}2} to validate).
+\item
+  \texttt{Adjusted\ R-squared}: Modified version of \(R^2\) that adjusts the estimate for non-significant predictors. A large delta between \(R^2\) and Adjusted \(R^2\) coefficients generally indicates a model containing a larger number of non-significant predictors relative to when \(R^2\) and Adjusted \(R^2\) values are similar.
+\item
+  \texttt{F-statistic}: Statistic used in conjunction with the \texttt{p-value} for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in \(y\).
+\end{itemize}
+
+The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,002.67 USD (\(\beta\) = 28,002.67, \(t\)(407) = 7.58, \(p\) \textless{} .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+
+The \(R^2\) value indicates that 12.4\% of the variance in sales can be explained by the variation in engagement levels. Put differently, this simple model does not account for 87.6\% of variation in sales. Since a large portion of the variance in sales is unexplained, we need signal from additional predictors to understand the other dimensions along which sales vary.
+
+Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 28,002.67\(x\) + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at these levels. However, for those with higher engagement levels, there is greater spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that need to be accounted for in the regression equation to achieve more accurate estimates.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/slm-fit-1} 
+
+}
+
+\caption{Simple Linear Model Fit Line for y = 28,002.67x + 2,431.67}\label{fig:slm-fit}
+\end{figure}
 
 \hypertarget{multiple-linear-regression}{%
 \section{Multiple Linear Regression}\label{multiple-linear-regression}}
+
+\[ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]
+
+\textbf{Multicollinearity Diagnostics}
+
+Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+
+Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Execute lines 104-109 below. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B. The code below makes this easy as it orders pairs of predictors based on their absolute correlation (from highest to lowest), so you only need to look at the first row in the output.
+\item
+  Execute lines 113-114 below to build a correlation matrix for the predictors. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B. The combination of the summary() and abs() functions on line 114 enables an easy evaluation of which predictor is more highly correlated with other predictors (simply compare the \texttt{mean} for the predictors of interest).
+\item
+  If predictor A has a larger average absolute correlation, remove it from the \texttt{predictors} vector; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives for this assignment (be sure to reread the overall purpose for this assignment if this is unclear).
+\item
+  Repeat steps 1-3 until no absolute correlations are \textgreater{}= .7.
+\end{enumerate}
+
+All variables for this assignment are numeric (no categorical variables), which means we can simply evaluate correlations among all without any dummy coding. The code below will create a correlation matrix using the predictors specified in the \texttt{predictors} vector initialized at the beginning of this script.
+
+As you iteratively address multicollinearity issues using the aforementioned approach, simply remove from the \texttt{predictors} vector the variable you wish to omit and then execute that line of code again to inform R that the predictors have been updated. You can then re-execute the code below to produce a new correlation matrix with the revised subset of predictors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load libraries}
+\KeywordTok{library}\NormalTok{(corrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## corrplot 0.92 loaded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(reshape2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'reshape2' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'reshape2'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:tidyr':
+## 
+##     smiths
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.}
+\CommentTok{# M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).}
+\CommentTok{# M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.}
+\CommentTok{# M1 <- M1[order(-abs(M1$value)),] # Sort order the data.}
+\CommentTok{# colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.}
+\CommentTok{# M1 # Display contents of the matrix.}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.}
+\CommentTok{# summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.}
+\end{Highlighting}
+\end{Shaded}
+
+Once multicollinearity has been addressed (no two predictors have an absolute correlation of .7 or higher), execute the code below to ensure the VIF for remaining predictors is below 5 (a sanity check, as it were).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(car)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: package 'car' was built under R version 4.0.2
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: carData
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: package 'carData' was built under R version 4.0.5
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'car'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:purrr':
+## 
+##     some
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     recode
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{fit-linear-model-with-subset-of-important-variables}{%
+\section{Fit Linear Model (with Subset of Important Variables)}\label{fit-linear-model-with-subset-of-important-variables}}
+
+The following lines of code will fit a linear regression model using the subset of predictors for which no collinearity problems are present (the result of your work from the prior section).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)}
+\CommentTok{# summary(lm.fit.sub)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we need to reduce our model to the subset of predictors with statistically significant relationships with SALES. Backward Stepwise Selection is the simplest of all variable selection procedures, and the approach we will use for this assignment. The steps for this procedure are outlined below:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Remove the predictor with the highest p-value greater than the critical value (.05).
+\item
+  Refit the model (i.e., modify the `predictors' vector to exclude the irrelevant variable, and then re-execute lines 122-123 to refit the linear model and display output), and repeat step 1.
+\item
+  Stop when all p-values are less than the critical value.
+\end{enumerate}
+
+When you have reduced the model to a subset of predictors that all have statistically significant associations with SALES and no evidence of problematic collinearity, proceed to the final step below.
+
+We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# mlm.fit.sub.scaled <- lm(paste0("scale(ytd_sales) ~ scale(", paste(predictors, collapse = ")+scale("),")"), data)}
+\CommentTok{# summary(mlm.fit.sub.scaled)}
+\end{Highlighting}
+\end{Shaded}
 
 \hypertarget{moderation}{%
 \subsection{Moderation}\label{moderation}}
