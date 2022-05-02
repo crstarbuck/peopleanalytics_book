@@ -128,7 +128,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{An Applied Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-05-01}
+\date{2022-05-02}
 
 \begin{document}
 \maketitle
@@ -287,6 +287,8 @@ The primary data set used in this book is \texttt{employees}, which contains inf
   \texttt{monthly\_comp}: Hourly rate * 2080 / 12
 \item
   \texttt{annual\_comp}: Hourly rate * 2080
+\item
+  \texttt{ytd\_leads}: Year-to-date (YTD) number of leads generated for employees in Sales Executive and Sales Representative positions
 \item
   \texttt{ytd\_sales}: Year-to-date (YTD) sales measured in USD for employees in Sales Executive and Sales Representative positions
 \item
@@ -597,9 +599,11 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## corrplot   0.89   0.92             FALSE
 ## caret    6.0-91 6.0-92              TRUE
 ## 
+## Error in download.file(url, destfile, method, mode = "wb", ...) : 
+##   cannot open URL 'http://cran.us.r-project.org/bin/macosx/contrib/4.0/car_3.0-12.tgz'
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmph0oqNQ/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpxYrUmu/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1720,7 +1724,7 @@ Let's demonstrate how to implement cluster sampling in R:
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 748  35
+## [1] 748  36
 \end{verbatim}
 
 \textbf{Systematic Sampling}
@@ -3799,7 +3803,7 @@ First, let's load the data sets:
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1470   34
+## [1] 1470   35
 \end{verbatim}
 
 Next, we will apply the \texttt{sqldf()} function to our data frame to extract specific rows and columns. In addition to the \texttt{SELECT}, \texttt{FROM}, and \texttt{WHERE} clauses, we will use the \texttt{LIMIT} clause to limit the number of rows that are displayed given the data frame's size (\(n = 1,470\)). In a practical setting, the \texttt{LIMIT} clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
@@ -5989,11 +5993,11 @@ In R, we can build (or \emph{fit}) a simple linear regression model using the \t
 \CommentTok{# Load employee data}
 \NormalTok{employees <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv"}\NormalTok{)}
 
-\CommentTok{# Subset employees data frame; sales are only applicable for those in sales positions}
+\CommentTok{# Subset employees data frame; leads are only applicable for those in sales positions}
 \NormalTok{data <-}\StringTok{ }\KeywordTok{subset}\NormalTok{(employees, job_title }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{'Sales Executive'}\NormalTok{, }\StringTok{'Sales Representative'}\NormalTok{))}
 
-\CommentTok{# Regress YTD sales on engagement}
-\NormalTok{slm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(ytd_sales }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
+\CommentTok{# Regress YTD leads on engagement}
+\NormalTok{slm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(ytd_leads }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -6123,41 +6127,30 @@ In addition to the visual inspection, we can perform the \textbf{Breusch-Pagan t
 ##  studentized Breusch-Pagan test
 ## 
 ## data:  slm.fit
-## BP = 22.64, df = 1, p-value = 1.953e-06
+## BP = 0.07603, df = 1, p-value = 0.7828
 \end{verbatim}
 
-Since \(p\) \textless{} .05, there is evidence of heteroscedasticity in our data. A common approach to addressing this is transforming the response variable by taking the natural logarithm or square root of the raw data. Let's try addressing heteroscedasticity by log-transforming our response via the \texttt{log()} function:
+Since \(p\) \textgreater{} .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (\texttt{log()}) or square root (\texttt{sqrt()}) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
+
+Let's illustrate how to transform the response variable with the square root function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Log-transform YTD sales and refit model}
-\NormalTok{slm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(ytd_sales) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
-
-\CommentTok{# Run the Breusch-Pagan test for evaluate homoscedasticity}
-\NormalTok{lmtest}\OperatorTok{::}\KeywordTok{bptest}\NormalTok{(slm.fit)}
+\CommentTok{# Transform YTD leads and refit model}
+\NormalTok{slm.fit.trans <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(ytd_leads) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{verbatim}
-## 
-##  studentized Breusch-Pagan test
-## 
-## data:  slm.fit
-## BP = 0.15997, df = 1, p-value = 0.6892
-\end{verbatim}
+The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only minor departures in the upper and lower ends of the quantile range.
 
-The test statistic for the Breusch-Pagan test is no longer significant (\(p\) \textgreater{} .05), indicating the the natural log of YTD sales corrected for the heteroscedasticity observed in the untransformed data. While this is good news, the transformation does result in a less intuitive interpretation of model output which we will cover shortly.
-
-The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis, and we have some obvious deviations in the lower and upper ends of the theoretical quantile range.
-
-We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
+We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads, in which case there is no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{# Produce histogram to visualize distribution of model residuals}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(slm.fit}\OperatorTok{$}\NormalTok{resid) }\OperatorTok{+}\StringTok{ }
-\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"YTD Sales Residuals"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(slm.fit}\OperatorTok{$}\NormalTok{residuals) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"YTD Leads Residuals"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
 \NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
@@ -6173,7 +6166,7 @@ We can also visualize the distribution of model residuals using a histogram. In 
 \caption{Distribution of Model Residuals}\label{fig:unnamed-chunk-168}
 \end{figure}
 
-Based on both the Normal Q-Q Plot and histogram, there are clear departures from normality for these model residuals. We can confirm using the Shapiro-Wilk test:
+Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6187,7 +6180,7 @@ Based on both the Normal Q-Q Plot and histogram, there are clear departures from
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  slm.fit$residuals
-## W = 0.95731, p-value = 1.645e-09
+## W = 0.99339, p-value = 0.07029
 \end{verbatim}
 
 Let's use the \texttt{flextable} package to present our simple linear model results in an elegant tabular summary:
@@ -6239,31 +6232,31 @@ Let's use the \texttt{flextable} package to present our simple linear model resu
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ standard\ error:\ 0.7938\ on\ 407\ degrees\ of\ freedom}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ standard\ error:\ 5.095\ on\ 407\ degrees\ of\ freedom}}}} \\
 
 
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Multiple\ R-squared:\ 0.1249,\ Adjusted\ R-squared:\ 0.1227}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Multiple\ R-squared:\ 0.8858,\ Adjusted\ R-squared:\ 0.8855}}}} \\
 
 
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{F-statistic:\ 58.08\ on\ 407\ and\ 1\ DF,\ p-value:\ 0.0000}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.56in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{F-statistic:\ 3158\ on\ 407\ and\ 1\ DF,\ p-value:\ 0.0000}}}} \\
 
 \endfoot
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{9.819}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.155}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{63.207}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{1.630}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.997}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{1.635}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.1028}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.424}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.056}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{7.621}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.13in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{20.065}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.357}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{56.193}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 \hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
 
@@ -6276,7 +6269,7 @@ There are several important pieces of information in this output:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{Estimate}: \emph{Unstandardized} Beta coefficient associated with the respective predictor
+  \texttt{Estimate}: \emph{Unstandardized} Beta coefficient associated with the predictor
 \item
   \texttt{Standard\ Error}: Average distance between the observed and estimated values per the fitted regression line
 \item
@@ -6292,18 +6285,18 @@ There are several important pieces of information in this output:
 \item
   \texttt{Degrees\ of\ freedom}: \(n\) - \(p\), where \(n\) is the number of observations and \(p\) is the number of predictors
 \item
-  \texttt{Multiple\ R-squared}: Percent of variance in \(y\) (when multiplied by 100) explained by the predictors in the model. This is also known as the \textbf{Coefficient of Determination}. For simple linear regression, this is simply the squared value of Pearson's \(r\) for the bivariate relationship between the predictor and response (execute \texttt{cor(data\$engagement,\ data\$ytd\_sales)\^{}2} to validate).
+  \texttt{Multiple\ R-squared}: Percent of variance in \(y\) (when multiplied by 100) explained by the predictors in the model. This is also known as the \textbf{Coefficient of Determination}. For simple linear regression, this is simply the squared value of Pearson's \(r\) for the bivariate relationship between the predictor and response (execute \texttt{cor(data\$engagement,\ data\$ytd\_leads)\^{}2} to validate).
 \item
   \texttt{Adjusted\ R-squared}: Modified version of \(R^2\) that adjusts the estimate for non-significant predictors. A large delta between \(R^2\) and Adjusted \(R^2\) coefficients generally indicates a model containing a larger number of non-significant predictors relative to when \(R^2\) and Adjusted \(R^2\) values are similar.
 \item
   \texttt{F-statistic}: Statistic used in conjunction with the \texttt{p-value} for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in \(y\).
 \end{itemize}
 
-The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,002.67 USD (\(\beta\) = 28,002.67, \(t\)(407) = 7.58, \(p\) \textless{} .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). While it may be tempting to conclude that employee engagement has a significant influence on leads, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
 
-The \(R^2\) value indicates that 12.4\% of the variance in sales can be explained by the variation in engagement levels. Put differently, this simple model does not account for 87.6\% of variation in sales. Since a large portion of the variance in sales is unexplained, we need signal from additional predictors to understand the other dimensions along which sales vary.
+The \(R^2\) value indicates that 8.9\% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1\% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
 
-Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 28,002.67\(x\) + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at these levels. However, for those with higher engagement levels, there is greater spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that need to be accounted for in the regression equation to achieve more accurate estimates.
+Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 20.1\(x\) + 5.1) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for each combination of the predictor values is directly related to an increase in \(R^2\) (explained variance in YTD leads).
 
 \begin{figure}
 
@@ -6311,7 +6304,7 @@ Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple
 
 }
 
-\caption{Simple Linear Model Fit Line for y = 28,002.67x + 2,431.67}\label{fig:slm-fit}
+\caption{Simple Linear Model Fit Line for y = 20.1x + 5.1}\label{fig:slm-fit}
 \end{figure}
 
 \hypertarget{multiple-linear-regression}{%
