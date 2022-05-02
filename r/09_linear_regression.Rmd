@@ -153,11 +153,11 @@ library(dplyr)
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
-# Subset employees data frame; sales are only applicable for those in sales positions
+# Subset employees data frame; leads are only applicable for those in sales positions
 data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representative'))
 
-# Regress YTD sales on engagement
-slm.fit <- lm(ytd_sales ~ engagement, data)
+# Regress YTD leads on engagement
+slm.fit <- lm(ytd_leads ~ engagement, data)
 
 ```
 
@@ -253,37 +253,34 @@ lmtest::bptest(slm.fit)
 
 ```
 
-  Since $p$ < .05, there is evidence of heteroscedasticity in our data. A common approach to addressing this is transforming the response variable by taking the natural logarithm or square root of the raw data. Let's try addressing heteroscedasticity by log-transforming our response via the `log()` function:
+  Since $p$ > .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (`log()`) or square root (`sqrt()`) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
+  
+  Let's illustrate how to transform the response variable with the square root function:
 
 ```{r, message = FALSE}
 
-# Log-transform YTD sales and refit model
-slm.fit <- lm(log(ytd_sales) ~ engagement, data)
-
-# Run the Breusch-Pagan test for evaluate homoscedasticity
-lmtest::bptest(slm.fit)
+# Transform YTD leads and refit model
+slm.fit.trans <- lm(sqrt(ytd_leads) ~ engagement, data)
 
 ```
 
-  The test statistic for the Breusch-Pagan test is no longer significant ($p$ > .05), indicating the the natural log of YTD sales corrected for the heteroscedasticity observed in the untransformed data. While this is good news, the transformation does result in a less intuitive interpretation of model output which we will cover shortly.
+  The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only minor departures in the upper and lower ends of the quantile range.
 
-  The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis, and we have some obvious deviations in the lower and upper ends of the theoretical quantile range.
-
-  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD sales, in which case there is no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
+  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads, in which case there is no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
   
 ```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
 
 # Produce histogram to visualize distribution of model residuals
 ggplot2::ggplot() + 
-ggplot2::aes(slm.fit$resid) + 
-ggplot2::labs(x = "YTD Sales Residuals", y = "Density") + 
+ggplot2::aes(slm.fit$residuals) + 
+ggplot2::labs(x = "YTD Leads Residuals", y = "Density") + 
 ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
 ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
 ggplot2::theme_bw()
 
 ```
 
-  Based on both the Normal Q-Q Plot and histogram, there are clear departures from normality for these model residuals. We can confirm using the Shapiro-Wilk test:
+  Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -305,7 +302,7 @@ flextable::as_flextable(slm.fit)
 
   There are several important pieces of information in this output:
   
-  * `Estimate`: *Unstandardized* Beta coefficient associated with the respective predictor
+  * `Estimate`: *Unstandardized* Beta coefficient associated with the predictor
   * `Standard Error`: Average distance between the observed and estimated values per the fitted regression line
   * `t value`: `Estimate` / `Standard Error`. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.
   * `Pr(>|t|)`: $p$-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., $x$ has a relationship with $y$)
@@ -313,23 +310,23 @@ flextable::as_flextable(slm.fit)
   * `Signif. codes`: Symbols to quickly ascertain whether predictors are significant at key levels, such as $p$ < .001 (***), $p$ < .01 (**), or $p$ < .05 (*).
   * `Residual standard error`: Measure of model fit which reflects the standard deviation of the residuals ($\sqrt {\sum(y-\hat{y})^2 / df}$)
   * `Degrees of freedom`: $n$ - $p$, where $n$ is the number of observations and $p$ is the number of predictors
-  * `Multiple R-squared`: Percent of variance in $y$ (when multiplied by 100) explained by the predictors in the model. This is also known as the **Coefficient of Determination**. For simple linear regression, this is simply the squared value of Pearson's $r$ for the bivariate relationship between the predictor and response (execute `cor(data$engagement, data$ytd_sales)^2` to validate).
+  * `Multiple R-squared`: Percent of variance in $y$ (when multiplied by 100) explained by the predictors in the model. This is also known as the **Coefficient of Determination**. For simple linear regression, this is simply the squared value of Pearson's $r$ for the bivariate relationship between the predictor and response (execute `cor(data$engagement, data$ytd_leads)^2` to validate).
   * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
-  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD sales is 28,002.67 USD ($\beta$ = 28,002.67, $t$(407) = 7.58, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on sales, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing sales. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on leads, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
   
-  The $R^2$ value indicates that 12.4% of the variance in sales can be explained by the variation in engagement levels. Put differently, this simple model does not account for 87.6% of variation in sales. Since a large portion of the variance in sales is unexplained, we need signal from additional predictors to understand the other dimensions along which sales vary.
+  The $R^2$ value indicates that 8.9% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
   
-  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 28,002.67$x$ + 2,431.67) fits the data points for sales employees. Since there is less variability in sales for employees with low engagement, this equation will result in estimates that are not far off in either direction by estimating the simple average of sales at these levels. However, for those with higher engagement levels, there is greater spread in sales and estimating the average at these levels may result in estimates for some that are highly inaccurate in either direction. This spread indicates that there are other factors that explain variance in sales for highly engaged people that need to be accounted for in the regression equation to achieve more accurate estimates.
+  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 5.1) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for each combination of the predictor values is directly related to an increase in $R^2$ (explained variance in YTD leads).
   
-```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 28,002.67x + 2,431.67', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 20.1x + 5.1', fig.align = 'center', message = FALSE, warning = FALSE}
 
-ggplot2::ggplot(data = data, aes(x = engagement, y = ytd_sales)) + 
-ggplot2::labs(x = "Engagement", y = "YTD Sales") +
+ggplot2::ggplot(data = data, aes(x = engagement, y = ytd_leads)) + 
+ggplot2::labs(x = "Engagement", y = "YTD Leads") +
 ggplot2::geom_point(color = "black") +
 ggplot2::geom_function(fun = function(x) {slm.fit$coefficients[[2]]*x + slm.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
-ggplot2::annotate("text", x = 1.4, y = 120000, label = "y = 28,002.67x + 2,431.67", colour = "red") +
+ggplot2::annotate("text", x = 1.4, y = 40, label = "y = 20.1x + 5.1", colour = "red") +
 ggplot2::theme_bw()
 
 ```
