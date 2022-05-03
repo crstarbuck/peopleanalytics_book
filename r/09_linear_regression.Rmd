@@ -232,7 +232,7 @@ ggpubr::ggarrange(p2, p3, ncol = 2, nrow = 1)
   * **Scale-Location**: Shows how *standardized* residuals ($y$-axis) change across the range of fitted values ($x$-axis)
   * **Residuals vs Leverage**: Shows the leverage of each data point ($x$-axis) against their standardized residuals ($y$-axis)
 
-```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Linear Regression Model Diagnostics', fig.align = 'center',}
+```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -255,18 +255,21 @@ lmtest::bptest(slm.fit)
 
   Since $p$ > .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (`log()`) or square root (`sqrt()`) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
   
-  Let's illustrate how to transform the response variable with the square root function:
+  Let's illustrate how to transform the response variable:
 
 ```{r, message = FALSE}
 
-# Transform YTD leads and refit model
+# Square root transformation of YTD leads
 slm.fit.trans <- lm(sqrt(ytd_leads) ~ engagement, data)
+
+# Natural logarithmic transformation of YTD leads
+slm.fit.trans <- lm(log(ytd_leads) ~ engagement, data)
 
 ```
 
-  The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only minor departures in the upper and lower ends of the quantile range.
+  The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.
 
-  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads, in which case there is no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
+  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
   
 ```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
 
@@ -280,7 +283,7 @@ ggplot2::theme_bw()
 
 ```
 
-  Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test:
+  Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic is sufficient evidence of normality:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -314,11 +317,13 @@ flextable::as_flextable(slm.fit)
   * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
-  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). While it may be tempting to conclude that employee engagement has a significant influence on leads, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., $\beta$ is the square root or natural log of the average change in leads for a one-level increase in engagement).
+  
+  While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
   
   The $R^2$ value indicates that 8.9% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
   
-  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for each combination of the predictor values is directly related to an increase in $R^2$ (explained variance in YTD leads).
+  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases $R^2$ (explained variance in YTD leads).
   
 ```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 20.1x + 1.6', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -333,23 +338,35 @@ ggplot2::theme_bw()
 
 ## Multiple Linear Regression
 
+  **Multiple linear regression** extends the simple linear model to one with two or more predictor variables. A multiple regression model generally explains more variance in the response relative to the simple linear model, and is defined by:
 
 $$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
 
-**Multicollinearity Diagnostics**
+  Once we estimate the unknown model coefficients, $\beta_0$ through $\beta_p$, we can estimate $Y$ for a particular combination of values for $X_1$ through $X_p$ by calculating:
 
-  Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+$$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...} + \hat{\beta_p} x_{ip} $$
 
-  Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
+  Let's demonstrate the mechanics of multiple linear regression by estimating YTD sales using multiple predictor variables. We can include additional predictors in the model using the `+` symbol in the `lm()` function:
+  
+```{r, message = FALSE, warning = FALSE}
 
-  1. Execute lines 104-109 below. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B. The code below makes this easy as it orders pairs of predictors based on their absolute correlation (from highest to lowest), so you only need to look at the first row in the output.
-  2. Execute lines 113-114 below to build a correlation matrix for the predictors. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B. The combination of the summary() and abs() functions on line 114 enables an easy evaluation of which predictor is more highly correlated with other predictors (simply compare the `mean` for the predictors of interest).
-  3. If predictor A has a larger average absolute correlation, remove it from the `predictors` vector; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives for this assignment (be sure to reread the overall purpose for this assignment if this is unclear).
-  4. Repeat steps 1-3 until no absolute correlations are >= .7.
+# Regress YTD sales on a combination of predictors
+mlm.fit <- lm(ytd_sales ~ engagement + job_lvl + work_exp + org_tenure + job_tenure + last_promo, data)
 
-  All variables for this assignment are numeric (no categorical variables), which means we can simply evaluate correlations among all without any dummy coding. The code below will create a correlation matrix using the predictors specified in the `predictors` vector initialized at the beginning of this script.
+```
 
-  As you iteratively address multicollinearity issues using the aforementioned approach, simply remove from the `predictors` vector the variable you wish to omit and then execute that line of code again to inform R that the predictors have been updated. You can then re-execute the code below to produce a new correlation matrix with the revised subset of predictors.
+**Collinearity Diagnostics**
+
+  In addition to the assumptions we tested in the context of the simple linear model, multiple linear regression warrants collinearity diagnostics. **Collinearity** refers to situations in which predictors that are related to the response variable also have strong associations with one another. In practice, there is usually some level of collinearity between variables, so the goal of collinearity diagnostics is to identify and address *problematic* levels of collinearity.
+
+  Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they are redundant and do not provide unique information. A large amount of collinearity can cause serious issues with the underlying calculus of a regression model, which can manifest in the form of effects of significant predictors being masked or suppressed or a negative sign/effect showing in the output when a positive association between the predictor and the response actually exists (or vice versa). As a result, it would be premature to fit a linear model before running collinearity diagnostics, as there may be false negatives -- predictors that appear unimportant but are actually statistical drivers of the response. If problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+
+  Kuhn and Johnson (2013) recommend the simple procedure outlined below to identify and address problematic collinearity:
+
+  1. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B.
+  2. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B.
+  3. If predictor A has a larger average absolute correlation, remove it; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives or hypotheses.
+  4. Repeat steps 1-3 until $|r|$ < .7.
 
 ```{r}
 
@@ -357,53 +374,135 @@ $$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
 library(corrplot)
 library(reshape2)
 
-# M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.
-# M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).
-# M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.
-# M1 <- M1[order(-abs(M1$value)),] # Sort order the data.
-# colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.
-# M1 # Display contents of the matrix.
+M1 <- round(cor(subset(data, select = c(engagement, job_lvl, work_exp, org_tenure, job_tenure, last_promo))), 2) # Build a correlation matrix named M1.
+M1[M1 == 1] <- NA # Drop perfect correlations (relationships of variables with themselves)
+M1 <- na.omit(reshape2::melt(M1)) # Convert columns into rows for ease of use
+M1 <- M1[order(-abs(M1$value)), ] # Sort order the data
+M1 # Display contents of the matrix
 
 ```
+
+  There is a strong relationship between `job_tenure` and `org_tenure`, indicating that job changes for those in sales roles have been infrequent. Let's drop `job_tenure` and reevaluate the correlation coefficients:
 
 ```{r}
 
-# M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.
-# summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.
+M1 <- round(cor(subset(data, select = c(engagement, job_lvl, work_exp, org_tenure, last_promo))), 2) # Build a correlation matrix named M1.
+M1[M1 == 1] <- NA # Drop perfect correlations (relationships of variables with themselves)
+M1 <- na.omit(reshape2::melt(M1)) # Convert columns into rows for ease of use
+M1 <- M1[order(-abs(M1$value)), ] # Sort order the data
+M1 # Display contents of the matrix
+
+```
+  
+  Since $|r|$ < .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Regress YTD sales on a combination of predictors
+mlm.fit <- lm(ytd_sales ~ engagement + job_lvl + work_exp + org_tenure + last_promo, data)
 
 ```
 
-Once multicollinearity has been addressed (no two predictors have an absolute correlation of .7 or higher), execute the code below to ensure the VIF for remaining predictors is below 5 (a sanity check, as it were).
+  While Kuhn and Johnson's procedure is a good first step, this may not eliminate what is known as **multicollinearity**, which is collinearity among three or more predictors. It is possible for collinearity to exist between three or more variables, even in the absence of a strong correlation for a pair of variables. We can evaluate the **Variance Inflation Factor (VIF)** for the predictors that remain following the bivariate correlation review to ensure multicollinearity is not present. $VIF$ is defined by:
+  
+  $$ VIF(\hat{\beta_j}) = \frac{1}{1 - R^2_{X_j|X_{-j}}}, $$
+  
+  where the denominator, $R^2_{X_j|X_{-j}}$, is the $R^2$ from regressing $X_j$ onto all other predictors. The smallest value of $VIF$ is 1, which indicates a complete absence of collinearity. Problematic collinearity exists if $VIF$ for any variable exceeds 5.
+  
+  We can produce $VIF$ for each variable using the `vif()` function from the `car` library:
 
 ```{r}
 
 # Load library
 library(car)
 
-# car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))
+# Produce VIF for each predictor
+car::vif(mlm.fit)
 
 ```
+
+  Based on the output, $VIF$ < 5 for each predictor, which indicates that multicollinearity is not an issue.
+  
+  Next, let's evaluate the linear model assumptions to validate that fitting a linear model to these data is appropriate:
+  
+```{r mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple Linear Regression Model Diagnostics', fig.align = 'center',}
+
+# Produce 2x2 visuals for model diagnostics
+par(mfrow = c(2,2))
+plot(mlm.fit)
+
+```
+
+  Based on these visuals, there are clear violations of linear model assumptions that need to be addressed.
+  
+  One initial observation is that there are data points with high leverage on the fit. Let's address using Cook's distance as the criterion:
+
+```{r, message = FALSE}
+
+# Remove high leverage observations per Cook's distance
+w <- abs(rstudent(mlm.fit)) < 3 & abs(cooks.distance(mlm.fit)) < 4/nrow(mlm.fit$model)
+mlm.fit <- update(mlm.fit, weights = as.numeric(w))
+
+```
+
+
+
+
+
+  
+```{r, message = FALSE}
+
+# Run the Breusch-Pagan test for evaluate homoscedasticity
+lmtest::bptest(mlm.fit)
+
+```
+
+```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
+
+# Produce histogram to visualize distribution of model residuals
+ggplot2::ggplot() + 
+ggplot2::aes(mlm.fit$residuals) + 
+ggplot2::labs(x = "YTD Leads Residuals", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(mlm.fit$residuals)
+
+```
+
+
+
+
+
+
+
+```{r, message = FALSE, warning = FALSE}
+
+library(flextable)
+
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(mlm.fit)
+
+```
+
 
 ## Fit Linear Model (with Subset of Important Variables)
 
-The following lines of code will fit a linear regression model using the subset of predictors for which no collinearity problems are present (the result of your work from the prior section).
-
-```{r}
-
-# mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)
-# summary(lm.fit.sub)
-
-```
-
-Next, we need to reduce our model to the subset of predictors with statistically significant relationships with SALES. Backward Stepwise Selection is the simplest of all variable selection procedures, and the approach we will use for this assignment. The steps for this procedure are outlined below:
+  Next, we need to reduce our model to the subset of predictors with statistically significant relationships with SALES. Backward Stepwise Selection is the simplest of all variable selection procedures, and the approach we will use for this assignment. The steps for this procedure are outlined below:
 
   1. Remove the predictor with the highest p-value greater than the critical value (.05).
   2. Refit the model (i.e., modify the 'predictors' vector to exclude the irrelevant variable, and then re-execute lines 122-123 to refit the linear model and display output), and repeat step 1.
   3. Stop when all p-values are less than the critical value.
 
-When you have reduced the model to a subset of predictors that all have statistically significant associations with SALES and no evidence of problematic collinearity, proceed to the final step below.
+  When you have reduced the model to a subset of predictors that all have statistically significant associations with SALES and no evidence of problematic collinearity, proceed to the final step below.
 
-We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
+  We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
 
 ```{r}
 
