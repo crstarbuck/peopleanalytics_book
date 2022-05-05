@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Linear Regression {#lm}
 
   It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning. 
@@ -36,7 +41,7 @@
   In addition to these key assumptions, additional diagnostics are important to incorporate into the early data screening stage:
   
   2. **High-Leverage Observations**: Influential data that significantly changes the model fit
-  1. **Multicollinearity**: Independent variables that are highly correlated (these should be *independent*)
+  1. **Collinearity**: Independent variables that are highly correlated (these should be *independent*)
 
 ## Simple Linear Regression
 
@@ -232,7 +237,7 @@ ggpubr::ggarrange(p2, p3, ncol = 2, nrow = 1)
   * **Scale-Location**: Shows how *standardized* residuals ($y$-axis) change across the range of fitted values ($x$-axis)
   * **Residuals vs Leverage**: Shows the leverage of each data point ($x$-axis) against their standardized residuals ($y$-axis)
 
-```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Regression Model Diagnostics', fig.align = 'center',}
+```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple linear regression model diagnostics.', fig.align = 'center',}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -271,7 +276,7 @@ slm.fit.trans <- lm(log(ytd_leads) ~ engagement, data)
 
   We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
   
-```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
+```{r slm-residuals, fig.cap = "Distribution of model residuals.", fig.align = 'center', message = FALSE}
 
 # Produce histogram to visualize distribution of model residuals
 ggplot2::ggplot() + 
@@ -375,7 +380,7 @@ $$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...}
   
   We can leverage the `ggpairs()` function introduced in Chapter \@ref(desc-stats) to efficiently compute bivariate correlations and visualize data distributions:
   
-```{r ggpairs-ytd-sales, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions.', fig.align = 'center',}
+```{r ggpairs-ytd-sales, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions.', fig.align = 'center'}
 
 # Produce correlation matrix
 GGally::ggpairs(subset(data, select = c(ytd_sales, engagement, job_lvl, work_exp, stock_opt_lvl, job_tenure, org_tenure, mgr_tenure)))
@@ -401,7 +406,7 @@ mlm.fit <- lm(ytd_sales ~ engagement + job_lvl + stock_opt_lvl + org_tenure, dat
   
   We can produce $VIF$ for each variable using the `vif()` function from the `car` library:
 
-```{r}
+```{r, message = FALSE, warning = FALSE}
 
 # Load library
 library(car)
@@ -415,7 +420,7 @@ car::vif(mlm.fit)
   
   Next, let's evaluate the linear model assumptions to validate that fitting a linear model to these data is appropriate:
   
-```{r pre-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple Linear Regression Model Diagnostics', fig.align = 'center',}
+```{r pre-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics.', fig.align = 'center'}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -423,9 +428,9 @@ plot(mlm.fit)
 
 ```
 
-  Based on these visuals, there are clear violations of linear model assumptions that need to be addressed. 
+  Based on these visuals, there are obvious violations of linear model assumptions that need to first be addressed.
   
-  Given the long right tail for the `ytd_sales` distribution shown in Figure \@ref(fig:pre-mlm-diagnostics), let's apply a square root transformation to the response variable:
+  First, given the long right tail for the `ytd_sales` distribution shown in Figure \@ref(fig:pre-mlm-diagnostics), let's apply a square root transformation to the response variable:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -434,9 +439,9 @@ mlm.fit <- lm(sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + org_tenur
 
 ```  
   
-  Also, the diagnostic plots indicate that are data points with high leverage on the fit. Let's address using Cook's distance as the criterion:
+  Additionally, the diagnostic plots indicate that there are data points with high leverage on the fit. Let's address using Cook's distance as the criterion:
 
-```{r, message = FALSE}
+```{r, message = FALSE, warning = FALSE}
 
 # Remove high leverage observations per Cook's distance
 w <- abs(rstudent(mlm.fit)) < 3 & abs(cooks.distance(mlm.fit)) < 4/nrow(mlm.fit$model)
@@ -444,9 +449,9 @@ mlm.fit <- update(mlm.fit, weights = as.numeric(w))
 
 ```
 
-  Let's produce a refreshed set of diagnostic plots to evaluate the impact of removing high leverage observations:
+  Now we can produce a refreshed set of diagnostic plots to evaluate the impact of transforming the response variable and removing high leverage observations:
 
-```{r post-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple Linear Regression Model Diagnostics', fig.align = 'center',}
+```{r post-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics (post-transformation).', fig.align = 'center'}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -467,7 +472,7 @@ lmtest::bptest(mlm.fit)
 
   Next, let's ensure residuals are normally distributed around 0:
 
-```{r, fig.cap = "Distribution of Model Residuals", fig.align = 'center', message = FALSE}
+```{r mlm-residuals, fig.cap = "Distribution of model residuals", fig.align = 'center', message = FALSE}
 
 # Produce histogram to visualize distribution of model residuals
 ggplot2::ggplot() + 
@@ -490,45 +495,80 @@ shapiro.test(mlm.fit$residuals)
 
   **Variable Selection**
 
-  Next, we need to reduce our model to the subset of predictors with statistically significant relationships with the response variable. Backward Stepwise Selection is a common and simple variable selection procedure, and the steps for this procedure are outlined below:
+  Next, we need to reduce our model to the subset of predictors with statistically significant relationships with the response variable. **Backward Stepwise Selection** is a common and simple variable selection procedure, and the steps are outlined below:
 
   1. Remove the predictor with the highest $p$-value greater than the critical value ($\alpha$ = .05).
   2. Refit the model, and repeat step 1.
   3. Stop when all $p$-values are less than the critical value.
 
-  Each predictor in our model has a significant relationship with `ytd_sales`, so further variable reduction is not required.
+  Each predictor in our model has a statistically significant relationship with `ytd_sales` -- indicating that the slope of the relationships with the response is unlikely 0 in the population -- so further variable reduction is not required.
 
-```{r, message = FALSE, warning = FALSE}
+```{r mlm, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales.', fig.align = 'center'}
 
 # Produce tabular summary for model results using flextable
 flextable::as_flextable(mlm.fit)
 
 ```
 
+  Based on the model output, the combination of predictors explains about 78% of the variance in YTD sales ($R^2$ = .778). In people analytics settings, it is rare to explain three-quarters of the variance for an outcome given people data are especially noisy.
 
+  Be default, the coefficients on the predictors are unstandardized; that is, they represent the average change in the square root transformed response for each one-unit increase for the respective predictor. Since the predictors have different units of measurement, such as `stock_opt_lvl` ranging from 0 to 3 and `org_tenure` ranging from 0 to 40, the unstandardized coefficients cannot be compared to determine which variable has the largest effect on YTD sales. We must standardize these coefficients and adjust for differences in the units of measurement for an apples-to-apples comparison.
 
+  We can apply the `scale()` function to variables to standardize units of measurement and determine which variable has the largest effect on `ytd_sales`:
 
+```{r mlm-scaled, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of YTD sales using scaled variables.', fig.align = 'center'}
 
-  We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
+# Scale variables and store standardized data in new data frame
+data_std = data.frame(scale(subset(data, select = (c(ytd_sales, engagement, job_lvl, stock_opt_lvl, org_tenure)))))
 
-```{r}
+# Refit model using scaled variables
+mlm.fit.scaled <- lm(ytd_sales ~ engagement + job_lvl + stock_opt_lvl + org_tenure, data_std)
 
-mlm.fit.sub.scaled <- lm(paste0("scale(ytd_sales) ~ scale(", paste(predictors, collapse = ")+scale("),")"), data)
-# summary(mlm.fit.sub.scaled)
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.scaled)
 
 ```
 
+  Based on the standardized coefficients, `org_tenure` has the largest effect ($\beta$ = .56, $t$(404) = 18.29, $p$ < .001) and `job_lvl` has the second largest effect ($\beta$ = .39, $t$(404) = 12.42, $p$ < .001).
+  
+## Model Comparisons
 
+  Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts.
+  
+  To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those 
+without overtime.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Partition data into overtime and non-overtime groups
+data_ot <- subset(data, overtime == 'Yes')
+data_nonot <- subset(data, overtime == 'No')
+
+# Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups
+mlm.fit.ot <- lm(sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + org_tenure, data_ot)
+mlm.fit.nonot <- lm(sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + org_tenure, data_nonot)
+
+```
+
+```{r mlm-ot, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales for salespeople with overtime.', fig.align = 'center'}
+
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.ot)
+
+```
+
+```{r mlm-nonot, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales for salespeople without overtime.', fig.align = 'center'}
+
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.nonot)
+
+```
 
 ### Moderation
 
 
 
 ### Mediation
-
-
-
-## Polynomial Regression
 
 
 

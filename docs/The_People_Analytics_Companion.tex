@@ -128,7 +128,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{An Applied Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-05-02}
+\date{2022-05-04}
 
 \begin{document}
 \maketitle
@@ -588,22 +588,23 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
+\KeywordTok{install.packages}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{), }\DataTypeTok{dependencies =} \OtherTok{TRUE}\NormalTok{, }\DataTypeTok{repos =} \StringTok{"http://cran.us.r-project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
 ## 
 ##   There are binary versions available but the source versions are later:
-##          binary source needs_compilation
-## corrplot   0.89   0.92             FALSE
-## caret    6.0-91 6.0-92              TRUE
+##            binary source needs_compilation
+## texPreview    1.5  2.0.0             FALSE
+## corrplot     0.89   0.92             FALSE
+## moments      0.14 0.14.1             FALSE
+## caret      6.0-91 6.0-92              TRUE
+## car        3.0-12 3.0-13             FALSE
 ## 
-## Error in download.file(url, destfile, method, mode = "wb", ...) : 
-##   cannot open URL 'http://cran.us.r-project.org/bin/macosx/contrib/4.0/car_3.0-12.tgz'
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpxYrUmu/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpRrqwkd/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -2775,33 +2776,25 @@ Based on this correlation matrix, most pairwise associations are weak with the e
 
 A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Store correlation matrix to object M}
-\NormalTok{M <-}\StringTok{ }\KeywordTok{cor}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)), }\DataTypeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+\begin{figure}
 
-\CommentTok{# Visualize correlation matrix}
-\NormalTok{corrplot}\OperatorTok{::}\KeywordTok{corrplot}\NormalTok{(M, }\DataTypeTok{method =} \StringTok{"color"}\NormalTok{,  }
-                   \DataTypeTok{type =} \StringTok{"upper"}\NormalTok{, }\DataTypeTok{order =} \StringTok{"hclust"}\NormalTok{, }\CommentTok{# Apply hierarchical clustering for ordering coefficients above the diagonal}
-                   \DataTypeTok{addCoef.col =} \StringTok{"black"}\NormalTok{, }\CommentTok{# Add correlation coefficient}
-                   \DataTypeTok{tl.col=}\StringTok{"grey"}\NormalTok{, }\DataTypeTok{tl.srt =} \DecValTok{45}\NormalTok{, }\CommentTok{# Label color and rotation}
-                   \DataTypeTok{diag =} \OtherTok{FALSE} \CommentTok{# Hide correlation coefficient on the principal diagonal}
-\NormalTok{                   )}
-\end{Highlighting}
-\end{Shaded}
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/corrplot-comp-1} 
 
-\includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-82-1.pdf}
+}
+
+\caption{Corrplot correlation matrix}\label{fig:corrplot-comp}
+\end{figure}
 
 The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Visualize correlation matrix}
-\NormalTok{GGally}\OperatorTok{::}\KeywordTok{ggpairs}\NormalTok{(}\KeywordTok{subset}\NormalTok{(employees, }\DataTypeTok{select =} \KeywordTok{c}\NormalTok{(}\StringTok{"annual_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org_tenure"}\NormalTok{, }\StringTok{"job_tenure"}\NormalTok{, }\StringTok{"prior_emplr_cnt"}\NormalTok{, }\StringTok{"commute_dist"}\NormalTok{)))}
-\end{Highlighting}
-\end{Shaded}
+\begin{figure}
 
-\includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-83-1.pdf}
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/ggpairs-comp-1} 
+
+}
+
+\caption{GGpairs bivariate correlations and data distributions.}\label{fig:ggpairs-comp}
+\end{figure}
 
 We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
 
@@ -3282,11 +3275,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-91-1} 
+{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-89-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-91}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-89}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -3330,11 +3323,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-92-1} 
+{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-90-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-92}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-90}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -6106,7 +6099,7 @@ We can conveniently perform linear model diagnostics using the \texttt{plot()} f
 
 }
 
-\caption{Linear Regression Model Diagnostics}\label{fig:slm-diagnostics}
+\caption{Simple Linear Regression Model Diagnostics}\label{fig:slm-diagnostics}
 \end{figure}
 
 The \emph{Residuals vs Fitted} and \emph{Scale-Location} plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between \(X\) and \(Y\), in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
@@ -6132,18 +6125,21 @@ In addition to the visual inspection, we can perform the \textbf{Breusch-Pagan t
 
 Since \(p\) \textgreater{} .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (\texttt{log()}) or square root (\texttt{sqrt()}) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
 
-Let's illustrate how to transform the response variable with the square root function:
+Let's illustrate how to transform the response variable:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# Transform YTD leads and refit model}
+\CommentTok{# Square root transformation of YTD leads}
 \NormalTok{slm.fit.trans <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(ytd_leads) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
+
+\CommentTok{# Natural logarithmic transformation of YTD leads}
+\NormalTok{slm.fit.trans <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{log}\NormalTok{(ytd_leads) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement, data)}
 \end{Highlighting}
 \end{Shaded}
 
-The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only minor departures in the upper and lower ends of the quantile range.
+The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.
 
-We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads, in which case there is no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
+We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6159,14 +6155,14 @@ We can also visualize the distribution of model residuals using a histogram. In 
 
 \begin{figure}
 
-{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-168-1} 
+{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-166-1} 
 
 }
 
-\caption{Distribution of Model Residuals}\label{fig:unnamed-chunk-168}
+\caption{Distribution of Model Residuals}\label{fig:unnamed-chunk-166}
 \end{figure}
 
-Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test:
+Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic is sufficient evidence of normality:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6292,11 +6288,13 @@ There are several important pieces of information in this output:
   \texttt{F-statistic}: Statistic used in conjunction with the \texttt{p-value} for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in \(y\).
 \end{itemize}
 
-The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). While it may be tempting to conclude that employee engagement has a significant influence on leads, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., \(\beta\) is the square root or natural log of the average change in leads for a one-level increase in engagement).
+
+While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
 
 The \(R^2\) value indicates that 8.9\% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1\% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
 
-Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 20.1\(x\) + 5.1) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for each combination of the predictor values is directly related to an increase in \(R^2\) (explained variance in YTD leads).
+Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 20.1\(x\) + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases \(R^2\) (explained variance in YTD leads).
 
 \begin{figure}
 
@@ -6304,88 +6302,88 @@ Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple
 
 }
 
-\caption{Simple Linear Model Fit Line for y = 20.1x + 5.1}\label{fig:slm-fit}
+\caption{Simple Linear Model Fit Line for y = 20.1x + 1.6}\label{fig:slm-fit}
 \end{figure}
+
+We can use the \texttt{extract\_eq()} function from the \texttt{equatiomatic} library to easily build a properly formatted LaTex regression equation from the model object:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Load library}
+\KeywordTok{library}\NormalTok{(equatiomatic)}
+
+\CommentTok{# Convert model to LaTex regression equation}
+\KeywordTok{extract_eq}\NormalTok{(slm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{equation}
+\operatorname{ytd\_leads} = \alpha + \beta_{1}(\operatorname{engagement}) + \epsilon
+\end{equation}
 
 \hypertarget{multiple-linear-regression}{%
 \section{Multiple Linear Regression}\label{multiple-linear-regression}}
 
+\textbf{Multiple linear regression} extends the simple linear model to one with two or more predictor variables. A multiple regression model generally explains more variance in the response relative to the simple linear model, and is defined by:
+
 \[ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]
 
-\textbf{Multicollinearity Diagnostics}
+Once we estimate the unknown model coefficients, \(\beta_0\) through \(\beta_p\), we can estimate \(Y\) for a particular combination of values for \(X_1\) through \(X_p\) by calculating:
 
-Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they do not provide unique information; they are redundant. While it does not make intuitive sense to use redundant predictors, you should be aware that multicollinearity can cause serious issues with the underlying math. These issues can result in the effects of significant predictors being suppressed, a negative sign/effect showing in the output when a positive association between the predictor and the outcome actually exists (or vice versa), etc. Simply put, if problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+\[ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...} + \hat{\beta_p} x_{ip} \]
 
-Kuhn and Johnson (2013) recommend the approach outlined below to address multicollinearity:
+\textbf{Collinearity Diagnostics}
+
+In addition to the assumptions we tested in the context of the simple linear model, multiple linear regression warrants collinearity diagnostics. \textbf{Collinearity} refers to situations in which predictors that are related to the response variable also have strong associations with one another. In practice, there is usually some level of collinearity between variables, so the goal of collinearity diagnostics is to identify and address \emph{problematic} levels of collinearity.
+
+Models should be built with predictors that have a strong association with the outcome but not with one another. If predictors are highly correlated with each other, it indicates that they are redundant and do not provide unique information. A large amount of collinearity can cause serious issues with the underlying calculus of a regression model, which can manifest in the form of effects of significant predictors being masked or suppressed or a negative sign/effect showing in the output when a positive association between the predictor and the response actually exists (or vice versa). As a result, it would be premature to fit a linear model before running collinearity diagnostics, as there may be false negatives -- predictors that appear unimportant but are actually statistical drivers of the response. If problematic collinearity is not addressed, false conclusions may be drawn from the model output which may lead to bad business decisions.
+
+Kuhn and Johnson (2013) recommend the simple procedure outlined below to identify and address problematic collinearity:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Execute lines 104-109 below. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B. The code below makes this easy as it orders pairs of predictors based on their absolute correlation (from highest to lowest), so you only need to look at the first row in the output.
+  Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B.
 \item
-  Execute lines 113-114 below to build a correlation matrix for the predictors. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B. The combination of the summary() and abs() functions on line 114 enables an easy evaluation of which predictor is more highly correlated with other predictors (simply compare the \texttt{mean} for the predictors of interest).
+  Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B.
 \item
-  If predictor A has a larger average absolute correlation, remove it from the \texttt{predictors} vector; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives for this assignment (be sure to reread the overall purpose for this assignment if this is unclear).
+  If predictor A has a larger average absolute correlation, remove it; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives or hypotheses.
 \item
-  Repeat steps 1-3 until no absolute correlations are \textgreater{}= .7.
+  Repeat steps 1-3 until \(|r|\) \textless{} .7.
 \end{enumerate}
 
-All variables for this assignment are numeric (no categorical variables), which means we can simply evaluate correlations among all without any dummy coding. The code below will create a correlation matrix using the predictors specified in the \texttt{predictors} vector initialized at the beginning of this script.
+Let's demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from \texttt{data} to simplify the model and explanation. In Chapter \ref{pred-mod}, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.
 
-As you iteratively address multicollinearity issues using the aforementioned approach, simply remove from the \texttt{predictors} vector the variable you wish to omit and then execute that line of code again to inform R that the predictors have been updated. You can then re-execute the code below to produce a new correlation matrix with the revised subset of predictors.
+We can leverage the \texttt{ggpairs()} function introduced in Chapter \ref{desc-stats} to efficiently compute bivariate correlations and visualize data distributions:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Load libraries}
-\KeywordTok{library}\NormalTok{(corrplot)}
-\end{Highlighting}
-\end{Shaded}
+\begin{figure}
 
-\begin{verbatim}
-## corrplot 0.92 loaded
-\end{verbatim}
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/ggpairs-ytd-sales-1} 
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(reshape2)}
-\end{Highlighting}
-\end{Shaded}
+}
 
-\begin{verbatim}
-## Warning: package 'reshape2' was built under R version 4.0.2
-\end{verbatim}
+\caption{GGpairs bivariate correlations and data distributions.}\label{fig:ggpairs-ytd-sales}
+\end{figure}
 
-\begin{verbatim}
-## 
-## Attaching package: 'reshape2'
-\end{verbatim}
+Based on the correlations, \texttt{org\_tenure} is highly correlated with both \texttt{job\_tenure}, \texttt{mgr\_tenure} and \texttt{work\_exp}. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since \texttt{org\_tenure} has the strongest relationship with our response, \texttt{ytd\_sales}, we will drop \texttt{job\_tenure}, \texttt{mgr\_tenure}, and \texttt{work\_exp}.
 
-\begin{verbatim}
-## The following object is masked from 'package:tidyr':
-## 
-##     smiths
-\end{verbatim}
+Since \(|r|\) \textless{} .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model using the resulting subset of predictors. We can include multiple predictors in the model using the \texttt{+} symbol in the \texttt{lm()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# M1 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M1.}
-\CommentTok{# M1[M1 == 1] <- NA # Drop perfect correlations (e.g., relationships of variables with themselves).}
-\CommentTok{# M1 <- na.omit(reshape2::melt(M1)) # Melt the data; convert columns into rows for ease of use.}
-\CommentTok{# M1 <- M1[order(-abs(M1$value)),] # Sort order the data.}
-\CommentTok{# colnames(M1) <- c("Variable 1", "Variable 2", "Correlation") # Assign meaningful names to the columns in the matrix.}
-\CommentTok{# M1 # Display contents of the matrix.}
+\CommentTok{# Regress YTD sales on a combination of predictors}
+\NormalTok{mlm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(ytd_sales }\OperatorTok{~}\StringTok{ }\NormalTok{engagement }\OperatorTok{+}\StringTok{ }\NormalTok{job_lvl }\OperatorTok{+}\StringTok{ }\NormalTok{stock_opt_lvl }\OperatorTok{+}\StringTok{ }\NormalTok{org_tenure, data)}
 \end{Highlighting}
 \end{Shaded}
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# M2 <- round(cor(data[ ,paste(predictors)]), 2) # Build a correlation matrix named M2.}
-\CommentTok{# summary(abs(M2)) # Display descriptive stats for the absolute value of each bivariate relationship to inform which variables to drop.}
-\end{Highlighting}
-\end{Shaded}
+While Kuhn and Johnson's procedure is a good first step, this may not eliminate what is known as \textbf{multicollinearity}, which is collinearity among three or more predictors. It is possible for collinearity to exist between three or more variables, even in the absence of a strong correlation for a pair of variables. We can evaluate the \textbf{Variance Inflation Factor (VIF)} for the predictors that remain following the bivariate correlation review to ensure multicollinearity is not present. \(VIF\) is defined by:
 
-Once multicollinearity has been addressed (no two predictors have an absolute correlation of .7 or higher), execute the code below to ensure the VIF for remaining predictors is below 5 (a sanity check, as it were).
+\[ VIF(\hat{\beta_j}) = \frac{1}{1 - R^2_{X_j|X_{-j}}}, \]
+
+where the denominator, \(R^2_{X_j|X_{-j}}\), is the \(R^2\) from regressing \(X_j\) onto all other predictors. The smallest value of \(VIF\) is 1, which indicates a complete absence of collinearity. Problematic collinearity exists if \(VIF\) for any variable exceeds 5.
+
+We can produce \(VIF\) for each variable using the \texttt{vif()} function from the \texttt{car} library:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6393,10 +6391,6 @@ Once multicollinearity has been addressed (no two predictors have an absolute co
 \KeywordTok{library}\NormalTok{(car)}
 \end{Highlighting}
 \end{Shaded}
-
-\begin{verbatim}
-## Warning: package 'car' was built under R version 4.0.2
-\end{verbatim}
 
 \begin{verbatim}
 ## Loading required package: carData
@@ -6425,36 +6419,231 @@ Once multicollinearity has been addressed (no two predictors have an absolute co
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# car::vif(mlm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data))}
+\CommentTok{# Produce VIF for each predictor}
+\NormalTok{car}\OperatorTok{::}\KeywordTok{vif}\NormalTok{(mlm.fit)}
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{fit-linear-model-with-subset-of-important-variables}{%
-\section{Fit Linear Model (with Subset of Important Variables)}\label{fit-linear-model-with-subset-of-important-variables}}
+\begin{verbatim}
+##    engagement       job_lvl stock_opt_lvl    org_tenure 
+##      1.001459      1.407192      1.009435      1.395797
+\end{verbatim}
 
-The following lines of code will fit a linear regression model using the subset of predictors for which no collinearity problems are present (the result of your work from the prior section).
+Based on the output, \(VIF\) \textless{} 5 for each predictor, which indicates that multicollinearity is not an issue.
+
+Next, let's evaluate the linear model assumptions to validate that fitting a linear model to these data is appropriate:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/pre-mlm-diagnostics-1} 
+
+}
+
+\caption{Multiple Linear Regression Model Diagnostics}\label{fig:pre-mlm-diagnostics}
+\end{figure}
+
+Based on these visuals, there are clear violations of linear model assumptions that need to be addressed.
+
+Given the long right tail for the \texttt{ytd\_sales} distribution shown in Figure \ref{fig:pre-mlm-diagnostics}, let's apply a square root transformation to the response variable:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{# mlm.fit.sub <- lm(paste("ytd_sales ~ ", paste(predictors, collapse = "+")), data)}
-\CommentTok{# summary(lm.fit.sub)}
+\CommentTok{# Regress YTD sales on a combination of predictors}
+\NormalTok{mlm.fit <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(}\KeywordTok{sqrt}\NormalTok{(ytd_sales) }\OperatorTok{~}\StringTok{ }\NormalTok{engagement }\OperatorTok{+}\StringTok{ }\NormalTok{job_lvl }\OperatorTok{+}\StringTok{ }\NormalTok{stock_opt_lvl }\OperatorTok{+}\StringTok{ }\NormalTok{org_tenure, data)}
 \end{Highlighting}
 \end{Shaded}
 
-Next, we need to reduce our model to the subset of predictors with statistically significant relationships with SALES. Backward Stepwise Selection is the simplest of all variable selection procedures, and the approach we will use for this assignment. The steps for this procedure are outlined below:
+Also, the diagnostic plots indicate that are data points with high leverage on the fit. Let's address using Cook's distance as the criterion:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Remove high leverage observations per Cook's distance}
+\NormalTok{w <-}\StringTok{ }\KeywordTok{abs}\NormalTok{(}\KeywordTok{rstudent}\NormalTok{(mlm.fit)) }\OperatorTok{<}\StringTok{ }\DecValTok{3} \OperatorTok{&}\StringTok{ }\KeywordTok{abs}\NormalTok{(}\KeywordTok{cooks.distance}\NormalTok{(mlm.fit)) }\OperatorTok{<}\StringTok{ }\DecValTok{4}\OperatorTok{/}\KeywordTok{nrow}\NormalTok{(mlm.fit}\OperatorTok{$}\NormalTok{model)}
+\NormalTok{mlm.fit <-}\StringTok{ }\KeywordTok{update}\NormalTok{(mlm.fit, }\DataTypeTok{weights =} \KeywordTok{as.numeric}\NormalTok{(w))}
+\end{Highlighting}
+\end{Shaded}
+
+Let's produce a refreshed set of diagnostic plots to evaluate the impact of removing high leverage observations:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_People_Analytics_Companion_files/figure-latex/post-mlm-diagnostics-1} 
+
+}
+
+\caption{Multiple Linear Regression Model Diagnostics}\label{fig:post-mlm-diagnostics}
+\end{figure}
+
+There is a clear improvement towards satisifying linear model assumptions.
+
+Let's perform the Breusch-Pagan test to validate that the assumption of homoscedasticity is met:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Run the Breusch-Pagan test for evaluate homoscedasticity}
+\NormalTok{lmtest}\OperatorTok{::}\KeywordTok{bptest}\NormalTok{(mlm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  studentized Breusch-Pagan test
+## 
+## data:  mlm.fit
+## BP = 2.2111, df = 4, p-value = 0.697
+\end{verbatim}
+
+Next, let's ensure residuals are normally distributed around 0:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce histogram to visualize distribution of model residuals}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{aes}\NormalTok{(mlm.fit}\OperatorTok{$}\NormalTok{residuals) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{"YTD Leads Residuals"}\NormalTok{, }\DataTypeTok{y =} \StringTok{"Density"}\NormalTok{) }\OperatorTok{+}\StringTok{ }
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_histogram}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{y =}\NormalTok{ ..density..), }\DataTypeTok{fill =} \StringTok{"#414141"}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{geom_density}\NormalTok{(}\DataTypeTok{fill =} \StringTok{"#ADD8E6"}\NormalTok{, }\DataTypeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\OperatorTok{+}
+\NormalTok{ggplot2}\OperatorTok{::}\KeywordTok{theme_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics{The_People_Analytics_Companion_files/figure-latex/unnamed-chunk-175-1} 
+
+}
+
+\caption{Distribution of Model Residuals}\label{fig:unnamed-chunk-175}
+\end{figure}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Compute Shapiro-Wilk test of normality}
+\KeywordTok{shapiro.test}\NormalTok{(mlm.fit}\OperatorTok{$}\NormalTok{residuals)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##  Shapiro-Wilk normality test
+## 
+## data:  mlm.fit$residuals
+## W = 0.99342, p-value = 0.07202
+\end{verbatim}
+
+Based on the diagnostic plots and statistical tests, our data satisify the requirements for building a multiple linear regression model.
+
+\textbf{Variable Selection}
+
+Next, we need to reduce our model to the subset of predictors with statistically significant relationships with the response variable. Backward Stepwise Selection is a common and simple variable selection procedure, and the steps for this procedure are outlined below:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Remove the predictor with the highest p-value greater than the critical value (.05).
+  Remove the predictor with the highest \(p\)-value greater than the critical value (\(\alpha\) = .05).
 \item
-  Refit the model (i.e., modify the `predictors' vector to exclude the irrelevant variable, and then re-execute lines 122-123 to refit the linear model and display output), and repeat step 1.
+  Refit the model, and repeat step 1.
 \item
-  Stop when all p-values are less than the critical value.
+  Stop when all \(p\)-values are less than the critical value.
 \end{enumerate}
 
-When you have reduced the model to a subset of predictors that all have statistically significant associations with SALES and no evidence of problematic collinearity, proceed to the final step below.
+Each predictor in our model has a significant relationship with \texttt{ytd\_sales}, so further variable reduction is not required.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# Produce tabular summary for model results using flextable}
+\NormalTok{flextable}\OperatorTok{::}\KeywordTok{as_flextable}\NormalTok{(mlm.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1.5}
+
+\begin{longtable}[c]{|p{1.17in}|p{0.88in}|p{1.29in}|p{0.75in}|p{0.75in}|p{0.75in}}
+
+
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedleft}p{\dimexpr 5.59in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\textit{Signif.\ codes:\ 0\ <=\ '***'\ <\ 0.001\ <\ '**'\ <\ 0.01\ <\ '*'\ <\ 0.05\ <\ '.'\ <\ 0.1\ <\ ''\ <\ 1}}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.59in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.59in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ standard\ error:\ 26.15\ on\ 375\ degrees\ of\ freedom}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.59in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Multiple\ R-squared:\ 0.7783,\ Adjusted\ R-squared:\ 0.7759}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.59in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{F-statistic:\ 329.1\ on\ 375\ and\ 4\ DF,\ p-value:\ 0.0000}}}} \\
+
+\endfoot
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{125.981}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{6.903}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{18.250}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{10.105}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{1.974}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{5.118}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{job\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{33.768}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.425}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{13.922}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{stock\_opt\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{5.166}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{1.621}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{3.187}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0016}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{**}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.17in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{org\_tenure}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{6.812}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.341}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{19.952}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
 
 We will now produce a standardized Estimate for each predictor to evaluate relative importance with respect to SALES. We will accomplish this by scaling both the independent and dependent variables to adjust for differences in the spread of values (R does not produce standardized Estimates by default with the lm() function). Simply run the code below, and the Estimates shown in the output will now reflect standardized Beta coefficients. Adjusting for the different units of measurement, we can now determine which variable has the largest effect on SALES.
 
