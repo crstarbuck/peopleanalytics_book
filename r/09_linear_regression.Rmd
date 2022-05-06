@@ -25,7 +25,7 @@ output:
 
   You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
 
-  While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small ($n$ < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered later in this chapter.
+  While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small ($n$ < 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered in Chapter \@ref(pred-mod).
 
   This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.
   
@@ -503,20 +503,33 @@ shapiro.test(mlm.fit$residuals)
 
   Each predictor in our model has a statistically significant relationship with `ytd_sales` -- indicating that the slope of the relationships with the response is unlikely 0 in the population -- so further variable reduction is not required.
 
-```{r mlm, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales.', fig.align = 'center'}
+```{r mlm, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto multiple predictors.', fig.align = 'center'}
 
 # Produce tabular summary for model results using flextable
 flextable::as_flextable(mlm.fit)
 
 ```
+  
+  We can view the multiple regression equation for estimating `sqrt(ytd_sales)` with these four predictors using the `extract_eq` function:
+
+```{r, message = FALSE, warning = FALSE, results = "asis"}
+
+# Convert model to LaTex regression equation
+extract_eq(mlm.fit)
+
+```
 
   Based on the model output, the combination of predictors explains about 78% of the variance in YTD sales ($R^2$ = .778). In people analytics settings, it is rare to explain three-quarters of the variance for an outcome given people data are especially noisy.
 
-  Be default, the coefficients on the predictors are unstandardized; that is, they represent the average change in the square root transformed response for each one-unit increase for the respective predictor. Since the predictors have different units of measurement, such as `stock_opt_lvl` ranging from 0 to 3 and `org_tenure` ranging from 0 to 40, the unstandardized coefficients cannot be compared to determine which variable has the largest effect on YTD sales. We must standardize these coefficients and adjust for differences in the units of measurement for an apples-to-apples comparison.
+  By default, the coefficients on the predictors are unstandardized; that is, they represent the average change in the square root transformed response for each one-unit increase for the respective predictor. Since the predictors have different units of measurement, such as `stock_opt_lvl` ranging from 0 to 3 and `org_tenure` ranging from 0 to 40, the unstandardized coefficients cannot be compared to determine which variable has the largest effect on YTD sales. We must standardize these coefficients and adjust for differences in the units of measurement for an apples-to-apples comparison.
 
-  We can apply the `scale()` function to variables to standardize units of measurement and determine which variable has the largest effect on `ytd_sales`:
+  We can scale variables by subtracting the variable's mean from $x$ and dividing the difference into the variable's standard deviation:
+  
+  $$ x_{scaled} = \frac{x - \bar{x}} {s} $$
+  
+  We can leverage the `scale()` function to standardize the predictors' units of measurement and determine which has the largest effect on `ytd_sales`:
 
-```{r mlm-scaled, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of YTD sales using scaled variables.', fig.align = 'center'}
+```{r mlm-scaled, out.width = "100%", echo = FALSE, fig.cap = 'Regression of YTD sales onto multiple predictors using scaled variables.', fig.align = 'center'}
 
 # Scale variables and store standardized data in new data frame
 data_std = data.frame(scale(subset(data, select = (c(ytd_sales, engagement, job_lvl, stock_opt_lvl, org_tenure)))))
@@ -529,14 +542,13 @@ flextable::as_flextable(mlm.fit.scaled)
 
 ```
 
-  Based on the standardized coefficients, `org_tenure` has the largest effect ($\beta$ = .56, $t$(404) = 18.29, $p$ < .001) and `job_lvl` has the second largest effect ($\beta$ = .39, $t$(404) = 12.42, $p$ < .001).
+  Based on the standardized coefficients in Figure \@ref(fig:mlm-scaled), `org_tenure` has the largest effect ($\beta$ = .56, $t$(404) = 18.29, $p$ < .001) and `job_lvl` has the second largest effect ($\beta$ = .39, $t$(404) = 12.42, $p$ < .001).
   
 ## Model Comparisons
 
   Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts.
   
-  To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those 
-without overtime.
+  To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -550,30 +562,65 @@ mlm.fit.nonot <- lm(sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + org
 
 ```
 
-```{r mlm-ot, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales for salespeople with overtime.', fig.align = 'center'}
+```{r mlm-ot, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto multiple predictors for salespeople with overtime.', fig.align = 'center'}
 
 # Produce tabular summary with standardized coefficients
 flextable::as_flextable(mlm.fit.ot)
 
 ```
 
-```{r mlm-nonot, out.width = "100%", echo = FALSE, fig.cap = 'Multiple regression of square root transformed YTD sales for salespeople without overtime.', fig.align = 'center'}
+```{r mlm-nonot, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto multiple predictors for salespeople without overtime.', fig.align = 'center'}
 
 # Produce tabular summary with standardized coefficients
 flextable::as_flextable(mlm.fit.nonot)
 
 ```
 
+  Since we are comparing two models, we need not scale the variables since comparing a specific predictor's relationship with the response in the overtime model can be juxtaposed against the same predictor in the non-overtime model using the original units of measurement.
+  
+  Based on the output shown in figures in Figure \@ref(fig:mlm-ot) and in Figure \@ref(fig:mlm-nonot), the model for salespeople who worked overtime explains more variance in square root transformed `ytd_sales` ($R^2$ = .73) relative to the model for salespeople without overtime ($R^2$ = .69).
+  
+  We can see that `engagement` has a larger effect on the transformed response among salespeople who worked overtime ($\beta$ = 13.17, $t$(113) = 2.88, $p$ < .01) relative to those who worked no overtime ($\beta$ = 9.85, $t$(286) = 3.99, $p$ < .001). In addition, `job_lvl` has a stronger association with the response in the overtime group ($\beta$ = 35.98, $t$(113) = 7.57, $p$ < .01) relative to the non-overtime group ($\beta$ = 33.14, $t$(286) = 11.04, $p$ < .001). Given that the intercept (average square root of `ytd_sales` when the values of all predictors are set to 0) is higher for the non-overtime group ($\beta$ = 132.34, $t$(286) = 15.27, $p$ < .001) than for the overtime group ($\beta$ = 121.82, $t$(113) = 8.25, $p$ < .001), differences in the coefficients on `job_lvl` may indicate that one's job level is a proxy for skill and capacity to sell more in fewer hours.
+  
+  **Hierarchical Regression**
+  
+  This multiple model approach can also be useful for understanding the incremental value a given variable -- or set of variables -- provides above and beyond a set of control variables. This approach is known as **hierarchical regression**, in which variables are added to the model in steps and changes in model statistics are evaluated after each. Let's use hierarchical regression to test the hypothesis below.
+  
+  **H1:** Among salespeople who work overtime, engagement has a significant positive relationship with YTD sales after controlling for job level, stock option level, and organization tenure.
+  
+```{r hier-ctrl, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto control variables.', fig.align = 'center'}
+
+# Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups
+mlm.fit.ot <- lm(sqrt(ytd_sales) ~ job_lvl + stock_opt_lvl + org_tenure, data_ot)
+
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.ot)
+
+```
+
+```{r hier-main, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto control and main variables.', fig.align = 'center'}
+
+# Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups
+mlm.fit.ot <- lm(sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + org_tenure, data_ot)
+
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.ot)
+
+```
+
+  Comparing Figure \@ref(fig:hier-ctrl) to Figure \@ref(fig:hier-main), we can determine that the addition of `engagement` to the control set explains an additional 2% of the variance in YTD sales ($\Delta R^2 = .69 - .67 = .02$). 
+  
+  In addition, Figure \@ref(fig:hier-ctrl) shows that without `engagement` in the model, `stock_opt_lvl` is not significant. This is a good reminder that regression does not examine bivariate relationships of each predictor with the response *independent of other variables*; rather, the relationships among all variables in the model impact which predictors emerge as having a statistical association with the response.
+  
 ### Moderation
+
+
 
 
 
 ### Mediation
 
 
-
-
-## Hierarchical Models
 
 
 
