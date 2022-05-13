@@ -1,8 +1,3 @@
----
-output:
-  pdf_document: default
-  html_document: default
----
 # Linear Regression {#lm}
 
   It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning. 
@@ -614,9 +609,57 @@ flextable::as_flextable(mlm.fit.ot)
   
 ### Moderation
 
+  As discussed in Chapter \@ref(measure-sampl), a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an **interaction term**, which is the product of the two variables ($X_1$ * $X_2$).
+  
+  Let's examine whether `org_tenure` influences the strength of the relationship between `job_lvl` and `sqrt(ytd_sales)`. We would generally expect sales to increase as the job level of salespeople increases, and longer tenure may amplify the strength of this association. Step one is testing whether the interaction term is statistically significant, and step two is determining the nature of any observed statistical interaction. Including the interaction term in the model (`job_lvl` * `org_tenure`) will add the predictors independently *and* jointly:
 
+```{r mlm-int, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto interaction term between job level and organization tenure.', fig.align = 'center'}
 
+# Regress YTD sales on a combination of predictors with interaction term
+mlm.fit.int <- lm(sqrt(ytd_sales) ~ job_lvl * org_tenure, data)
 
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.int)
+
+```
+
+  The results show that both the main and interaction effects are statistically significant ($p$ < .001).
+  
+  Since interaction terms can be highly correlated with independent predictors, it is good to check for collinearity:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Produce VIF for each model term
+car::vif(mlm.fit.int)
+
+```
+  
+  $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. A common method of addressing collinearity in the context of interaction testing is variable centering, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Like other transformations we have explored, it is important to note that variable centering impacts the interpretation of model coefficients since variables are not modeled using their original units of measurement.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Append centered predictors to data
+data$job_lvl_cntrd <- data$job_lvl - mean(data$job_lvl)
+data$org_tenure_cntrd <- data$org_tenure - mean(data$org_tenure)
+
+# Regress YTD sales on a combination of centered predictors with interaction term
+mlm.fit.int <- lm(sqrt(ytd_sales) ~ job_lvl_cntrd * org_tenure_cntrd, data)
+
+# Produce VIF for centered variables
+car::vif(mlm.fit.int)
+
+```  
+  
+  To better understand the nature of the interaction effect ($\beta$ = -2.51, $t$(405) = -8.39, $p$ < .001), two equations can be built to evaluate changes in the slope of the relationship with low ($\bar{x}$ - 1$s$) and high ($\bar{x}$ + 1$s$) organization tenure:
+  
+  * *Low organization tenure*: $Y = 123.84 - 2.51 (6.57 - 5.12) * X$)
+  * *High organization tenure*: $Y = 123.84 - 2.51 (6.57 + 5.12) * X$), 
+  
+  where 6.57 is `mean(data$org_tenure)`, 5.12 is `sd(data$org_tenure)`, and $X$ is a vector of values for `job_lvl`.
+  
+  These equations are visualized in Figure \@ref(fig:int-effects).
+  
+  
 
 ### Mediation
 
