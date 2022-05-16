@@ -634,9 +634,9 @@ car::vif(mlm.fit.int)
 
 ```
   
-  $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. A common method of addressing collinearity in the context of interaction testing is variable centering, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Like other transformations we have explored, it is important to note that variable centering impacts the interpretation of model coefficients since variables are not modeled using their original units of measurement.
+  $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
   
-```{r, message = FALSE, warning = FALSE}
+```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term.', fig.align = 'center'}
 
 # Append centered predictors to data
 data$job_lvl_cntrd <- data$job_lvl - mean(data$job_lvl)
@@ -645,21 +645,41 @@ data$org_tenure_cntrd <- data$org_tenure - mean(data$org_tenure)
 # Regress YTD sales on a combination of centered predictors with interaction term
 mlm.fit.int <- lm(sqrt(ytd_sales) ~ job_lvl_cntrd * org_tenure_cntrd, data)
 
+# Produce tabular summary with standardized coefficients
+flextable::as_flextable(mlm.fit.int)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
 # Produce VIF for centered variables
 car::vif(mlm.fit.int)
 
 ```  
   
-  To better understand the nature of the interaction effect ($\beta$ = -2.51, $t$(405) = -8.39, $p$ < .001), two equations can be built to evaluate changes in the slope of the relationship with low ($\bar{x}$ - 1$s$) and high ($\bar{x}$ + 1$s$) organization tenure:
+  After centering the variables, $VIF$ is well beneath the threshold of 5.
   
-  * *Low organization tenure*: $Y = 123.84 - 2.51 (6.57 - 5.12) * X$)
-  * *High organization tenure*: $Y = 123.84 - 2.51 (6.57 + 5.12) * X$), 
+  To better understand the nature of the interaction effect ($\beta$ = -2.51, $t$(405) = -8.39, $p$ < .001), two equations can be built to evaluate changes in the slope of the relationship with high ($\bar{x}$ + 1$s$) and low ($\bar{x}$ - 1$s$) organization tenure:
+  
+  * *High organization tenure*: $Y = -2.51 (6.57 + 5.12)X + 276.56$
+  * *Low organization tenure*: $Y = -2.51 (6.57 - 5.12)X + 276.56,$
   
   where 6.57 is `mean(data$org_tenure)`, 5.12 is `sd(data$org_tenure)`, and $X$ is a vector of values for `job_lvl`.
   
-  These equations are visualized in Figure \@ref(fig:int-effects).
-  
-  
+```{r int-effects, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto job level x organization tenure interaction term. High organization tenure (red line): Y = -2.51 (6.57 + 5.12)X + 276.56. Low organization tenure (blue line): Y = -2.51 (6.57 - 5.12)X + 276.56.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+ggplot2::ggplot(data = data, aes(x = job_lvl, y = sqrt(ytd_sales))) + 
+ggplot2::labs(x = "Job Level", y = "Square Root of YTD Sales") +
+#ggplot2::geom_point(color = "black") +
+ggplot2::geom_function(fun = function(x) {mlm.fit.int$coefficients[[4]] * (mean(data$org_tenure) + sd(data$org_tenure)) * x + mlm.fit.int$coefficients[[1]]}, colour = "red") +
+  ggplot2::geom_function(fun = function(x) {mlm.fit.int$coefficients[[4]] * (mean(data$org_tenure) - sd(data$org_tenure)) * x + mlm.fit.int$coefficients[[1]]}, colour = "blue") +
+ggplot2::annotate("text", x = 1.5, y = 255, label = "High organization tenure", colour = "red") +
+ggplot2::annotate("text", x = 1.5, y = 280, label = "Low organization tenure", colour = "blue") +
+ggplot2::theme_bw()
+
+```  
+
+  As shown in Figure \@ref(fig:int-effects), the slope of both regression lines is negative. However, the drop in sales is far more significant as job level increases for those with high ($\bar{x} + 1s$) organization tenure relative to those with low ($\bar{x} - 1s$) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels that may explain this difference.
 
 ### Mediation
 
