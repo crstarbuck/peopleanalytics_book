@@ -128,7 +128,7 @@
 \providecommand{\subtitle}[1]{}
 \subtitle{An Applied Guide through the People Analytics Lifecycle}
 \author{Craig Starbuck}
-\date{2022-05-16}
+\date{2022-05-17}
 
 \begin{document}
 \maketitle
@@ -605,7 +605,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpJKMVo4/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpZZI68r/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -6003,7 +6003,7 @@ Before performing model diagnostics, it is important to note the following:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Multicollinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
+  Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
 \item
   Outliers are not always an issue, as we discussed in Chapter \ref{data-wrang-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 \end{enumerate}
@@ -6290,6 +6290,8 @@ There are several important pieces of information in this output:
 \end{itemize}
 
 The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., \(\beta\) is the square root or natural log of the average change in leads for a one-level increase in engagement).
+
+Thanks to the properties of the CLT, which requires normally distributed \emph{residuals}, we can be confident that the true relationship between engagement and YTD leads in the population is not 0 since the 95\% CI (\(\beta\) +/- 2\(SE\)) does not include 0.
 
 While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
 
@@ -6726,7 +6728,7 @@ Based on the standardized coefficients in Figure \ref{fig:mlm-scaled}, \texttt{o
 \hypertarget{model-comparisons}{%
 \section{Model Comparisons}\label{model-comparisons}}
 
-Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts.
+Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs.~female employees or across ethnic cohorts.
 
 To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
 
@@ -7209,7 +7211,9 @@ Since interaction terms can be highly correlated with independent predictors, it
 ##           2.189565           9.246489          12.308142
 \end{verbatim}
 
-\(VIF\) is greater than 5 for both \texttt{org\_tenure} and the interaction term; therefore, there is a problematic level of collinearity between these variables. A common method of addressing collinearity in the context of interaction testing is \textbf{variable centering}, in which each value of the predictor is subtracted from its mean (\(x - \bar{x}\)). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
+\(VIF\) is greater than 5 for both \texttt{org\_tenure} and the interaction term; therefore, there is a problematic level of collinearity between these variables.
+
+A common method of addressing collinearity in the context of interaction testing is \textbf{variable centering}, in which each value of the predictor is subtracted from its mean (\(x - \bar{x}\)). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
 
 \providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
 
@@ -7309,6 +7313,8 @@ Since interaction terms can be highly correlated with independent predictors, it
 
 After centering the variables, \(VIF\) is well beneath the threshold of 5.
 
+Comparing Figure \ref{fig:mlm-int} to Figure \ref{fig:mlm-int-cntrd}, we can observe that the main effects for \texttt{job\_lvl} and \texttt{org\_tenure} are inflated -- and population parameter estimates less precise (larger \(SE\)) -- when high collinearity is present.
+
 To better understand the nature of the interaction effect (\(\beta\) = -2.51, \(t\)(405) = -8.39, \(p\) \textless{} .001), two equations can be built to evaluate changes in the slope of the relationship with high (\(\bar{x}\) + 1\(s\)) and low (\(\bar{x}\) - 1\(s\)) organization tenure:
 
 \begin{itemize}
@@ -7330,13 +7336,41 @@ where 6.57 is \texttt{mean(data\$org\_tenure)}, 5.12 is \texttt{sd(data\$org\_te
 \caption{Regression of square root transformed YTD sales onto job level x organization tenure interaction term. High organization tenure (red line): Y = -2.51 (6.57 + 5.12)X + 276.56. Low organization tenure (blue line): Y = -2.51 (6.57 - 5.12)X + 276.56.}\label{fig:int-effects}
 \end{figure}
 
-As shown in Figure \ref{fig:int-effects}, the slope of both regression lines is negative. However, the drop in sales is far more significant as job level increases for those with high (\(\bar{x} + 1s\)) organization tenure relative to those with low (\(\bar{x} - 1s\)) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels that may explain this difference.
+As shown in Figure \ref{fig:int-effects}, the slope of both regression lines is negative. However, the drop in sales is much more significant as job level increases for those with high (\(\bar{x} + 1s\)) organization tenure relative to those with low (\(\bar{x} - 1s\)) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels.
 
 \hypertarget{mediation}{%
 \subsection{Mediation}\label{mediation}}
 
+As discussed in Chapter \ref{measure-sampl}, mediating variables may fully or partially mediate the relationship between a predictor and response. Full mediation indicates that the mediator fully explains the effect; in other words, without the mediator in the model, there is no relationship between an IV and DV. Partial mediation indicates that the mediator partially explains the effect; that is, there is still a relationship between an IV and DV without the mediator in the model.
+
+The implementation of Baron and Kenny's (1986) approach to testing full and partial mediation is very straightforward.
+
 \hypertarget{review-questions-7}{%
 \section{Review Questions}\label{review-questions-7}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  What is Ordinary Least Squares (OLS) regression, and how does it work?
+\item
+  What assumptions must be satisifed to fit a linear model?
+\item
+  What does a statistically significant result for the Breusch-Pagan test indicate about linear model assumptions?
+\item
+  What does a statistically significant result for the Shapiro-Wilk test indicate about linear model assumptions?
+\item
+  In what ways can high collinearity among predictors impact the quality of model results?
+\item
+  When are outliers problematic for fitting a regression model?
+\item
+  How is unstandardized \(\beta\) interpreted in the output of a linear model?
+\item
+  How does the delta between \(R^2\) and Adjusted \(R^2\) change as additional non-significant variables are included in a model?
+\item
+  How does the backward stepwise variable selection procedure work?
+\item
+  What are some ways regression can be leveraged to isolate the relationship of a particular variable with the response beyond a set of controls?
+\end{enumerate}
 
 \hypertarget{glm}{%
 \chapter{Generalized Linear Regression}\label{glm}}

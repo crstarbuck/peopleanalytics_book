@@ -165,7 +165,7 @@ slm.fit <- lm(ytd_leads ~ engagement, data)
   
   Before performing model diagnostics, it is important to note the following:
   
-  1. Multicollinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
+  1. Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
   2. Outliers are not always an issue, as we discussed in Chapter \@ref(data-wrang-prep). Figure \@ref(fig:high-leverage) illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 
 ```{r high-leverage, out.width = "100%", echo = FALSE, fig.cap = 'Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers.', fig.align = 'center', message = FALSE, warning = FALSE}
@@ -318,6 +318,8 @@ flextable::as_flextable(slm.fit)
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
   The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., $\beta$ is the square root or natural log of the average change in leads for a one-level increase in engagement).
+  
+  Thanks to the properties of the CLT, which requires normally distributed *residuals*, we can be confident that the true relationship between engagement and YTD leads in the population is not 0 since the 95% CI ($\beta$ +/- 2$SE$) does not include 0.
   
   While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
   
@@ -541,7 +543,7 @@ flextable::as_flextable(mlm.fit.scaled)
   
 ## Model Comparisons
 
-  Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts.
+  Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs. female employees or across ethnic cohorts.
   
   To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
 
@@ -634,7 +636,9 @@ car::vif(mlm.fit.int)
 
 ```
   
-  $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
+  $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. 
+  
+  A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
   
 ```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term.', fig.align = 'center'}
 
@@ -659,6 +663,8 @@ car::vif(mlm.fit.int)
   
   After centering the variables, $VIF$ is well beneath the threshold of 5.
   
+  Comparing Figure \@ref(fig:mlm-int) to Figure \@ref(fig:mlm-int-cntrd), we can observe that the main effects for `job_lvl` and `org_tenure` are inflated -- and population parameter estimates less precise (larger $SE$) -- when high collinearity is present.
+  
   To better understand the nature of the interaction effect ($\beta$ = -2.51, $t$(405) = -8.39, $p$ < .001), two equations can be built to evaluate changes in the slope of the relationship with high ($\bar{x}$ + 1$s$) and low ($\bar{x}$ - 1$s$) organization tenure:
   
   * *High organization tenure*: $Y = -2.51 (6.57 + 5.12)X + 276.56$
@@ -679,13 +685,34 @@ ggplot2::theme_bw()
 
 ```  
 
-  As shown in Figure \@ref(fig:int-effects), the slope of both regression lines is negative. However, the drop in sales is far more significant as job level increases for those with high ($\bar{x} + 1s$) organization tenure relative to those with low ($\bar{x} - 1s$) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels that may explain this difference.
+  As shown in Figure \@ref(fig:int-effects), the slope of both regression lines is negative. However, the drop in sales is much more significant as job level increases for those with high ($\bar{x} + 1s$) organization tenure relative to those with low ($\bar{x} - 1s$) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels.
 
 ### Mediation
 
+  As discussed in Chapter \@ref(measure-sampl), mediating variables may fully or partially mediate the relationship between a predictor and response. Full mediation indicates that the mediator fully explains the effect; in other words, without the mediator in the model, there is no relationship between an IV and DV. Partial mediation indicates that the mediator partially explains the effect; that is, there is still a relationship between an IV and DV without the mediator in the model.
 
-
-
+  The implementation of Baron and Kenny's (1986) approach to testing full and partial mediation is very straightforward.
+  
+  
 
 ## Review Questions
 
+1. What is Ordinary Least Squares (OLS) regression, and how does it work?
+
+2. What assumptions must be satisifed to fit a linear model?
+
+3. What does a statistically significant result for the Breusch-Pagan test indicate about linear model assumptions?
+
+4. What does a statistically significant result for the Shapiro-Wilk test indicate about linear model assumptions?
+
+5. In what ways can high collinearity among predictors impact the quality of model results?
+
+6. When are outliers problematic for fitting a regression model?
+
+7. How is unstandardized $\beta$ interpreted in the output of a linear model?
+
+8. How does the delta between $R^2$ and Adjusted $R^2$ change as additional non-significant variables are included in a model?
+
+9. How does the backward stepwise variable selection procedure work?
+
+10. What are some ways regression can be leveraged to isolate the relationship of a particular variable with the response beyond a set of controls?
