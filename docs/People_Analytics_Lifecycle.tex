@@ -623,7 +623,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpZhZyo5/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpPcMKwd/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -7713,14 +7713,14 @@ Linear regression is a powerful approach to understanding the relative strength 
 
 When working with time series data in a forecasting context, there is often a seasonality component about the relationship between time and the response that is being estimated. \textbf{Seasonality} is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in regression models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
 
-The simple linear regression equation, \$ Y = \beta\_0 + \beta\_1 X + \epsilon \$, can be easily extended to include higher order polynomial terms:
+The simple linear regression equation, \[ Y = \beta_0 + \beta_1 X + \epsilon \], can be easily extended to include higher order polynomial terms:
 
 \begin{itemize}
 \tightlist
 \item
-  Quadratic (2nd Order Polynomial) Regression Equation: \$ Y = \beta\_0 + \beta\_1 X + \beta\_2 X\^{}2 + \epsilon \$
+  Quadratic (2nd Order Polynomial) Regression Equation: \[ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon \]
 \item
-  Cubic (3nd Order Polynomial) Regression Equation: \$ Y = \beta\_0 + \beta\_1 X + \beta\_2 X\^{}2 + \beta\_3 X\^{}3 + \epsilon \$
+  Cubic (3nd Order Polynomial) Regression Equation: \[ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon \]
 \end{itemize}
 
 Figure \ref{fig:poly-fun} illustrates how higher-order polynomial functions can fit more curvilinear trends relative to a simple linear projection.
@@ -8322,23 +8322,11 @@ Given the cubic nature of the change in average turnover year-over-year, let's a
 
 The inclusion of higher-order polynomials on \texttt{year} result in a perfect fit to these data (\(R^2\) = 1). This indicates that the slope of the relationship between \texttt{month} and \texttt{turnover\_rate} is perfectly consistent across years and within remote and non-remote groups -- an improbable situation in practice.
 
-Let's leverage the \texttt{equatiomatic} library to construct the equation that resulted in a perfect fit:
+Our resulting equation for estimating \texttt{turnover\_rate} on the basis of a combination of values for \texttt{year}, \texttt{month}, and \texttt{remote} is defined by:
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{# Load library}
-\KeywordTok{library}\NormalTok{(equatiomatic)}
+\[ \hat y = -1.87 + 5.91year - 2.71year^2 + .36year^3 + 2.41month - .41month^2 + .02month^3 - 1.64remote + \epsilon \]
 
-\CommentTok{# Convert model to LaTex regression equation}
-\KeywordTok{extract_eq}\NormalTok{(ps.cube.fit)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{equation}
-\operatorname{turnover\_rate} = \alpha + \beta_{1}(\operatorname{year}) + \beta_{2}(\operatorname{year\texttt{\^{}}2}) + \beta_{3}(\operatorname{year\texttt{\^{}}3}) + \beta_{4}(\operatorname{month}) + \beta_{5}(\operatorname{month\texttt{\^{}}2}) + \beta_{6}(\operatorname{month\texttt{\^{}}3}) + \beta_{7}(\operatorname{remote}_{\operatorname{Yes}}) + \epsilon
-\end{equation}
-
-While this may initially seem like a cause for celebration, the chances that future turnover will conform perfectly to these simulated data are low. As stated earlier in this chapter, a model that results in a perfect fit is likely too flexible to generalize well to other data, and methods of evaluating how models will perform on future data will be covered in Chapter \ref{pred-mod}.
+While the performance of this model may initially seem like a cause for celebration, the probability is low that future turnover will conform perfectly to the patterning characteristic of these simulated data. As stated earlier in this chapter, a model that results in a perfect fit is likely too flexible to generalize well to other data, and methods of evaluating how well models are likely to perform on future data will be covered in Chapter \ref{pred-mod}.
 
 \hypertarget{logistic-regression}{%
 \section{Logistic Regression}\label{logistic-regression}}

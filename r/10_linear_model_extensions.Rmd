@@ -1,16 +1,18 @@
-# Generalized Linear Regression {#glm}
+# Linear Model Extensions {#lme}
 
 
 ## Polynomial Regression
 
   Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. However, relationships between variables are often nonlinear. Therefore, we need to generalize the linear regression framework to respect the nonlinear nature of relationships between variables and achieve a more flexible fit. Logarithmic and square root transformations were covered in the context of addressing violations of the residual normality assumption for linear models in Chapter \@ref(lm), but the nature of the relationships of predictors with the response may warrant a more complex set of transformations to fit a model to curvilinear data.
   
-  When working with time series data in a forecasting context, there is often a seasonality component about the relationship between time and the response that is being estimated. **Seasonality** is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in regression models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
+  In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable, such as building a recruiter capacity model to estimate hires by month. 
   
-  The simple linear regression equation, $$ Y = \beta_0 + \beta_1 X + \epsilon $$, can be easily extended to include higher order polynomial terms:
+  There is often a seasonality component inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). **Seasonality** is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
   
-  * Quadratic (2nd Order Polynomial) Regression Equation: $$ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon $$
-  * Cubic (3nd Order Polynomial) Regression Equation: $$ Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon $$
+  The simple linear regression equation, $Y = \beta_0 + \beta_1 X + \epsilon$, can be easily extended to include higher order polynomial terms and achieve a more flexible fit:
+  
+  * Quadratic (2nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon$
+  * Cubic (3nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$
   
   Figure \@ref(fig:poly-fun) illustrates how higher-order polynomial functions can fit more curvilinear trends relative to a simple linear projection.
   
@@ -66,11 +68,11 @@ ggpubr::ggarrange(p_lin, p_quad, p_cube, ncol = 3, nrow = 1)
 
   It is important to note that adding higher order terms to the regression equation usually increases $R^2$ due to a more flexible fit to the data, but the additional coefficients are not necessarily significant. $R^2$ will approach 1 as the power of $x$ approaches $n-1$ since the fit line will connect every data point. However, a model that results in a perfect fit is likely too flexible to generalize well to other data. This problem is known as overfitting and will be covered in Chapter \@ref(pred-mod). As a general rule, it is best not to add polynomial terms beyond the second- or third-orders to protect against overfitting the model.
   
-  Comparing the Adjusted $R^2$ for models with higher-order terms to one with only linear terms will help in determining whether higher-order polynomials add value to the model in explaining incremental variance in the response. Evaluating whether the coefficients on higher-order polynomials are statistically significant is important in determining *which variables* are contributing to observed increases in Adjusted $R^2$.
+  Comparing the Adjusted $R^2$ for models with higher-order terms to one with only linear terms will help in determining whether higher-order polynomials add value to the model in explaining incremental variance in the response. Evaluating whether the coefficients on higher-order polynomials are statistically significant is important in determining *which variables* are contributing to any observed increases in Adjusted $R^2$.
   
   Let's demonstrate how to fit a regression model with polynomial terms in R using the `turnover_trends` dataset. First, we will subset this data frame to level 4 People Scientists who work remotely, based on the notion that turnover varies by `level` and `remote`, and then visualize the turnover trend to understand month-over-month variation across years.
   
-```{r ps-turnover-trends, out.width = "100%", echo = FALSE, fig.cap = 'Year 1-5 turnover trends for level 4 People Scientists, stratified by remote (blue line) vs. non-remote (grey line).', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ps-turnover-trends, out.width = "100%", echo = FALSE, fig.cap = 'Year 1-5 turnover trends for level 4 People Scientists, stratified by remote (dark grey line) vs. non-remote (light grey line).', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(dplyr)
@@ -86,7 +88,7 @@ p_ps_yr1 <- ggplot2::ggplot(data = subset(ps_turnover, year == 1), aes(x = month
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::scale_y_continuous(breaks = 1:10) +
-            ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values=c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Year 1", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -97,7 +99,7 @@ p_ps_yr2 <- ggplot2::ggplot(data = subset(ps_turnover, year == 2), aes(x = month
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::scale_y_continuous(breaks = 1:10) +
-            ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values=c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Year 2", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -108,7 +110,7 @@ p_ps_yr3 <- ggplot2::ggplot(data = subset(ps_turnover, year == 3), aes(x = month
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::scale_y_continuous(breaks = 1:10) +
-            ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values=c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Year 3", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -119,7 +121,7 @@ p_ps_yr4 <- ggplot2::ggplot(data = subset(ps_turnover, year == 4), aes(x = month
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::scale_y_continuous(breaks = 1:10) +
-            ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values=c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Year 4", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -130,7 +132,7 @@ p_ps_yr5 <- ggplot2::ggplot(data = subset(ps_turnover, year == 5), aes(x = month
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::scale_y_continuous(breaks = 1:10) +
-            ggplot2::scale_color_manual(values = c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values = c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Year 5", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -182,7 +184,7 @@ flextable::as_flextable(ps.cube.fit)
   
   While the cubic model achieved statistical significance at the $p$ < .001 level, 86% of the variance in monthly turnover rates remains unexplained (1 - $R^2$ = .86). To improve the performance of the model, our model needs to reflect the fact that turnover varies as a function of `year` and `remote` in addition to `month`.
 
-```{r turnover-pred, out.width = "100%", echo = FALSE, fig.cap = 'Linear, quadratic, and cubic model fit (red dashed line) to remote (blue points) and non-remote (grey points) groups.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r turnover-pred, out.width = "100%", echo = FALSE, fig.cap = 'Linear, quadratic, and cubic model fit (red dashed line) to remote (dark grey points) and non-remote (light grey points) groups.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Apply models to predict people scientist turnover rates for each month in year 1
 ps_lin_pred <- data.frame(month = 1:12,
@@ -197,7 +199,7 @@ p_ps_lin <- ggplot2::ggplot(data = ps_turnover, aes(x = month, y = turnover_rate
             ggplot2::geom_point() +
             ggplot2::scale_x_continuous(breaks = 1:12) +
             ggplot2::geom_function(fun = function(x) {ps.lin.fit$coefficients[[2]]*x + ps.lin.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
-            ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+            ggplot2::scale_color_manual(values = c("#B8BDBF", "#595959")) +
             ggplot2::labs(title = "Linear", x = "Month", y = "Turnover Rate") +
             ggplot2::theme_bw() +
             ggplot2::theme(legend.position = "none") +
@@ -207,7 +209,7 @@ p_ps_quad <- ggplot2::ggplot(data = ps_turnover, aes(x = month, y = turnover_rat
              ggplot2::geom_point() +
              ggplot2::scale_x_continuous(breaks = 1:12) +
              ggplot2::geom_function(fun = function(x) {ps.quad.fit$coefficients[[2]]*x + ps.quad.fit$coefficients[[3]]*x^2 + ps.quad.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
-             ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+             ggplot2::scale_color_manual(values = c("#B8BDBF", "#595959")) +
              ggplot2::labs(title = "Quadratic", x = "Month", y = "Turnover Rate") +
              ggplot2::theme_bw() +
              ggplot2::theme(legend.position = "none") +
@@ -217,7 +219,7 @@ p_ps_cube <- ggplot2::ggplot(data = ps_turnover, aes(x = month, y = turnover_rat
              ggplot2::geom_point() +
              ggplot2::scale_x_continuous(breaks = 1:12) +
              ggplot2::geom_function(fun = function(x) {ps.cube.fit$coefficients[[2]]*x + ps.cube.fit$coefficients[[3]]*x^2 + ps.cube.fit$coefficients[[4]]*x^3 + ps.cube.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
-             ggplot2::scale_color_manual(values=c("#B8BDBF", "#0080FF")) +
+             ggplot2::scale_color_manual(values = c("#B8BDBF", "#595959")) +
              ggplot2::labs(title = "Cubic", x = "Month", y = "Turnover Rate") +
              ggplot2::theme_bw() +
              ggplot2::theme(legend.position = "none") +
@@ -228,9 +230,9 @@ ggpubr::ggarrange(p_ps_lin, p_ps_quad, p_ps_cube, ncol = 3, nrow = 1)
 
 ```
 
-  As shown in Figure \@ref(fig:turnover-pred), the multidimensional data vary widely around estimates from the two-dimensional models (i.e., `turnover_rate` predicted on the basis of `month`). While the cubic regression model reflects the seasonality in month-over-month turnover, there are notable differences between remote and non-remote turnover rates as well as differences across years.
+  As shown in Figure \@ref(fig:turnover-pred), the multidimensional data vary widely around estimates produced by the two-dimensional models (i.e., `turnover_rate` predicted on the basis of `month`). While the cubic regression model reflects the seasonality in month-over-month turnover, there are notable differences between remote and non-remote turnover rates as well as differences across years.
 
-  Let's add `remote` to the model to see how performance changes.
+  Let's add `remote` to the cubic regression model to see how performance changes.
 
 ```{r ps-cube-mnthrem-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month and remote.', fig.align = 'center'}
 
@@ -244,7 +246,7 @@ flextable::as_flextable(ps.cube.fit)
 
   As shown in Figure \@ref(fig:ps-cube-mnthrem-output), accounting for remote status increases explained variance by 21% (.35 - .14). In addition to the change in explained variance $\Delta R^2$, the coefficient on `remote` is statistically significant ($\beta$ = -1.64, $t$(115) = -6.09, $p$ < .001). On average, the turnover rate for remote People Scientists is 1.64% lower than the turnover rate for non-remote People Scientists.
 
-  Next, let's include `year` in the model since turnover rates also vary by year.
+  Next, let's include `year` in the model since turnover rates also vary along this dimension.
 
 ```{r ps-cube-yrmnthrem-output1, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
 
@@ -256,16 +258,35 @@ flextable::as_flextable(ps.cube.fit)
 
 ```
 
-  Explained variance increases to 62% by adding `year` to the model. While the coefficient on `year` is statistically significant ($\beta$ = .66, $t$(114) = 8.93, $p$ < .001), the change in attrition by year is not linear. Since month-over-month seasonality is consistent across years, a simple turnover rate average by year will provide evidence that a linear year-over-year growth rate will not capture the more complex trend present in these data.
+  Explained variance increases to 62% by adding `year` to the model. While the coefficient on `year` is statistically significant ($\beta$ = .66, $t$(114) = 8.93, $p$ < .001), the change in attrition by year is not linear. Visualizing the distribution of turnover rates by year will provide evidence that a linear year-over-year growth factor will result in some large residuals since it will not capture the more complex trend present in these data.
   
-```{r message = FALSE, warning = FALSE, results = "asis"}
+```{r ps-turnover_yrly_dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center'}
 
-# Calculate average turnover rate by year
-ps_turnover %>% group_by(year) %>% summarise_at(vars(turnover_rate), list(name = mean))
+# Model linear relationship between year and turnover rate, grouped by remote vs. non-remote
+ps.lin.fit <- lm(turnover_rate ~ year + remote, data = ps_turnover)
+
+# Build plots to visualize turnover rate distribution across years, grouped by remote status
+p_ps_rem <- ggplot2::ggplot(data = subset(ps_turnover, remote == 'Yes'), aes(x = year, y = turnover_rate, group = year)) + 
+            ggplot2::labs(title = "Remote", x = "Year", y = "Turnover Rate") +
+            ggplot2::theme_bw() +
+            ggplot2::geom_point(color = "#B8BDBF") +
+            ggplot2::geom_function(fun = function(x) {ps.lin.fit$coefficients[[2]]*x + ps.lin.fit$coefficients[[3]] + ps.lin.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+            ggplot2::scale_color_manual(values=c("#B8BDBF", "#595959")) +
+            ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+p_ps_nrem <- ggplot2::ggplot(data = subset(ps_turnover, remote == 'No'), aes(x = year, y = turnover_rate, group = year)) + 
+             ggplot2::labs(title = "Non-Remote", x = "Year", y = "Turnover Rate") +
+             ggplot2::theme_bw() +
+             ggplot2::geom_point(color = "#B8BDBF") +
+             ggplot2::geom_function(fun = function(x) {ps.lin.fit$coefficients[[2]]*x + ps.lin.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+             ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Display distribution visualizations
+ggpubr::ggarrange(p_ps_rem, p_ps_nrem, ncol = 2, nrow = 1)
 
 ``` 
 
-  Given the cubic nature of the change in average turnover year-over-year, let's add quadratic and cubic terms for `year` to examine changes in model performance:
+  Given the cubic nature of the change in turnover year-over-year, let's add quadratic and cubic terms for `year` to examine changes in model performance:
 
 ```{r ps-cube-yrmnthrem2-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
 
@@ -277,13 +298,13 @@ flextable::as_flextable(ps.cube.fit)
 
 ```
 
-  The inclusion of higher-order polynomials on `year` result in a perfect fit to these data ($R^2$ = 1). This indicates that the slope of the relationship between `month` and `turnover_rate` is perfectly consistent across years and within remote and non-remote groups -- an improbable situation in practice.
+  The inclusion of higher-order polynomials on `year` result in a perfect fit to these data ($R^2$ = 1). This indicates that the slope of the relationship between `month` and `turnover_rate` is perfectly consistent across years and within remote and non-remote groups.
   
-  Our resulting equation for estimating `turnover_rate` on the basis of a combination of values for `year`, `month`, and `remote` is defined by:
+  Our resulting equation for estimating `turnover_rate` on the basis of a combination of linear and nonlinear values of `year`, `month`, and `remote` is defined by:
   
   $$ \hat y = -1.87 + 5.91year - 2.71year^2 + .36year^3 + 2.41month - .41month^2 + .02month^3 - 1.64remote + \epsilon $$
 
-  While the performance of this model may initially seem like a cause for celebration, the probability is low that future turnover will conform perfectly to the patterning characteristic of these simulated data. As stated earlier in this chapter, a model that results in a perfect fit is likely too flexible to generalize well to other data, and methods of evaluating how well models are likely to perform on future data will be covered in Chapter \@ref(pred-mod).
+  The performance of this model may initially seem like a cause for celebration, but the probability is low that this model would estimate future turnover with such a high degree of accuracy. While these data were generated with a goal to simplify illustrations and facilitate a working knowledge of polynomial regression mechanics, data which conform to such a constant pattern of seasonality across multiple years is a highly improbable situation in practice. As stated earlier in this chapter, a model that results in a perfect fit is likely too flexible to generalize well to other data, and methods of evaluating how well models are likely to perform on future data will be covered in Chapter \@ref(pred-mod).
 
 ## Logistic Regression
 
@@ -304,7 +325,9 @@ Logistic regression is an excellent tool when the outcome is categorical. Logist
 ### Proportional Odds Logistic Regression
 
 
+
 ## Poisson Regression
+
 
 
 ## Review Questions
