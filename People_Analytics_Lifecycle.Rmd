@@ -5063,18 +5063,17 @@ flextable::as_flextable(med.fit.four)
 
 <!--chapter:end:r/09_linear_regression.Rmd-->
 
-# Linear Model Extensions {#lme}
+# Non-Linear Regression {#lme}
 
+  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this chapter, we will discuss how to extend the linear regression framework and relax linear model assumptions to respect the non-linear nature of relationships.
 
 ## Polynomial Regression
-
-  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. However, relationships between variables are often nonlinear. Therefore, we need to generalize the linear regression framework to respect the nonlinear nature of relationships between variables and achieve a more flexible fit. Logarithmic and square root transformations were covered in the context of addressing violations of the residual normality assumption for linear models in Chapter \@ref(lm), but the nature of the relationships of predictors with the response may warrant a more complex set of transformations to fit a model to curvilinear data.
   
-  In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable, such as building a recruiter capacity model to estimate hires by month. 
+  In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., workforce planning model that estimates hires by month).
   
-  There is often a seasonality component inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). **Seasonality** is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
+  There is often a seasonality element inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). **Seasonality** is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
   
-  The simple linear regression equation, $Y = \beta_0 + \beta_1 X + \epsilon$, can be easily extended to include higher order polynomial terms and achieve a more flexible fit:
+  The simple linear regression equation, $Y = \beta_0 + \beta_1 X + \epsilon$, can be easily extended to include higher order polynomial terms and achieve a more flexible fit. This is known as **polynomial regression**.
   
   * Quadratic (2nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon$
   * Cubic (3nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$
@@ -5131,7 +5130,7 @@ ggpubr::ggarrange(p_lin, p_quad, p_cube, ncol = 3, nrow = 1)
 
 ```
 
-  It is important to note that adding higher order terms to the regression equation usually increases $R^2$ due to a more flexible fit to the data, but the additional coefficients are not necessarily significant. $R^2$ will approach 1 as the power of $x$ approaches $n-1$ since the fit line will connect every data point. However, a model that results in a perfect fit is likely too flexible to generalize well to other data. This problem is known as overfitting and will be covered in Chapter \@ref(pred-mod). As a general rule, it is best not to add polynomial terms beyond the second- or third-orders to protect against overfitting the model.
+  It is important to note that adding higher order terms to the regression equation usually increases $R^2$ due to a more flexible fit to the data, but the additional coefficients are not necessarily significant. $R^2$ will approach 1 as the power of $x$ approaches $n-1$ since the fit line will connect every data point. However, a model that results in a perfect -- or near perfect -- fit is likely too flexible to generalize well to other data. This problem is known as overfitting and will be covered in Chapter \@ref(pred-mod). As a general rule, it is best not to add polynomial terms beyond the second or third orders to protect against overfitting the model.
   
   Comparing the Adjusted $R^2$ for models with higher-order terms to one with only linear terms will help in determining whether higher-order polynomials add value to the model in explaining incremental variance in the response. Evaluating whether the coefficients on higher-order polynomials are statistically significant is important in determining *which variables* are contributing to any observed increases in Adjusted $R^2$.
   
@@ -5208,7 +5207,7 @@ ggpubr::ggarrange(p_ps_yr1, p_ps_yr2, p_ps_yr3, p_ps_yr4, p_ps_yr5, ncol = 3, nr
 
 ```
   
-  As we can see in Figure \@ref(fig:ps-turnover-trends), the relationship between month and turnover rate is nonlinear, and level 4 People Scientists who work remotely leave at lower rates relative to those who do not work remotely. There is a clear seasonal pattern that is consistent across all five years as well as remote vs. non-remote groups; namely, there is a spike in turnover between March and June as well as later in the year (November/December). Fitting a model to these data will require nonlinear terms.
+  As we can see in Figure \@ref(fig:ps-turnover-trends), the relationship between month and turnover rate is non-linear, and level 4 People Scientists who work remotely leave at lower rates relative to those who do not work remotely. There is a clear seasonal pattern that is consistent across all five years as well as remote vs. non-remote groups; namely, there is a spike in turnover between March and June as well as later in the year (November/December). Fitting a model to these data will require non-linear terms.
   
   Adding polynomial terms requires an indicator variable `I()` in which the value of $x$ is raised to the desired order (e.g., $x^2$ = `I(x^2)`). Let's start by fitting linear, quadratic, and cubic regression models (to compare performance) using only `month` as a predictor. Notice that the shape of the trends resemble the cubic function shown in Figure \@ref(fig:poly-fun) in that there are two discernible inflection points at which the trend reverses directions.
 
@@ -5365,7 +5364,7 @@ flextable::as_flextable(ps.cube.fit)
 
   The inclusion of higher-order polynomials on `year` result in a perfect fit to these data ($R^2$ = 1). This indicates that the slope of the relationship between `month` and `turnover_rate` is perfectly consistent across years and within remote and non-remote groups.
   
-  Our resulting equation for estimating `turnover_rate` on the basis of a combination of linear and nonlinear values of `year`, `month`, and `remote` is defined by:
+  Our resulting equation for estimating `turnover_rate` on the basis of a combination of linear and non-linear values of `year`, `month`, and `remote` is defined by:
   
   $$ \hat y = -1.87 + 5.91year - 2.71year^2 + .36year^3 + 2.41month - .41month^2 + .02month^3 - 1.64remote + \epsilon $$
 
@@ -5373,11 +5372,17 @@ flextable::as_flextable(ps.cube.fit)
 
 ## Logistic Regression
 
-Logistic regression is an excellent tool when the outcome is categorical. Logistic regression allows us to model the probability of different classes -- a type of modeling often referred to as classification. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., skills, job families), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level).
+  **Logistic regression** is an excellent tool for modeling the probability of different classes of a categorical outcome -- a type of modeling often referred to as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level).
+
+  You may be wondering if linear regression can be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-wrang-prep). 
+  
+  In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y$ > .5 would be indicative of a termination prediction. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. 
+  
+  Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given `engagement`, which would be written as: Pr(`active` = Yes|`engagement`). A probability of `active` will be estimated for a given value of `engagement`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives, we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
 ### Binomial Logistic Regression
 
-
+  
 
 ### Multinomial Logistic Regression
 
@@ -5398,7 +5403,7 @@ Logistic regression is an excellent tool when the outcome is categorical. Logist
 ## Review Questions
 
 
-<!--chapter:end:r/10_linear_model_extensions.Rmd-->
+<!--chapter:end:r/10_nonlinear_regression.Rmd-->
 
 # Predictive Models {#pred-mod}
 
