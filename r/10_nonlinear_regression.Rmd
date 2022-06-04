@@ -311,46 +311,73 @@ flextable::as_flextable(ps.cube.fit)
 
   You may be wondering if linear regression can be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-wrang-prep). 
   
-  In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y$ > .5 would be indicative of a termination prediction. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. 
+  In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y$ > .5 would be indicative of a termination prediction. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. 
   
-  Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given a value for `engagement`, which would be written as $Pr$(`active` = Yes | `engagement`) or simply, $p$(`engagement`). A probability of `active` = Yes will be estimated for a given value of `engagement`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., flag at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
+  This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression.
+  
+  Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given a value for `interview_rating`, which would be written as $Pr$(`active` = Yes | `interview_rating`) or simply, $p$(`inteview_rating`). A probability of `active` = Yes will be estimated for a given value of `interview_rating`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
 ### Binomial Logistic Regression
 
-  Since estimating a binary outcome using linear regression can result in $p(X)$ < 0 for some values of $X$ and $p$($X$) > 1 for others, we need a function that contrains the output to a [0,1] interval. For logistic regression, the *logistic* function is used. This function converts the linear model, $p(X) = \beta_0 + \beta_1 X$, to the following form:
+  Since estimating a binary outcome using linear regression can result in $p(X)$ < 0 for some values of $X$ and $p$($X$) > 1 for others, we need a function that constrains the output to a [0,1] interval. For logistic regression, the *logistic* function is used. This function converts the linear model, $p(X) = \beta_0 + \beta_1 X$, to the following form:
   
   $$ p(X) = \frac{e^{\beta_0 + \beta_1 X}}{1+e^{\beta_0 + \beta_1 X}} $$
 
   Irrespective of the value of $X$, the logistic function will always produce an *S-shaped* curve. 
   
-```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto YTD sales for salespeople.', fig.align = 'center'}
+  Taking the ratio of $\frac {p(X)}{1 - p(X)}$ will give the odds of the outcome, which ranges between 0 (very low) and $\infty$ (very high). The logarithm of this ratio, $\log(\frac {p(X)}{1 - p(X)})$, is known as the *log odds* or *logit*, and is fundamental to logistic regression. Log odds is a *monotonic transformation*, meaning the greater the odds, the greater the log of odds (and vice versa).
+  
+  Recall that in linear regression, the coefficient $\beta$ on a predictor is interpreted as the average change in $Y$ for a one-unit increase in the respective predictor's value. In logistic regression, the interpretation is similar but rather than $\beta$ representing the average change in $Y$, it represents the average unit change in the *log of the odds* for a one-unit increase in the predictor's value.
+  
+  In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. Recall from Chapter \@ref(inf-stats) that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
+  
+```{r glm, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating.', fig.align = 'center'}
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
-# Subset employees data frame; leads are only applicable for those in sales positions
-data <- subset(employees, job_title %in% c('Sales Executive', 'Sales Representative'))
-
 # Dummy code active status to 1/0
-data$active <- ifelse(data$active == 'Yes', 1, 0)
+employees$active <- ifelse(employees$active == 'Yes', 1, 0)
 
-# Regress active on engagement using lm() and glm() functions
-lm.fit <- lm(ytd_sales ~ engagement, data = data)
-glm.fit <- glm(active ~ engagement, data = data, family = 'binomial')
+# Fit a logistic regression model
+glm.fit <- glm(active ~ interview_rating, data = employees, family = 'binomial')
+
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(glm.fit)
+
+```
+
+  The output shown in Figure \@ref(fig:glm) has some differences relative to the output of a linear regression model. 
+  
+  * `Estimate`: Average change in the log of odds for each one-unit increase in the value of the predictor
+  * `z value`: Ratio of Estimate / Standard Error. Assuming $\alpha$ = .05, a $z$-value of 2 is a good rule of thumb for achieving statistical significance ($p$ < .05) per the properties of the normal distribution.
+  * `Null deviance`: Measure of how well the response can be predicted by a model with only an intercept term; the lower the number, the better the fit.
+  * `Residual deviance`: Measure of how well the response can be predicted by a model with $p$ predictors; the lower the number, the better the fit. The larger the delta between residual and null deviance, the better the model with $p$ predictors relative to the intercept-only model.
+  
+  Given the positive coefficient on `interview_rating`, we can interpret this to mean that for each one-unit increase in the average interviewer rating during the onsite stage of the employee's recruiting process, the log of the odds of the employee staying with the organization (`active` status of `Yes` coded as $1$) increases by 21.96.
+  
+  To illustrate why the logistic function is necessary, let's demonstrate differences in applying linear and logistic regression models by regressing a binary outcome `active` onto `interview_rating`.
+
+```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating.', fig.align = 'center'}
+
+# Fit a linear model to illustrate why this should not be done with a binary outcome
+lm.fit <- lm(active ~ interview_rating, data = employees)
 
 # Construct plots
-p_lm <- ggplot2::ggplot(data = data, aes(x = ytd_sales, y = active)) + 
-        ggplot2::geom_point() +
+p_lm <- ggplot2::ggplot(data = employees, aes(x = interview_rating, y = active)) + 
+        ggplot2::geom_point(color = "grey") +
+        ggplot2::scale_y_continuous(breaks = c(0, .25, .50, .75, 1, 1.25)) +
         ggplot2::geom_function(fun = function(x) {lm.fit$coefficients[[2]]*x + lm.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
-        ggplot2::labs(title = "Linear", x = "YTD Sales", y = "Active") +
+        ggplot2::labs(title = "Linear", x = "Interviewer Rating", y = "Active") +
         ggplot2::theme_bw() +
         ggplot2::theme(legend.position = "none") +
         ggplot2::theme(plot.title = element_text(hjust = 0.5))
 
-p_glm <- ggplot2::ggplot(data = data, aes(x = ytd_sales, y = active)) + 
-         ggplot2::geom_point() +
+p_glm <- ggplot2::ggplot(data = employees, aes(x = interview_rating, y = active)) + 
+         ggplot2::geom_point(color = "grey") +
+         ggplot2::scale_y_continuous(breaks = c(0, .25, .50, .75, 1, 1.25)) +
          ggplot2::stat_smooth(method = "glm", colour = "red", size = .5, linetype = "dashed", se = FALSE, method.args = list(family = binomial)) +
-         ggplot2::labs(title = "Logistic", x = "YTD Sales", y = "Active") +
+         ggplot2::labs(title = "Logistic", x = "Interviewer Rating", y = "Active") +
          ggplot2::theme_bw() +
          ggplot2::theme(legend.position = "none") +
          ggplot2::theme(plot.title = element_text(hjust = 0.5))
@@ -359,7 +386,12 @@ p_glm <- ggplot2::ggplot(data = data, aes(x = ytd_sales, y = active)) +
 ggpubr::ggarrange(p_lm, p_glm, ncol = 2, nrow = 1)
 
 ```
-
+  Figure \@ref(fig:lm-glm-compare) illustrates that for high values of `interview_rating`, a linear model would estimate probabilities for `active` that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the [0,1] interval does not make sense. On the other hand, the logistic function produces the *S-shaped* curve described previously. Using the logistic function, the probabilities are constrained to the [0,1] interval, and the visual reflects the fact that `active` can be perfectly predicted for low and high values of `interview_rating` but it is a mixed bag for values in the middle of the range (3.3 - 3.6).
+  
+  
+  
+  It is often helpful to explain the relationship between a binary predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor (e.g., attrition likelihood for remote and non-remote employees). Therefore, $(\beta - 1) * 100$ will provide the percentage increase or decrease in the odds of the included group (dummy coded as 1) relative to the omitted group (dummy coded as 0). For example, if $\beta = 2.75$, there is a $(2.75 - 1) * 100 = 175$ percent increase in the odds. If $\beta = .95$, there is a $(1 - .95) * 100 = 5$ percent decrease in the odds.
+  
 ### Multinomial Logistic Regression
 
 
