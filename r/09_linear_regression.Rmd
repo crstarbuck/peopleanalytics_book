@@ -26,18 +26,30 @@
   
   **Assumptions & Diagnostics**
 
-  From the outset, we must determine if a linear model is appropriate for the data at hand. Consistent with the assumptions of parametric tests covered in Chapter \@ref(aod), there are several assumptions that need to be validated to make this decision, and these largely relate to the residuals ($\hat{y}$ - $y$):
+  First, the **sample size** needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum -- and realistic -- $n$-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.
+  
+  Consistent with the assumptions of parametric tests covered in Chapter \@ref(aod), there are several assumptions that need to be validated to determine if a linear model is appropriate for understanding relationships in the data. These assumptions largely relate to the residuals ($\hat{y}$ - $y$):
   
   1. **Independence**: Residuals are independent of each other; consecutive residuals in time series data are unrelated
   2. **Homoscedasticity**: Variance of residuals is constant across values of $X$
   3. **Normality**: Residuals must be normally distributed (with mean of 0) across values of $X$
   4. **Linearity**: Relationship between $X$ and $Y$ is linear
   
-  In addition to these key assumptions, additional diagnostics are important to incorporate into the early data screening stage:
+  Beyond these core assumptions for linear models, additional diagnostics are important to incorporate into the early data screening stage:
   
-  2. **High-Leverage Observations**: Influential data that significantly changes the model fit
-  1. **Collinearity**: Independent variables that are highly correlated (these should be *independent*)
+  1. **High-Leverage Observations**: Influential data that significantly changes the model fit
+  2. **Collinearity**: Independent variables that are highly correlated (these should be *independent*)
+  
+## Sample Size
 
+  While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IVs, the power analysis section in Chapter \@ref(inf-stats) covered a more rigorous approach to calculating the sample size needed to observe significant effects.
+  
+  For linear regression, power analysis involves a comparison of model fit between a model with a full set of predictors relative to one with only a subset of the full model's predictors. The function from the `pwr` library to call is `pwr.f2.test(u = , v = , f2 = , sig.level = , power = )`, where `u` and `v` are the numerator and denominator degrees of freedom, respectively, and `f2` is defined as:
+  
+  $$ f^2 = \frac {R^2_{AB} - R^2_A}{1 - R^2_{AB}}, $$
+  
+  where $R^2_{AB}$ represents the variance accounted for by a full model with all predictors, and $R^2_A$ represents the variance accounted for by a model containing only a subset of the full model's predictors. For example, power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.
+  
 ## Simple Linear Regression
 
   **Simple linear regression** is a simple technique for estimating the value of a quantitative DV, denoted as $Y$, on the basis of a single IV, denoted as $X$. It is assumed that there is an approximately linear relationship between $X$ and $Y$. Often, this relationship is expressed as *regressing* $Y$ on $X$ and is defined mathematically as:
@@ -637,7 +649,6 @@ car::vif(mlm.fit.int)
 ```
   
   $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. 
-  
   A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
   
 ```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term.', fig.align = 'center'}
