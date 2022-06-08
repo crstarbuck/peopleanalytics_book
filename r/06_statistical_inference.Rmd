@@ -649,11 +649,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### Statistical Power
   
-  Whereas $\alpha$ is the probability of a Type I error, **Beta** $\beta$ is the opposite -- the probability of accepting $H_0$ when it is false (Type II error). 
+  Whereas $\alpha$ is the probability of a Type I error, **Beta** $\beta$ is the opposite: the probability of accepting $H_0$ when it is false (Type II error). 
   
   $\beta$ is related to the *power* of the analysis, which is calculated by 1 - $\beta$ and reflects our ability to detect a difference or relationship if one exists. For example, if a study has 80% power, it has an 80% chance of detecting an effect if one actually exists in the population. **Power analysis** helps with defining the optimal $n$-count for detecting a population effect in sample data (i.e., correctly rejecting a false $H_0$). Increasing the power of a statistical test decreases the probability that we will fail to detect a significant effect present in the population.
   
-  At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the $t$-test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how different values of $x$ must be to observe non-overlapping CIs.
+  At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the $t$-test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how different the values of $x$ must be to observe non-overlapping CIs.
     
   Before diving into the mechanics of power analysis, it is important to understand the three important -- and interrelated -- considerations in hypothesis tests that influence whether effects are real or a product of random sampling error:
   
@@ -661,11 +661,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * **Sample size**: Larger samples can detect smaller differences and weaker relationships (though they may be too small or weak to be meaningful)
   * **Variability**: Greater variability in the data is likely to result in differences that are attributable to random sampling error
   
-  It may be helpful to think of power analysis as an optimization problem. The goal is to achieve a large enough sample size to detect meaningful effects, but not wastefully large as data collection can be expensive, whilst protecting against an underpowered analysis with a low probability of detecting an important effect.
+  It may be helpful to think of power analysis as an optimization problem. The goal is to achieve a large enough sample size to detect meaningful effects -- but not wastefully large as data collection can be expensive -- whilst protecting against an underpowered analysis with a low probability of detecting an important effect.
   
-  To estimate the sample size needed to achieve a given power level, one must use domain expertise to specify parameters. Let's illustrate by calculating the sample size required for a one-way ANOVA that involves four groups. We will set $\alpha = .05$ and specify an 80% chance (power = .8) of detecting a moderate population effect.
+  To estimate the sample size needed to achieve a given power level, one must use domain expertise to specify parameters. The effect size parameter varies based on the statistical test but when in doubt, we can use Cohen's (1988) conventional effect sizes which are defined in Figure \@ref(fig:conv-eff-size-tbl). The effect size for a particular test can also be retrieved using the `cohen.ES()` function. For example, the following command returns 0.25 as the medium effect size threshold for ANOVA: `cohen.ES(test = "anov", size = "medium")`.
   
-  We can leverage the `pwr` library in R to perform power analysis. Executing `?pwr` will provide package documentation that clarifies what function to execute to calculate the sample size requirement for various statistical tests. 
+```{r conv-eff-size-tbl, out.width = "50%", echo = FALSE, fig.cap = paste("Critical Values of Student's t Distribution"), fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/conventional_effect_size_table.png")
+
+```
+  
+  Let's illustrate by calculating the sample size required for a one-way ANOVA that involves four groups. We will set $\alpha = .05$ and specify an 80% chance (power = .8) of detecting a moderate population effect. We can leverage the `pwr` library in R to perform power analysis. Executing `?pwr` will provide package documentation that clarifies what function to execute to calculate the sample size requirement for various statistical tests.
   
 ```{r, message = FALSE}
 
@@ -674,12 +680,12 @@ library(pwr)
 
 # Calculate sample size for one-way ANOVA
 # k = 4 indicates we plan to compare 4 groups
-# f = .30 indicates we wish to detect a moderate effect (small = .10, medium = .30, large = .50)
-pwr.anova.test(k = 4, f = .30, sig.level = .05, power = .8)
+# f = .25 indicates we wish to detect a medium effect
+pwr.anova.test(k = 4, f = .25, sig.level = .05, power = .8)
 
 ```
   
-  The power analysis for this one-way ANOVA shows that we need a minimum of $n = 31$ *within each* of the four groups to achieve an 80% chance of detecting a moderate population effect across the four groups when setting $\alpha = .05$.
+  The power analysis for this one-way ANOVA shows that we need a minimum of $n = 45$ *within each* of the four groups to achieve an 80% chance of detecting a medium population effect across the four groups when setting $\alpha = .05$.
   
 ## Review Questions
 

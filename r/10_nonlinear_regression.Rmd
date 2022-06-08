@@ -1,6 +1,6 @@
 # Non-Linear Regression {#lme}
 
-  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this chapter, we will discuss how to extend the linear regression framework and relax linear model assumptions to respect the non-linear nature of relationships.
+  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this chapter, we will discuss how to extend the linear regression framework and relax linear model assumptions to handle non-linear relationships.
 
 ## Polynomial Regression
   
@@ -155,7 +155,7 @@ ps.cube.fit <- lm(turnover_rate ~ month + I(month^2) + I(month^3), data = ps_tur
 
 ```
 
-```{r ps-lm-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Linear model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-lm-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Linear model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(flextable)
@@ -165,14 +165,14 @@ flextable::as_flextable(ps.lin.fit)
 
 ```  
 
-```{r ps-quad-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Quadratic model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-quad-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Quadratic model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce tabular summary of regression model output
 flextable::as_flextable(ps.quad.fit)
 
 ```
 
-```{r ps-cube-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-cube-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce tabular summary of regression model output
 flextable::as_flextable(ps.cube.fit)
@@ -233,7 +233,7 @@ ggpubr::ggarrange(p_ps_lin, p_ps_quad, p_ps_cube, ncol = 3, nrow = 1)
 
   Let's add `remote` to the cubic regression model to see how performance changes.
 
-```{r ps-cube-mnthrem-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month and remote.', fig.align = 'center'}
+```{r ps-cube-mnthrem-output, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto month and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -247,7 +247,7 @@ flextable::as_flextable(ps.cube.fit)
 
   Next, let's include `year` in the model since turnover rates also vary along this dimension.
 
-```{r ps-cube-yrmnthrem-output1, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
+```{r ps-cube-yrmnthrem-output1, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -259,7 +259,7 @@ flextable::as_flextable(ps.cube.fit)
 
   Explained variance increases to 62% by adding `year` to the model. While the coefficient on `year` is statistically significant ($\beta$ = .66, $t$(114) = 8.93, $p$ < .001), the change in attrition by year is not linear. Visualizing the distribution of turnover rates by year will provide evidence that a linear year-over-year growth factor will result in some large residuals since it will not capture the more complex trend present in these data.
   
-```{r ps-turnover_yrly_dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center'}
+```{r ps-turnover-yrly-dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Model linear relationship between year and turnover rate, grouped by remote vs. non-remote
 ps.lin.fit <- lm(turnover_rate ~ year + remote, data = ps_turnover)
@@ -287,7 +287,7 @@ ggpubr::ggarrange(p_ps_rem, p_ps_nrem, ncol = 2, nrow = 1)
 
   Given the cubic nature of the change in turnover year-over-year, let's add quadratic and cubic terms for `year` to examine changes in model performance:
 
-```{r ps-cube-yrmnthrem2-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
+```{r ps-cube-yrmnthrem2-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ year + I(year^2) + I(year^3) + month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -307,7 +307,7 @@ flextable::as_flextable(ps.cube.fit)
 
 ## Logistic Regression
 
-  **Logistic regression** is an excellent tool for modeling the probability of different classes of a categorical outcome -- a type of modeling often referred to as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of regression analysis.
+  **Logistic regression** is an excellent tool for modeling the probability of different classes of a categorical outcome -- a type of modeling often referred to as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of *regression* analysis.
 
   You may be wondering if linear regression can be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-wrang-prep). 
   
@@ -323,7 +323,7 @@ flextable::as_flextable(ps.cube.fit)
   
   $$ p(X) = \frac{e^{\beta_0 + \beta_1 X}}{1+e^{\beta_0 + \beta_1 X}} $$
 
-  Irrespective of the value of $X$, the logistic function will always produce an *S-shaped* curve. 
+  Irrespective of the value of $X$, the logistic function will always produce a sigmoidal (*S-shaped*) curve. 
   
   Taking the ratio of $\frac {p(X)}{1 - p(X)}$ will give the odds of the outcome, which ranges between 0 (very low) and $\infty$ (very high). The logarithm of this ratio, $\log(\frac {p(X)}{1 - p(X)})$, is known as the *log odds* or *logit*, and is fundamental to logistic regression. Log odds is a *monotonic transformation*, meaning the greater the odds, the greater the log of odds (and vice versa).
   
@@ -331,7 +331,7 @@ flextable::as_flextable(ps.cube.fit)
   
   In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. Recall from Chapter \@ref(inf-stats) that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
   
-```{r glm, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating.', fig.align = 'center'}
+```{r glm-rating, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load employee data
 employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
@@ -347,7 +347,7 @@ flextable::as_flextable(glm.fit)
 
 ```
 
-  The output shown in Figure \@ref(fig:glm) has some differences relative to the output of a linear regression model. 
+  The output shown in Figure \@ref(fig:glm-rating) has some differences relative to the output of a linear regression model. 
   
   * `Estimate`: Average change in the log of odds for each one-unit increase in the value of the predictor
   * `z value`: Ratio of Estimate / Standard Error. Assuming $\alpha$ = .05, a $z$-value of 2 is a good rule of thumb for achieving statistical significance ($p$ < .05) per the properties of the normal distribution.
@@ -358,7 +358,7 @@ flextable::as_flextable(glm.fit)
   
   To illustrate why the logistic function is necessary, let's demonstrate differences in applying linear and logistic regression models by regressing a binary outcome `active` onto `interview_rating`.
 
-```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating.', fig.align = 'center'}
+```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit a linear model to illustrate why this should not be done with a binary outcome
 lm.fit <- lm(active ~ interview_rating, data = employees)
@@ -386,17 +386,39 @@ p_glm <- ggplot2::ggplot(data = employees, aes(x = interview_rating, y = active)
 ggpubr::ggarrange(p_lm, p_glm, ncol = 2, nrow = 1)
 
 ```
+  
   Figure \@ref(fig:lm-glm-compare) illustrates that for high values of `interview_rating`, a linear model would estimate probabilities for `active` that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the [0,1] interval does not make sense. On the other hand, the logistic function produces the *S-shaped* curve described previously. Using the logistic function, the probabilities are constrained to the [0,1] interval, and the visual reflects the fact that `active` can be perfectly predicted for low and high values of `interview_rating` but it is a mixed bag for values in the middle of the range (3.3 - 3.6).
   
+  It is often helpful to explain the relationship between a binary predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, $(exp(\beta) - 1) * 100$ will provide the percentage increase or decrease in the odds of the *included* group relative to the *omitted* group. 
   
+  For example, Figure \@ref(fig:glm-ot-lvl) provides the log odds for `active` regressed onto two binary predictors: `overtime` and `job_lvl2plus`.
+
+```{r glm-ot-lvl, out.width = "100%", fig.cap = 'Logistic regression of active status onto overtime and job level 2+.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Create dummy-coded variable for job level 2+
+employees$job_lvl2plus <- ifelse(employees$job_lvl > 1, 1, 0)
+
+# Fit a logistic regression model
+glm.fit <- glm(active ~ overtime + job_lvl2plus, data = employees, family = 'binomial')
+
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(glm.fit)
+
+```
+
+  We can convert these coefficients into odds ratios by exponentiating the coefficients:
   
-  It is often helpful to explain the relationship between a binary predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor (e.g., attrition likelihood for remote and non-remote employees). Therefore, $(\beta - 1) * 100$ will provide the percentage increase or decrease in the odds of the included group (dummy coded as 1) relative to the omitted group (dummy coded as 0). For example, if $\beta = 2.75$, there is a $(2.75 - 1) * 100 = 175$ percent increase in the odds. If $\beta = .95$, there is a $(1 - .95) * 100 = 5$ percent decrease in the odds.
+```{r exp-coef, out.width = "100%", fig.cap = 'Exponentiated logistic regression coefficients', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Return exponentiated coefficients
+exp(coef(glm.fit)[2])
+exp(coef(glm.fit)[3])
+
+```
+
+  The exponentiated coefficient on `overtime` is $exp(\beta) = .25$, so there is a $(1 - .25) * 100 = 75%$ percent *decrease* in the odds of being active for employees who work overtime (since `overtime = Yes` is the included group) relative to those who do not work overtime. The exponentiated coefficient on `job_lvl2plus` is $exp(\beta) = 3.41$, so there is a $(3.41 - 1) * 100 = 241%$ percent *increase* in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1.
   
 ### Multinomial Logistic Regression
-
-
-
-### Ordinal Logistic Regression
 
 
 
