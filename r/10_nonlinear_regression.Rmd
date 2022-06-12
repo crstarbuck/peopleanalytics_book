@@ -411,16 +411,72 @@ flextable::as_flextable(glm.fit)
 ```{r exp-coef, out.width = "100%", fig.cap = 'Exponentiated logistic regression coefficients', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Return exponentiated coefficients
-exp(coef(glm.fit)[2])
-exp(coef(glm.fit)[3])
+exp(coef(glm.fit))
 
 ```
 
-  The exponentiated coefficient on `overtime` is $exp(\beta) = .25$, so there is a $(1 - .25) * 100 = 75%$ percent *decrease* in the odds of being active for employees who work overtime (since `overtime = Yes` is the included group) relative to those who do not work overtime. The exponentiated coefficient on `job_lvl2plus` is $exp(\beta) = 3.41$, so there is a $(3.41 - 1) * 100 = 241%$ percent *increase* in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1.
+  The exponentiated coefficient on `overtime` is $exp(\beta) = .25$, so there is a $(1 - .25) * 100 = 75%$ percent *decrease* in the odds of being active for employees who work overtime (since `overtime = Yes` is the included group) relative to those who do not work overtime. The exponentiated coefficient on `job_lvl2plus` is $exp(\beta) = 3.41$, so there is a $(3.41 - 1) * 100 = 241%$ percent *increase* in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1 (i.e., attrition is a larger concern for level 1 employees).
   
 ### Multinomial Logistic Regression
 
+  **Multinomial logistic regression** is used to estimate the probability of an unordered categorical response with $K>2$ classes. With an understanding of binomial logistic regression, extending the binomial model to a multinomial logistic regression model should be relatively intuitive.
+  
+  To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but this decision is nonetheless important as it impacts how the model coefficients are interpreted. With the reference level defined, we can then express the multinomial logistic regression model as:
+  
+  $$ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1} x_1 + ... + \beta_{lp} x_p}}, $$
+  
+  where $K$ is the reference class, $l$ is a variable representing one of the respective $K-1$ non-reference levels, and $k$ is the specified class for which the probability is being estimated on the basis of values for one or more $X$ predictors. 
+  
+  Consider `dept` from our `employees` data, which has values of `Research & Development`, `Sales`, and `Human Resources`. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or a Likert scale ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is *higher* or *better* relative to the Human Resources department.
+  
+  Multinomial models are essentially a collection of binomial models which compare the log-odds of each non-reference category to the specified reference category. If the Human Resources department is identified as the reference category $K$, then $\beta_{k0}$ for $k = Sales$ can be interpreted as the log odds of Sales department membership relative to Human Resources department membership in the following equation:
+  
+  $$ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p $$
+  
+  Let's illustrate how multinomial logistic regression can be used to predict `dept` on the basis of variables from the `employees` data. To build this model in R, we will use the `multinom` function from the `nnet` package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of `dept` from its native character type to a factor. We also need to identify the reference category for `dept`, against which the probability of all other classes will be evaluated; we will define this using the `ref` argument within the `relevel()` function:
 
+```{r multi-nom-mdl, out.width = "100%", fig.cap = 'Multinomial logistic regression of department onto overtime and business travel.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(nnet)
+
+# Convert dept to factor
+employees$dept <- factor(employees$dept)
+
+# Specify reference level
+employees$dept <- relevel(employees$dept, ref = "Human Resources")
+
+# Fit multinomial logistic regression model
+multinom.fit <- multinom(dept ~ overtime + business_travel, data = employees)
+
+# Summarize results from model object
+summary(multinom.fit)
+
+```
+
+  As we did in the case of binomial logistic regression, we can return the exponential of model coefficients from the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:
+
+```{r, message = FALSE}
+
+# Return exponentiated coefficients from model object
+exp(coef(multinom.fit))
+
+```
+
+  Notice that the output from the `multinom()` function is quite limited relative to `glm()` and `lm()`. To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values.
+  
+```{r multi-nom-p-vals, out.width = "100%", fig.cap = '$p$-values for multinomial logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Calculate z-scores
+z_scores <- summary(multinom.fit)$coefficients / summary(multinom.fit)$standard.errors
+
+# Produce p-values
+p_values <- (1 - pnorm(abs(z_scores))) * 2
+
+# Transpose and display rounded p-values 
+data.frame(t(round(p_values, 2)))
+
+```
 
 ### Proportional Odds Logistic Regression
 
