@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-08}
+\date{2022-06-13}
 
 \begin{document}
 \maketitle
@@ -511,7 +511,25 @@ Is the required data already accessible in a data warehouse or other analytics e
 
 \textbf{Data Quality}
 
-It is important to understand the data generative process and never make assumptions about how anomalies or missing data should be interpreted. After identifying what data sources will be required for a particular analysis, it is important to meet with source system owners and data stewards to deeply understand the business processes by which data are generated in the system(s). Are there data quality concerns that need to be explored and addressed?
+It is important to understand the data generative process and never make assumptions about how anomalies or missing data should be interpreted. After identifying what data sources will be required for a particular analysis, it is important to meet with source system owners and data stewards to deeply understand the business processes by which data are generated in the system(s). Below are some helpful questions to consider:
+
+\begin{itemize}
+\tightlist
+\item
+  Is there a better data source, such as data generated further upstream?
+\item
+  Are the data actively validated with automated data quality checks and regular exceptions reports?
+\item
+  What is the SLA for the data refreshes, and how often is this SLA met?
+\item
+  Is there a clear (and accessible) data source owner/steward?
+\item
+  Is there comprehensive documentation and field definitions?
+\item
+  Do the tables drive business critical deliverables?
+\item
+  Who are the other consumers of the data?
+\end{itemize}
 
 \textbf{Variables}
 
@@ -613,7 +631,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -627,11 +645,11 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## moments      0.14 0.14.1             FALSE
 ## caret      6.0-91 6.0-92              TRUE
 ## car        3.0-12 3.0-13             FALSE
-## flextable   0.7.0  0.7.1             FALSE
+## flextable   0.7.0  0.7.2             FALSE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpdrk8MN/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpwVDiAY/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1476,9 +1494,9 @@ The framing of variables in research hypotheses guides the treatment of each in 
 \hypertarget{independent-variables-iv}{%
 \subsection{Independent Variables (IV)}\label{independent-variables-iv}}
 
-An \textbf{Independent Variable (IV)} is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as \emph{predictors}, \emph{factors}, \emph{features}, \emph{antecedents}, or \emph{explanatory} variables.
+An \textbf{Independent Variable (IV)} is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as \emph{predictors}, \emph{factors}, \emph{features}, \emph{antecedents}, or \emph{explanatory} variables, and these terms will be used interchangeably throughout this book.
 
-For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
+Let's consider a scenario in which we wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
 
 IVs are also present in non-experimental designs. For example, we may survey employees and ask them to rate their leader's inclusiveness and provide self-reported belonging ratings. In this context, leader inclusiveness (rather than an inclusion training) is the IV. If we find that average team-level belonging scores tend to be higher when leader inclusiveness scores are higher, this \emph{may} indicate that leader inclusion has some degree of influence on team-level belonging. Of course, there could be alternative explanations for any observed differences in team-level belonging, which is why experimental designs tend to provide stronger evidence for an IV's effect.
 
@@ -1494,7 +1512,7 @@ In our leader inclusion example, team-level belonging is the DV since this varia
 
 A \textbf{Control Variable (CV)} is a variable that is held constant in research. The unchanging state of a CV allows us to understand the extent to which the IV has a unique and independent effect on the DV.
 
-In an experimental context, control variables represent a researcher's attempt to control for alternative explanations so that the IV's main effect on the DV can be isolated. For example, in our leader inclusion example, to be confident that the reason for any observed differences in team-level belonging can be attributed to leader inclusion training rather than other factors that theoretically may explain differences. For example, we should ensure that the two groups are similar with respect to characteristics such as gender and ethnicity, since underrepresented groups (URGs) may have different experiences independent of any training programs. In this case, gender and ethnicity are CVs.
+In an experimental context, control variables represent a researcher's attempt to control for alternative explanations so that the IV's main effect on the DV can be isolated. In our leader inclusion example, we would seek to determine whether the reason for any observed differences in team-level belonging can be attributed to leader inclusion training rather than other factors that theoretically may explain the differences. In this setting, we should ensure that the two groups are similar with respect to characteristics such as gender and ethnicity, since underrepresented groups (URGs) may have different experiences independent of any training programs. In this case, gender and ethnicity are CVs.
 
 While we control for the effects of alternative explanations by way of the research design in an experimental context, we will discuss ways to control for these statistically in Chapter \ref{lm} for correlational designs. CVs are equally important in experimental and non-experimental contexts.
 
@@ -2706,7 +2724,7 @@ There are several correlation coefficients, and the measurement scale of \(x\) a
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table} 
 
 }
 
@@ -4218,7 +4236,7 @@ If it were possible for all employee ids to exist in \texttt{demographics} but n
 
 In this case, if demographics is the base data set which contains all employee ids (i.e., the `LEFT' dataset), it is important for \texttt{tenure} and \texttt{job} to be joined to it. Joining \texttt{job} to \texttt{tenure} may result in information loss if an employee id exists in \texttt{demographics} and \texttt{job} but not in the intermediate \texttt{tenure} data set.
 
-When integrating data within R, the \texttt{tidyverse} provides a more efficient and parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single \texttt{employees} data frame using a left join on the \texttt{employee\_id} column:
+When integrating data within R, the \texttt{tidyverse} provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the package-specific \texttt{\%\textgreater{}\%} operator. The example below joins nine data sets into a single \texttt{employees} data frame using a left join on the \texttt{employee\_id} column:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8546,7 +8564,7 @@ To illustrate why the logistic function is necessary, let's demonstrate differen
 
 Figure \ref{fig:lm-glm-compare} illustrates that for high values of \texttt{interview\_rating}, a linear model would estimate probabilities for \texttt{active} that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the {[}0,1{]} interval does not make sense. On the other hand, the logistic function produces the \emph{S-shaped} curve described previously. Using the logistic function, the probabilities are constrained to the {[}0,1{]} interval, and the visual reflects the fact that \texttt{active} can be perfectly predicted for low and high values of \texttt{interview\_rating} but it is a mixed bag for values in the middle of the range (3.3 - 3.6).
 
-It is often helpful to explain the relationship between a binary predictor and binary outcome in terms of a percentage increase or decrease. When \(\beta = 1\), this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, \((exp(\beta) - 1) * 100\) will provide the percentage increase or decrease in the odds of the \emph{included} group relative to the \emph{omitted} group.
+It is often helpful to explain the relationship between a predictor and binary outcome in terms of a percentage increase or decrease. When \(\beta = 1\), this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, \((exp(\beta) - 1) * 100\) will provide the percentage increase or decrease in the odds of the \emph{included} group relative to the \emph{omitted} group.
 
 For example, Figure \ref{fig:glm-ot-lvl} provides the log odds for \texttt{active} regressed onto two binary predictors: \texttt{overtime} and \texttt{job\_lvl2plus}.
 
@@ -8644,41 +8662,212 @@ We can convert these coefficients into odds ratios by exponentiating the coeffic
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Return exponentiated coefficients}
-\FunctionTok{exp}\NormalTok{(}\FunctionTok{coef}\NormalTok{(glm.fit)[}\DecValTok{2}\NormalTok{])}
+\FunctionTok{exp}\NormalTok{(}\FunctionTok{coef}\NormalTok{(glm.fit))}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## overtimeYes 
-##   0.2474668
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{exp}\NormalTok{(}\FunctionTok{coef}\NormalTok{(glm.fit)[}\DecValTok{3}\NormalTok{])}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## job_lvl2plus 
-##      3.41083
+##  (Intercept)  overtimeYes job_lvl2plus 
+##    4.5551147    0.2474668    3.4108303
 \end{verbatim}
 
 The exponentiated coefficient on \texttt{overtime} is \(exp(\beta) = .25\), so there is a \((1 - .25) * 100 = 75%
 \) percent \emph{decrease} in the odds of being active for employees who work overtime (since \texttt{overtime\ =\ Yes} is the included group) relative to those who do not work overtime. The exponentiated coefficient on \texttt{job\_lvl2plus} is \(exp(\beta) = 3.41\), so there is a \((3.41 - 1) * 100 = 241%
-\) percent \emph{increase} in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1.
+\) percent \emph{increase} in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1 (i.e., attrition is a larger concern for level 1 employees).
 
 \hypertarget{multinomial-logistic-regression}{%
 \subsection{Multinomial Logistic Regression}\label{multinomial-logistic-regression}}
 
+\textbf{Multinomial logistic regression} is used to estimate the probability of an unordered categorical response with \(K>2\) classes. With an understanding of binomial logistic regression, extending the binomial model to a multinomial logistic regression model should be relatively intuitive.
+
+To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but the decision is nonetheless important as it impacts how the model coefficients are interpreted -- always relative to the reference level. With the reference level defined, we can then express the multinomial logistic regression model as:
+
+\[ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1} x_1 + ... + \beta_{lp} x_p}}, \]
+
+where \(K\) is the reference class, \(l\) is a variable representing one of the respective \(K-1\) non-reference levels, and \(k\) is the specified class for which the probability is being estimated on the basis of values for one or more \(X\) predictors.
+
+Consider \texttt{dept} from our \texttt{employees} data, which has values of \texttt{Research\ \&\ Development}, \texttt{Sales}, and \texttt{Human\ Resources}. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or a Likert scale ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is \emph{higher} or \emph{better} relative to the Human Resources department.
+
+Multinomial models are essentially a collection of binomial models which compare the log-odds of each non-reference category to the specified reference category. If the Human Resources department is identified as the reference category \(K\), then \(\beta_{k0}\) for \(k = Sales\) can be interpreted as the log odds of Sales department membership relative to Human Resources department membership in the following equation:
+
+\[ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p \]
+
+Let's illustrate how multinomial logistic regression can be used to predict \texttt{dept} on the basis of variables from the \texttt{employees} data. To build this model in R, we will use the \texttt{multinom} function from the \texttt{nnet} package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of \texttt{dept} from its native character type to a factor. We also need to identify the reference category for \texttt{dept}, against which the probability of all other classes will be evaluated; we will define this using the \texttt{ref} argument within the \texttt{relevel()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(nnet)}
+
+\CommentTok{\# Convert dept to factor}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{dept }\OtherTok{\textless{}{-}} \FunctionTok{factor}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{dept)}
+
+\CommentTok{\# Specify reference level}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{dept }\OtherTok{\textless{}{-}} \FunctionTok{relevel}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{dept, }\AttributeTok{ref =} \StringTok{"Human Resources"}\NormalTok{)}
+
+\CommentTok{\# Fit multinomial logistic regression model}
+\CommentTok{\# An omitted group for categorical variables is defined by default}
+\NormalTok{multinom.fit }\OtherTok{\textless{}{-}} \FunctionTok{multinom}\NormalTok{(dept }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ ed\_field, }\AttributeTok{data =}\NormalTok{ employees)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # weights:  24 (14 variable)
+## initial  value 1614.960064 
+## iter  10 value 887.448722
+## iter  20 value 833.883230
+## iter  30 value 833.513790
+## final  value 833.513639 
+## converged
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Summarize results from model object}
+\FunctionTok{summary}\NormalTok{(multinom.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## multinom(formula = dept ~ overtime + ed_field, data = employees)
+## 
+## Coefficients:
+##                        (Intercept) overtimeYes ed_fieldLife Sciences
+## Research & Development   -18.92857   0.1674815              22.19842
+## Sales                    -19.40948   0.1602262              21.60505
+##                        ed_fieldMarketing ed_fieldMedical ed_fieldOther
+## Research & Development          25.72879        22.21217      21.93577
+## Sales                           37.42515        21.27842      20.96823
+##                        ed_fieldTechnical Degree
+## Research & Development                  22.0455
+## Sales                                   21.5113
+## 
+## Std. Errors:
+##                        (Intercept) overtimeYes ed_fieldLife Sciences
+## Research & Development    1.808496   0.3917603              1.817514
+## Sales                     1.810390   0.4071887              1.819982
+##                        ed_fieldMarketing ed_fieldMedical ed_fieldOther
+## Research & Development          8.991934        1.820007      1.864206
+## Sales                           8.996707        1.823207      1.874536
+##                        ed_fieldTechnical Degree
+## Research & Development                  1.84963
+## Sales                                   1.85451
+## 
+## Residual Deviance: 1667.027 
+## AIC: 1695.027
+\end{verbatim}
+
+Notice the output from the \texttt{multinom()} function is quite limited relative to \texttt{glm()} and \texttt{lm()}. Coefficients and standard errors are provided, but \(p\)-values are not available in the output so we will need to calculate them separately.
+
+A new statistical measure is included in the output of this model, \textbf{Akaike Information Criterion (AIC)}, which is a score that is helpful for model selection. AIC is calculated by:
+
+\[ AIC = -2\frac{\ell}{n} + 2\frac{k}{n}, \]
+where \(n\) is the number of observations, \(k\) is the number of parameters (predictors + intercept), and \(\ell\) is the log likelihood function where:
+
+\[ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  \]
+
+Just as we compared \(R^2\) across linear regression models in Chapter \ref{lm}, AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted \(R^2\) statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score.
+
+At the time of this writing, the \texttt{as\_flextable()} function used to format the output of \texttt{glm()} and \texttt{lm()} is not compatible with objects in which \texttt{multinom()} results are stored. Therefore, we will construct a basic data frame that improves readability.
+
+To determine whether the coefficients are statistically significant, we need to perform an additional step to compute \(p\)-values using \(z\) scores:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate z{-}scores}
+\NormalTok{z\_scores }\OtherTok{\textless{}{-}} \FunctionTok{summary}\NormalTok{(multinom.fit)}\SpecialCharTok{$}\NormalTok{coefficients }\SpecialCharTok{/} \FunctionTok{summary}\NormalTok{(multinom.fit)}\SpecialCharTok{$}\NormalTok{standard.errors}
+
+\CommentTok{\# Produce p{-}values}
+\NormalTok{p\_values }\OtherTok{\textless{}{-}}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{pnorm}\NormalTok{(}\FunctionTok{abs}\NormalTok{(z\_scores))) }\SpecialCharTok{*} \DecValTok{2}
+
+\CommentTok{\# Transpose and display rounded p{-}values }
+\FunctionTok{data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{round}\NormalTok{(p\_values, }\DecValTok{3}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                          Research...Development Sales
+## (Intercept)                               0.000 0.000
+## overtimeYes                               0.669 0.694
+## ed_fieldLife Sciences                     0.000 0.000
+## ed_fieldMarketing                         0.004 0.000
+## ed_fieldMedical                           0.000 0.000
+## ed_fieldOther                             0.000 0.000
+## ed_fieldTechnical Degree                  0.000 0.000
+\end{verbatim}
+
+These \(p\)-values indicate that those who work overtime are not significantly more likely to work in either the Research \& Development or Sales departments relative to the Human Resources department. In other words, a considerable portion of employees in all three departments work overtime, so this variable is not helpful in classifying employees into their correct departments. This is evident in Figure \ref{fig:ot-dept}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/ot-dept-1} 
+
+}
+
+\caption{Department distribution by overtime status.}\label{fig:ot-dept}
+\end{figure}
+
+The \(p\)-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \ref{fig:ed-field-dept}, which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental \emph{purity} on the basis of \texttt{ed\_field} alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R\&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/ed-field-dept-1} 
+
+}
+
+\caption{Department distribution by educational field.}\label{fig:ed-field-dept}
+\end{figure}
+
+As we did for binomial logistic regression, we can compute the exponential of model coefficients for the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return exponentiated coefficients from model object}
+\CommentTok{\# Transpose rows to columns for improved readability}
+\FunctionTok{data.frame}\NormalTok{(}\FunctionTok{t}\NormalTok{(}\FunctionTok{exp}\NormalTok{(}\FunctionTok{coef}\NormalTok{(multinom.fit))))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                          Research...Development        Sales
+## (Intercept)                        6.017654e-09 3.720234e-09
+## overtimeYes                        1.182323e+00 1.173776e+00
+## ed_fieldLife Sciences              4.371726e+09 2.415207e+09
+## ed_fieldMarketing                  1.492349e+11 1.792819e+16
+## ed_fieldMedical                    4.432226e+09 1.742213e+09
+## ed_fieldOther                      3.361886e+09 1.277572e+09
+## ed_fieldTechnical Degree           3.751786e+09 2.199075e+09
+\end{verbatim}
+
+Consistent with our approach for binomial logistic regression, we can interpret these exponentiated coefficients in terms of having greater or lesser odds. Importantly, in the multinomial context the odds are \emph{relative to the reference category} -- the Human Resources department in this case.
+
+For example, the odds ratio associated with a Medical educational field is \(exp(\beta) = 4.43\) for Research \& Development and \(exp(\beta) = 1.74\) for Sales. Therefore, those with a Medical education have \((4.43 - 1) * 100 = 343%
+\) greater odds of being in the Research \& Development department and \((1.74 - 1) * 100 = 74%
+\) greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with \texttt{overtime} since this variable does not provide significant information.
+
 \hypertarget{proportional-odds-logistic-regression}{%
 \subsection{Proportional Odds Logistic Regression}\label{proportional-odds-logistic-regression}}
 
-\hypertarget{poisson-regression}{%
-\section{Poisson Regression}\label{poisson-regression}}
-
 \hypertarget{review-questions-8}{%
 \section{Review Questions}\label{review-questions-8}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  In what ways does polynomial regression differ from linear regression?
+\item
+  If the coefficient on the cubic term is not statistically significant (\(p\) \textgreater= .05) in a cubic regression model, but the linear and quadratic terms are statistically significant (\(p\) \textless{} .05), what does this indicate about the model's fit to the data?
+\item
+  Why is it helpful to calculate the exponential of log-odds in a logistic regression model?
+\item
+  What does an odds ratio of 1.25 indicate in a binomial context?
+\item
+  What does an odds ratio of 0.75 indicate in a multinomial context?
+\item
+  How does Akaike Information Criterion (AIC) compare to \(R^2\) with respect to its purpose and function?
+\item
+\end{enumerate}
 
 \hypertarget{pred-mod}{%
 \chapter{Predictive Models}\label{pred-mod}}

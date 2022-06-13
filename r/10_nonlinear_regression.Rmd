@@ -389,7 +389,7 @@ ggpubr::ggarrange(p_lm, p_glm, ncol = 2, nrow = 1)
   
   Figure \@ref(fig:lm-glm-compare) illustrates that for high values of `interview_rating`, a linear model would estimate probabilities for `active` that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the [0,1] interval does not make sense. On the other hand, the logistic function produces the *S-shaped* curve described previously. Using the logistic function, the probabilities are constrained to the [0,1] interval, and the visual reflects the fact that `active` can be perfectly predicted for low and high values of `interview_rating` but it is a mixed bag for values in the middle of the range (3.3 - 3.6).
   
-  It is often helpful to explain the relationship between a binary predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, $(exp(\beta) - 1) * 100$ will provide the percentage increase or decrease in the odds of the *included* group relative to the *omitted* group. 
+  It is often helpful to explain the relationship between a predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, $(exp(\beta) - 1) * 100$ will provide the percentage increase or decrease in the odds of the *included* group relative to the *omitted* group. 
   
   For example, Figure \@ref(fig:glm-ot-lvl) provides the log odds for `active` regressed onto two binary predictors: `overtime` and `job_lvl2plus`.
 
@@ -421,7 +421,7 @@ exp(coef(glm.fit))
 
   **Multinomial logistic regression** is used to estimate the probability of an unordered categorical response with $K>2$ classes. With an understanding of binomial logistic regression, extending the binomial model to a multinomial logistic regression model should be relatively intuitive.
   
-  To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but this decision is nonetheless important as it impacts how the model coefficients are interpreted. With the reference level defined, we can then express the multinomial logistic regression model as:
+  To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but the decision is nonetheless important as it impacts how the model coefficients are interpreted -- always relative to the reference level. With the reference level defined, we can then express the multinomial logistic regression model as:
   
   $$ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1} x_1 + ... + \beta_{lp} x_p}}, $$
   
@@ -447,23 +447,28 @@ employees$dept <- factor(employees$dept)
 employees$dept <- relevel(employees$dept, ref = "Human Resources")
 
 # Fit multinomial logistic regression model
-multinom.fit <- multinom(dept ~ overtime + business_travel, data = employees)
+# An omitted group for categorical variables is defined by default
+multinom.fit <- multinom(dept ~ overtime + ed_field, data = employees)
 
 # Summarize results from model object
 summary(multinom.fit)
 
 ```
 
-  As we did in the case of binomial logistic regression, we can return the exponential of model coefficients from the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:
-
-```{r, message = FALSE}
-
-# Return exponentiated coefficients from model object
-exp(coef(multinom.fit))
-
-```
-
-  Notice that the output from the `multinom()` function is quite limited relative to `glm()` and `lm()`. To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values.
+  Notice the output from the `multinom()` function is quite limited relative to `glm()` and `lm()`. Coefficients and standard errors are provided, but $p$-values are not available in the output so we will need to calculate them separately.
+  
+  A new statistical measure is included in the output of this model, **Akaike Information Criterion (AIC)**, which is a score that is helpful for model selection. AIC is calculated by:
+  
+  $$ AIC = -2\frac{\ell}{n} + 2\frac{k}{n}, $$
+  where $n$ is the number of observations, $k$ is the number of parameters (predictors + intercept), and $\ell$ is the log likelihood function where:
+  
+  $$ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  $$
+  
+  Just as we compared $R^2$ across linear regression models in Chapter \@ref(lm), AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted $R^2$ statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score. 
+  
+  At the time of this writing, the `as_flextable()` function used to format the output of `glm()` and `lm()` is not compatible with objects in which `multinom()` results are stored. Therefore, we will construct a basic data frame that improves readability.
+  
+  To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values using $z$ scores:
   
 ```{r multi-nom-p-vals, out.width = "100%", fig.cap = '$p$-values for multinomial logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -474,17 +479,67 @@ z_scores <- summary(multinom.fit)$coefficients / summary(multinom.fit)$standard.
 p_values <- (1 - pnorm(abs(z_scores))) * 2
 
 # Transpose and display rounded p-values 
-data.frame(t(round(p_values, 2)))
+data.frame(t(round(p_values, 3)))
 
 ```
+  
+  These $p$-values indicate that those who work overtime are not significantly more likely to work in either the Research & Development or Sales departments relative to the Human Resources department. In other words, a considerable portion of employees in all three departments work overtime, so this variable is not helpful in classifying employees into their correct departments. This is evident in Figure \@ref(fig:ot-dept).
+
+```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by overtime status.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize distribution of educational fields by department
+ggplot2::ggplot(employees, aes(x = overtime, fill = dept)) +
+ggplot2::labs(x = 'Overtime', y = 'Count') +
+ggplot2::guides(fill = guide_legend(title = "Department")) +
+ggplot2::geom_bar() +
+ggplot2::theme_bw()
+
+```  
+  
+  The $p$-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \@ref(fig:ed-field-dept), which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental *purity* on the basis of `ed_field` alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
+  
+```{r ed-field-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by educational field.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize distribution of educational fields by department
+ggplot2::ggplot(employees, aes(x = ifelse(ed_field == 'Human Resources', 'HR', ed_field), fill = dept)) +
+ggplot2::labs(x = 'Education Field', y = 'Count') +
+ggplot2::guides(fill = guide_legend(title = "Department")) +
+ggplot2::geom_bar() +
+ggplot2::theme_bw()
+
+```  
+
+  As we did for binomial logistic regression, we can compute the exponential of model coefficients for the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:
+
+```{r, message = FALSE}
+
+# Return exponentiated coefficients from model object
+# Transpose rows to columns for improved readability
+data.frame(t(exp(coef(multinom.fit))))
+
+```
+
+  Consistent with our approach for binomial logistic regression, we can interpret these exponentiated coefficients in terms of having greater or lesser odds. Importantly, in the multinomial context the odds are *relative to the reference category* -- the Human Resources department in this case.
+
+  For example, the odds ratio associated with a Medical educational field is $exp(\beta) = 4.43$ for Research & Development and $exp(\beta) = 1.74$ for Sales. Therefore, those with a Medical education have $(4.43 - 1) * 100 = 343%$ greater odds of being in the Research & Development department and $(1.74 - 1) * 100 = 74%$ greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with `overtime` since this variable does not provide significant information. 
 
 ### Proportional Odds Logistic Regression
 
 
 
-## Poisson Regression
-
-
 
 ## Review Questions
 
+1. In what ways does polynomial regression differ from linear regression?
+
+2. If the coefficient on the cubic term is not statistically significant ($p$ >= .05) in a cubic regression model, but the linear and quadratic terms are statistically significant ($p$ < .05), what does this indicate about the model's fit to the data?
+
+3. Why is it helpful to calculate the exponential of log-odds in a logistic regression model?
+
+4. What does an odds ratio of 1.25 indicate in a binomial context?
+
+5. What does an odds ratio of 0.75 indicate in a multinomial context?
+
+6. How does Akaike Information Criterion (AIC) compare to $R^2$ with respect to its purpose and function?
+
+7. 
