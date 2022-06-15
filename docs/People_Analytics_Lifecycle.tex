@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-13}
+\date{2022-06-15}
 
 \begin{document}
 \maketitle
@@ -631,7 +631,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -644,12 +644,13 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## psych       2.2.3  2.2.5             FALSE
 ## moments      0.14 0.14.1             FALSE
 ## caret      6.0-91 6.0-92              TRUE
-## car        3.0-12 3.0-13             FALSE
+## car        3.0-12  3.1-0             FALSE
 ## flextable   0.7.0  0.7.2             FALSE
+## MASS       7.3-56 7.3-57              TRUE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpwVDiAY/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpWbSHIR/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -8682,17 +8683,19 @@ The exponentiated coefficient on \texttt{overtime} is \(exp(\beta) = .25\), so t
 
 To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but the decision is nonetheless important as it impacts how the model coefficients are interpreted -- always relative to the reference level. With the reference level defined, we can then express the multinomial logistic regression model as:
 
-\[ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1} x_1 + ... + \beta_{lp} x_p}}, \]
+\[ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{j=1}^{K-1} e^{\beta_{j0} + \beta_{j1} x_1 + ... + \beta_{jp} x_p}}, \]
 
-where \(K\) is the reference class, \(l\) is a variable representing one of the respective \(K-1\) non-reference levels, and \(k\) is the specified class for which the probability is being estimated on the basis of values for one or more \(X\) predictors.
+where \(K\) is the reference class, \(j\) is a \(K-1\) non-reference level, and \(k\) is the specified class for which the probability is being estimated on the basis of values for one or more \(X\) predictors.
 
-Consider \texttt{dept} from our \texttt{employees} data, which has values of \texttt{Research\ \&\ Development}, \texttt{Sales}, and \texttt{Human\ Resources}. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or a Likert scale ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is \emph{higher} or \emph{better} relative to the Human Resources department.
+Consider \texttt{dept} from our \texttt{employees} data, which has values of \texttt{Research\ \&\ Development}, \texttt{Sales}, and \texttt{Human\ Resources}. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or Likert scales ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is \emph{higher} or \emph{better} relative to the Human Resources department.
 
 Multinomial models are essentially a collection of binomial models which compare the log-odds of each non-reference category to the specified reference category. If the Human Resources department is identified as the reference category \(K\), then \(\beta_{k0}\) for \(k = Sales\) can be interpreted as the log odds of Sales department membership relative to Human Resources department membership in the following equation:
 
 \[ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p \]
 
-Let's illustrate how multinomial logistic regression can be used to predict \texttt{dept} on the basis of variables from the \texttt{employees} data. To build this model in R, we will use the \texttt{multinom} function from the \texttt{nnet} package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of \texttt{dept} from its native character type to a factor. We also need to identify the reference category for \texttt{dept}, against which the probability of all other classes will be evaluated; we will define this using the \texttt{ref} argument within the \texttt{relevel()} function:
+Depending on the research objective, it may be appropriate to compute the odds of one category relative to all other categories. This can actually be accomplished using binomial regression if the category of interest is coded as 1 and all other categories are coded as 0. In this case, the reference for the binomial model is a \emph{collection} of \(K-1\) categories. If understanding the odds of \emph{each category} relative to a reference category is more appropriate based on the research objective, multinomial logistic regression is the proper model.
+
+Let's illustrate how to implement multinomial logistic regression by determining how variables in the \texttt{employees} dataset help in classifying employees into departments. To build this model in R, we will use the \texttt{multinom} function from the \texttt{nnet} package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of \texttt{dept} from its native character type to a factor. We also need to identify the reference department against which the probability of each of the other departments will be evaluated; we will define this using the \texttt{ref} argument within the \texttt{relevel()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8846,8 +8849,89 @@ For example, the odds ratio associated with a Medical educational field is \(exp
 \) greater odds of being in the Research \& Development department and \((1.74 - 1) * 100 = 74%
 \) greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with \texttt{overtime} since this variable does not provide significant information.
 
-\hypertarget{proportional-odds-logistic-regression}{%
-\subsection{Proportional Odds Logistic Regression}\label{proportional-odds-logistic-regression}}
+\hypertarget{ordinal-logistic-regression}{%
+\subsection{Ordinal Logistic Regression}\label{ordinal-logistic-regression}}
+
+Many projects in people analytics involve understanding how variables influence ordinal outcomes, such as performance ratings or survey items measured on a Likert scale. Stepwise changes in the levels of ordinal outcomes may or may not be consistent. For example, it may be easy for one to be promoted from job level 1 to 2 but relatively difficult to progress from 5 to 6. Linear regression should not be used in these settings, as linear assumptions are designed for data measured on a continuous scale and will not hold for ordinal data. This section will cover \textbf{ordinal logistic regression}, which is a modeling technique designed for understanding how variables influence stepwise changes in a multi-class ordinal outcome.
+
+Beyond the universal data screening procedures we have covered, such as ensuring problematic collinearity is not present, ordinal logistic regression features a unique \textbf{proportional odds assumption} that must be satisfied. This assumption, also known as the \textbf{parallel regression assumption}, requires that each independent variable has an equal effect at each level of the ordinal outcome. If the effect varies across levels of the outcome, separate models are needed to accurately reflect the associations with each pair of levels.
+
+The proportional-odds model is based on cumulative distribution probabilities. Its intercepts are dependent on the \(j\) levels but slopes are equal as defined by:
+
+\[ log(\frac{Pr(Y \le j)} {Pr(Y > j)}) = \beta_{j0} - \displaystyle\sum_{i=1}^{n} \beta_{1i} x_{1i} + ... + \beta_{pi} x_{pi} \]
+
+The implementation of ordinal logistic regression will be demonstrated by evaluating the statistical drivers of engagement. First, we need to define \texttt{engagement} as an ordered factor:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Define ordered factor}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{engagement }\OtherTok{\textless{}{-}} \FunctionTok{ordered}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{engagement, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{))}
+
+\CommentTok{\# Verify structure of engagement variable}
+\FunctionTok{str}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{engagement)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  Ord.factor w/ 5 levels "1"<"2"<"3"<"4"<..: 3 2 2 3 3 3 4 3 2 3 ...
+\end{verbatim}
+
+Next, the proportional odds assumption will be checked using the \textbf{Brant test}. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether \(\beta_{j1}\) through \(\beta_{jp}\) are consistent across each of the \(j\) levels. This is done via a \(\chi^2\) test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the \(j\) levels; therefore, \(p < .05\) indicates that significant differences in effects are present across the \(j\) levels and, thus, the proportional odds assumption is violated.
+
+We can leverage the \texttt{brant} package in R for this, which is compatible with the \texttt{polr()} function from the \texttt{MASS} package that will be used to perform ordinal logistic regression. Since we will be evaluating model statistics, rather than merely using the model for prediction (the subject of Chapter \ref{pred-mod}), we need to specify the \texttt{Hess\ =\ TRUE} argument in the \texttt{polr()} function to include the \emph{Hessian matrix} (observed information matrix) in the output.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(MASS)}
+\FunctionTok{library}\NormalTok{(brant)}
+
+\CommentTok{\# Fit a ordinal logistic regression model}
+\NormalTok{ord.fit }\OtherTok{\textless{}{-}} \FunctionTok{polr}\NormalTok{(engagement }\SpecialCharTok{\textasciitilde{}}\NormalTok{ org\_tenure, }\AttributeTok{data =}\NormalTok{ employees, }\AttributeTok{Hess =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Test proportional odds assumption using Brant\textquotesingle{}s test}
+\FunctionTok{brant}\NormalTok{(ord.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -------------------------------------------- 
+## Test for X2  df  probability 
+## -------------------------------------------- 
+## Omnibus      0.39    2   0.82
+## org_tenure   0.39    2   0.82
+## -------------------------------------------- 
+## 
+## H0: Parallel Regression Assumption holds
+\end{verbatim}
+
+The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = .82\); therefore, the proportional odds assumption holds for these data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Summarize ordinal logistic regression model}
+\FunctionTok{summary}\NormalTok{(ord.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Call:
+## polr(formula = engagement ~ org_tenure, data = employees, Hess = TRUE)
+## 
+## Coefficients:
+##                Value Std. Error t value
+## org_tenure -0.006965   0.008032 -0.8671
+## 
+## Intercepts:
+##     Value      Std. Error t value   
+## 1|2    -2.8661     0.1271   -22.5423
+## 2|3    -0.8419     0.0804   -10.4703
+## 3|4     2.1711     0.1036    20.9479
+## 4|5  4122.5567     0.1036 39776.9095
+## 
+## Residual Deviance: 3084.592 
+## AIC: 3094.592
+\end{verbatim}
 
 \hypertarget{review-questions-8}{%
 \section{Review Questions}\label{review-questions-8}}
@@ -8867,6 +8951,13 @@ For example, the odds ratio associated with a Medical educational field is \(exp
 \item
   How does Akaike Information Criterion (AIC) compare to \(R^2\) with respect to its purpose and function?
 \item
+  In what type of R object do ordinal data need to be stored in order to implement ordinal logistic regression?
+\item
+  Why can't linear regression be used to understand associations of predictors with an ordinal outcome?
+\item
+  What does the proportional odds (or parallel regression) assumption assume about model coefficients?
+\item
+  What is the null hypothesis for the Brant test?
 \end{enumerate}
 
 \hypertarget{pred-mod}{%
@@ -9018,6 +9109,8 @@ Angrist, J. D., \& Pischke, J.-S. (2009). Mostly harmless econometrics: An empir
 Baron, R. M., \& Kenny, D. A. (1986). The moderator--mediator variable distinction in social psychological research: Conceptual, strategic, and statistical considerations. Journal of Personality and Social Psychology, 51(6), 1173--1182.
 
 Bartlett, R. (2013). A Practitioner's Guide to Business Analytics: Using Data Analysis Tools to Improve Your Organization's Decision Making and Strategy. New York, NY: McGraw-Hill.
+
+Brant, R. (1990). Assessing Proportionality in the Proportional Odds Model for Ordinal Logistic Regression. Biometrics, 46(4), 1171--1178. \url{https://doi.org/10.2307/2532457}
 
 Chakravarti, I. M., Laha, R. G., \& Roy, J. (1967). Handbook of methods of applied statistics. New York: Wiley.
 

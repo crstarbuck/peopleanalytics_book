@@ -423,17 +423,19 @@ exp(coef(glm.fit))
   
   To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but the decision is nonetheless important as it impacts how the model coefficients are interpreted -- always relative to the reference level. With the reference level defined, we can then express the multinomial logistic regression model as:
   
-  $$ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{l=1}^{K-1} e^{\beta_{l0} + \beta_{l1} x_1 + ... + \beta_{lp} x_p}}, $$
+  $$ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{j=1}^{K-1} e^{\beta_{j0} + \beta_{j1} x_1 + ... + \beta_{jp} x_p}}, $$
   
-  where $K$ is the reference class, $l$ is a variable representing one of the respective $K-1$ non-reference levels, and $k$ is the specified class for which the probability is being estimated on the basis of values for one or more $X$ predictors. 
+  where $K$ is the reference class, $j$ is a $K-1$ non-reference level, and $k$ is the specified class for which the probability is being estimated on the basis of values for one or more $X$ predictors. 
   
-  Consider `dept` from our `employees` data, which has values of `Research & Development`, `Sales`, and `Human Resources`. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or a Likert scale ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is *higher* or *better* relative to the Human Resources department.
+  Consider `dept` from our `employees` data, which has values of `Research & Development`, `Sales`, and `Human Resources`. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or Likert scales ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is *higher* or *better* relative to the Human Resources department.
   
   Multinomial models are essentially a collection of binomial models which compare the log-odds of each non-reference category to the specified reference category. If the Human Resources department is identified as the reference category $K$, then $\beta_{k0}$ for $k = Sales$ can be interpreted as the log odds of Sales department membership relative to Human Resources department membership in the following equation:
   
   $$ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p $$
   
-  Let's illustrate how multinomial logistic regression can be used to predict `dept` on the basis of variables from the `employees` data. To build this model in R, we will use the `multinom` function from the `nnet` package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of `dept` from its native character type to a factor. We also need to identify the reference category for `dept`, against which the probability of all other classes will be evaluated; we will define this using the `ref` argument within the `relevel()` function:
+  Depending on the research objective, it may be appropriate to compute the odds of one category relative to all other categories. This can actually be accomplished using binomial regression if the category of interest is coded as 1 and all other categories are coded as 0. In this case, the reference for the binomial model is a *collection* of $K-1$ categories. If understanding the odds of *each category* relative to a reference category is more appropriate based on the research objective, multinomial logistic regression is the proper model.
+  
+  Let's illustrate how to implement multinomial logistic regression by determining how variables in the `employees` dataset help in classifying employees into departments. To build this model in R, we will use the `multinom` function from the `nnet` package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of `dept` from its native character type to a factor. We also need to identify the reference department against which the probability of each of the other departments will be evaluated; we will define this using the `ref` argument within the `relevel()` function:
 
 ```{r multi-nom-mdl, out.width = "100%", fig.cap = 'Multinomial logistic regression of department onto overtime and business travel.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -523,10 +525,54 @@ data.frame(t(exp(coef(multinom.fit))))
 
   For example, the odds ratio associated with a Medical educational field is $exp(\beta) = 4.43$ for Research & Development and $exp(\beta) = 1.74$ for Sales. Therefore, those with a Medical education have $(4.43 - 1) * 100 = 343%$ greater odds of being in the Research & Development department and $(1.74 - 1) * 100 = 74%$ greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with `overtime` since this variable does not provide significant information. 
 
-### Proportional Odds Logistic Regression
+### Ordinal Logistic Regression
 
+  Many projects in people analytics involve understanding how variables influence ordinal outcomes, such as performance ratings or survey items measured on a Likert scale. Stepwise changes in the levels of ordinal outcomes may or may not be consistent. For example, it may be easy for one to be promoted from job level 1 to 2 but relatively difficult to progress from 5 to 6. Linear regression should not be used in these settings, as linear assumptions are designed for data measured on a continuous scale and will not hold for ordinal data. This section will cover **ordinal logistic regression**, which is a modeling technique designed for understanding how variables influence stepwise changes in a multi-class ordinal outcome.
 
+  Beyond the universal data screening procedures we have covered, such as ensuring problematic collinearity is not present, ordinal logistic regression features a unique **proportional odds assumption** that must be satisfied. This assumption, also known as the **parallel regression assumption**, requires that each independent variable has an equal effect at each level of the ordinal outcome. If the effect varies across levels of the outcome, separate models are needed to accurately reflect the associations with each pair of levels.
+  
+  The proportional-odds model is based on cumulative distribution probabilities. Its intercepts are dependent on the $j$ levels but slopes are equal as defined by:
+  
+  $$ log(\frac{Pr(Y \le j)} {Pr(Y > j)}) = \beta_{j0} - \displaystyle\sum_{i=1}^{n} \beta_{1i} x_{1i} + ... + \beta_{pi} x_{pi} $$
+  
+  The implementation of ordinal logistic regression will be demonstrated by evaluating the statistical drivers of engagement. First, we need to define `engagement` as an ordered factor:
+  
+```{r, message = FALSE}
 
+# Define ordered factor
+employees$engagement <- ordered(employees$engagement, levels = c(1, 2, 3, 4, 5))
+
+# Verify structure of engagement variable
+str(employees$engagement)
+
+```
+
+  Next, the proportional odds assumption will be checked using the **Brant test**. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether $\beta_{j1}$ through $\beta_{jp}$ are consistent across each of the $j$ levels. This is done via a $\chi^2$ test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the $j$ levels; therefore, $p < .05$ indicates that significant differences in effects are present across the $j$ levels and, thus, the proportional odds assumption is violated.
+  
+  We can leverage the `brant` package in R for this, which is compatible with the `polr()` function from the `MASS` package that will be used to perform ordinal logistic regression. Since we will be evaluating model statistics, rather than merely using the model for prediction (the subject of Chapter \@ref(pred-mod)), we need to specify the `Hess = TRUE` argument in the `polr()` function to include the *Hessian matrix* (observed information matrix) in the output.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Load library
+library(MASS)
+library(brant)
+
+# Fit a ordinal logistic regression model
+ord.fit <- polr(engagement ~ org_tenure, data = employees, Hess = TRUE)
+
+# Test proportional odds assumption using Brant's test
+brant(ord.fit)
+
+```
+
+  The results of Brant's test indicate that we fail to reject $H_0$ since $p = .82$; therefore, the proportional odds assumption holds for these data.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Summarize ordinal logistic regression model
+summary(ord.fit)
+
+```
 
 ## Review Questions
 
@@ -542,4 +588,10 @@ data.frame(t(exp(coef(multinom.fit))))
 
 6. How does Akaike Information Criterion (AIC) compare to $R^2$ with respect to its purpose and function?
 
-7. 
+7. In what type of R object do ordinal data need to be stored in order to implement ordinal logistic regression?
+
+8. Why can't linear regression be used to understand associations of predictors with an ordinal outcome?
+
+9. What does the proportional odds (or parallel regression) assumption assume about model coefficients?
+
+10. What is the null hypothesis for the Brant test?
