@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-15}
+\date{2022-06-17}
 
 \begin{document}
 \maketitle
@@ -650,7 +650,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpWbSHIR/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpAHwx1y/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1229,7 +1229,7 @@ A data frame can be created using the \texttt{data.frame()} function:
 ## 10 10 j 2021-10-01
 \end{verbatim}
 
-The data type of each vector in a data frame object can be viewed using the \texttt{str()} function:
+The structure of an object can be viewed using the \texttt{str()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1813,7 +1813,9 @@ There are many types of \textbf{nonsampling error} that can invalidate results b
 
 Surveys are a staple in the set of data sources germane to people analytics. While survey data provide unique attitudinal and perceptive signals that can be highly predictive of future behavior and events, surveys tend to be far more susceptible to nonsampling error than other data sources.
 
-As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as \textbf{nonresponse bias}. For example, if we administer an employee experience survey to the entire organization and receive a 60\% response rate, the reality is that we do not know how the 40\% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that the nonrespondents were busy, away on vacation, cynical to the confidentiality language in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.
+As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as \textbf{nonresponse bias}. For example, if we administer an employee experience survey to the entire organization and receive a 60\% response rate, the reality is that we do not know how the 40\% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that nonrespondents did not participate because they were busy, away on vacation, cynical to the confidentiality language in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.
+
+As an aside, nonrespondents can actually function as an important variable in analyses. In some contexts, nonrespondents may be at greater risk of voluntary attrition than those who respond unfavorably on a stay intentions survey item such as, ``I plan to be working here in one year.'' Evaluating response rate distributions across departments, divisions, roles, and other dimensions may be an insightful endeavor.
 
 Nonresponse bias is not limited to surveys. For example, self-reported demographics such as gender and ethnicity may not be disclosed by all employees in the HR information system (HRIS). This can bias segmentations based on these categorical dimensions. While there are strategies to address this, such as visual ID or applying models trained to infer missing values (which may be necessary to fulfill EEOC reporting requirements), there may still be error in the imputed values.
 
@@ -8856,7 +8858,7 @@ Many projects in people analytics involve understanding how variables influence 
 
 Beyond the universal data screening procedures we have covered, such as ensuring problematic collinearity is not present, ordinal logistic regression features a unique \textbf{proportional odds assumption} that must be satisfied. This assumption, also known as the \textbf{parallel regression assumption}, requires that each independent variable has an equal effect at each level of the ordinal outcome. If the effect varies across levels of the outcome, separate models are needed to accurately reflect the associations with each pair of levels.
 
-The proportional-odds model is based on cumulative distribution probabilities. Its intercepts are dependent on the \(j\) levels but slopes are equal as defined by:
+Though other approaches exist for modeling ordinal outcomes, the proportional-odds model based on cumulative distribution probabilities is the most common. Its intercepts are dependent on the \(j\) levels but slopes are equal as defined by:
 
 \[ log(\frac{Pr(Y \le j)} {Pr(Y > j)}) = \beta_{j0} - \displaystyle\sum_{i=1}^{n} \beta_{1i} x_{1i} + ... + \beta_{pi} x_{pi} \]
 
@@ -8905,7 +8907,14 @@ We can leverage the \texttt{brant} package in R for this, which is compatible wi
 ## H0: Parallel Regression Assumption holds
 \end{verbatim}
 
-The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = .82\); therefore, the proportional odds assumption holds for these data.
+Notice the line in the output for the omnibus test, which shows an identical \(\chi^2\), \(df\), and \(p\)-value to the line associated with \texttt{org\_tenure}. \textbf{Omnibus tests} are statistical tests which test for the significance of several parameters in a model at once. For example, a one-way ANOVA evaluating differences in mean commute time across three locations is an omnibus test since it has more than two parameters. As we covered in Chapter \ref{aod}, the null hypothesis is rejected in the context of ANOVA if there is at least \emph{one} difference in complex contrasts -- even if the mean commute time is not significantly different between \emph{all} groups. Test statistics are identical for this ordinal logistic regression model because there is a single predictor, but Brant's omnibus test investigates equality of coefficients for all predictors jointly in the case of more than two parameters (Martin, 2022). The null and alternative hypotheses for Brant's omnibus test are:
+
+\(H_0\): The odds are proportional for all predictors in the model.
+\(H_A\): The odds are non-proportional for at least one predictor.
+
+The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = .82\) for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated \emph{if} \(p < .05\) for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which \(p < .05\) since our tolerance for a Type I error is 1 in 20 with \(\alpha = .05\).
+
+Since the proportional odds assumption holds, let's review the model output:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8933,6 +8942,39 @@ The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = 
 ## AIC: 3094.592
 \end{verbatim}
 
+The output provides the average effect of a one-unit increase in \texttt{org\_tenure} (Coefficients section) as well as intercepts on each pair of levels for \texttt{engagement} (Intercepts section). The effect of a one-unit increase in \texttt{org\_tenure} in moving \texttt{engagement} from one ordinal level to the next is quite small (\(\beta = -.007\)). The intercepts are often referred to as cutpoints and can be roughly translated as thresholds. While the intercepts for each cutpoint vary, note that the single coefficient on \texttt{org\_tenure} is only possible because our proportional odds assumption holds and the effect is consistent (proportional) across levels of our ordered factor, \texttt{engagement}.
+
+Consistent with the default output from the \texttt{multinom()} function used for multinomial logistic regression, \(p\)-values are not provided in the standard output from the \texttt{polr()} function. However, we can calculate them for reasonably large samples by comparing the \(t\)-values against the standard normal distribution:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Store coefficients to df}
+\NormalTok{coef\_df }\OtherTok{\textless{}{-}} \FunctionTok{coef}\NormalTok{(}\FunctionTok{summary}\NormalTok{(ord.fit))}
+
+\CommentTok{\# Produce p{-}values}
+\NormalTok{p }\OtherTok{\textless{}{-}} \FunctionTok{pnorm}\NormalTok{(}\FunctionTok{abs}\NormalTok{(coef\_df[, }\StringTok{"t value"}\NormalTok{]), }\AttributeTok{lower.tail =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{*} \DecValTok{2}
+
+\CommentTok{\# Combine p values with coefficients df}
+\NormalTok{coef\_df }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(coef\_df, }\StringTok{"p value"} \OtherTok{=}\NormalTok{ p)}
+
+\CommentTok{\# Display df contents}
+\NormalTok{coef\_df}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    Value  Std. Error      t value       p value
+## org_tenure   -0.00696485 0.008032275    -0.867108  3.858828e-01
+## 1|2          -2.86612408 0.127144280   -22.542297 1.598105e-112
+## 2|3          -0.84185679 0.080404351   -10.470289  1.182814e-25
+## 3|4           2.17107818 0.103641956    20.947870  1.962145e-97
+## 4|5        4122.55669611 0.103641956 39776.909511  0.000000e+00
+\end{verbatim}
+
+We can now estimate the likelihood of a particular observation having a specified level of \(Y\), such as \(Y \le 3\), as follows:
+
+\[ log(\frac{Pr(Y \le 3)} {Pr(Y > 3)}) =  2.17 - .007 x_{org_tenure} \]
+
 \hypertarget{review-questions-8}{%
 \section{Review Questions}\label{review-questions-8}}
 
@@ -8957,7 +8999,7 @@ The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = 
 \item
   What does the proportional odds (or parallel regression) assumption assume about model coefficients?
 \item
-  What is the null hypothesis for the Brant test?
+  Why is it important to evaluate Brant's omnibus test -- over the test statistics on independent predictors alone -- when determining whether the proportional odds assumption for ordinal logistic regression holds?
 \end{enumerate}
 
 \hypertarget{pred-mod}{%
@@ -9137,6 +9179,8 @@ Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). 
 Kuhn, M., \& Johnson, K. (2013). Applied predictive modeling. New York: Springer.
 
 Levene, H. (1960). Robust Tests for Equality of Variances. In: Olkin, I., Ed., Contributions to Probability and Statistics. Palo Alto: Stanford University Press. pp.~278-292.
+
+Martin, P. (2022). Regression Models for Categorical and Count Data (1st ed.). SAGE Publications. Retrieved from \url{https://www.perlego.com/book/3277492/regression-models-for-categorical-and-count-data-pdf} (Original work published 2022)
 
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 
