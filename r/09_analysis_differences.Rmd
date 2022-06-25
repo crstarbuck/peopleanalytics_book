@@ -1,0 +1,767 @@
+# Analysis of Differences {#aod}
+
+  There are many statistical tests that can be used to test for differences within or between two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
+
+## Parametric vs. Nonparametric Tests
+
+  In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
+  
+  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
+  
+  1. **Independence**: Observations within each group are independent of each other
+  2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
+  3. **Normality**: Residuals must be normally distributed (with mean of 0) within each group
+  
+  While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
+  
+  You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \@ref(inf-stats), influences our ability to utilize parametric tests with respect to the assumption of normality. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+```
+
+## Differences in Discrete Data
+
+  Nonparametric tests are generally best when working with data measured on a discrete scale since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the nonparametric *Chi-square test* and *Fisher's exact test*.
+  
+```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/discrete_differences_test_table.png")
+
+```
+  
+  Both tests organize data within 2x2 **contingency tables** which enables us to understand interrelations between variables. 
+
+  **Chi-Square Test**
+
+  The **Chi-Square Test of Independence** evaluates patterns of observations to determine if categories occur more frequently than we would expect by chance. The Chi-square statistic is defined by:
+  
+  $$ {\chi}^2 = \sum\frac{(O_i - E_i)^2}{E_i}, $$
+  
+  where $O_i$ is the observed value, and $E_i$ is the expected value. 
+  
+  $H_0$ states that each variable is independent of one another (i.e., there is no relationship). In addition to the ${\chi}^2$ test statistic, $df$ for the contingency table, defined by $df = (rows - 1) * (columns - 1)$, is required to determine whether we reject or fail to reject $H_0$.
+  
+  While there is not consensus on the minimum sample size for this test, it is important to note that the ${\chi}^2$ statistic follows a chi-square distribution *asymptotically*. This means we can only calculate accurate $p$-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small $n$-counts is illustrated in Figure \@ref(fig:chisq-dist); the chi-square distribution approaches a vertical line as $df$ drops below 5.
+  
+```{r chisq-dist, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square Distributions by Degrees of Freedom (df)', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Sample from chi-square distribution for various df
+chisq <- data.frame(dens = c(rchisq(1:10000000, df = 5), rchisq(1:10000000, df = 10), rchisq(1:10000000, df = 15)),
+                    df = rep(c("df = 5", "df = 10", "df = 15"), each = 10000000))
+
+# Order data by df for plotting
+chisq$df <- with(chisq, reorder(df, dens))
+
+# Plot chi-square distributions
+ggplot2::ggplot(chisq, aes(x = dens, fill = df)) + 
+ggplot2::labs(x = "x", y = "Density") +  
+ggplot2::geom_density(alpha = 0.6) +
+ggplot2::scale_fill_manual(values = c("#0099FF", "0066FF", "0033FF")) +
+ggplot2::theme_bw()
+
+```
+
+  We will demonstrate how to perform a chi-square test of independence by evaluating whether exit rates are independent of whether an employee works overtime. Let's first construct a 2x2 contingency table using the `table()` function:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create contingency table
+cont_tbl <- table(employees$active, employees$overtime)
+cont_tbl
+
+```   
+
+  A **mosaic plot** is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced using the `mosaicplot()` function from the `graphics` library:
+
+```{r mosaic-plot, out.width = "100%", echo = FALSE, fig.cap = 'Mosaic Plot of Residuals for Overtime x Active Status', fig.align = 'center',}
+
+# Load library for mosaic plot
+library("graphics")
+
+# Build mosaic plot of contingency table residuals
+mosaicplot(cont_tbl, shade = TRUE, main = NULL, xlab = "Overtime", ylab = "Active")
+
+``` 
+
+  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
+
+  Let's run the chi-square test of independence to determine whether these residuals are statistically significant. This test can be performed in R by passing the contingency table into the `chisq.test()` function:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform chi-square test of independence
+chisq.test(cont_tbl)
+
+```   
+
+  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a statistically significant relationship between an employee working overtime and the rate at which they change from an active to inactive status -- confirming what was evident in the mosaic plot.
+  
+  **Fisher's Exact Test**
+  
+  When the sample size is small, **Fisher's Exact Test** can be used to calculate the *exact* $p$-value rather than an approximation, which is the case with many statistical tests such as the chi-square test.
+  
+  $H_0$ for Fisher's exact test is the same as $H_0$ for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the `fisher.test()` function in R:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Fisher's exact test
+fisher.test(cont_tbl)
+
+```    
+
+  Note the *odds ratio* shown in this output. The **odds ratio** represents the ratio of positive to negative cases, which is the ratio of overtime for active and inactive workers in this example. The odds ratio is defined by:
+  
+  $$OR = \frac{a*d}{b*c}$$
+  
+  An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \@ref(fig:contingency-tbl) illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.
+
+```{r contingency-tbl, out.width = "75%", echo = FALSE, fig.cap = '2x2 Contingency Table of Overtime for Active and Inactive Workers', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/contingency_table.png")
+
+```
+  
+  Since the 95% $CI$ for the odds ratio does not include 1, we reject the null hypothesis and conclude that exit rates are related to working overtime; this is consistent with results from the chi-square test of independence. Since overtime was indicated far more often for inactive workers than for active workers, it is no surprise that the denominator of our ratio is larger than the numerator (i.e., $OR$ < 1).
+  
+  As discussed in Chapter \@ref(desc-stats), we can produce a $\phi$ coefficient to understand the strength of the association by passing the contingency table into the `phi` function from the `psych` library:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Calculate the Phi Coefficient
+psych::phi(cont_tbl)
+
+``` 
+
+  The relationship between active status and overtime is negative, and the strength of the relationship is weak ($\phi$ = -.25).
+  
+  Another common method of measuring the strength of the association between two categorical variables is **Cramer's V**, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alernative methods, the implementation won't be covered.
+
+## Differences in Continuous Data
+
+  A variety of parametric and nonparametric tests are available for evaluating differences between variables measured on a continuous scale. Figure \@ref(fig:continuous-tests) provides a side-by-side of these parametric and corresponding nonparametric tests of differences.
+  
+```{r continuous-tests, out.width = "100%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/continuous_differences_test_table.png")
+
+```
+
+  **Independent Samples **$\textbf t$**-Test**
+  
+  When evaluating differences between two independent samples, social psychology researchers generally select from two tests: *Student's* $t$*-test* and *Welch's* $t$*-test*. There are other alternatives, such as *Yuen's* $t$*-test* and a *bootstrapped* $t$*-test*, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
+  
+  The **Student's** $t$**-test**, which was introduced in Chapter \@ref(inf-stats), is a parametric test whose assumptions of equal variances seldom hold in people analytics. **Welch's** $t$**-test** is generally preferred to the Student's $t$-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, & Leys, 2017). When $n$ is equal between groups, the Student's $t$-test is known to be robust to violations of the equal variance assumption, as long as $n$ is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
+  
+  Let's explore the mechanics of independent samples $t$-tests. Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a standard normal distribution with larger $df$. In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p > .05$). You may also notice that as the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
+
+```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1,000, and 10,000 (rows) and standard deviations of 25, 50, and 75 (columns). Dashed vertical lines represent distribution means.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+
+# Set seed for reproducible random numbers
+set.seed(123)
+
+# Fill sample size vector
+n_counts <- c(100, 1000, 10000)
+
+# Fill standard deviation vector
+sds <- c(25, 50, 75)
+
+# Initialize lists
+p = list()
+t_test = list()
+
+# Initialize index
+i = 1
+
+for (n in n_counts){
+  
+  for (sd in sds){
+    
+    # Draw random numbers from normal distribution per defined parameters
+    a <- data.frame(x = rnorm(n, 100, sd))
+    b <- data.frame(x = rnorm(n, 120, sd))
+
+    # Label groups and combine within single df
+    a$group <- 'a'
+    b$group <- 'b'
+    ab <- rbind(a, b)
+
+    # Store mean values in df
+    mean_df <- ab %>%
+               group_by(group) %>%
+               summarize(mean = mean(x))
+
+    # Calculate absolute mean difference
+    xbar_delta <- abs(round(mean(ab[ab$group == 'b', 'x']) - mean(ab[ab$group == 'a', 'x']), 0))
+    t_test <- t.test(ab[ab$group == 'a', 'x'], ab[ab$group == 'b', 'x'])
+
+    # Store viz to object
+    p[[i]] <- ggplot2::ggplot(ab, aes(x, fill = group)) + 
+              ggplot2::labs(title = paste0("MD = ", xbar_delta, "\n t = ", round(t_test$statistic, 1), ifelse(t_test$p.value < .05, ", p < .05", ", p > .05")), x = "x", y = "Density") +  
+              ggplot2::geom_density(alpha = 0.6) +
+              ggplot2::scale_fill_manual(values = c("skyblue", "lightgrey")) +
+              ggplot2::geom_vline(data = mean_df, aes(xintercept = mean), colour = c("blue", "#3D3D3D"), size = .5, linetype = "dashed") +
+              ggplot2::theme_bw() +
+              ggplot2::theme(plot.title = element_text(hjust = 0.5)) +
+              ggplot2::theme(legend.position = "none")
+    
+    # Increment counter variable by 1
+    i = i + 1
+  }
+}
+
+# Visualize density plots side-by-side
+ggpubr::ggarrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]], p[[7]], p[[8]], p[[9]],
+                  ncol = 3, nrow = 3)
+
+```
+  
+  Next, we will walk through the steps involved in performing Welch's $t$-test. Let's first visualize the distribution of data for each group using boxplots:
+  
+```{r comp-job-boxplots, out.width = "100%", echo = FALSE, fig.cap = 'Annual Compensation Distributions for Managers and Research Scientists', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Subset data
+data <- subset(employees, job_title %in% c('Manager', 'Research Scientist'), select = c(annual_comp, job_title))
+
+# Produce boxplots to visualize compensation distribution by job title
+ggplot2::ggplot(data, aes(x = as.factor(job_title), y = annual_comp, color = job_title)) +
+ggplot2::labs(x = "Job Title", y = "Annual Compensation") + 
+ggplot2::guides(col = guide_legend("Job Title")) +
+ggplot2::theme_bw() +
+ggplot2::geom_boxplot()
+
+``` 
+
+  While the median -- rather than the mean which is being evaluated with Welch's $t$-test -- is shown in these boxplots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.
+  
+  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit test** (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S) test** (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk test** (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
+    
+  We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high $p$-value indicates that the assumption of normality is satisfied (i.e., failure to reject the null hypothesis of normally distributed data). We can use the `with()` function together with the `shapiro.test()` function to run this test in R:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality for each group
+with(employees, shapiro.test(annual_comp[job_title == 'Manager']))
+with(employees, shapiro.test(annual_comp[job_title == 'Research Scientist']))
+
+```  
+    
+  Based on these tests, the distribution of annual compensation for Managers and Research Scientists are significantly different from normally distributed data ($p$ < .05).
+    
+  While we should not proceed with performing Welch's $t$-test due to unequal variances, let's do so merely to illustrate how the test is implemented in R. To perform Welch's $t$-test in R, we can simply pass into the `t.test()` function a numeric vector for each of the two groups.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create compensation vectors for two jobs
+comp_mgr <- unlist(subset(employees, job_title == 'Manager', select = annual_comp))
+comp_rsci <- unlist(subset(employees, job_title == 'Research Scientist', select = annual_comp))
+
+# Run Welch's t-test
+t.test(comp_mgr, comp_rsci)
+
+``` 
+
+  If the data adhered to the assumptions of Welch's $t$-test, we would conclude that the mean difference between annual compensation for Managers ($\bar{x}$ = 139,901) and Research Scientists ($\bar{x}$ = 138,755) is not significant ($t(159.55)$ = .23, $p$ = .82).
+  
+  Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# This assigns each element of results from Welch's t-test to an indexed position in the object
+t_rslts <- t.test(comp_mgr, comp_rsci)
+
+t_rslts$statistic # t-statistic
+t_rslts$parameter # df
+t_rslts$p.value # p-value
+t_rslts$method # type of t-test
+
+```   
+
+  When object elements are referenced by index, the element name is displayed in the output to clarify what the metric represents:
+
+```{r, message = FALSE, warning = FALSE}
+
+t_rslts[1] # t-statistic
+t_rslts[2] # df
+t_rslts[3] # p-value
+t_rslts[9] # type of t-test
+
+```
+
+  Given $df$ = 159.55, you may be wondering how $df$ is calculated for Welch's $t$-test given that thus far, we have only discussed the basic $df$ calculation outlined in Chapter \@ref(inf-stats); namely, $df = n - 1$. Welch's $t$-test uses the **Welch-Satterthwaite equation** for $df$ (Satterthwaite, 1946; Welch, 1947). This equation approximates $df$ for a linear combination of independent sample variances; which means that if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by: 
+  
+  $$ df = \frac {(\frac{s^2_1}{n_1} + \frac{s^2_2}{n_2})^2} {\frac{1}{n_1 - 1} (\frac{s^2_1}{n_1})^2 + \frac{1}{n_2 - 1} (\frac{s^2_2}{n_2})^2} $$
+
+  **Cohen's** $\textbf d$ is a standardized measure of the difference between two means that helps us understand the size (or *practical* significance) of observed mean differences. Cohen's $d$ is defined by:
+  
+  $$ d = \frac{\bar{x}_1 - \bar{x}_2} {s_p},  $$
+  
+  where $s_p$ represents the pooled standard deviation defined by:
+  
+  $$ s_p = \sqrt\frac{s^2_1 + s^2_2}{2} $$
+  
+  Cohen's $d$ can be produced using the `cohen.d()` function from the `effsize` package in R. The following thresholds can be referenced as a *general* rule of thumb for interpreting effect size:
+  
+  * **Small** = 0.2
+  * **Medium** = 0.5
+  * **Large** = 0.8
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library for effect size functions
+library(effsize)
+
+# Perform Cohen's d
+effsize::cohen.d(comp_mgr, comp_rsci)
+
+```   
+  
+  Not only are the differences statistically insignificant, Cohen's $d$ = .03 indicates a negligible difference. Therefore, there is nothing of interest based on these statistical and practical significance tests.
+  
+  **Mann-Whitney U Test**
+  
+  A popular nonparametric (distribution-free) alternative to Welch's $t$-test is the **Mann-Whitney U Test**, also referred to as the **Wilcoxon Rank-Sum Test**. Rather than comparing the mean between two groups, like the Student's $t$-test or Welch's $t$-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the *ranks* are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.
+  
+  The `wilcox.test()` function is used to run this test in R. Let's illustrate by examining whether engagement (an ordinal variable in our dataset) is significantly different between those who have been promoted in the past year and those who have not:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create dummy-coded promotion variable
+employees$promo <- ifelse(employees$last_promo == 1, 1, 0)
+
+# Create numeric engagement vectors for promo groups
+no_promo <- unlist(subset(employees, promo == 0, select = engagement))
+promo <- unlist(subset(employees, promo == 1, select = engagement))
+
+# Perform the Mann-Whitney U (aka Wilcoxon rank-sum) test
+wilcox.test(no_promo, promo)
+
+```  
+
+  Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions ($W$ = 196,056, $p$ = .67). Note the reference to continuity correction in the output. **Continuity correction** is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.
+  
+  Just as Cohen's $d$ is used to measure the magnitude of difference between a pair of means, **Cliff's delta** can be leveraged to evaluate the size of differences between ordinal variables. Cliff's delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the `cliff.delta()` function from the `effsize` package in R.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Run Cliff's Delta
+effsize::cliff.delta(no_promo, promo)
+
+```    
+  
+  Some (e.g., Vargha & Delaney, 2000) have endeavored to categorize the Cliff's delta statistic, which ranges from -1 to 1, into effect size buckets. However, such categorizations are far more controversial than thresholds attributed to Cohen's $d$. Nevertheless, the near-zero delta estimate of -.01 indicates a negligible difference.
+  
+  **Paired Samples** $\textbf t$**-Test**
+  
+  A **Paired Samples **$\textbf t$**-Test** is used to compare means between pairs of measurements. This test is known by many other names, such as a **dependent samples** $\textbf t$**-test**, **paired-difference** $\textbf t$**-test**, **matched pairs** $\textbf t$**-test**, and **repeated-samples** $\textbf t$**-test**.
+  
+  The assumption of normality in the context of a paired samples $t$-test relates to normally distributed paired differences. This is important, as the $p$-value for the test statistic will not be valid if this assumption is violated.
+  
+  To illustrate, let's design an experiment. Let's assume morale has declined for employees who travel frequently, and several actions have been proposed by a task force to help address this. The task force has decided to pilot a new flexible work benefit over a six-month period to determine if it has a meaningful effect on morale. This new benefit is piloted to a random sample of frequent travelers, and our task is to test whether the outcomes warrant a broader rollout to frequent travelers.
+  
+  Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).
+  
+  While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \@ref(research) that this would be a weak design that may lead to inaccurate conclusions. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.
+  
+  **Difference-in-differences (DiD)** estimation is a quasi-experimental approach that originated from econometrics for this same purpose, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
+  
+  Let's prepare the data for this experiment. Since `employees` is a cross-sectional dataset (single point-in-time), we will generate simulated data for repeated measures (i.e., post-intervention scores).
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Set seed for reproducible results
+set.seed(1234)
+
+# Derive happiness index from survey variables
+employees$happiness_ind <- (employees$engagement + employees$env_sat + employees$job_sat + employees$rel_sat) / 4
+
+# Sample size of frequent travelers
+n = nrow(subset(employees, business_travel == 'Travel_Frequently', select = employee_id))
+
+# Randomly assign half of frequent travelers to treatment and control groups
+treat_ids <- sample(unlist(subset(employees, business_travel == 'Travel_Frequently', select = employee_id)), floor(n * .5))
+ctrl_ids <- unlist(subset(employees, business_travel == 'Travel_Frequently' & !employee_id %in% treat_ids, select = employee_id))
+
+# Initialize dfs for pre/post metrics
+treat_metrics = data.frame(pre_ind = numeric(length(treat_ids)),
+                           rand_num = rnorm(length(treat_ids), mean = 15, sd = 5) * .001,
+                           post_ind = numeric(length(treat_ids)), 
+                           diff = numeric(length(treat_ids)))
+
+ctrl_metrics = data.frame(pre_ind = numeric(length(ctrl_ids)), 
+                          rand_num = rnorm(length(ctrl_ids), mean = 0, sd = 1) * .001, 
+                          post_ind = numeric(length(ctrl_ids)),
+                          diff = numeric(length(ctrl_ids)))
+
+# Store happiness indices for treatment and control groups
+treat_metrics$pre_ind <- unlist(subset(employees, employee_id %in% treat_ids, select = happiness_ind))
+ctrl_metrics$pre_ind <- unlist(subset(employees, employee_id %in% ctrl_ids, select = happiness_ind))
+
+# Create vectors with artificially inflated post-intervention happiness indices
+treat_metrics$post_ind <- treat_metrics$pre_ind + treat_metrics$rand_num
+ctrl_metrics$post_ind <- ctrl_metrics$pre_ind + ctrl_metrics$rand_num
+
+# Force an upper bound of 4 to adjusted index scores (variables were measured using a 4-point Likert scale)
+treat_metrics$post_ind <- if(treat_metrics$post_ind > 4) {4} else {treat_metrics$post_ind}
+ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$post_ind}
+
+```    
+
+  It's important to remember that a paired samples $t$-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee should be removed from the data since paired measurements will not be available.
+  
+  The variance is not assumed to be equal for a paired test; therefore, the homogeneity of variance assumption is not applicable in this context.
+  
+  Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an *approximately* continuous variable. There are $2^p - p - 1$ combinations of scores, where $p$ is the number of variables. For our happiness index, there are $2^4 - 4 - 1 = 11$ combinations.
+
+```{r pre-post-diff, fig.cap = "Pre/Post Differences for Treatment and Control Groups", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Load library
+library(ggpubr)
+
+# Calculate pre/post differences
+treat_metrics$diff <- treat_metrics$post_ind - treat_metrics$pre_ind
+ctrl_metrics$diff <- ctrl_metrics$post_ind - ctrl_metrics$pre_ind
+
+# Histogram for distribution of pre/post treatment group differences
+p_treat <- ggplot2::ggplot() + 
+           ggplot2::aes(treat_metrics$diff) + 
+           ggplot2::labs(title = "Treatment Group", x = "Happiness Index Differences", y = "Frequency") + 
+           ggplot2::geom_histogram(fill = "#414141") +
+           ggplot2::theme_bw() +
+           ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Histogram for distribution of pre/post control group differences
+p_ctrl <- ggplot2::ggplot() + 
+          ggplot2::aes(ctrl_metrics$diff) + 
+          ggplot2::labs(title = "Control Group", x = "Happiness Index Differences", y = "Frequency") + 
+          ggplot2::geom_histogram(fill = "#414141") +
+          ggplot2::theme_bw() +
+          ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Display histograms side-by-side
+ggpubr::ggarrange(p_treat, p_ctrl, ncol = 2, nrow = 1)
+
+``` 
+
+  Based on a visual inspection, the distributions of differences appear to be roughly normal. This should not be surprising given random values were sampled from normal distributions to derive artificial post-intervention happiness indices.
+  
+  Let's test for normality by performing the Shapiro-Wilk test on vectors of differences:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(treat_metrics$diff)
+shapiro.test(ctrl_metrics$diff)
+
+```
+  
+  Since $p$ > .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples $t$-test.
+  
+  We can run a paired samples $t$-test in R by passing `paired = TRUE` as an argument to the same `t.test()` function used for the independent samples $t$-test. Since we are investigating whether the average post-intervention happiness index is significantly *greater* than the average pre-intervention happiness index, we also need the `alternative = "greater"` argument since the default two-tailed test only evaluates whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform one-tailed paired samples t-test for treatment group
+t.test(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE, alternative = "greater")
+
+```  
+
+  These results indicate that the post-intervention happiness index is significantly larger than the pre-intervention happiness index. This is encouraging with respect to the potential efficacy of the flexible work pilot, but the question about whether the control group experienced a commensurate improvement over the observation period remains unanswered.
+  
+  Let's run the same paired samples $t$-test using the control group indices:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform one-tailed paired samples t-test for control group
+t.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE, alternative = "greater")
+
+``` 
+
+  Since $p$ > .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. Chapter \@ref(lm) will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
+  
+  We can evaluate the magnitude of mean differences for these paired samples by passing the `paired = TRUE` argument to the same `cohen.d()` function used for independent samples:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Cohen's d
+effsize::cohen.d(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE)
+
+```   
+
+  Though pre/post indices are statistically significant for the treatment group, the size of the difference is negligible ($d$ = .03).
+
+  **Wilcoxon Signed-Rank Test**
+  
+  The **Wilcoxon Signed-Rank Test** is the nonparametric alternative to the paired samples $t$-test. This distribution-free test does not require normally distributed differences.
+  
+  The matched Wilcoxon Signed-Rank test is performed in R using the same `wilcox.test()` function used to perform the unmatched Wilcoxon Rank-Sum test. Though we can use a paired samples $t$-test to test differences for our flexible work benefit study since the assumption of normally distributed differences is met, let's run a Wilcoxon Signed-Rank test for demonstrative purposes:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Wilcoxon Signed-Rank test
+wilcox.test(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Wilcoxon Signed-Rank test
+wilcox.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE)
+
+```  
+
+  Consistent with results from the paired samples $t$-tests, significantly higher post-intervention happiness indices were observed for the treatment group but not for the control group. 
+  
+  We can evaluate the magnitude of differences for these paired samples by passing the `paired = TRUE` argument to the same `cliff.delta()` function used for independent samples:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Run Cliff's Delta
+effsize::cliff.delta(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRUE)
+
+```    
+
+  With Cliff's delta, we observe a small difference between pre/post indices for the treatment group (delta estimate = .15).
+
+  **Analysis of Variance (ANOVA)**
+
+  **Analysis of Variance (ANOVA)** is used to determine whether the means of scale-level DVs are equal across nominal-level variables with three or more independent categories.
+  
+  It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, a difference between one or more of these contrasts results in a decision to reject $H_0$ in ANOVA. As a result, we may find a significant $F$-statistic but no significant differences between pairwise means.
+  
+  In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \@ref(inf-stats), multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+  
+  ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A **one-way ANOVA** is used to determine how one categorical IV influences a continuous DV. A **two-way ANOVA** is used to determine how two categorical IVs influence a continuous DV. A **three-way ANOVA** is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a **factorial ANOVA**. As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
+  
+  ANOVA is not a test, per se, but a $F$-test underpins it. The mathematical procedure behind the $F$-test is relatively straightforward:
+  
+  1. Compute the **within-group variance**, which is also known as residual variance. Simply put, this tells us how different each member of the group is from the average.
+  2. Compute the **between-group variance**. This represents how different the group means are from one another.
+  3. Produce the $F$-statistic, which is the ratio of *within-group variance* to *between-group variance*.
+  
+  More formally, the $F$-statistic is defined by:
+  
+  $$ F = \frac{MS_{between}}{MS_{within}}, $$
+  
+  where:
+  
+  $$ MS_{between} = \frac{SS_{between}}{df_{between}}, $$
+  
+  $$ MS_{within} = \frac{SS_{within}}{df_{within}}, $$
+  
+  $$ SS_{between} = \displaystyle\sum_{j=1}^{p} n_j(\bar{x}_j-\bar{x})^2, $$
+  
+  $$ SS_{within} = \displaystyle\sum_{j=1}^{p} \displaystyle\sum_{i=1}^{n_j} (x_{ij}-\bar{x_j})^2 $$
+  
+  **One-Way ANOVA**
+  
+  To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.
+  
+  Each observation in `employees` represents a unique employee, and a given employee can only have one job satisfaction score and one annual compensation value. The assumption of independence is met since each record exists independent of one another and each job satisfaction group is comprised of different employees.
+  
+  Levene's test (Levene, 1960) can be used to test the homogeneity of variance assumption -- even with non-normal distributions. This can be performed in R using the `leveneTest()` function from the `car` package:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform Levene's test for homogeneity of variance
+car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
+
+```  
+  
+  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p > .05$, we fail to reject this null hypothesis and can assume equal variances.
+  
+  Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
+  
+```{r comp-dist, fig.cap = "Annual Compensation Distribution by Job Satisfaction Level", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load data viz library
+library(ggplot2)
+library(ggpubr)
+
+# Create function to visualize distribution
+dist.viz <- function(data, x) {
+  
+viz <- ggplot2::ggplot() + 
+       ggplot2::aes(data) + 
+       ggplot2::labs(title = paste("Job Sat = ", x), x = "Annual Compensation", y = "Frequency") + 
+       ggplot2::geom_histogram(fill = "#414141") +
+       ggplot2::theme_bw() +
+       ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+  return(viz)
+}
+
+# Produce annual compensation vectors for each job satisfaction level
+# Unlist() is needed to convert the default object from subset() into a numeric vector
+group_1 <- unlist(subset(employees, job_sat == 1, select = annual_comp))
+group_2 <- unlist(subset(employees, job_sat == 2, select = annual_comp))
+group_3 <- unlist(subset(employees, job_sat == 3, select = annual_comp))
+group_4 <- unlist(subset(employees, job_sat == 4, select = annual_comp))
+
+# Call UDF to build annual comp histogram for each job satisfaction level
+viz_1 <- dist.viz(data = group_1, x = 1)
+viz_2 <- dist.viz(data = group_2, x = 2)
+viz_3 <- dist.viz(data = group_3, x = 3)
+viz_4 <- dist.viz(data = group_4, x = 4)
+
+# Display distribution visualizations
+ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
+          ncol = 2, nrow = 2)
+
+``` 
+  
+  As we can see, annual compensation data are not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.
+  
+  To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. After partitioning annual compensation into groups differentiated by job satisfaction level, we can use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
+
+```{r qq-plot, fig.cap = "Q-Q Plot of Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Generate residuals for each group
+residuals <- c(group_1 - mean(group_1), group_2 - mean(group_2), group_3 - mean(group_3), group_4 - mean(group_4))
+
+# Create a Q-Q plot of residuals
+ggpubr::ggqqplot(residuals)
+
+``` 
+
+  To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure \@ref(fig:qq-plot), there is a clear departure from normality at both ends of the theoretical range.
+  
+  Let's test for normality using the Shapiro-Wilk test:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Compute Shapiro-Wilk test of normality
+shapiro.test(residuals)
+
+``` 
+
+  Since $p < .05$, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
+  
+  Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.
+  
+  Let's first try several common data transformations and then examine the resulting Q-Q plots:
+
+```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Build a linear model using the natural logarithm of annual comp
+ln.model <- lm(log(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the log base 10 of annual comp
+log10.model <- lm(log10(annual_comp) ~ job_sat, data = employees)
+
+# Build a linear model using the square root of annual comp
+sqrt.model <- lm(sqrt(annual_comp) ~ job_sat, data = employees)
+
+# Store Q-Q plots to viz objects
+ln.viz <- ggpubr::ggqqplot(residuals(ln.model)) + ggtitle("Natural Log")
+log10.viz <- ggpubr::ggqqplot(residuals(log10.model)) + ggtitle("Log Base 10")
+sqrt.viz <- ggpubr::ggqqplot(residuals(sqrt.model)) + ggtitle("Square Root")
+
+# Display Q-Q plots of residuals
+ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
+          ncol = 3, nrow = 1)
+
+``` 
+
+  Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA is demonstrated below. Performing ANOVA involves the `aov()` function along with the `summary()` function to display model output:
+    
+```{r, message = FALSE, warning = FALSE}
+
+# One-way ANOVA investigating mean differences in annual comp by job satisfaction
+one.way <- aov(annual_comp ~ job_sat, data = employees)
+summary(one.way)
+
+```
+
+  The **Kruskal Wallis H Test** is the nonparametric alternative to a one-way ANOVA (Daniel, 1990) and an appropriate alternative for investigating median differences in annual comp by job satisfaction in our data. This test can be performed using the `kruskal.test()` function in R:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Nonparametric Kruskal one-way ANOVA
+kruskal.test(annual_comp ~ job_sat, data = employees)
+
+```
+
+  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the `pairwise.wilcox.test()` function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
+
+```{r, message = FALSE, warning = FALSE}
+
+pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method = "BH")
+
+```
+  
+  Based on the results, there are significant pairwise differences in median annual compensation for job satisfaction levels 3 and 4 relative to level 1. 
+  
+  **Factorial ANOVA**
+  
+  **Factorial ANOVA** is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. It is important to understand the hypothesis a factorial design tests. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Calculate mean for each IV pair
+combos <- aggregate(annual_comp ~ job_sat + stock_opt_lvl, employees, mean)
+combos
+
+```  
+  
+  As we have already discussed, a difference between one or more of these contrasts may result in a decision to reject $H_0$ in ANOVA. We may also find a significant pairwise difference but a non-significant result from ANOVA since the family-wise error rate adjustment is applied in the context of multiple comparisons which reduces statistical power.
+  
+  Factorial ANOVA can be performed by adding variables with `+` within the same `aov()` function used for one-way ANOVA:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level
+factorial <- aov(annual_comp ~ job_sat + stock_opt_lvl, data = employees)
+summary(factorial)
+
+```  
+
+  While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. These statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \@ref(fig:two-way-factorial).
+
+```{r two-way-factorial, out.width = "100%", echo = FALSE, fig.cap = 'Relationships of Job Satisfaction and Stock Option Level with Annual Compensation', fig.align = 'center'}
+
+ggplot2::ggplot(combos, aes(x = job_sat, y = annual_comp, group = stock_opt_lvl)) +
+ggplot2::geom_line(aes(color = stock_opt_lvl)) +
+ggplot2::labs(x = "Job Satisfaction", y = "Annual Compensation") + 
+ggplot2::guides(col = guide_legend("Stock Option Level")) +
+ggplot2::theme_bw() +
+ggplot2::geom_point(aes(color = stock_opt_lvl))
+
+```
+
+  As we can see, there is a strong negative relationship between job satisfaction and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.
+  
+  These relationships may initially seem counterintuitive, as one might expect higher levels of job satisfaction to contribute to higher performance and consequently, higher compensation. There may be other variables that happen to be correlated with job satisfaction and/or stock option level that are the actual determinants of annual compensation. For example, there may be a relationship between jobs that each feature a stock option level of 3 but for which there are markedly different average job satisfaction scores and annual compensation among workers in said jobs. Without accounting for additional variables that may explain why employees vary in the amount of annual compensation they earn, the limited set of relationships shown in Figure \@ref(fig:two-way-factorial) may lead to a misleading understanding and inaccurate conclusions.
+  
+  Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \@ref(lm), we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly explain variation in the DV.
+
+## Review Questions
+
+1. What are the main differences between a Chi-square test and Fisher's exact test?
+
+2. Why is it problematic to test for significant differences using the ${\chi}^2$ statistic with extremely small samples (e.g., $n$ < 5)?
+
+3. What are the general assumptions of parametric tests?
+
+4. What is a benefit of Welch's $t$-test over the Student's $t$-test?
+
+5. How does a paired-samples $t$-test differ from an independent samples $t$-test?
+
+6. In what ways does the Wilcoxon signed-rank test differ from the paired samples $t$-test?
+
+7. How can the magnitude of differences (i.e., practical significance) be quantified when working with data measured on a continuous scale?
+
+8. How can the magnitude of differences (i.e., practical significance) be quantified when working with data measured on an ordinal scale?
+
+9. What null hypothesis does ANOVA test?
+
+10. What are some ways to better understand the nature of statistical differences indicated in the output of ANOVA?

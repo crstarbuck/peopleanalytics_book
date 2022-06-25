@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-17}
+\date{2022-06-25}
 
 \begin{document}
 \maketitle
@@ -631,7 +631,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -647,10 +647,11 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## car        3.0-12  3.1-0             FALSE
 ## flextable   0.7.0  0.7.2             FALSE
 ## MASS       7.3-56 7.3-57              TRUE
+## lme4       1.1-28 1.1-29              TRUE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpAHwx1y/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp5yJDJW/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -3766,10 +3767,10 @@ The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 
   According to the Empirical Rule, 95\% of normally distributed data lie within how many standard deviations of the mean?
 \end{enumerate}
 
-\hypertarget{data-wrang-prep}{%
-\chapter{Data Wrangling and Preparation}\label{data-wrang-prep}}
+\hypertarget{data-wrangl}{%
+\chapter{Data Wrangling}\label{data-wrangl}}
 
-To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for a large part of the work analytics professionals do.
+To begin a data analysis, we must first access and organize the relevant data. These tasks -- together with data preparation steps outlined in Chapter \ref{data-prep} -- account for a large part of the work analytics professionals do.
 
 \begin{figure}
 
@@ -3783,7 +3784,7 @@ To begin a data analysis, we must first access, integrate, and clean the relevan
 \hypertarget{data-management}{%
 \section{Data Management}\label{data-management}}
 
-Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}.
+Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}.
 
 A \textbf{data lake} stores myriad types of data -- both structured and unstructured -- in its native format until needed. \textbf{Structured data} refers to data that fits a predefined data model, such as hire dates formatted as \texttt{MM/DD/YYYY} or zip codes stored as a five-digit string. \textbf{Unstructured data} has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables.
 
@@ -3813,7 +3814,7 @@ Figure \ref{fig:dw-erd} shows an \textbf{Entity Relationship Diagram (ERD)} that
 \caption{Entity Relationship Diagram (ERD)}\label{fig:dw-erd}
 \end{figure}
 
-A DW may contain many different types of tables, but the two most common are \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
 
 Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
 
@@ -3840,6 +3841,12 @@ While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y
 \end{figure}
 
 A \textbf{data mart} is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+
+\textbf{Modern Data Architecture}
+
+Though a deep treatment of data architecture is beyond the scope of this book, it is important to acknowledge the significant advancements in infrastructure and computation since these complex SCD architectures were introduced by Kimball (1996). These developments have greatly improved the efficiency with which analysts can translate data into information and insight. The primitive systems in place decades ago required expensive \textbf{ETL} jobs to \textbf{extract (E)} data from source systems, \textbf{transform (T)} data using complex transformation rules, and \textbf{load (L)} the transformed data to relational tables -- which then required complex queries to wrangle and analyze the data.
+
+With modern cloud environments, the significant investment associated with humans designing, developing, and maintaining these complex architectures is often difficult to justify given how inexpensive storage and compute have become. Increasingly, the heavy computational tasks have migrated out of data pipelines and into the analytics layer wherein analytics teams have more flexibility and control. Today, daily snapshots containing \emph{all} current and historical records can be copied and stored within partitioned DW tables for a negligible increase in storage costs, and this greatly simplifies data pipeline complexity and engineering support requirements. This changing dynamic has given rise to a new breed of data engineers focused on optimizing the heavy computation requirements of analytics teams.
 
 \hypertarget{sql}{%
 \section{SQL}\label{sql}}
@@ -3943,6 +3950,8 @@ A best practice in writing SQL is to capitalize the names of clauses and functio
 \end{verbatim}
 
 This query returned a list of employee ids for employees in the Research \& Development department.
+
+To optimize query performance, it is important to order conditions in the \texttt{WHERE} clause beginning with the condition that will exclude the largest number of records. Conditions are executed sequentially, and each subsequent condition must evaluate all records that remain following any preceding filtering. Limiting the number of records that must be searched when evaluating each condition will reduce the time it takes the query to return results. For example, if two conditions are needed and one excludes 5,000 records while the other excludes 10, the condition that excludes 5,000 records should be listed first in the \texttt{WHERE} clause.
 
 \textbf{Aggregate Functions}
 
@@ -4511,77 +4520,126 @@ An alternative approach is to use a \textbf{common table expression (CTE)}, whic
 ## 7            Vice President              1            8
 \end{verbatim}
 
-\hypertarget{data-screening-cleaning}{%
-\section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
+\hypertarget{review-questions-5}{%
+\section{Review Questions}\label{review-questions-5}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  What are the differences between data lakes, data warehouses, and data marts?
+\item
+  What is the difference between a Type 1 and Type 2 table in a DW?
+\item
+  In what ways has modern cloud computing influenced data architecture?
+\item
+  What two clauses must always be present in a SQL query?
+\item
+  What SQL clause is executed first at run time?
+\item
+  To optimize the performance of a SQL query, how should conditions in the WHERE clause be ordered?
+\item
+  How do aggregate functions differ from window functions in SQL?
+\item
+  What is a subquery?
+\item
+  What is the difference between an INNER JOIN and LEFT JOIN?
+\item
+  What is the purpose of a common table expression (CTE)?
+\end{enumerate}
+
+\hypertarget{data-prep}{%
+\chapter{Data Preparation}\label{data-prep}}
 
 The initial data review process is sometimes referred to as \textbf{exploratory data analysis (EDA)}. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
+
+\hypertarget{data-screening-cleaning}{%
+\section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
 
 A handy function in base R for initial data screening is \texttt{summary()}:
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\# Load employee data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
+
 \CommentTok{\# Summarize df}
 \FunctionTok{summary}\NormalTok{(employees)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##   employee_id        age         commute_dist        ed_lvl     
-##  Min.   :1001   Min.   :18.00   Min.   : 1.000   Min.   :1.000  
-##  1st Qu.:1368   1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000  
-##  Median :1736   Median :36.00   Median : 7.000   Median :3.000  
-##  Mean   :1736   Mean   :36.92   Mean   : 9.193   Mean   :2.913  
-##  3rd Qu.:2103   3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000  
-##  Max.   :2470   Max.   :60.00   Max.   :29.000   Max.   :5.000  
-##    ed_field            gender          marital_sts           active         
-##  Length:1470        Length:1470        Length:1470        Length:1470       
-##  Class :character   Class :character   Class :character   Class :character  
-##  Mode  :character   Mode  :character   Mode  :character   Mode  :character  
-##                                                                             
-##                                                                             
-##                                                                             
-##  stock_opt_lvl      trainings         dept              job_lvl     
-##  Min.   :0.0000   Min.   :0.000   Length:1470        Min.   :1.000  
-##  1st Qu.:0.0000   1st Qu.:2.000   Class :character   1st Qu.:1.000  
-##  Median :1.0000   Median :3.000   Mode  :character   Median :2.000  
-##  Mean   :0.7939   Mean   :2.799                      Mean   :2.064  
-##  3rd Qu.:1.0000   3rd Qu.:3.000                      3rd Qu.:3.000  
-##  Max.   :3.0000   Max.   :6.000                      Max.   :5.000  
-##   job_title           overtime         business_travel     hourly_rate    
-##  Length:1470        Length:1470        Length:1470        Min.   : 30.00  
-##  Class :character   Class :character   Class :character   1st Qu.: 48.00  
-##  Mode  :character   Mode  :character   Mode  :character   Median : 66.00  
-##                                                           Mean   : 65.89  
-##                                                           3rd Qu.: 83.75  
-##                                                           Max.   :100.00  
-##    daily_comp     monthly_comp    annual_comp      standard_hrs salary_hike_pct
-##  Min.   :240.0   Min.   : 5200   Min.   : 62400   Min.   :80    Min.   :11.00  
-##  1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840   1st Qu.:80    1st Qu.:12.00  
-##  Median :528.0   Median :11440   Median :137280   Median :80    Median :14.00  
-##  Mean   :527.1   Mean   :11421   Mean   :137054   Mean   :80    Mean   :15.21  
-##  3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200   3rd Qu.:80    3rd Qu.:18.00  
-##  Max.   :800.0   Max.   :17333   Max.   :208000   Max.   :80    Max.   :25.00  
-##   perf_rating    prior_emplr_cnt    env_sat        engagement      job_sat     
-##  Min.   :3.000   Min.   :0.000   Min.   :1.000   Min.   :1.00   Min.   :1.000  
-##  1st Qu.:3.000   1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.00   1st Qu.:2.000  
-##  Median :3.000   Median :2.000   Median :3.000   Median :3.00   Median :3.000  
-##  Mean   :3.154   Mean   :2.693   Mean   :2.722   Mean   :2.73   Mean   :2.729  
-##  3rd Qu.:3.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:3.00   3rd Qu.:4.000  
-##  Max.   :4.000   Max.   :9.000   Max.   :4.000   Max.   :4.00   Max.   :4.000  
-##     rel_sat        wl_balance       work_exp       org_tenure    
-##  Min.   :1.000   Min.   :1.000   Min.   : 0.00   Min.   : 0.000  
-##  1st Qu.:2.000   1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000  
-##  Median :3.000   Median :2.000   Median :10.00   Median : 5.000  
-##  Mean   :2.712   Mean   :1.841   Mean   :11.28   Mean   : 7.032  
-##  3rd Qu.:4.000   3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000  
-##  Max.   :4.000   Max.   :2.000   Max.   :40.00   Max.   :72.000  
-##    job_tenure       last_promo       mgr_tenure    
-##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.: 2.000   1st Qu.: 0.000   1st Qu.: 2.000  
-##  Median : 3.000   Median : 1.000   Median : 3.000  
-##  Mean   : 4.229   Mean   : 2.188   Mean   : 4.123  
-##  3rd Qu.: 7.000   3rd Qu.: 3.000   3rd Qu.: 7.000  
-##  Max.   :18.000   Max.   :15.000   Max.   :17.000
+##   employee_id      active          stock_opt_lvl      trainings    
+##  Min.   :1001   Length:1470        Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:1368   Class :character   1st Qu.:0.0000   1st Qu.:2.000  
+##  Median :1736   Mode  :character   Median :1.0000   Median :3.000  
+##  Mean   :1736                      Mean   :0.7939   Mean   :2.799  
+##  3rd Qu.:2103                      3rd Qu.:1.0000   3rd Qu.:3.000  
+##  Max.   :2470                      Max.   :3.0000   Max.   :6.000  
+##                                                                    
+##       age         commute_dist        ed_lvl        ed_field        
+##  Min.   :18.00   Min.   : 1.000   Min.   :1.000   Length:1470       
+##  1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000   Class :character  
+##  Median :36.00   Median : 7.000   Median :3.000   Mode  :character  
+##  Mean   :36.92   Mean   : 9.193   Mean   :2.913                     
+##  3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000                     
+##  Max.   :60.00   Max.   :29.000   Max.   :5.000                     
+##                                                                     
+##     gender          marital_sts            dept             engagement  
+##  Length:1470        Length:1470        Length:1470        Min.   :1.00  
+##  Class :character   Class :character   Class :character   1st Qu.:2.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median :3.00  
+##                                                           Mean   :2.73  
+##                                                           3rd Qu.:3.00  
+##                                                           Max.   :4.00  
+##                                                                         
+##     job_lvl       job_title           overtime         business_travel   
+##  Min.   :1.000   Length:1470        Length:1470        Length:1470       
+##  1st Qu.:1.000   Class :character   Class :character   Class :character  
+##  Median :2.000   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :2.064                                                           
+##  3rd Qu.:3.000                                                           
+##  Max.   :5.000                                                           
+##                                                                          
+##   hourly_rate       daily_comp     monthly_comp    annual_comp    
+##  Min.   : 30.00   Min.   :240.0   Min.   : 5200   Min.   : 62400  
+##  1st Qu.: 48.00   1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840  
+##  Median : 66.00   Median :528.0   Median :11440   Median :137280  
+##  Mean   : 65.89   Mean   :527.1   Mean   :11421   Mean   :137054  
+##  3rd Qu.: 83.75   3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200  
+##  Max.   :100.00   Max.   :800.0   Max.   :17333   Max.   :208000  
+##                                                                   
+##    ytd_leads       ytd_sales       standard_hrs salary_hike_pct  perf_rating   
+##  Min.   :11.00   Min.   : 15496   Min.   :80    Min.   :11.00   Min.   :3.000  
+##  1st Qu.:45.00   1st Qu.: 56997   1st Qu.:80    1st Qu.:12.00   1st Qu.:3.000  
+##  Median :59.00   Median : 73505   Median :80    Median :14.00   Median :3.000  
+##  Mean   :55.84   Mean   : 77124   Mean   :80    Mean   :15.21   Mean   :3.154  
+##  3rd Qu.:65.00   3rd Qu.: 96002   3rd Qu.:80    3rd Qu.:18.00   3rd Qu.:3.000  
+##  Max.   :95.00   Max.   :281499   Max.   :80    Max.   :25.00   Max.   :4.000  
+##  NA's   :1061    NA's   :1061                                                  
+##  prior_emplr_cnt    env_sat         job_sat         rel_sat     
+##  Min.   :0.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+##  1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
+##  Median :2.000   Median :3.000   Median :3.000   Median :3.000  
+##  Mean   :2.693   Mean   :2.722   Mean   :2.729   Mean   :2.712  
+##  3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000  
+##  Max.   :9.000   Max.   :4.000   Max.   :4.000   Max.   :4.000  
+##                                                                 
+##    wl_balance       work_exp       org_tenure       job_tenure    
+##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.000  
+##  1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000   1st Qu.: 2.000  
+##  Median :2.000   Median :10.00   Median : 5.000   Median : 3.000  
+##  Mean   :1.841   Mean   :11.28   Mean   : 7.032   Mean   : 4.229  
+##  3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000   3rd Qu.: 7.000  
+##  Max.   :2.000   Max.   :40.00   Max.   :72.000   Max.   :18.000  
+##                                                                   
+##    last_promo       mgr_tenure     interview_rating
+##  Min.   : 0.000   Min.   : 0.000   Min.   :2.000   
+##  1st Qu.: 0.000   1st Qu.: 2.000   1st Qu.:3.600   
+##  Median : 1.000   Median : 3.000   Median :4.100   
+##  Mean   : 2.188   Mean   : 4.123   Mean   :3.989   
+##  3rd Qu.: 3.000   3rd Qu.: 7.000   3rd Qu.:4.500   
+##  Max.   :15.000   Max.   :17.000   Max.   :5.000   
+## 
 \end{verbatim}
 
 Note that fields with \texttt{NA\textquotesingle{}s} contain missing values. Also, by default \texttt{employee\_id} is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. \texttt{employee\_id} should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
@@ -4855,31 +4913,31 @@ Level one people analytics tends to utilize only the delivered fields from the H
   Industry experience (binary or length in years)
 \end{itemize}
 
-\hypertarget{review-questions-5}{%
-\section{Review Questions}\label{review-questions-5}}
+\hypertarget{review-questions-6}{%
+\section{Review Questions}\label{review-questions-6}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \item
-  What are the differences between data lakes, data warehouses, and data marts?
+  Why is it dangerous to address missing values without domain knowledge of how the data are generated?
 \item
-  What is the difference between a Type 1 and Type 2 table in a DW?
-\item
-  What two clauses must always be present in a SQL query?
-\item
-  How do aggregate functions differ from window functions in SQL?
-\item
-  What is a subquery?
-\item
-  What is the difference between an INNER JOIN and LEFT JOIN?
-\item
-  Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+  What is the difference between structural and informative missingness?
 \item
   How can missing values be addressed when impacted records cannot be eliminated from a data set?
 \item
   When is one-hot encoding required for categorical variables?
 \item
+  When one-hot encoding a categorical variable with more than two categories, why is an omitted category important?
+\item
+  When binning numeric data, what are some considerations in determining the size of each bin?
+\item
   Why should variables with low to no variability be dropped?
+\item
+  Where are validation rules ideally situated to limit downstream data cleaning tasks and ensure consistent categorical dimension values?
+\item
+  What does a value of \texttt{NA} indicate in a data set within R?
+\item
+  What additional variables could be derived from standard data elements?
 \end{enumerate}
 
 \hypertarget{aod}{%
@@ -5950,8 +6008,8 @@ These relationships may initially seem counterintuitive, as one might expect hig
 
 Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \ref{lm}, we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly explain variation in the DV.
 
-\hypertarget{review-questions-6}{%
-\section{Review Questions}\label{review-questions-6}}
+\hypertarget{review-questions-7}{%
+\section{Review Questions}\label{review-questions-7}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -6122,7 +6180,7 @@ Before performing model diagnostics, it is important to note the following:
 \item
   Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
 \item
-  Outliers are not always an issue, as we discussed in Chapter \ref{data-wrang-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
+  Outliers are not always an issue, as we discussed in Chapter \ref{data-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 \end{enumerate}
 
 \begin{verbatim}
@@ -7223,8 +7281,79 @@ Comparing Figure \ref{fig:hier-ctrl} to Figure \ref{fig:hier-main}, we can deter
 
 In addition, Figure \ref{fig:hier-ctrl} shows that without \texttt{engagement} in the model, \texttt{stock\_opt\_lvl} is not significant. This is a good reminder that regression does not examine bivariate relationships of each predictor with the response \emph{independent of other variables}; rather, the relationships among all variables in the model impact which predictors emerge as having a statistical association with the response.
 
+\hypertarget{multilevel-models}{%
+\section{Multilevel Models}\label{multilevel-models}}
+
+The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have \emph{fixed} effects on the outcome and these effects do not vary based on group(s) to which the observations belong. These models are sometimes referred to as \textbf{fixed effects} models.
+
+It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
+
+You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of \(Y\) when all predictors are set to 0 -- namely the \(Y\)-intercept \(\beta_0\) -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is \emph{random} rather than \emph{fixed} for each group. Group-level effects can also be modeled for select -- or all -- \(X\) variables in addition to varying \(\beta_0\) for each group.
+
+Consider a linear model constructed to test hypothesized relationships of every \(X\) variable with an outcome \(Y\). This is the equivalent of building \(G\) independent models, where \(G\) is the number of groups, using data subsetted for the respective group:
+
+\[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon \]
+
+In this case, it is easy to consider wrapping the \texttt{lm()} function within a \texttt{for} loop that iterates through each \(G\) group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only \emph{certain} variables depend on the \(G\) group, we need to estimate both group-level \emph{and} observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a \textbf{mixed effects} model. A model in which group-level effects are hypothesized for \(\beta_0\) and \(X_1\) and observation-level effects are hypothesized for all other predictors is expressed as:
+
+\[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]
+
+To fit a linear mixed effects model in R, we can leverage the \texttt{lmer()} function from the \texttt{lmerTest} package. Let's demonstrate how to fit a model to understand the random effects of \texttt{stock\_opt\_lvl} and fixed effects of \texttt{engagement}, \texttt{job\_lvl}, and \texttt{org\_tenure} on \texttt{sqrt(ytd\_sales)}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(lmerTest)}
+
+\CommentTok{\# Fit linear mixed model}
+\NormalTok{lme.fit }\OtherTok{\textless{}{-}}\NormalTok{ lmerTest}\SpecialCharTok{::}\FunctionTok{lmer}\NormalTok{(}\FunctionTok{sqrt}\NormalTok{(ytd\_sales) }\SpecialCharTok{\textasciitilde{}}\NormalTok{ engagement }\SpecialCharTok{+}\NormalTok{ job\_lvl }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ stock\_opt\_lvl) }\SpecialCharTok{+}\NormalTok{ org\_tenure, data\_ot)}
+
+\CommentTok{\# Summarize model results}
+\FunctionTok{summary}\NormalTok{(lme.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linear mixed model fit by REML. t-tests use Satterthwaite's method [
+## lmerModLmerTest]
+## Formula: sqrt(ytd_sales) ~ engagement + job_lvl + (1 | stock_opt_lvl) +  
+##     org_tenure
+##    Data: data_ot
+## 
+## REML criterion at convergence: 1141.3
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.52388 -0.63661  0.00411  0.61215  3.13684 
+## 
+## Random effects:
+##  Groups        Name        Variance Std.Dev.
+##  stock_opt_lvl (Intercept)   51.16   7.152  
+##  Residual                  1069.27  32.700  
+## Number of obs: 118, groups:  stock_opt_lvl, 4
+## 
+## Fixed effects:
+##             Estimate Std. Error       df t value Pr(>|t|)    
+## (Intercept) 133.6129    14.5677  88.8995   9.172 1.67e-14 ***
+## engagement   12.0038     4.5140 113.9662   2.659  0.00896 ** 
+## job_lvl      35.8950     4.7470 112.4054   7.562 1.17e-11 ***
+## org_tenure    5.2542     0.7265 113.5918   7.232 5.94e-11 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Correlation of Fixed Effects:
+##            (Intr) enggmn jb_lvl
+## engagement -0.727              
+## job_lvl    -0.445 -0.110       
+## org_tenure  0.046 -0.054 -0.463
+\end{verbatim}
+
+The results of \texttt{lmer()} contain sections for both fixed and random effects. Consistent with the interpretation of general linear model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and \texttt{sqrt(ytd\_sales)} across the levels of \texttt{stock\_opt\_lvl} that would be missed without a mixed model that accounts for these group-level effects.
+
+For a more comprehensive treatment on multilevel models, see Gelman and Hill (2006).
+
 \hypertarget{moderation}{%
-\subsection{Moderation}\label{moderation}}
+\section{Moderation}\label{moderation}}
 
 As discussed in Chapter \ref{measure-sampl}, a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an \textbf{interaction term}, which is the product of the two variables (\(X_1\) * \(X_2\)).
 
@@ -7455,7 +7584,7 @@ where 6.57 is \texttt{mean(data\$org\_tenure)}, 5.12 is \texttt{sd(data\$org\_te
 As shown in Figure \ref{fig:int-effects}, the slope of both regression lines is negative. However, the drop in sales is much more significant as job level increases for those with high (\(\bar{x} + 1s\)) organization tenure relative to those with low (\(\bar{x} - 1s\)) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels.
 
 \hypertarget{mediation}{%
-\subsection{Mediation}\label{mediation}}
+\section{Mediation}\label{mediation}}
 
 As discussed in Chapter \ref{measure-sampl}, mediating variables may fully or partially mediate the relationship between a predictor and response. Full mediation indicates that the mediator fully explains the effect; in other words, without the mediator in the model, there is no relationship between an IV and DV. Partial mediation indicates that the mediator partially explains the effect; that is, there is still a relationship between an IV and DV without the mediator in the model.
 
@@ -7774,8 +7903,8 @@ Let's illustrate the implementation of this approach in R by testing the followi
 
 Output from these models show significant paths for Steps 1-3 but when adding both \texttt{ed\_lvl} and \texttt{job\_lvl} in the multiple regression model in Step 4, \texttt{ed\_lvl} is no longer significant. Therefore, support for full mediation exists.
 
-\hypertarget{review-questions-7}{%
-\section{Review Questions}\label{review-questions-7}}
+\hypertarget{review-questions-8}{%
+\section{Review Questions}\label{review-questions-8}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -7798,7 +7927,7 @@ Output from these models show significant paths for Steps 1-3 but when adding bo
 \item
   How does the backward stepwise variable selection procedure work?
 \item
-  What are some ways regression can be leveraged to isolate the relationship of a particular variable with the response beyond a set of controls?
+  What are some examples of hypotheses that would warrant a linear mixed effects model over a general linear model?
 \end{enumerate}
 
 \hypertarget{lme}{%
@@ -8443,15 +8572,11 @@ The performance of this model may initially seem like a cause for celebration, b
 \hypertarget{logistic-regression}{%
 \section{Logistic Regression}\label{logistic-regression}}
 
-\textbf{Logistic regression} is an excellent tool for modeling the probability of different classes of a categorical outcome -- a type of modeling often referred to as \textbf{classification}. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of \emph{regression} analysis.
+\textbf{Logistic regression} is a type of \textbf{generalized linear model}, which is a family of models for which key linear assumptions are relaxed. Logistic regression is an excellent tool for modeling relationships with outcomes that are not measured on a continuous scale (a key requirement for linear regression). Logistic regression is often leveraged to model the probability of observations belonging to different classes of a categorical outcome, and this type of modeling is known as \textbf{classification}. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of \emph{regression} analysis which uses a link function to generalize the linear model for non-continuous outcomes.
 
-You may be wondering if linear regression can be implemented when the categorical outcome is dummy coded as outlined in Chapter \ref{data-wrang-prep}.
+You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \ref{data-prep}. In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for \(\hat\beta X\) that represents the estimated probability of the outcome coded as 1 given \(X\). For example, if attrition is the binary outcome and \(Y = 1\) for employees who left and \(Y = 0\) for employees who stayed, \(\hat Y > .5\) could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities.
 
-In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for \(\hat\beta X\) that represents the estimated probability of the outcome coded as 1 given \(X\). For example, if attrition is the binary outcome and \(Y = 1\) for employees who left and \(Y = 0\) for employees who stayed, \(\hat Y\) \textgreater{} .5 would be indicative of a termination prediction. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities.
-
-This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression.
-
-Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our \texttt{employees} dataset to model the probability of \texttt{active} given a value for \texttt{interview\_rating}, which would be written as \(Pr\)(\texttt{active} = Yes \textbar{} \texttt{interview\_rating}) or simply, \(p\)(\texttt{inteview\_rating}). A probability of \texttt{active} = Yes will be estimated for a given value of \texttt{interview\_rating}, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
+This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our \texttt{employees} dataset to model the probability of \texttt{active} given a value for \texttt{interview\_rating}, which would be written as \(Pr\)(\texttt{active} = Yes \textbar{} \texttt{interview\_rating}) or simply, \(p\)(\texttt{inteview\_rating}). A probability of \texttt{active} = Yes will be estimated for a given value of \texttt{interview\_rating}, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
 \hypertarget{binomial-logistic-regression}{%
 \subsection{Binomial Logistic Regression}\label{binomial-logistic-regression}}
@@ -8677,6 +8802,58 @@ We can convert these coefficients into odds ratios by exponentiating the coeffic
 The exponentiated coefficient on \texttt{overtime} is \(exp(\beta) = .25\), so there is a \((1 - .25) * 100 = 75%
 \) percent \emph{decrease} in the odds of being active for employees who work overtime (since \texttt{overtime\ =\ Yes} is the included group) relative to those who do not work overtime. The exponentiated coefficient on \texttt{job\_lvl2plus} is \(exp(\beta) = 3.41\), so there is a \((3.41 - 1) * 100 = 241%
 \) percent \emph{increase} in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1 (i.e., attrition is a larger concern for level 1 employees).
+
+Generalized linear mixed models can be fitted using the \texttt{glmer()} function from the \texttt{lme4} library. The syntax is identical to the illustration of \texttt{lmer()} for multilevel linear models in Chapter \ref{lm} with the exception of needing to define \texttt{family} as an additional argument.
+
+A juxtaposition of \texttt{glm()} and \texttt{glmer()} fits for logistic regression is shown in the following block of code. The mixed model example features an additional random (group-level) effect on \texttt{business\_travel} via \texttt{1\ \textbar{}\ business\_travel}, and fixed (observation-level) effects on remaining predictors which are consistent with the standard logistic regression model:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(lme4)}
+
+\CommentTok{\# Logistic model}
+\FunctionTok{glm}\NormalTok{(active }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ job\_lvl2plus, }\AttributeTok{data =}\NormalTok{ employees, }\AttributeTok{family =} \StringTok{\textquotesingle{}binomial\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:  glm(formula = active ~ overtime + job_lvl2plus, family = "binomial", 
+##     data = employees)
+## 
+## Coefficients:
+##  (Intercept)   overtimeYes  job_lvl2plus  
+##        1.516        -1.396         1.227  
+## 
+## Degrees of Freedom: 1469 Total (i.e. Null);  1467 Residual
+## Null Deviance:       1299 
+## Residual Deviance: 1150  AIC: 1156
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Logistic mixed model}
+\NormalTok{lme4}\SpecialCharTok{::}\FunctionTok{glmer}\NormalTok{(active }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ job\_lvl2plus }\SpecialCharTok{+}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{|}\NormalTok{ business\_travel), }\AttributeTok{data =}\NormalTok{ employees, }\AttributeTok{family =} \StringTok{\textquotesingle{}binomial\textquotesingle{}}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Generalized linear mixed model fit by maximum likelihood (Laplace
+##   Approximation) [glmerMod]
+##  Family: binomial  ( logit )
+## Formula: active ~ overtime + job_lvl2plus + (1 | business_travel)
+##    Data: employees
+##       AIC       BIC    logLik  deviance  df.resid 
+## 1148.0596 1169.2317 -570.0298 1140.0596      1466 
+## Random effects:
+##  Groups          Name        Std.Dev.
+##  business_travel (Intercept) 0.4351  
+## Number of obs: 1470, groups:  business_travel, 3
+## Fixed Effects:
+##  (Intercept)   overtimeYes  job_lvl2plus  
+##        1.546        -1.382         1.223
+\end{verbatim}
 
 \hypertarget{multinomial-logistic-regression}{%
 \subsection{Multinomial Logistic Regression}\label{multinomial-logistic-regression}}
@@ -8973,10 +9150,10 @@ Consistent with the default output from the \texttt{multinom()} function used fo
 
 We can now estimate the likelihood of a particular observation having a specified level of \(Y\), such as \(Y \le 3\), as follows:
 
-\[ log(\frac{Pr(Y \le 3)} {Pr(Y > 3)}) =  2.17 - .007 x_{org_tenure} \]
+\[ log(\frac{Pr(Y \le 3)} {Pr(Y > 3)}) =  2.17 - .007 x_{orgtenure} \]
 
-\hypertarget{review-questions-8}{%
-\section{Review Questions}\label{review-questions-8}}
+\hypertarget{review-questions-9}{%
+\section{Review Questions}\label{review-questions-9}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -9020,8 +9197,8 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{automated-machine-learning-automl}{%
 \section{Automated Machine Learning (AutoML)}\label{automated-machine-learning-automl}}
 
-\hypertarget{review-questions-9}{%
-\section{Review Questions}\label{review-questions-9}}
+\hypertarget{review-questions-10}{%
+\section{Review Questions}\label{review-questions-10}}
 
 \hypertarget{unsup-lrn}{%
 \chapter{Unsupervised Learning}\label{unsup-lrn}}
@@ -9032,8 +9209,8 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{clustering}{%
 \section{Clustering}\label{clustering}}
 
-\hypertarget{review-questions-10}{%
-\section{Review Questions}\label{review-questions-10}}
+\hypertarget{review-questions-11}{%
+\section{Review Questions}\label{review-questions-11}}
 
 \hypertarget{data-viz}{%
 \chapter{Data Visualization}\label{data-viz}}
@@ -9120,8 +9297,8 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{pie-charts}{%
 \subsection{Pie Charts}\label{pie-charts}}
 
-\hypertarget{review-questions-11}{%
-\section{Review Questions}\label{review-questions-11}}
+\hypertarget{review-questions-12}{%
+\section{Review Questions}\label{review-questions-12}}
 
 \hypertarget{storytelling}{%
 \chapter{Data Storytelling}\label{storytelling}}
@@ -9138,8 +9315,8 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{reference-material}{%
 \section{Reference Material}\label{reference-material}}
 
-\hypertarget{review-questions-12}{%
-\section{Review Questions}\label{review-questions-12}}
+\hypertarget{review-questions-13}{%
+\section{Review Questions}\label{review-questions-13}}
 
 \hypertarget{bibli}{%
 \chapter{Bibliography}\label{bibli}}
@@ -9170,11 +9347,15 @@ DeVellis, R. F. (2012). Scale development: Theory and applications. Thousand Oak
 
 Edmondson, A. (1999). Psychological safety and learning behavior in work teams. Administrative Science Quarterly, 44(2), 350-383.
 
+Gelman, A., \& Hill, J. (2006). Analytical methods for social research: Data analysis using regression and multilevel/hierarchical models. Cambridge University Press.
+
 James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to Statistical Learning: With Applications in R. New York: Springer.
 
 Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Giroux.
 
 Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
+
+Kimball, R. (1996). The Data Warehouse Toolkit. New York: Wiley.
 
 Kuhn, M., \& Johnson, K. (2013). Applied predictive modeling. New York: Springer.
 
