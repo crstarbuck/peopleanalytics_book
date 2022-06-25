@@ -621,7 +621,37 @@ flextable::as_flextable(mlm.fit.ot)
   
   In addition, Figure \@ref(fig:hier-ctrl) shows that without `engagement` in the model, `stock_opt_lvl` is not significant. This is a good reminder that regression does not examine bivariate relationships of each predictor with the response *independent of other variables*; rather, the relationships among all variables in the model impact which predictors emerge as having a statistical association with the response.
   
-### Moderation
+## Multilevel Models
+
+  The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have *fixed* effects on the outcome and these effects do not vary based on the group(s) to which the observations belong. These models are sometimes referred to as **fixed effects** models.
+  
+  It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, in a recruiting context the average time to fill requisitions generally varies significantly across geographies, job families, and job levels. Implementing a fixed effects model without accounting for how relationships vary at the group level may result in inaccurate estimates or incorrectly concluding that predictors are not significantly related to the outcome.
+  
+  You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of $Y$ when all predictors are set to 0 -- namely the $Y$-intercept $\beta_0$ -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is *random* rather than *fixed* for each group. This important distinction is why multilevel models are often referred to as **random effects** models. In a multilevel model, group-level effects can also be modeled for select (or all) $X$ variables in addition to varying $\beta_0$ for each group.
+  
+  Consider a linear model constructed to test hypothesized relationships of every $X$ variable with an outcome $Y$. This is the equivalent of building $G$ independent models, where $G$ is the number of groups, using data subsetted for the respective group:
+  
+  $$ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon $$
+  In this case, it is easy to consider wrapping the `lm()` function within a `for` loop that iterates through each $G$ group, subsetting to each respective group's data in turn. However, if we hypothesize that the effects of only *certain* variables depend on the $G$ group, we need to estimate both group-level *and* observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a *mixed* model. A model in which group-level effects are hypothesized for $\beta_0$ and $X_1$ and observation-level effects are hypothesized for all other predictors is expressed as:
+  
+  $$ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
+  To fit a multilevel linear regression model in R, we can leverage the `lmer()` function from the `lme4` package. Let's demonstrate how to fit a linear mixed model with random effects on $\beta_0$ and `stock_opt_lvl`: 
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(lme4)
+
+# Fit linear mixed model
+lme.fit <- lme4::lmer(sqrt(ytd_sales) ~ engagement + job_lvl + (1 | stock_opt_lvl) + org_tenure, data_ot)
+
+# Summarize model results
+summary(lme.fit)
+
+```  
+  
+  
+## Moderation
 
   As discussed in Chapter \@ref(measure-sampl), a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an **interaction term**, which is the product of the two variables ($X_1$ * $X_2$).
   
@@ -697,7 +727,7 @@ ggplot2::theme_bw()
 
   As shown in Figure \@ref(fig:int-effects), the slope of both regression lines is negative. However, the drop in sales is much more significant as job level increases for those with high ($\bar{x} + 1s$) organization tenure relative to those with low ($\bar{x} - 1s$) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels.
 
-### Mediation
+## Mediation
 
   As discussed in Chapter \@ref(measure-sampl), mediating variables may fully or partially mediate the relationship between a predictor and response. Full mediation indicates that the mediator fully explains the effect; in other words, without the mediator in the model, there is no relationship between an IV and DV. Partial mediation indicates that the mediator partially explains the effect; that is, there is still a relationship between an IV and DV without the mediator in the model.
 
