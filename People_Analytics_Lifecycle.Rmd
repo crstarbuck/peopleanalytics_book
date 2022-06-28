@@ -46,7 +46,7 @@ Thus, this book represents my earnest attempt to provide a concise -- yet adequa
 Craig Starbuck <br />
 December 2021 <br /><br />
 
-<i><b>Craig Starbuck, PhD</b> has built and scaled successful people analytics teams at companies such as Robinhood, Mastercard, Equifax, TD Ameritrade, and Scottrade and spent a decade in various data engineering and analytics positions in the banking and health care industries as well. He is also the Co-Founder and Chief Data Scientist at OrgAcuity, a tech company with a mission to democratize access to people analytics, and a Member of the Society for Industrial and Organizational Psychology (SIOP).</i>
+<i><b>Craig Starbuck, PhD</b> has built and scaled successful people analytics teams at companies such as Roku, Robinhood, Mastercard, Equifax, and TD Ameritrade and spent a decade in various data engineering and analytics positions in the banking and health care industries as well. He is also the Co-Founder and Chief Data Scientist at OrgAcuity, a tech company with a mission to democratize access to people analytics, and a Member of the Society for Industrial and Organizational Psychology (SIOP).</i>
 
 <!--chapter:end:r/preface.Rmd-->
 
@@ -151,6 +151,7 @@ December 2021 <br /><br />
   * `job_tenure`: Years in current job
   * `last_promo`: Years since last promotion
   * `mgr_tenure`: Years under current manager
+  * `interview_rating`: Average rating across the interview loop for the onsite stage of the employee's recruiting process, where 1 = *Definitely Not* and 5 = *Definitely Yes*
 
   The secondary data set used in this book is `turnover_trends`, which contains trailing 12-month turnover rates for each month across a five-year horizon. Fields are defined in the data dictionary provided below:
   
@@ -278,7 +279,15 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Data Quality**
 
-  It is important to understand the data generative process and never make assumptions about how anomalies or missing data should be interpreted. After identifying what data sources will be required for a particular analysis, it is important to meet with source system owners and data stewards to deeply understand the business processes by which data are generated in the system(s). Are there data quality concerns that need to be explored and addressed?
+  It is important to understand the data generative process and never make assumptions about how anomalies or missing data should be interpreted. After identifying what data sources will be required for a particular analysis, it is important to meet with source system owners and data stewards to deeply understand the business processes by which data are generated in the system(s). Below are some helpful questions to consider:
+  
+  * Is there a better data source, such as data generated further upstream?
+  * Are the data actively validated with automated data quality checks and regular exceptions reports?
+  * What is the SLA for the data refreshes, and how often is this SLA met?
+  * Is there a clear (and accessible) data source owner/steward?
+  * Is there comprehensive documentation and field definitions?
+  * Do the tables drive business critical deliverables?
+  * Who are the other consumers of the data?
 
   **Variables**
 
@@ -358,7 +367,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, warning = FALSE, message = FALSE}
 
-install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf", "caret", "car", "reshape2", "flextable", "lmtest", "equatiomatic"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
+install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "GGally", "sqldf", "caret", "car", "reshape2", "flextable", "lmtest", "equatiomatic", "pwr", "nnet", "MASS", "brant", "lme4", "lmerTest"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
 ```
 
@@ -740,7 +749,7 @@ df
 
 ``` 
 
-  The data type of each vector in a data frame object can be viewed using the `str()` function:
+  The structure of an object can be viewed using the `str()` function:
 
 ```{r, warning = FALSE, message = FALSE}
 
@@ -920,6 +929,560 @@ ggplot2::theme(plot.title = element_text(hjust = 0.5)) # Center plot title
 
 <!--chapter:end:r/02_r_intro.Rmd-->
 
+# Introduction to SQL {#sql-intro}
+
+  **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
+  
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  
+  **Basics**
+  
+  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently needed.
+  
+  * **SELECT**: Specifies the columns to include in the output
+  * **FROM**: Specifies the table(s) in which the relevant data are contained
+  * **WHERE**: Specifies the rows to search
+  
+  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
+  
+  Additional clauses are available for grouping and sorting data.
+  
+  * **GROUP BY**: Specifies the columns by which data should be grouped when using aggregate functions
+  * **HAVING**: Specifies conditions for filtering rows based on aggregate functions
+  * **ORDER BY**: Specifies how data should be sorted in the output
+  
+  When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
+  
+  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
+  
+  First, let's load the data sets:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load data sets
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+status <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv")
+benefits <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv")
+demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv")
+job <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv")
+payroll <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv")
+performance <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv")
+prior_employment <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv")
+survey_response <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv")
+tenure <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv")
+
+# Return row and column counts
+dim(employees)
+
+```
+
+  Next, we will apply the `sqldf()` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 1,470$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
+  
+  A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load SQL library
+library(sqldf)
+
+# Store SQL query as a character string using the paste() function
+sql_string <- paste("SELECT
+                      employee_id
+                    FROM
+                      employees
+                    WHERE
+                      dept = 'Research & Development'
+                    LIMIT 10")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  This query returned a list of employee ids for employees in the Research & Development department. 
+  
+  To optimize query performance, it is important to order conditions in the `WHERE` clause beginning with the condition that will exclude the largest number of records. Conditions are executed sequentially, and each subsequent condition must evaluate all records that remain following any preceding filtering. Limiting the number of records that must be searched when evaluating each condition will reduce the time it takes the query to return results. For example, if two conditions are needed and one excludes 5,000 records while the other excludes 10, the condition that excludes 5,000 records should be listed first in the `WHERE` clause.
+  
+  **Aggregate Functions**
+  
+  Next, let's take a look at average organization tenure by job for those in the Research & Development department:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      AVG(org_tenure)
+                    FROM
+                      employees
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  There are 7 distinct job titles among employees in the Research & Development department, and the average organization tenure for these ranges from `5` to `13.7` years.
+  
+  Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We will also apply column aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      AVG(org_tenure) AS avg_org_tenure
+                    FROM
+                      employees
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  The output shows that there are only 2 Vice Presidents in the Research & Development department, while other job titles are much more prevalent. 
+  
+  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees. We can also use the `ROUND()` function to truncate average organization tenure to one significant digit:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure
+                    FROM
+                      employees
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  **Joins**
+  
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
+
+```{r sql-joins, out.width = "100%", echo = FALSE, fig.cap = 'Types of SQL Joins', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins.png")
+
+```
+
+  The structure of SQL queries containing each type of join is represented below:
+
+  **LEFT INCLUSIVE**
+  
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+  
+```
+
+  **LEFT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE B.Key IS NULL
+
+```
+
+  **FULL OUTER INCLUSIVE**
+  
+```{r, message = FALSE, warning = FALSE}
+
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **FULL OUTER EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  FULL OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL OR B.Key IS NULL  
+
+```
+
+  **RIGHT INCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  RIGHT OUTER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  **RIGHT EXCLUSIVE**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  LEFT OUTER JOIN B
+#  ON A.Key = B.Key
+#  WHERE A.Key IS NULL
+
+```
+
+  **INNER JOIN**
+
+```{r, message = FALSE, warning = FALSE}
+  
+#  SELECT [Output Field List]
+#  FROM A 
+#  INNER JOIN B
+#  ON A.Key = B.Key
+
+```
+
+  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
+  
+  Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
+                    FROM
+                        demographics
+                      INNER JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      INNER JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure` and `job` were joined to `demographics` via the `employee_id` column. We could have instead joined `job` to `tenure` since we joined `tenure` to `demographics`; this would have achieved the same result since all employee ids exist in each of the three data frames.
+  
+  If it were possible for all employee ids to exist in `demographics` but not in either `tenure` or `job`, we could leverage a `LEFT JOIN` to ensure all records from `demographics` are included in the output irrespective of whether they have matches in `tenure` or `job`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
+                    FROM
+                        demographics
+                      LEFT JOIN
+                        tenure
+                      ON
+                        demographics.employee_id = tenure.employee_id
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  In this case, if demographics is the base data set which contains all employee ids (i.e., the 'LEFT' dataset), it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
+
+  When integrating data within R, the `tidyverse` provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the package-specific `%>%` operator. The example below joins nine data sets into a single `employees` data frame using a left join on the `employee_id` column:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load tidyverse
+library(tidyverse)
+
+employees <- list(demographics,
+                  status,
+                  benefits,
+                  job,
+                  payroll,
+                  performance,
+                  prior_employment,
+                  survey_response,
+                  tenure) %>%
+                  reduce(left_join, by = "employee_id")
+                  
+```
+
+  **Subqueries**
+  
+  **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
+  
+  For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include `tenure` in the join conditions of our main query:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+# Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
+                    FROM
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                    WHERE
+                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure > 1)
+                      AND 
+                        dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  **Virtual Tables**
+  
+  An alternative to a subquery is creating a **virtual table** in the `FROM` clause. When using an `INNER JOIN` to connect `demographics` to the virtual table `ids`, which provides a list of employee ids for those with more than a year of organization tenure, any records in `demographics` or `job` that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a `LEFT JOIN` is used to join `job` to `demographics` since records in `demographics` will be filtered based on `employee_id` matches in the virtual table. With this approach, our `WHERE` clause is limited to the `department = 'Research & Development'` condition:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                      job_title,
+                      COUNT(*) AS employee_cnt,
+                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
+                    FROM
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      dept = 'Research & Development'
+                    GROUP BY
+                      job_title
+                    HAVING
+                      COUNT(*) > 10
+                    ORDER BY
+                      job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
+
+  **Window Functions**
+  
+  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
+  
+  For example, we can assign an organization tenure rank by Research & Development job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+# Limit output to 10 records since query does not collapse records
+sql_string <- paste("SELECT
+                      demographics.employee_id,
+                      job_title,
+                      commute_dist,
+                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
+                    FROM
+                        demographics
+                      LEFT JOIN
+                        job
+                      ON
+                        demographics.employee_id = job.employee_id
+                      INNER JOIN
+                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                      ON
+                        demographics.employee_id = ids.employee_id
+                    WHERE
+                      dept = 'Research & Development'
+                    ORDER BY
+                      job_title,
+                      commute_dist_rank
+                    LIMIT 10")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+  Notice that in the case of commute distance ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.
+  
+  We can also treat this query as a virtual table, and then filter on the derived `commute_dist_rank` field to return the highest commute distance for each job. We can add a `DISTINCT()` function in the `SELECT` clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the `COUNT(*)` function:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("SELECT
+                        DISTINCT(job_title) AS job_title,
+                        COUNT(*) AS employee_count,
+                        commute_dist
+                     FROM
+                        (SELECT
+                          demographics.employee_id,
+                          job_title,
+                          commute_dist,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
+                        FROM
+                            demographics
+                          LEFT JOIN
+                            job
+                          ON
+                            demographics.employee_id = job.employee_id
+                          INNER JOIN
+                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                          ON
+                            demographics.employee_id = ids.employee_id
+                        WHERE
+                          dept = 'Research & Development'
+                        ORDER BY
+                          job_title,
+                          commute_dist_rank) tbl
+                      WHERE
+                        tbl.commute_dist_rank = 1
+                      GROUP BY
+                        job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+  
+  An alternative approach is to use a **common table expression (CTE)**, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Store SQL query as a character string
+sql_string <- paste("WITH max_commute_job
+                     AS
+                        (SELECT
+                          demographics.employee_id,
+                          job_title,
+                          commute_dist,
+                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
+                        FROM
+                            demographics
+                          LEFT JOIN
+                            job
+                          ON
+                            demographics.employee_id = job.employee_id
+                          INNER JOIN
+                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
+                          ON
+                            demographics.employee_id = ids.employee_id
+                        WHERE
+                          dept = 'Research & Development'
+                        ORDER BY
+                          job_title,
+                          commute_dist_rank)
+                      
+                      SELECT
+                        DISTINCT(job_title) AS job_title,
+                        COUNT(*) AS employee_count,
+                        commute_dist
+                     FROM
+                        max_commute_job
+                      WHERE
+                        commute_dist_rank = 1
+                      GROUP BY
+                        job_title")
+
+# Execute SQL query
+sqldf::sqldf(sql_string)
+
+```
+
+## Review Questions
+
+1. What two clauses must always be present in a SQL query?
+
+2. What SQL clause is executed first at run time?
+
+3. To optimize the performance of a SQL query, how should conditions in the WHERE clause be ordered?
+
+4. How do aggregate functions differ from window functions in SQL?
+
+5. What is a subquery?
+
+6. What is the difference between an INNER JOIN and LEFT JOIN?
+
+7. What is the purpose of a common table expression (CTE)?
+
+8. What does the PARTITION BY function do?
+
+9. Why is it important for queries to limit records on the database side before reading into R?
+
+10. In which clause are filter conditions applied to aggregate functions (e.g., `COUNT(*) > 5`, `AVG(salary) < 100000`)?
+
+<!--chapter:end:r/03_sql_intro.Rmd-->
+
 # Measurement & Sampling {#measure-sampl}
 
   This chapter will survey the type and function of study variables, measurement scales, sampling and nonsampling error, as well as probability and nonprobability sampling methods.
@@ -930,9 +1493,9 @@ ggplot2::theme(plot.title = element_text(hjust = 0.5)) # Center plot title
 
 ### Independent Variables (IV)
 
-  An **Independent Variable (IV)** is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as *predictors*, *factors*, *features*, *antecedents*, or *explanatory* variables.
+  An **Independent Variable (IV)** is a variable which is assumed to have a direct effect on another variable. IVs are sometimes referred to as *predictors*, *factors*, *features*, *antecedents*, or *explanatory* variables, and these terms will be used interchangeably throughout this book.
   
-  For example, we may wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
+  Let's consider a scenario in which we wish to examine whether an inclusion training program given to a random sample of leaders has a positive effect on team-level belonging. In a true experimental design, participation in the inclusion training would be the only difference between the treatment (teams whose leaders who participate in the training) and the control (teams whose leaders who do not participate in the training). In this case, inclusion training participation is the IV (the variable we are manipulating).
   
   IVs are also present in non-experimental designs. For example, we may survey employees and ask them to rate their leader's inclusiveness and provide self-reported belonging ratings. In this context, leader inclusiveness (rather than an inclusion training) is the IV. If we find that average team-level belonging scores tend to be higher when leader inclusiveness scores are higher, this *may* indicate that leader inclusion has some degree of influence on team-level belonging. Of course, there could be alternative explanations for any observed differences in team-level belonging, which is why experimental designs tend to provide stronger evidence for an IV's effect.
 
@@ -946,7 +1509,7 @@ ggplot2::theme(plot.title = element_text(hjust = 0.5)) # Center plot title
 
   A **Control Variable (CV)** is a variable that is held constant in research. The unchanging state of a CV allows us to understand the extent to which the IV has a unique and independent effect on the DV.
   
-  In an experimental context, control variables represent a researcher's attempt to control for alternative explanations so that the IV's main effect on the DV can be isolated. For example, in our leader inclusion example, to be confident that the reason for any observed differences in team-level belonging can be attributed to leader inclusion training rather than other factors that theoretically may explain differences. For example, we should ensure that the two groups are similar with respect to characteristics such as gender and ethnicity, since underrepresented groups (URGs) may have different experiences independent of any training programs. In this case, gender and ethnicity are CVs.
+  In an experimental context, control variables represent a researcher's attempt to control for alternative explanations so that the IV's main effect on the DV can be isolated. In our leader inclusion example, we would seek to determine whether the reason for any observed differences in team-level belonging can be attributed to leader inclusion training rather than other factors that theoretically may explain the differences. In this setting, we should ensure that the two groups are similar with respect to characteristics such as gender and ethnicity, since underrepresented groups (URGs) may have different experiences independent of any training programs. In this case, gender and ethnicity are CVs.
   
   While we control for the effects of alternative explanations by way of the research design in an experimental context, we will discuss ways to control for these statistically in Chapter \@ref(lm) for correlational designs. CVs are equally important in experimental and non-experimental contexts.
 
@@ -1203,7 +1766,9 @@ syst_sample <- employees[index, ]
   
   Surveys are a staple in the set of data sources germane to people analytics. While survey data provide unique attitudinal and perceptive signals that can be highly predictive of future behavior and events, surveys tend to be far more susceptible to nonsampling error than other data sources.
   
-  As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as **nonresponse bias**. For example, if we administer an employee experience survey to the entire organization and receive a 60% response rate, the reality is that we do not know how the 40% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that the nonrespondents were busy, away on vacation, cynical to the confidentiality language in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.
+  As discussed in the context of sampling error, we usually do not have access to information on entire populations of interest, so we must consider the possibility that those for whom we are missing data may have common qualities, perceptions, or opinions that differ from those for whom we do have data. This is known as **nonresponse bias**. For example, if we administer an employee experience survey to the entire organization and receive a 60% response rate, the reality is that we do not know how the 40% of nonrespondents would have responded. It is possible that nonrespondents represent highly disengaged employees, in which case their responses may have materially influenced results and conclusions in an unfavorable direction. It is also possible that nonrespondents did not participate because they were busy, away on vacation, cynical to the confidentiality language in the communications, or any number of other reasons which may or may not have resulted in significantly different feedback from that of respondents.
+  
+  As an aside, nonrespondents can actually function as an important variable in analyses. In some contexts, nonrespondents may be at greater risk of voluntary attrition than those who respond unfavorably on a stay intentions survey item such as, "I plan to be working here in one year." Evaluating response rate distributions across departments, divisions, roles, and other dimensions may be an insightful endeavor.
   
   Nonresponse bias is not limited to surveys. For example, self-reported demographics such as gender and ethnicity may not be disclosed by all employees in the HR information system (HRIS). This can bias segmentations based on these categorical dimensions. While there are strategies to address this, such as visual ID or applying models trained to infer missing values (which may be necessary to fulfill EEOC reporting requirements), there may still be error in the imputed values.
   
@@ -1308,7 +1873,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    
 10. What are some examples of nonprobabilistic sampling methods?
 
-<!--chapter:end:r/03_measurement_sampling.Rmd-->
+<!--chapter:end:r/04_measurement_sampling.Rmd-->
 
 # Research Fundamentals {#research}
 
@@ -1441,7 +2006,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 10. How can the Hawthorne Effect impact the integrity of an experiment?
 
-<!--chapter:end:r/04_research_fundamentals.Rmd-->
+<!--chapter:end:r/05_research_fundamentals.Rmd-->
 
 # Descriptive Statistics {#desc-stats}
 
@@ -1880,7 +2445,7 @@ cor(employees$annual_comp, employees$age, use = "complete.obs")
   
 <br />
 
-```{r corr-table, out.width = "75%", echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
+```{r corr-table, out.width = "100%", echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table.png")
 
@@ -2026,7 +2591,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    
 10. When using the Pearson method, what do the values down the diagonal of a *covariance* matrix represent?
 
-<!--chapter:end:r/05_descriptive_statistics.Rmd-->
+<!--chapter:end:r/06_descriptive_statistics.Rmd-->
 
 # Statistical Inference {#inf-stats}
 
@@ -2087,12 +2652,12 @@ ggplot2::theme_bw()
   
   **Discrete probability distributions**, also known as **Probability Mass Functions (PMF)**, can be leveraged to model different types of nominal and ordinal variables. Some common discrete distributions include:
   
-  * **Bernoulli**: probability of success or failure for a *single* trial with two outcomes
-  * **Binomial**: number of successes and failures in a *sequence* of independent trials with two outcomes (collection of Bernoulli trials)
-  * **Multinomial**: generalization of the binomial distribution for experiments with more than two outcomes
-  * **Negative Binomial (Pascal)**: a version of the binomial distribution for a *fixed* number of trials (this is positively skewed despite what the name might suggest)
+  * **Bernoulli**: probability of success or failure for a *single* observation with two outcomes
+  * **Binomial**: number of successes and failures in a *sequence* of independent observations with two outcomes (collection of Bernoulli trials)
+  * **Multinomial**: generalization of the binomial distribution for observations with more than two outcomes
+  * **Negative Binomial (Pascal)**: a version of the binomial distribution for a *fixed* number of observations (this is positively skewed despite what the name might suggest)
   * **Poisson**: probability of a given number of events occurring over a specified period
-  * **Geometric**: special case of the negative binomial distribution that repeats trials until a success is observed (rather than a fixed number of times)
+  * **Geometric**: special case of the negative binomial distribution that repeats observations until a success is observed (rather than a fixed number of times)
   
   Several functions are available in R to simulate PMFs. The precise shape of a distribution depends on the parameters, but we will simulate and visualize these common PMFs to illustrate differences in the general shape of each. First, let's simulate the distributions by drawing 1,000 random values from each with a specified set of parameters:
   
@@ -2642,10 +3207,6 @@ $$ H_A: \mu_A > \mu_B $$
   $\alpha$ is often set at .05 but is sometimes set at a more rigorous .01, depending upon the context and tolerance for error. An $\alpha$ of .05 corresponds to a 95% CI (1 - .05), and .01 to a 99% CI (1 - .01). With non-directional alternative hypotheses, we must divide $\alpha$ by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized. 
   
   At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. While we could observe more extreme values by chance with repeated attempts, in less than 1 in every 20 times would we expect a 95% CI that does not capture $\mu$. Moreover, in less than 1 in every 100 times should we expect a sample with a 99% CI that does not capture $\mu$.
-
-### Beta
-  
-  Another key value is **Beta**, denoted by $\beta$, which relates to the power of the analysis. Simply put, power reflects our ability to find a difference or relationship if there is one. Power is calculated by 1 - $\beta$. At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the $t$-test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how extremely different values of $x$ must be to observe non-overlapping CIs.
   
 ### Type I & II Errors
 
@@ -2681,6 +3242,46 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these "adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference." The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
 
+### Statistical Power
+  
+  Whereas $\alpha$ is the probability of a Type I error, **Beta** $\beta$ is the opposite: the probability of accepting $H_0$ when it is false (Type II error). 
+  
+  $\beta$ is related to the *power* of the analysis, which is calculated by 1 - $\beta$ and reflects our ability to detect a difference or relationship if one exists. For example, if a study has 80% power, it has an 80% chance of detecting an effect if one actually exists in the population. **Power analysis** helps with defining the optimal $n$-count for detecting a population effect in sample data (i.e., correctly rejecting a false $H_0$). Increasing the power of a statistical test decreases the probability that we will fail to detect a significant effect present in the population.
+  
+  At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the $t$-test example, CIs for small samples ($n$ < 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how different the values of $x$ must be to observe non-overlapping CIs.
+    
+  Before diving into the mechanics of power analysis, it is important to understand the three important -- and interrelated -- considerations in hypothesis tests that influence whether effects are real or a product of random sampling error:
+  
+  * **Effect size**: Larger differences and stronger relationships are less likely random sampling error
+  * **Sample size**: Larger samples can detect smaller differences and weaker relationships (though they may be too small or weak to be meaningful)
+  * **Variability**: Greater variability in the data is likely to result in differences that are attributable to random sampling error
+  
+  It may be helpful to think of power analysis as an optimization problem. The goal is to achieve a large enough sample size to detect meaningful effects -- but not wastefully large as data collection can be expensive -- whilst protecting against an underpowered analysis with a low probability of detecting an important effect.
+  
+  To estimate the sample size needed to achieve a given power level, one must use domain expertise to specify parameters. The effect size parameter varies based on the statistical test but when in doubt, we can use Cohen's (1988) conventional effect sizes which are defined in Figure \@ref(fig:conv-eff-size-tbl). The effect size for a particular test can also be retrieved using the `cohen.ES()` function. For example, the following command returns 0.25 as the medium effect size threshold for ANOVA: `cohen.ES(test = "anov", size = "medium")`.
+  
+```{r conv-eff-size-tbl, out.width = "100%", echo = FALSE, fig.cap = "Cohen's conventional effect sizes by statistical test.", fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/conventional_effect_size_table.png")
+
+```
+  
+  Let's illustrate by calculating the sample size required for a one-way ANOVA that involves four groups. We will set $\alpha = .05$ and specify an 80% chance (power = .8) of detecting a moderate population effect. We can leverage the `pwr` library in R to perform power analysis. Executing `?pwr` will provide package documentation that clarifies what function to execute to calculate the sample size requirement for various statistical tests.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Load library
+library(pwr)
+
+# Calculate sample size for one-way ANOVA
+# k = 4 indicates we plan to compare 4 groups
+# f = .25 indicates we wish to detect a medium effect
+pwr.anova.test(k = 4, f = .25, sig.level = .05, power = .8)
+
+```
+  
+  The power analysis for this one-way ANOVA shows that we need a minimum of $n = 45$ *within each* of the four groups to achieve an 80% chance of detecting a medium population effect across the four groups when setting $\alpha = .05$.
+  
 ## Review Questions
 
 1. What are some examples of a null hypothesis?
@@ -2703,21 +3304,21 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
    
 10. According to the Empirical Rule, 95% of normally distributed data lie within how many standard deviations of the mean?
 
-<!--chapter:end:r/06_statistical_inference.Rmd-->
+<!--chapter:end:r/07_statistical_inference.Rmd-->
 
-# Data Wrangling and Preparation {#data-wrang-prep}
+# Data Management & Preparation {#data-mgmt-prep}
 
-  To begin a data analysis, we must first access, integrate, and clean the relevant data. These tasks account for a large part of the work analytics professionals do.
+  To begin a data analysis, we must first access and organize the relevant data. These tasks -- together with data preparation steps outlined in this chapter -- account for a large part of the work analytics professionals do.
   
 ```{r ds-tasks, out.width = "75%", echo = FALSE, fig.cap = 'What Data Scientists Really Do', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/data_scientist_tasks.jpeg")
 
 ```
-  
+
 ## Data Management
   
-  Data are extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*.
+  Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*.
   
   A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables. 
   
@@ -2741,7 +3342,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  A DW may contain many different types of tables, but the two most common are *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which is truncated and reloaded with the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. A **Type 1 table** is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
@@ -2763,534 +3364,12 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
   
-## SQL
-
-  **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
+  **Modern Data Architecture**
   
-  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  Though a deep treatment of data architecture is beyond the scope of this book, it is important to acknowledge the significant advancements in infrastructure and computation since these complex SCD architectures were introduced by Kimball (1996). These developments have greatly improved the efficiency with which analysts can translate data into information and insight. The primitive systems in place decades ago required expensive **ETL** jobs to **extract (E)** data from source systems, **transform (T)** data using complex transformation rules, and **load (L)** the transformed data to relational tables -- which then required complex queries to wrangle and analyze the data. 
   
-  **Basics**
-  
-  There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently needed.
-  
-  * **SELECT**: Specifies the columns to include in the output
-  * **FROM**: Specifies the table(s) in which the relevant data are contained
-  * **WHERE**: Specifies the rows to search
-  
-  Despite the clauses being ordered as shown above (`SELECT` then `FROM` then `WHERE`), the `FROM` clause is the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The `SELECT` clause is the last to execute.
-  
-  Additional clauses are available for grouping and sorting data.
-  
-  * **GROUP BY**: Specifies the columns by which data should be grouped when using aggregate functions
-  * **HAVING**: Specifies conditions for filtering rows based on aggregate functions
-  * **ORDER BY**: Specifies how data should be sorted in the output
-  
-  When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
-  
-  Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. While the syntax of SQL may vary by database, the core structure of queries is universal.
-  
-  First, let's load the data sets:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Load data sets
-employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
-status <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/status.csv")
-benefits <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/benefits.csv")
-demographics <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/demographics.csv")
-job <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/job.csv")
-payroll <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/payroll.csv")
-performance <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/performance.csv")
-prior_employment <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/prior_employment.csv")
-survey_response <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_response.csv")
-tenure <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/tenure.csv")
-
-# Return row and column counts
-dim(employees)
-
-```
-
-  Next, we will apply the `sqldf()` function to our data frame to extract specific rows and columns. In addition to the `SELECT`, `FROM`, and `WHERE` clauses, we will use the `LIMIT` clause to limit the number of rows that are displayed given the data frame's size ($n = 1,470$). In a practical setting, the `LIMIT` clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.
-  
-  A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Load SQL library
-library(sqldf)
-
-# Store SQL query as a character string using the paste() function
-sql_string <- paste("SELECT
-                      employee_id
-                    FROM
-                      employees
-                    WHERE
-                      dept = 'Research & Development'
-                    LIMIT 10")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  This query returned a list of employee ids for employees in the Research & Development department. 
-  
-  **Aggregate Functions**
-  
-  Next, let's take a look at average organization tenure by job for those in the Research & Development department:
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      AVG(org_tenure)
-                    FROM
-                      employees
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  There are 7 distinct job titles among employees in the Research & Development department, and the average organization tenure for these ranges from `5` to `13.7` years.
-  
-  Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We will also apply column aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      AVG(org_tenure) AS avg_org_tenure
-                    FROM
-                      employees
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  The output shows that there are only 2 Vice Presidents in the Research & Development department, while other job titles are much more prevalent. 
-  
-  Since relatively few employees are Vice Presidents, let's use the `HAVING` clause to only show average organization tenure for Research & Development department jobs with more than 10 employees. We can also use the `ROUND()` function to truncate average organization tenure to one significant digit:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure
-                    FROM
-                      employees
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  **Joins**
-  
-  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
-
-```{r sql-joins, out.width = "100%", echo = FALSE, fig.cap = 'Types of SQL Joins', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/sql_joins.png")
-
-```
-
-  The structure of SQL queries containing each type of join is represented below:
-
-  **LEFT INCLUSIVE**
-  
-```{r, message = FALSE, warning = FALSE}
-
-#  SELECT [Output Field List]
-#  FROM A 
-#  LEFT OUTER JOIN B
-#  ON A.Key = B.Key
-  
-```
-
-  **LEFT EXCLUSIVE**
-
-```{r, message = FALSE, warning = FALSE}
-
-#  SELECT [Output Field List]
-#  FROM A 
-#  LEFT OUTER JOIN B
-#  ON A.Key = B.Key
-#  WHERE B.Key IS NULL
-
-```
-
-  **FULL OUTER INCLUSIVE**
-  
-```{r, message = FALSE, warning = FALSE}
-
-#  SELECT [Output Field List]
-#  FROM A 
-#  FULL OUTER JOIN B
-#  ON A.Key = B.Key
-
-```
-
-  **FULL OUTER EXCLUSIVE**
-
-```{r, message = FALSE, warning = FALSE}
-  
-#  SELECT [Output Field List]
-#  FROM A 
-#  FULL OUTER JOIN B
-#  ON A.Key = B.Key
-#  WHERE A.Key IS NULL OR B.Key IS NULL  
-
-```
-
-  **RIGHT INCLUSIVE**
-
-```{r, message = FALSE, warning = FALSE}
-  
-#  SELECT [Output Field List]
-#  FROM A 
-#  RIGHT OUTER JOIN B
-#  ON A.Key = B.Key
-
-```
-
-  **RIGHT EXCLUSIVE**
-
-```{r, message = FALSE, warning = FALSE}
-  
-#  SELECT [Output Field List]
-#  FROM A 
-#  LEFT OUTER JOIN B
-#  ON A.Key = B.Key
-#  WHERE A.Key IS NULL
-
-```
-
-  **INNER JOIN**
-
-```{r, message = FALSE, warning = FALSE}
-  
-#  SELECT [Output Field List]
-#  FROM A 
-#  INNER JOIN B
-#  ON A.Key = B.Key
-
-```
-
-  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
-  
-  Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
-                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
-                    FROM
-                        demographics
-                      INNER JOIN
-                        tenure
-                      ON
-                        demographics.employee_id = tenure.employee_id
-                      INNER JOIN
-                        job
-                      ON
-                        demographics.employee_id = job.employee_id
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  Note that the `INNER JOIN` in this SQL query was structured such that both `tenure` and `job` were joined to `demographics` via the `employee_id` column. We could have instead joined `job` to `tenure` since we joined `tenure` to `demographics`; this would have achieved the same result since all employee ids exist in each of the three data frames.
-  
-  If it were possible for all employee ids to exist in `demographics` but not in either `tenure` or `job`, we could leverage a `LEFT JOIN` to ensure all records from `demographics` are included in the output irrespective of whether they have matches in `tenure` or `job`:
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,
-                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
-                    FROM
-                        demographics
-                      LEFT JOIN
-                        tenure
-                      ON
-                        demographics.employee_id = tenure.employee_id
-                      LEFT JOIN
-                        job
-                      ON
-                        demographics.employee_id = job.employee_id
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  In this case, if demographics is the base data set which contains all employee ids (i.e., the 'LEFT' dataset), it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
-
-  When integrating data within R, the `tidyverse` provides a more efficient and parsimonious method of joining many data sets using various join types. The example below joins nine data sets into a single `employees` data frame using a left join on the `employee_id` column:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Load tidyverse
-library(tidyverse)
-
-employees <- list(demographics,
-                  status,
-                  benefits,
-                  job,
-                  payroll,
-                  performance,
-                  prior_employment,
-                  survey_response,
-                  tenure) %>%
-                  reduce(left_join, by = "employee_id")
-                  
-```
-
-  **Subqueries**
-  
-  **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
-  
-  For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include `tenure` in the join conditions of our main query:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-# Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
-                    FROM
-                        demographics
-                      LEFT JOIN
-                        job
-                      ON
-                        demographics.employee_id = job.employee_id
-                    WHERE
-                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure > 1)
-                      AND 
-                        dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  **Virtual Tables**
-  
-  An alternative to a subquery is creating a **virtual table** in the `FROM` clause. When using an `INNER JOIN` to connect `demographics` to the virtual table `ids`, which provides a list of employee ids for those with more than a year of organization tenure, any records in `demographics` or `job` that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a `LEFT JOIN` is used to join `job` to `demographics` since records in `demographics` will be filtered based on `employee_id` matches in the virtual table. With this approach, our `WHERE` clause is limited to the `department = 'Research & Development'` condition:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                      job_title,
-                      COUNT(*) AS employee_cnt,
-                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist
-                    FROM
-                        demographics
-                      LEFT JOIN
-                        job
-                      ON
-                        demographics.employee_id = job.employee_id
-                      INNER JOIN
-                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
-                      ON
-                        demographics.employee_id = ids.employee_id
-                    WHERE
-                      dept = 'Research & Development'
-                    GROUP BY
-                      job_title
-                    HAVING
-                      COUNT(*) > 10
-                    ORDER BY
-                      job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
-
-  **Window Functions**
-  
-  **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
-  
-  For example, we can assign an organization tenure rank by Research & Development job using the `RANK()` and `OVER()` functions in the `SELECT` clause. The `PARTITION BY` argument functions like a `GROUP BY` clause but without collapsing rows, while the `ORDER BY` argument sorts the records in ascending (`ASC`) or descending (`DESC`) order for proper ranking:
-
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-# Limit output to 10 records since query does not collapse records
-sql_string <- paste("SELECT
-                      demographics.employee_id,
-                      job_title,
-                      commute_dist,
-                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
-                    FROM
-                        demographics
-                      LEFT JOIN
-                        job
-                      ON
-                        demographics.employee_id = job.employee_id
-                      INNER JOIN
-                        (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
-                      ON
-                        demographics.employee_id = ids.employee_id
-                    WHERE
-                      dept = 'Research & Development'
-                    ORDER BY
-                      job_title,
-                      commute_dist_rank
-                    LIMIT 10")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-
-  Notice that in the case of commute distance ties, the `RANK()` function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.
-  
-  We can also treat this query as a virtual table, and then filter on the derived `commute_dist_rank` field to return the highest commute distance for each job. We can add a `DISTINCT()` function in the `SELECT` clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the `COUNT(*)` function:
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("SELECT
-                        DISTINCT(job_title) AS job_title,
-                        COUNT(*) AS employee_count,
-                        commute_dist
-                     FROM
-                        (SELECT
-                          demographics.employee_id,
-                          job_title,
-                          commute_dist,
-                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
-                        FROM
-                            demographics
-                          LEFT JOIN
-                            job
-                          ON
-                            demographics.employee_id = job.employee_id
-                          INNER JOIN
-                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
-                          ON
-                            demographics.employee_id = ids.employee_id
-                        WHERE
-                          dept = 'Research & Development'
-                        ORDER BY
-                          job_title,
-                          commute_dist_rank) tbl
-                      WHERE
-                        tbl.commute_dist_rank = 1
-                      GROUP BY
-                        job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-  
-  An alternative approach is to use a **common table expression (CTE)**, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Store SQL query as a character string
-sql_string <- paste("WITH max_commute_job
-                     AS
-                        (SELECT
-                          demographics.employee_id,
-                          job_title,
-                          commute_dist,
-                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank
-                        FROM
-                            demographics
-                          LEFT JOIN
-                            job
-                          ON
-                            demographics.employee_id = job.employee_id
-                          INNER JOIN
-                            (SELECT employee_id FROM tenure WHERE org_tenure > 1) ids
-                          ON
-                            demographics.employee_id = ids.employee_id
-                        WHERE
-                          dept = 'Research & Development'
-                        ORDER BY
-                          job_title,
-                          commute_dist_rank)
-                      
-                      SELECT
-                        DISTINCT(job_title) AS job_title,
-                        COUNT(*) AS employee_count,
-                        commute_dist
-                     FROM
-                        max_commute_job
-                      WHERE
-                        commute_dist_rank = 1
-                      GROUP BY
-                        job_title")
-
-# Execute SQL query
-sqldf::sqldf(sql_string)
-
-```
-  
+  With modern cloud environments, the significant investment associated with humans designing, developing, and maintaining these complex architectures is often difficult to justify given how inexpensive storage and compute have become. Increasingly, the heavy computational tasks have migrated out of data pipelines and into the analytics layer wherein analytics teams have more flexibility and control. Today, daily snapshots containing *all* current and historical records can be copied and stored within partitioned DW tables for a negligible increase in storage costs, and this greatly simplifies data pipeline complexity and engineering support requirements. This changing dynamic has given rise to a new breed of data engineers focused on optimizing the heavy computation requirements of analytics teams.
+   
 ## Data Screening & Cleaning
 
   The initial data review process is sometimes referred to as **exploratory data analysis (EDA)**. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
@@ -3298,6 +3377,9 @@ sqldf::sqldf(sql_string)
   A handy function in base R for initial data screening is `summary()`:
   
 ```{r, message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
 # Summarize df
 summary(employees)
@@ -3352,7 +3434,17 @@ round(abs(orig_comp - subset(employees, employee_id == '2176', select = annual_c
 
   **Outliers**
 
-  The treatment of outliers is a controversial topic. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be treated. As discussed in Chapter \@ref(desc-stats), a common method of outlier detection is identifying values which fall outside the following interval:
+  The treatment of outliers is an important, though controversial, subject. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be handled. 
+  
+  The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving erroneous sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents' claims that their tap water was to blame -- despite some extreme cases in which the tap water was colored orange. 
+  
+  Water companies routinely add chemicals to water to prevent pipe corrosion which can cause lead to seep into drinking water. In Flint's hurry to switch water sources, they failed to address the fact that the Flint River is naturally high in chloride (which corrodes pipes) by adding corrosion-controlling chemicals. According to the Lead and Copper Rule (LCR) of 1991, lead consumption should not exceed 15 parts per billion (ppb) in more than 10% of homes tested. If the 90th percentile value for sampled homes is greater than 15 ppb, action is required.
+  
+  Two initial samples of tap water were taken from a concerned resident's home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes in the resident's home. Not only did authorities fail to investigate these outliers, they failed to consider the reason for so many *inliers* in other samples that had been taken in light of these observed outliers (e.g., households with water filtration systems or non-lead pipes contributing to lead levels falling beneath the action threshold in aggregate).   
+  
+  In the end, the tenacity of the growing number of residents with health concerns resulted in new samples being analyzed by a team of researchers at Virginia Tech University. Researchers found that the 90th percentile value among the sample of households -- which included homes with non-lead pipes and water filtration systems -- was 26.8 ppb and the highest individual sample was 158 ppb! The city switched back to the Lake Huron water source in October 2015 (18 months later), and a state of emergency was declared. The State of Michigan has brought 43 criminal charges against 13 state and local officials which include misconduct in office, tampering with evidence, willful neglect of duty, and various counts of conspiracy. Residents launched a series of class action lawsuits against the Governor as well (Langkjær-Bain, 2017).
+  
+  This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated! Simply discarding outliers may truly be a grave mistake. As discussed in Chapter \@ref(desc-stats), a common method of outlier detection is identifying values which fall outside the following interval:
   
   $$I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR$$
 
@@ -3500,23 +3592,23 @@ headcount over x months)
 
 2. What is the difference between a Type 1 and Type 2 table in a DW?
 
-3. What two clauses must always be present in a SQL query?
+3. In what ways has modern cloud computing influenced data architecture?
 
-4. How do aggregate functions differ from window functions in SQL?
+4. Why is it dangerous to address missing values without domain knowledge of how the data are generated?
 
-5. What is a subquery?
+5. How can missing values be addressed when impacted records cannot be eliminated from a data set?
 
-6. What is the difference between an INNER JOIN and LEFT JOIN?
+6. When is one-hot encoding required for categorical variables?
 
-7. Why is it dangeous to address missing values without domain knowledge of how the data are generated?
+7. When one-hot encoding a categorical variable with more than two categories, why is an omitted category important?
 
-8. How can missing values be addressed when impacted records cannot be eliminated from a data set?
+8. When binning numeric data, what are some considerations in determining the size of each bin?
 
-9. When is one-hot encoding required for categorical variables?
+9. Why should variables with low to no variability be dropped?
 
-10. Why should variables with low to no variability be dropped?
+10. Where are validation rules ideally situated to limit downstream data cleaning tasks and ensure consistent categorical dimension values?
 
-<!--chapter:end:r/07_data_wrangling_preparation.Rmd-->
+<!--chapter:end:r/08_data_mgmt_preparation.Rmd-->
 
 # Analysis of Differences {#aod}
 
@@ -3526,7 +3618,7 @@ headcount over x months)
 
   In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
   
-  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-wrang-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
+  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-mgmt-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
   
   1. **Independence**: Observations within each group are independent of each other
   2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
@@ -4286,7 +4378,7 @@ ggplot2::geom_point(aes(color = stock_opt_lvl))
 
 10. What are some ways to better understand the nature of statistical differences indicated in the output of ANOVA?
 
-<!--chapter:end:r/08_analysis_differences.Rmd-->
+<!--chapter:end:r/09_analysis_differences.Rmd-->
 
 # Linear Regression {#lm}
 
@@ -4316,18 +4408,30 @@ ggplot2::geom_point(aes(color = stock_opt_lvl))
   
   **Assumptions & Diagnostics**
 
-  From the outset, we must determine if a linear model is appropriate for the data at hand. Consistent with the assumptions of parametric tests covered in Chapter \@ref(aod), there are several assumptions that need to be validated to make this decision, and these largely relate to the residuals ($\hat{y}$ - $y$):
+  First, the **sample size** needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum -- and realistic -- $n$-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.
+  
+  Consistent with the assumptions of parametric tests covered in Chapter \@ref(aod), there are several assumptions that need to be validated to determine if a linear model is appropriate for understanding relationships in the data. These assumptions largely relate to the residuals ($\hat{y}$ - $y$):
   
   1. **Independence**: Residuals are independent of each other; consecutive residuals in time series data are unrelated
   2. **Homoscedasticity**: Variance of residuals is constant across values of $X$
   3. **Normality**: Residuals must be normally distributed (with mean of 0) across values of $X$
   4. **Linearity**: Relationship between $X$ and $Y$ is linear
   
-  In addition to these key assumptions, additional diagnostics are important to incorporate into the early data screening stage:
+  Beyond these core assumptions for linear models, additional diagnostics are important to incorporate into the early data screening stage:
   
-  2. **High-Leverage Observations**: Influential data that significantly changes the model fit
-  1. **Collinearity**: Independent variables that are highly correlated (these should be *independent*)
+  1. **High-Leverage Observations**: Influential data that significantly changes the model fit
+  2. **Collinearity**: Independent variables that are highly correlated (these should be *independent*)
+  
+## Sample Size
 
+  While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IVs, the power analysis section in Chapter \@ref(inf-stats) covered a more rigorous approach to calculating the sample size needed to observe significant effects.
+  
+  For linear regression, power analysis involves a comparison of model fit between a model with a full set of predictors relative to one with only a subset of the full model's predictors. The function from the `pwr` library to call is `pwr.f2.test(u = , v = , f2 = , sig.level = , power = )`, where `u` and `v` are the numerator and denominator degrees of freedom, respectively, and `f2` is defined as:
+  
+  $$ f^2 = \frac {R^2_{AB} - R^2_A}{1 - R^2_{AB}}, $$
+  
+  where $R^2_{AB}$ represents the variance accounted for by a full model with all predictors, and $R^2_A$ represents the variance accounted for by a model containing only a subset of the full model's predictors. For example, power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.
+  
 ## Simple Linear Regression
 
   **Simple linear regression** is a simple technique for estimating the value of a quantitative DV, denoted as $Y$, on the basis of a single IV, denoted as $X$. It is assumed that there is an approximately linear relationship between $X$ and $Y$. Often, this relationship is expressed as *regressing* $Y$ on $X$ and is defined mathematically as:
@@ -4456,7 +4560,7 @@ slm.fit <- lm(ytd_leads ~ engagement, data)
   Before performing model diagnostics, it is important to note the following:
   
   1. Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
-  2. Outliers are not always an issue, as we discussed in Chapter \@ref(data-wrang-prep). Figure \@ref(fig:high-leverage) illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
+  2. Outliers are not always an issue, as we discussed in Chapter \@ref(data-mgmt-prep). Figure \@ref(fig:high-leverage) illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 
 ```{r high-leverage, out.width = "100%", echo = FALSE, fig.cap = 'Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -4899,7 +5003,42 @@ flextable::as_flextable(mlm.fit.ot)
   
   In addition, Figure \@ref(fig:hier-ctrl) shows that without `engagement` in the model, `stock_opt_lvl` is not significant. This is a good reminder that regression does not examine bivariate relationships of each predictor with the response *independent of other variables*; rather, the relationships among all variables in the model impact which predictors emerge as having a statistical association with the response.
   
-### Moderation
+## Multilevel Models
+
+  The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have *fixed* effects on the outcome and these effects do not vary based on group(s) to which the observations belong. These models are sometimes referred to as **fixed effects** models.
+  
+  It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
+  
+  You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of $Y$ when all predictors are set to 0 -- namely the $Y$-intercept $\beta_0$ -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is *random* rather than *fixed* for each group. Group-level effects can also be modeled for select -- or all -- $X$ variables in addition to varying $\beta_0$ for each group.
+  
+  Consider a linear model constructed to test hypothesized relationships of every $X$ variable with an outcome $Y$. This is the equivalent of building $G$ independent models, where $G$ is the number of groups, using data subsetted for the respective group:
+  
+  $$ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon $$
+  
+  In this case, it is easy to consider wrapping the `lm()` function within a `for` loop that iterates through each $G$ group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only *certain* variables depend on the $G$ group, we need to estimate both group-level *and* observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a **mixed effects** model. A model in which group-level effects are hypothesized for $\beta_0$ and $X_1$ and observation-level effects are hypothesized for all other predictors is expressed as:
+  
+  $$ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
+
+  To fit a linear mixed effects model in R, we can leverage the `lmer()` function from the `lmerTest` package. Let's demonstrate how to fit a model to understand the random effects of `stock_opt_lvl` and fixed effects of `engagement`, `job_lvl`, and `org_tenure` on `sqrt(ytd_sales)`: 
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(lmerTest)
+
+# Fit linear mixed model
+lme.fit <- lmerTest::lmer(sqrt(ytd_sales) ~ engagement + job_lvl + (1 | stock_opt_lvl) + org_tenure, data_ot)
+
+# Summarize model results
+summary(lme.fit)
+
+```  
+  
+  The results of `lmer()` contain sections for both fixed and random effects. Consistent with the interpretation of general linear model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and `sqrt(ytd_sales)` across the levels of `stock_opt_lvl` that would be missed without a mixed model that accounts for these group-level effects.
+  
+  For a more comprehensive treatment on multilevel models, see Gelman and Hill (2006).
+  
+## Moderation
 
   As discussed in Chapter \@ref(measure-sampl), a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an **interaction term**, which is the product of the two variables ($X_1$ * $X_2$).
   
@@ -4927,7 +5066,6 @@ car::vif(mlm.fit.int)
 ```
   
   $VIF$ is greater than 5 for both `org_tenure` and the interaction term; therefore, there is a problematic level of collinearity between these variables. 
-  
   A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
   
 ```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term.', fig.align = 'center'}
@@ -4976,7 +5114,7 @@ ggplot2::theme_bw()
 
   As shown in Figure \@ref(fig:int-effects), the slope of both regression lines is negative. However, the drop in sales is much more significant as job level increases for those with high ($\bar{x} + 1s$) organization tenure relative to those with low ($\bar{x} - 1s$) organization tenure. Perhaps those with longer tenure in the organization gain additional responsibilities beyond selling (e.g., mentoring junior salespeople) as they are promoted into higher job levels.
 
-### Mediation
+## Mediation
 
   As discussed in Chapter \@ref(measure-sampl), mediating variables may fully or partially mediate the relationship between a predictor and response. Full mediation indicates that the mediator fully explains the effect; in other words, without the mediator in the model, there is no relationship between an IV and DV. Partial mediation indicates that the mediator partially explains the effect; that is, there is still a relationship between an IV and DV without the mediator in the model.
 
@@ -5059,13 +5197,13 @@ flextable::as_flextable(med.fit.four)
 
 9. How does the backward stepwise variable selection procedure work?
 
-10. What are some ways regression can be leveraged to isolate the relationship of a particular variable with the response beyond a set of controls?
+10. What are some examples of hypotheses that would warrant a linear mixed effects model over a general linear model?
 
-<!--chapter:end:r/09_linear_regression.Rmd-->
+<!--chapter:end:r/10_linear_regression.Rmd-->
 
 # Non-Linear Regression {#lme}
 
-  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this chapter, we will discuss how to extend the linear regression framework and relax linear model assumptions to respect the non-linear nature of relationships.
+  Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this chapter, we will discuss how to extend the linear regression framework and relax linear model assumptions to handle non-linear relationships.
 
 ## Polynomial Regression
   
@@ -5220,7 +5358,7 @@ ps.cube.fit <- lm(turnover_rate ~ month + I(month^2) + I(month^3), data = ps_tur
 
 ```
 
-```{r ps-lm-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Linear model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-lm-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Linear model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(flextable)
@@ -5230,14 +5368,14 @@ flextable::as_flextable(ps.lin.fit)
 
 ```  
 
-```{r ps-quad-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Quadratic model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-quad-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Quadratic model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce tabular summary of regression model output
 flextable::as_flextable(ps.quad.fit)
 
 ```
 
-```{r ps-cube-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month.', fig.align = 'center'}
+```{r ps-cube-mnth-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce tabular summary of regression model output
 flextable::as_flextable(ps.cube.fit)
@@ -5298,7 +5436,7 @@ ggpubr::ggarrange(p_ps_lin, p_ps_quad, p_ps_cube, ncol = 3, nrow = 1)
 
   Let's add `remote` to the cubic regression model to see how performance changes.
 
-```{r ps-cube-mnthrem-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto month and remote.', fig.align = 'center'}
+```{r ps-cube-mnthrem-output, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto month and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -5312,7 +5450,7 @@ flextable::as_flextable(ps.cube.fit)
 
   Next, let's include `year` in the model since turnover rates also vary along this dimension.
 
-```{r ps-cube-yrmnthrem-output1, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
+```{r ps-cube-yrmnthrem-output1, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -5324,7 +5462,7 @@ flextable::as_flextable(ps.cube.fit)
 
   Explained variance increases to 62% by adding `year` to the model. While the coefficient on `year` is statistically significant ($\beta$ = .66, $t$(114) = 8.93, $p$ < .001), the change in attrition by year is not linear. Visualizing the distribution of turnover rates by year will provide evidence that a linear year-over-year growth factor will result in some large residuals since it will not capture the more complex trend present in these data.
   
-```{r ps-turnover_yrly_dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center'}
+```{r ps-turnover-yrly-dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Model linear relationship between year and turnover rate, grouped by remote vs. non-remote
 ps.lin.fit <- lm(turnover_rate ~ year + remote, data = ps_turnover)
@@ -5352,7 +5490,7 @@ ggpubr::ggarrange(p_ps_rem, p_ps_nrem, ncol = 2, nrow = 1)
 
   Given the cubic nature of the change in turnover year-over-year, let's add quadratic and cubic terms for `year` to examine changes in model performance:
 
-```{r ps-cube-yrmnthrem2-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center'}
+```{r ps-cube-yrmnthrem2-output, out.width = "100%", echo = FALSE, fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit linear, quadratic, and cubic models to ps_turnover df
 ps.cube.fit <- lm(turnover_rate ~ year + I(year^2) + I(year^3) + month + I(month^2) + I(month^3) + remote, data = ps_turnover)
@@ -5372,38 +5510,340 @@ flextable::as_flextable(ps.cube.fit)
 
 ## Logistic Regression
 
-  **Logistic regression** is an excellent tool for modeling the probability of different classes of a categorical outcome -- a type of modeling often referred to as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level).
+  **Logistic regression** is a type of **generalized linear model**, which is a family of models for which key linear assumptions are relaxed. Logistic regression is an excellent tool for modeling relationships with outcomes that are not measured on a continuous scale (a key requirement for linear regression). Logistic regression is often leveraged to model the probability of observations belonging to different classes of a categorical outcome, and this type of modeling is known as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of *regression* analysis which uses a link function to generalize the linear model for non-continuous outcomes.
 
-  You may be wondering if linear regression can be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-wrang-prep). 
+  You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-mgmt-prep). In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y > .5$ could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. 
   
-  In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y$ > .5 would be indicative of a termination prediction. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. 
-  
-  Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given `engagement`, which would be written as: Pr(`active` = Yes|`engagement`). A probability of `active` will be estimated for a given value of `engagement`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives, we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
+  This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given a value for `interview_rating`, which would be written as $Pr$(`active` = Yes | `interview_rating`) or simply, $p$(`inteview_rating`). A probability of `active` = Yes will be estimated for a given value of `interview_rating`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
 ### Binomial Logistic Regression
 
+  Since estimating a binary outcome using linear regression can result in $p(X)$ < 0 for some values of $X$ and $p$($X$) > 1 for others, we need a function that constrains the output to a [0,1] interval. For logistic regression, the *logistic* function is used. This function converts the linear model, $p(X) = \beta_0 + \beta_1 X$, to the following form:
   
+  $$ p(X) = \frac{e^{\beta_0 + \beta_1 X}}{1+e^{\beta_0 + \beta_1 X}} $$
 
+  Irrespective of the value of $X$, the logistic function will always produce a sigmoidal (*S-shaped*) curve. 
+  
+  Taking the ratio of $\frac {p(X)}{1 - p(X)}$ will give the odds of the outcome, which ranges between 0 (very low) and $\infty$ (very high). The logarithm of this ratio, $\log(\frac {p(X)}{1 - p(X)})$, is known as the *log odds* or *logit*, and is fundamental to logistic regression. Log odds is a *monotonic transformation*, meaning the greater the odds, the greater the log of odds (and vice versa).
+  
+  Recall that in linear regression, the coefficient $\beta$ on a predictor is interpreted as the average change in $Y$ for a one-unit increase in the respective predictor's value. In logistic regression, the interpretation is similar but rather than $\beta$ representing the average change in $Y$, it represents the average unit change in the *log of the odds* for a one-unit increase in the predictor's value.
+  
+  In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. Recall from Chapter \@ref(inf-stats) that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
+  
+```{r glm-rating, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Dummy code active status to 1/0
+employees$active <- ifelse(employees$active == 'Yes', 1, 0)
+
+# Fit a logistic regression model
+glm.fit <- glm(active ~ interview_rating, data = employees, family = 'binomial')
+
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(glm.fit)
+
+```
+
+  The output shown in Figure \@ref(fig:glm-rating) has some differences relative to the output of a linear regression model. 
+  
+  * `Estimate`: Average change in the log of odds for each one-unit increase in the value of the predictor
+  * `z value`: Ratio of Estimate / Standard Error. Assuming $\alpha$ = .05, a $z$-value of 2 is a good rule of thumb for achieving statistical significance ($p$ < .05) per the properties of the normal distribution.
+  * `Null deviance`: Measure of how well the response can be predicted by a model with only an intercept term; the lower the number, the better the fit.
+  * `Residual deviance`: Measure of how well the response can be predicted by a model with $p$ predictors; the lower the number, the better the fit. The larger the delta between residual and null deviance, the better the model with $p$ predictors relative to the intercept-only model.
+  
+  Given the positive coefficient on `interview_rating`, we can interpret this to mean that for each one-unit increase in the average interviewer rating during the onsite stage of the employee's recruiting process, the log of the odds of the employee staying with the organization (`active` status of `Yes` coded as $1$) increases by 21.96.
+  
+  To illustrate why the logistic function is necessary, let's demonstrate differences in applying linear and logistic regression models by regressing a binary outcome `active` onto `interview_rating`.
+
+```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Fit a linear model to illustrate why this should not be done with a binary outcome
+lm.fit <- lm(active ~ interview_rating, data = employees)
+
+# Construct plots
+p_lm <- ggplot2::ggplot(data = employees, aes(x = interview_rating, y = active)) + 
+        ggplot2::geom_point(color = "grey") +
+        ggplot2::scale_y_continuous(breaks = c(0, .25, .50, .75, 1, 1.25)) +
+        ggplot2::geom_function(fun = function(x) {lm.fit$coefficients[[2]]*x + lm.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+        ggplot2::labs(title = "Linear", x = "Interviewer Rating", y = "Active") +
+        ggplot2::theme_bw() +
+        ggplot2::theme(legend.position = "none") +
+        ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+p_glm <- ggplot2::ggplot(data = employees, aes(x = interview_rating, y = active)) + 
+         ggplot2::geom_point(color = "grey") +
+         ggplot2::scale_y_continuous(breaks = c(0, .25, .50, .75, 1, 1.25)) +
+         ggplot2::stat_smooth(method = "glm", colour = "red", size = .5, linetype = "dashed", se = FALSE, method.args = list(family = binomial)) +
+         ggplot2::labs(title = "Logistic", x = "Interviewer Rating", y = "Active") +
+         ggplot2::theme_bw() +
+         ggplot2::theme(legend.position = "none") +
+         ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Visualize linear and logistic functions
+ggpubr::ggarrange(p_lm, p_glm, ncol = 2, nrow = 1)
+
+```
+  
+  Figure \@ref(fig:lm-glm-compare) illustrates that for high values of `interview_rating`, a linear model would estimate probabilities for `active` that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the [0,1] interval does not make sense. On the other hand, the logistic function produces the *S-shaped* curve described previously. Using the logistic function, the probabilities are constrained to the [0,1] interval, and the visual reflects the fact that `active` can be perfectly predicted for low and high values of `interview_rating` but it is a mixed bag for values in the middle of the range (3.3 - 3.6).
+  
+  It is often helpful to explain the relationship between a predictor and binary outcome in terms of a percentage increase or decrease. When $\beta = 1$, this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, $(exp(\beta) - 1) * 100$ will provide the percentage increase or decrease in the odds of the *included* group relative to the *omitted* group. 
+  
+  For example, Figure \@ref(fig:glm-ot-lvl) provides the log odds for `active` regressed onto two binary predictors: `overtime` and `job_lvl2plus`.
+
+```{r glm-ot-lvl, out.width = "100%", fig.cap = 'Logistic regression of active status onto overtime and job level 2+.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Create dummy-coded variable for job level 2+
+employees$job_lvl2plus <- ifelse(employees$job_lvl > 1, 1, 0)
+
+# Fit a logistic regression model
+glm.fit <- glm(active ~ overtime + job_lvl2plus, data = employees, family = 'binomial')
+
+# Produce tabular summary for model results using flextable
+flextable::as_flextable(glm.fit)
+
+```
+
+  We can convert these coefficients into odds ratios by exponentiating the coefficients:
+  
+```{r exp-coef, out.width = "100%", fig.cap = 'Exponentiated logistic regression coefficients', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Return exponentiated coefficients
+exp(coef(glm.fit))
+
+```
+
+  The exponentiated coefficient on `overtime` is $exp(\beta) = .25$, so there is a $(1 - .25) * 100 = 75%$ percent *decrease* in the odds of being active for employees who work overtime (since `overtime = Yes` is the included group) relative to those who do not work overtime. The exponentiated coefficient on `job_lvl2plus` is $exp(\beta) = 3.41$, so there is a $(3.41 - 1) * 100 = 241%$ percent *increase* in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1 (i.e., attrition is a larger concern for level 1 employees).
+
+  Generalized linear mixed models can be fitted using the `glmer()` function from the `lme4` library. The syntax is identical to the illustration of `lmer()` for multilevel linear models in Chapter \@ref(lm) with the exception of needing to define `family` as an additional argument.
+  
+  A juxtaposition of `glm()` and `glmer()` fits for logistic regression is shown in the following block of code. The mixed model example features an additional random (group-level) effect on `business_travel` via `1 | business_travel`, and fixed (observation-level) effects on remaining predictors which are consistent with the standard logistic regression model:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(lme4)
+
+# Logistic model
+glm(active ~ overtime + job_lvl2plus, data = employees, family = 'binomial')
+
+# Logistic mixed model
+lme4::glmer(active ~ overtime + job_lvl2plus + (1 | business_travel), data = employees, family = 'binomial')
+
+```
+  
 ### Multinomial Logistic Regression
 
+  **Multinomial logistic regression** is used to estimate the probability of an unordered categorical response with $K>2$ classes. With an understanding of binomial logistic regression, extending the binomial model to a multinomial logistic regression model should be relatively intuitive.
+  
+  To extend the binomial model to a multinomial context, we need to first identify a reference level. This decision may be arbitrary or guided by the research question or hypothesis, but the decision is nonetheless important as it impacts how the model coefficients are interpreted -- always relative to the reference level. With the reference level defined, we can then express the multinomial logistic regression model as:
+  
+  $$ Pr(Y = k | X = x) = \frac{e^{\beta_{k0} + \beta_{k1} x_1 + ... + \beta_{kp} x_p}}{1+ \displaystyle\sum_{j=1}^{K-1} e^{\beta_{j0} + \beta_{j1} x_1 + ... + \beta_{jp} x_p}}, $$
+  
+  where $K$ is the reference class, $j$ is a $K-1$ non-reference level, and $k$ is the specified class for which the probability is being estimated on the basis of values for one or more $X$ predictors. 
+  
+  Consider `dept` from our `employees` data, which has values of `Research & Development`, `Sales`, and `Human Resources`. This is a nominal variable because differences in these levels are not ordered in the same way job levels ranging from 1 to 10 or Likert scales ranging from 1 to 5 are. Employees in the Sales department may be greater in number relative to employees in the Human Resources department, for example, but it would not be appropriate to assign to the Sales department a numeric value that indicates it is *higher* or *better* relative to the Human Resources department.
+  
+  Multinomial models are essentially a collection of binomial models which compare the log-odds of each non-reference category to the specified reference category. If the Human Resources department is identified as the reference category $K$, then $\beta_{k0}$ for $k = Sales$ can be interpreted as the log odds of Sales department membership relative to Human Resources department membership in the following equation:
+  
+  $$ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p $$
+  
+  Depending on the research objective, it may be appropriate to compute the odds of one category relative to all other categories. This can actually be accomplished using binomial regression if the category of interest is coded as 1 and all other categories are coded as 0. In this case, the reference for the binomial model is a *collection* of $K-1$ categories. If understanding the odds of *each category* relative to a reference category is more appropriate based on the research objective, multinomial logistic regression is the proper model.
+  
+  Let's illustrate how to implement multinomial logistic regression by determining how variables in the `employees` dataset help in classifying employees into departments. To build this model in R, we will use the `multinom` function from the `nnet` package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of `dept` from its native character type to a factor. We also need to identify the reference department against which the probability of each of the other departments will be evaluated; we will define this using the `ref` argument within the `relevel()` function:
 
+```{r multi-nom-mdl, out.width = "100%", fig.cap = 'Multinomial logistic regression of department onto overtime and business travel.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(nnet)
+
+# Convert dept to factor
+employees$dept <- factor(employees$dept)
+
+# Specify reference level
+employees$dept <- relevel(employees$dept, ref = "Human Resources")
+
+# Fit multinomial logistic regression model
+# An omitted group for categorical variables is defined by default
+multinom.fit <- multinom(dept ~ overtime + ed_field, data = employees)
+
+# Summarize results from model object
+summary(multinom.fit)
+
+```
+
+  Notice the output from the `multinom()` function is quite limited relative to `glm()` and `lm()`. Coefficients and standard errors are provided, but $p$-values are not available in the output so we will need to calculate them separately.
+  
+  A new statistical measure is included in the output of this model, **Akaike Information Criterion (AIC)**, which is a score that is helpful for model selection. AIC is calculated by:
+  
+  $$ AIC = -2\frac{\ell}{n} + 2\frac{k}{n}, $$
+  where $n$ is the number of observations, $k$ is the number of parameters (predictors + intercept), and $\ell$ is the log likelihood function where:
+  
+  $$ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  $$
+  
+  Just as we compared $R^2$ across linear regression models in Chapter \@ref(lm), AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted $R^2$ statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score. 
+  
+  At the time of this writing, the `as_flextable()` function used to format the output of `glm()` and `lm()` is not compatible with objects in which `multinom()` results are stored. Therefore, we will construct a basic data frame that improves readability.
+  
+  To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values using $z$ scores:
+  
+```{r multi-nom-p-vals, out.width = "100%", fig.cap = '$p$-values for multinomial logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Calculate z-scores
+z_scores <- summary(multinom.fit)$coefficients / summary(multinom.fit)$standard.errors
+
+# Produce p-values
+p_values <- (1 - pnorm(abs(z_scores))) * 2
+
+# Transpose and display rounded p-values 
+data.frame(t(round(p_values, 3)))
+
+```
+  
+  These $p$-values indicate that those who work overtime are not significantly more likely to work in either the Research & Development or Sales departments relative to the Human Resources department. In other words, a considerable portion of employees in all three departments work overtime, so this variable is not helpful in classifying employees into their correct departments. This is evident in Figure \@ref(fig:ot-dept).
+
+```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by overtime status.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize distribution of educational fields by department
+ggplot2::ggplot(employees, aes(x = overtime, fill = dept)) +
+ggplot2::labs(x = 'Overtime', y = 'Count') +
+ggplot2::guides(fill = guide_legend(title = "Department")) +
+ggplot2::geom_bar() +
+ggplot2::theme_bw()
+
+```  
+  
+  The $p$-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \@ref(fig:ed-field-dept), which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental *purity* on the basis of `ed_field` alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
+  
+```{r ed-field-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by educational field.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize distribution of educational fields by department
+ggplot2::ggplot(employees, aes(x = ifelse(ed_field == 'Human Resources', 'HR', ed_field), fill = dept)) +
+ggplot2::labs(x = 'Education Field', y = 'Count') +
+ggplot2::guides(fill = guide_legend(title = "Department")) +
+ggplot2::geom_bar() +
+ggplot2::theme_bw()
+
+```  
+
+  As we did for binomial logistic regression, we can compute the exponential of model coefficients for the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:
+
+```{r, message = FALSE}
+
+# Return exponentiated coefficients from model object
+# Transpose rows to columns for improved readability
+data.frame(t(exp(coef(multinom.fit))))
+
+```
+
+  Consistent with our approach for binomial logistic regression, we can interpret these exponentiated coefficients in terms of having greater or lesser odds. Importantly, in the multinomial context the odds are *relative to the reference category* -- the Human Resources department in this case.
+
+  For example, the odds ratio associated with a Medical educational field is $exp(\beta) = 4.43$ for Research & Development and $exp(\beta) = 1.74$ for Sales. Therefore, those with a Medical education have $(4.43 - 1) * 100 = 343%$ greater odds of being in the Research & Development department and $(1.74 - 1) * 100 = 74%$ greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with `overtime` since this variable does not provide significant information. 
 
 ### Ordinal Logistic Regression
 
+  Many projects in people analytics involve understanding how variables influence ordinal outcomes, such as performance ratings or survey items measured on a Likert scale. Stepwise changes in the levels of ordinal outcomes may or may not be consistent. For example, it may be easy for one to be promoted from job level 1 to 2 but relatively difficult to progress from 5 to 6. Linear regression should not be used in these settings, as linear assumptions are designed for data measured on a continuous scale and will not hold for ordinal data. This section will cover **ordinal logistic regression**, which is a modeling technique designed for understanding how variables influence stepwise changes in a multi-class ordinal outcome.
 
+  Beyond the universal data screening procedures we have covered, such as ensuring problematic collinearity is not present, ordinal logistic regression features a unique **proportional odds assumption** that must be satisfied. This assumption, also known as the **parallel regression assumption**, requires that each independent variable has an equal effect at each level of the ordinal outcome. If the effect varies across levels of the outcome, separate models are needed to accurately reflect the associations with each pair of levels.
+  
+  Though other approaches exist for modeling ordinal outcomes, the proportional-odds model based on cumulative distribution probabilities is the most common. Its intercepts are dependent on the $j$ levels but slopes are equal as defined by:
+  
+  $$ log(\frac{Pr(Y \le j)} {Pr(Y > j)}) = \beta_{j0} - \displaystyle\sum_{i=1}^{n} \beta_{1i} x_{1i} + ... + \beta_{pi} x_{pi} $$
+  
+  The implementation of ordinal logistic regression will be demonstrated by evaluating the statistical drivers of engagement. First, we need to define `engagement` as an ordered factor:
+  
+```{r, message = FALSE}
 
-### Proportional Odds Logistic Regression
+# Define ordered factor
+employees$engagement <- ordered(employees$engagement, levels = c(1, 2, 3, 4, 5))
 
+# Verify structure of engagement variable
+str(employees$engagement)
 
+```
 
-## Poisson Regression
+  Next, the proportional odds assumption will be checked using the **Brant test**. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether $\beta_{j1}$ through $\beta_{jp}$ are consistent across each of the $j$ levels. This is done via a $\chi^2$ test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the $j$ levels; therefore, $p < .05$ indicates that significant differences in effects are present across the $j$ levels and, thus, the proportional odds assumption is violated.
+  
+  We can leverage the `brant` package in R for this, which is compatible with the `polr()` function from the `MASS` package that will be used to perform ordinal logistic regression. Since we will be evaluating model statistics, rather than merely using the model for prediction (the subject of Chapter \@ref(pred-mod)), we need to specify the `Hess = TRUE` argument in the `polr()` function to include the *Hessian matrix* (observed information matrix) in the output.
+  
+```{r, warning = FALSE, message = FALSE}
 
+# Load library
+library(MASS)
+library(brant)
 
+# Fit a ordinal logistic regression model
+ord.fit <- polr(engagement ~ org_tenure, data = employees, Hess = TRUE)
+
+# Test proportional odds assumption using Brant's test
+brant(ord.fit)
+
+```
+
+  Notice the line in the output for the omnibus test, which shows an identical $\chi^2$, $df$, and $p$-value to the line associated with `org_tenure`. **Omnibus tests** are statistical tests which test for the significance of several parameters in a model at once. For example, a one-way ANOVA evaluating differences in mean commute time across three locations is an omnibus test since it has more than two parameters. As we covered in Chapter \@ref(aod), the null hypothesis is rejected in the context of ANOVA if there is at least *one* difference in complex contrasts -- even if the mean commute time is not significantly different between *all* groups. Test statistics are identical for this ordinal logistic regression model because there is a single predictor, but Brant's omnibus test investigates equality of coefficients for all predictors jointly in the case of more than two parameters (Martin, 2022). The null and alternative hypotheses for Brant's omnibus test are:
+  
+  $H_0$: The odds are proportional for all predictors in the model.
+  $H_A$: The odds are non-proportional for at least one predictor.
+  
+  The results of Brant's test indicate that we fail to reject $H_0$ since $p = .82$ for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated *if* $p < .05$ for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which $p < .05$ since our tolerance for a Type I error is 1 in 20 with $\alpha = .05$.
+  
+  Since the proportional odds assumption holds, let's review the model output:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Summarize ordinal logistic regression model
+summary(ord.fit)
+
+```
+
+  The output provides the average effect of a one-unit increase in `org_tenure` (Coefficients section) as well as intercepts on each pair of levels for `engagement` (Intercepts section). The effect of a one-unit increase in `org_tenure` in moving `engagement` from one ordinal level to the next is quite small ($\beta = -.007$). The intercepts are often referred to as cutpoints and can be roughly translated as thresholds. While the intercepts for each cutpoint vary, note that the single coefficient on `org_tenure` is only possible because our proportional odds assumption holds and the effect is consistent (proportional) across levels of our ordered factor, `engagement`. 
+  
+  Consistent with the default output from the `multinom()` function used for multinomial logistic regression, $p$-values are not provided in the standard output from the `polr()` function. However, we can calculate them for reasonably large samples by comparing the $t$-values against the standard normal distribution:
+  
+```{r ord-p-vals, out.width = "100%", fig.cap = '$p$-values for ordinal logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Store coefficients to df
+coef_df <- coef(summary(ord.fit))
+
+# Produce p-values
+p <- pnorm(abs(coef_df[, "t value"]), lower.tail = FALSE) * 2
+
+# Combine p values with coefficients df
+coef_df <- cbind(coef_df, "p value" = p)
+
+# Display df contents
+coef_df
+
+```
+
+  We can now estimate the likelihood of a particular observation having a specified level of $Y$, such as $Y \le 3$, as follows:
+  
+  $$ log(\frac{Pr(Y \le 3)} {Pr(Y > 3)}) =  2.17 - .007 x_{orgtenure} $$
 
 ## Review Questions
 
+1. In what ways does polynomial regression differ from linear regression?
 
-<!--chapter:end:r/10_nonlinear_regression.Rmd-->
+2. If the coefficient on the cubic term is not statistically significant ($p$ >= .05) in a cubic regression model, but the linear and quadratic terms are statistically significant ($p$ < .05), what does this indicate about the model's fit to the data?
+
+3. Why is it helpful to calculate the exponential of log-odds in a logistic regression model?
+
+4. What does an odds ratio of 1.25 indicate in a binomial context?
+
+5. What does an odds ratio of 0.75 indicate in a multinomial context?
+
+6. How does Akaike Information Criterion (AIC) compare to $R^2$ with respect to its purpose and function?
+
+7. In what type of R object do ordinal data need to be stored in order to implement ordinal logistic regression?
+
+8. Why can't linear regression be used to understand associations of predictors with an ordinal outcome?
+
+9. What does the proportional odds (or parallel regression) assumption assume about model coefficients?
+
+10. Why is it important to evaluate Brant's omnibus test -- over the test statistics on independent predictors alone -- when determining whether the proportional odds assumption for ordinal logistic regression holds?
+
+<!--chapter:end:r/11_nonlinear_regression.Rmd-->
 
 # Predictive Models {#pred-mod}
 
@@ -5431,7 +5871,7 @@ flextable::as_flextable(ps.cube.fit)
 ## Review Questions
 
 
-<!--chapter:end:r/11_predictive_models.Rmd-->
+<!--chapter:end:r/12_predictive_models.Rmd-->
 
 # Unsupervised Learning {#unsup-lrn}
 
@@ -5446,7 +5886,7 @@ flextable::as_flextable(ps.cube.fit)
 ## Review Questions
 
 
-<!--chapter:end:r/12_unsupervised_learning.Rmd-->
+<!--chapter:end:r/13_unsupervised_learning.Rmd-->
 
 # Data Visualization {#data-viz}
 
@@ -5579,7 +6019,7 @@ ggplot2::theme(panel.background = element_blank(),
 
   
 
-<!--chapter:end:r/13_data_visualization.Rmd-->
+<!--chapter:end:r/14_data_visualization.Rmd-->
 
 # Data Storytelling {#storytelling}
 
@@ -5594,7 +6034,7 @@ ggplot2::theme(panel.background = element_blank(),
 ## Review Questions
 
 
-<!--chapter:end:r/14_data_storytelling.Rmd-->
+<!--chapter:end:r/15_data_storytelling.Rmd-->
 
 # Bibliography {#bibli}
 
@@ -5606,7 +6046,11 @@ Baron, R. M., & Kenny, D. A. (1986). The moderator–mediator variable distincti
 
 Bartlett, R. (2013). A Practitioner's Guide to Business Analytics: Using Data Analysis Tools to Improve Your Organization's Decision Making and Strategy. New York, NY: McGraw-Hill.
 
+Brant, R. (1990). Assessing Proportionality in the Proportional Odds Model for Ordinal Logistic Regression. Biometrics, 46(4), 1171–1178. https://doi.org/10.2307/2532457
+
 Chakravarti, I. M., Laha, R. G., & Roy, J. (1967). Handbook of methods of applied statistics. New York: Wiley.
+
+Cohen, J. (1988). Statistical power analysis for the behavioral sciences (2nd ed.). Hillsdale,NJ: Lawrence Erlbaum.
 
 Creswell, J. W., & Creswell, J. D. (2018). Research Design: Qualitative, Quantitative, and Mixed Methods Approaches (5th ed.). Los Angeles: Sage.
 
@@ -5620,15 +6064,23 @@ DeVellis, R. F. (2012). Scale development: Theory and applications. Thousand Oak
 
 Edmondson, A. (1999). Psychological safety and learning behavior in work teams. Administrative Science Quarterly, 44(2), 350-383.
 
+Gelman, A., & Hill, J. (2006). Analytical methods for social research: Data analysis using regression and multilevel/hierarchical models. Cambridge University Press.
+
 James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An Introduction to Statistical Learning: With Applications in R. New York: Springer.
 
 Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Giroux.
 
 Kerlinger, F., & Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
 
+Kimball, R. (1996). The Data Warehouse Toolkit. New York: Wiley.
+
 Kuhn, M., & Johnson, K. (2013). Applied predictive modeling. New York: Springer.
 
+Langkjær-Bain, R. (2017), The murky tale of Flint's deceptive water data. Significance, 14: 16-21. https://doi.org/10.1111/j.1740-9713.2017.01016.x
+
 Levene, H. (1960). Robust Tests for Equality of Variances. In: Olkin, I., Ed., Contributions to Probability and Statistics. Palo Alto: Stanford University Press. pp. 278-292.
+
+Martin, P. (2022). Regression Models for Categorical and Count Data (1st ed.). SAGE Publications. Retrieved from https://www.perlego.com/book/3277492/regression-models-for-categorical-and-count-data-pdf (Original work published 2022)
 
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 
@@ -5654,5 +6106,5 @@ Welch, B. L. (1947). The Generalization of `Student’s’ Problem when Several 
 
 Wheelan, C. (2013). Naked Statistics: Stripping the Dread from the Data. New York: W.W. Norton.
 
-<!--chapter:end:r/15_bibliography.Rmd-->
+<!--chapter:end:r/16_bibliography.Rmd-->
 
