@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-27}
+\date{2022-06-28}
 
 \begin{document}
 \maketitle
@@ -651,7 +651,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpi1d2Ro/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpmWnRWo/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1488,9 +1488,8 @@ Furthermore, we can use \texttt{ggplot} parameters and themes to adjust the aest
 
 \textbf{Structured Query Language (SQL)} is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
 
-When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.
-
-\textbf{Basics}
+\hypertarget{basics}{%
+\section{Basics}\label{basics}}
 
 There are three main \emph{clauses} in a SQL query: (a) \texttt{SELECT}, (b) \texttt{FROM}, and (c) \texttt{WHERE}. The \texttt{SELECT} and \texttt{FROM} clauses are required, though the optional \texttt{WHERE} clause is frequently needed.
 
@@ -1519,6 +1518,8 @@ Additional clauses are available for grouping and sorting data.
 \end{itemize}
 
 When implementing aggregate functions in a \texttt{SELECT} clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the \texttt{GROUP\ BY} clause.
+
+When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before paring down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.
 
 Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The \texttt{sqldf} library allows us to write SQL to query a data frame in R in lieu of a database. In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
 
@@ -1588,7 +1589,8 @@ This query returned a list of employee ids for employees in the Research \& Deve
 
 To optimize query performance, it is important to order conditions in the \texttt{WHERE} clause beginning with the condition that will exclude the largest number of records. Conditions are executed sequentially, and each subsequent condition must evaluate all records that remain following any preceding filtering. Limiting the number of records that must be searched when evaluating each condition will reduce the time it takes the query to return results. For example, if two conditions are needed and one excludes 5,000 records while the other excludes 10, the condition that excludes 5,000 records should be listed first in the \texttt{WHERE} clause.
 
-\textbf{Aggregate Functions}
+\hypertarget{aggregate-functions}{%
+\section{Aggregate Functions}\label{aggregate-functions}}
 
 Next, let's take a look at average organization tenure by job for those in the Research \& Development department:
 
@@ -1694,7 +1696,8 @@ Since relatively few employees are Vice Presidents, let's use the \texttt{HAVING
 ## 6        Research Scientist          292            5.1
 \end{verbatim}
 
-\textbf{Joins}
+\hypertarget{joins}{%
+\section{Joins}\label{joins}}
 
 In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \ref{fig:sql-joins} illustrates SQL join types using Venn diagrams:
 
@@ -1903,7 +1906,8 @@ When integrating data within R, the \texttt{tidyverse} provides a more efficient
 \end{Highlighting}
 \end{Shaded}
 
-\textbf{Subqueries}
+\hypertarget{subqueries}{%
+\section{Subqueries}\label{subqueries}}
 
 \textbf{Subqueries} are queries nested within other queries. Subqueries are often referred to as \textbf{inner queries}, while the main queries are referred to as \textbf{outer queries}.
 
@@ -1949,7 +1953,8 @@ For example, if we are interested in performing an analysis on employees with mo
 ## 6        Research Scientist          238              9.2
 \end{verbatim}
 
-\textbf{Virtual Tables}
+\hypertarget{virtual-tables}{%
+\section{Virtual Tables}\label{virtual-tables}}
 
 An alternative to a subquery is creating a \textbf{virtual table} in the \texttt{FROM} clause. When using an \texttt{INNER\ JOIN} to connect \texttt{demographics} to the virtual table \texttt{ids}, which provides a list of employee ids for those with more than a year of organization tenure, any records in \texttt{demographics} or \texttt{job} that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a \texttt{LEFT\ JOIN} is used to join \texttt{job} to \texttt{demographics} since records in \texttt{demographics} will be filtered based on \texttt{employee\_id} matches in the virtual table. With this approach, our \texttt{WHERE} clause is limited to the \texttt{department\ =\ \textquotesingle{}Research\ \&\ Development\textquotesingle{}} condition:
 
@@ -1996,7 +2001,8 @@ An alternative to a subquery is creating a \textbf{virtual table} in the \texttt
 
 As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
 
-\textbf{Window Functions}
+\hypertarget{window-functions}{%
+\section{Window Functions}\label{window-functions}}
 
 \textbf{Window functions} are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
 
@@ -4550,7 +4556,7 @@ With modern cloud environments, the significant investment associated with human
 \hypertarget{data-screening-cleaning}{%
 \section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
 
-The initial data review process is sometimes referred to as \textbf{exploratory data analysis (EDA)}. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations.
+The initial data review process is sometimes referred to as \textbf{exploratory data analysis (EDA)}. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations. An analytics ideal is \emph{unimpeachable data quality}, which is to say that the rigor of upstream processes and downstream data screening is such that stakeholders become confident enough to channel more energy towards actioning on results than questioning the quality. Suspect data quality is often surfaced during the initial EDA step and affords the opportunity to address and avoid stakeholders discounting results during later phases of the project.
 
 A handy function in base R for initial data screening is \texttt{summary()}:
 
@@ -4699,15 +4705,15 @@ While this approach should help in demonstrating the mechanics of imputing a mis
 
 The treatment of outliers is an important, though controversial, subject. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be handled.
 
-The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving erroneous sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents' claims that their tap water was to blame -- despite some extreme cases in which the tap water was colored orange.
+The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving poor sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents' claims that their tap water was to blame -- despite some extreme cases in which the tap water was colored orange.
 
 Water companies routinely add chemicals to water to prevent pipe corrosion which can cause lead to seep into drinking water. In Flint's hurry to switch water sources, they failed to address the fact that the Flint River is naturally high in chloride (which corrodes pipes) by adding corrosion-controlling chemicals. According to the Lead and Copper Rule (LCR) of 1991, lead consumption should not exceed 15 parts per billion (ppb) in more than 10\% of homes tested. If the 90th percentile value for sampled homes is greater than 15 ppb, action is required.
 
-Two initial samples of tap water were taken from a concerned resident's home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes in the resident's home. Not only did authorities fail to investigate these outliers, they failed to consider the reason for so many \emph{inliers} in other samples that had been taken in light of these observed outliers (e.g., households with water filtration systems or non-lead pipes contributing to lead levels falling beneath the action threshold in aggregate).
+Two initial samples of tap water were taken from a concerned resident's home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes \emph{in the resident's home}. Not only did authorities fail to investigate what they believed to be outliers, they failed to consider the reason for so many \emph{inliers} in other samples that had been taken in light of these observed outliers (e.g., households with water filtration systems or non-lead pipes that contributed to lead levels falling beneath the action threshold in aggregate).
 
 In the end, the tenacity of the growing number of residents with health concerns resulted in new samples being analyzed by a team of researchers at Virginia Tech University. Researchers found that the 90th percentile value among the sample of households -- which included homes with non-lead pipes and water filtration systems -- was 26.8 ppb and the highest individual sample was 158 ppb! The city switched back to the Lake Huron water source in October 2015 (18 months later), and a state of emergency was declared. The State of Michigan has brought 43 criminal charges against 13 state and local officials which include misconduct in office, tampering with evidence, willful neglect of duty, and various counts of conspiracy. Residents launched a series of class action lawsuits against the Governor as well (Langkjær-Bain, 2017).
 
-This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated! Simply discarding outliers may truly be a grave mistake. As discussed in Chapter \ref{desc-stats}, a common method of outlier detection is identifying values which fall outside the following interval:
+This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated. Simply discarding outliers may truly be a grave mistake! If outliers are attributable to measurement error, it may be appropriate to discard them. However, if outliers represent properly measured values, they should be investigated. As discussed in Chapter \ref{desc-stats}, a common method of outlier detection is identifying values which fall outside the following interval:
 
 \[I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR\]
 
@@ -9189,6 +9195,14 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{pred-mod}{%
 \chapter{Predictive Models}\label{pred-mod}}
 
+In people analytics, inferential models like those covered in Chapters \ref{lm} and \ref{lme} are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or \emph{predict} the most likely future values. This type of modeling is often referred to as \textbf{predictive analytics} and is the subject of this chapter.
+
+A branch of Artificial Intelligence (AI) known as Machine Learning (ML) is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is simply a bad idea. Despite the glamour predictive analytics has seen in recent years, and the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting.
+
+It is both a blessing and a curse that a predictive model can be built with a single line of code in R, and it is dangerous to blindly make recommendations on the basis of the output. A simpler model that you can understand and explain is generally a better option than a more complex one that you cannot. There is a high probability that stakeholders will ask deeper questions about \emph{why} a particular segment of the workforce is predicted to exit at higher rates, for example, and answering these questions requires a deeper understanding of the factors that led to them being classified as such.
+
+People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is a difficult endeavor. Spoiler alert: There is no crystal ball that will change this reality.
+
 \hypertarget{bias-variance-trade-off}{%
 \section{Bias-Variance Trade-Off}\label{bias-variance-trade-off}}
 
@@ -9198,11 +9212,49 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{balancing-classes}{%
 \section{Balancing Classes}\label{balancing-classes}}
 
+Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.
+
 \hypertarget{model-performance}{%
 \section{Model Performance}\label{model-performance}}
 
-\hypertarget{automated-machine-learning-automl}{%
-\section{Automated Machine Learning (AutoML)}\label{automated-machine-learning-automl}}
+While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Develop function for assessing model performance with two arguments: (1) actual and (2) predicted classes}
+\NormalTok{assess.prediction }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(truth, predicted)\{}
+  
+  \CommentTok{\# Check for missing values; metrics will be computed on non{-}missing values only}
+\NormalTok{  predicted }\OtherTok{\textless{}{-}}\NormalTok{ predicted[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(truth)]}
+\NormalTok{  truth }\OtherTok{\textless{}{-}}\NormalTok{ truth[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(truth)]}
+\NormalTok{  truth }\OtherTok{\textless{}{-}}\NormalTok{ truth[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(predicted)]}
+  
+  \CommentTok{\# Produce counts for model performance metrics}
+\NormalTok{  TP }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(truth }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ predicted }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\CommentTok{\# true positives}
+\NormalTok{  TN }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(truth }\SpecialCharTok{==} \DecValTok{0} \SpecialCharTok{\&}\NormalTok{ predicted }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) }\CommentTok{\# true negatives}
+\NormalTok{  FP }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(truth }\SpecialCharTok{==} \DecValTok{0} \SpecialCharTok{\&}\NormalTok{ predicted }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\CommentTok{\# false positives}
+\NormalTok{  FN }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(truth }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ predicted }\SpecialCharTok{==} \DecValTok{0}\NormalTok{) }\CommentTok{\# false negatives}
+\NormalTok{  P }\OtherTok{\textless{}{-}}\NormalTok{ TP }\SpecialCharTok{+}\NormalTok{ FN }\CommentTok{\# total positives}
+\NormalTok{  N }\OtherTok{\textless{}{-}}\NormalTok{ FP }\SpecialCharTok{+}\NormalTok{ TN }\CommentTok{\# total negatives}
+  
+  \CommentTok{\# Store rates to variables}
+\NormalTok{  accuracy }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\FunctionTok{sum}\NormalTok{(truth }\SpecialCharTok{==}\NormalTok{ predicted) }\SpecialCharTok{*} \DecValTok{100} \SpecialCharTok{/} \FunctionTok{length}\NormalTok{(truth), }\DecValTok{3}\NormalTok{)}
+\NormalTok{  sensitivity }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ TP }\SpecialCharTok{/}\NormalTok{ P, }\DecValTok{3}\NormalTok{)}
+\NormalTok{  specificity }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ TN }\SpecialCharTok{/}\NormalTok{ N, }\DecValTok{3}\NormalTok{)}
+\NormalTok{  precision }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ TP }\SpecialCharTok{/}\NormalTok{ (TP }\SpecialCharTok{+}\NormalTok{ FP), }\DecValTok{3}\NormalTok{)}
+\NormalTok{  false.discovery }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ FP}\SpecialCharTok{/}\NormalTok{ (TP }\SpecialCharTok{+}\NormalTok{ FP), }\DecValTok{3}\NormalTok{)}
+\NormalTok{  FPR }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ FP }\SpecialCharTok{/}\NormalTok{ N, }\DecValTok{3}\NormalTok{)}
+  
+  \CommentTok{\# Return results as slots in a list}
+  \FunctionTok{list}\NormalTok{(}\AttributeTok{accuracy =}\NormalTok{ accuracy, }
+       \AttributeTok{sensitivity =}\NormalTok{ sensitivity, }
+       \AttributeTok{specificity =}\NormalTok{ specificity, }
+       \AttributeTok{precision =}\NormalTok{ precision, }
+       \AttributeTok{false.discovery =}\NormalTok{ false.discovery, }
+       \AttributeTok{FPR =}\NormalTok{ FPR)}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
 
 \hypertarget{review-questions-10}{%
 \section{Review Questions}\label{review-questions-10}}
@@ -9371,6 +9423,8 @@ Langkjær-Bain, R. (2017), The murky tale of Flint's deceptive water data. Signi
 Levene, H. (1960). Robust Tests for Equality of Variances. In: Olkin, I., Ed., Contributions to Probability and Statistics. Palo Alto: Stanford University Press. pp.~278-292.
 
 Martin, P. (2022). Regression Models for Categorical and Count Data (1st ed.). SAGE Publications. Retrieved from \url{https://www.perlego.com/book/3277492/regression-models-for-categorical-and-count-data-pdf} (Original work published 2022)
+
+Mitchell, Tom (1997). Machine Learning. New York: McGraw Hill.
 
 Perneger, T. V. (1998). What's wrong with Bonferroni adjustments. BMJ, 316(7139), 1236-1238.
 

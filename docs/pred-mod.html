@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-06-27" />
+<meta name="date" content="2022-06-28" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -178,7 +178,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ul></li>
 <li class="chapter" data-level="3" data-path="sql-intro.html"><a href="sql-intro.html"><i class="fa fa-check"></i><b>3</b> Introduction to SQL</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="sql-intro.html"><a href="sql-intro.html#review-questions-1"><i class="fa fa-check"></i><b>3.1</b> Review Questions</a></li>
+<li class="chapter" data-level="3.1" data-path="sql-intro.html"><a href="sql-intro.html#basics"><i class="fa fa-check"></i><b>3.1</b> Basics</a></li>
+<li class="chapter" data-level="3.2" data-path="sql-intro.html"><a href="sql-intro.html#aggregate-functions"><i class="fa fa-check"></i><b>3.2</b> Aggregate Functions</a></li>
+<li class="chapter" data-level="3.3" data-path="sql-intro.html"><a href="sql-intro.html#joins"><i class="fa fa-check"></i><b>3.3</b> Joins</a></li>
+<li class="chapter" data-level="3.4" data-path="sql-intro.html"><a href="sql-intro.html#subqueries"><i class="fa fa-check"></i><b>3.4</b> Subqueries</a></li>
+<li class="chapter" data-level="3.5" data-path="sql-intro.html"><a href="sql-intro.html#virtual-tables"><i class="fa fa-check"></i><b>3.5</b> Virtual Tables</a></li>
+<li class="chapter" data-level="3.6" data-path="sql-intro.html"><a href="sql-intro.html#window-functions"><i class="fa fa-check"></i><b>3.6</b> Window Functions</a></li>
+<li class="chapter" data-level="3.7" data-path="sql-intro.html"><a href="sql-intro.html#review-questions-1"><i class="fa fa-check"></i><b>3.7</b> Review Questions</a></li>
 </ul></li>
 <li class="chapter" data-level="4" data-path="measure-sampl.html"><a href="measure-sampl.html"><i class="fa fa-check"></i><b>4</b> Measurement &amp; Sampling</a>
 <ul>
@@ -286,8 +292,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.2" data-path="pred-mod.html"><a href="pred-mod.html#cross-validation"><i class="fa fa-check"></i><b>12.2</b> Cross-Validation</a></li>
 <li class="chapter" data-level="12.3" data-path="pred-mod.html"><a href="pred-mod.html#balancing-classes"><i class="fa fa-check"></i><b>12.3</b> Balancing Classes</a></li>
 <li class="chapter" data-level="12.4" data-path="pred-mod.html"><a href="pred-mod.html#model-performance"><i class="fa fa-check"></i><b>12.4</b> Model Performance</a></li>
-<li class="chapter" data-level="12.5" data-path="pred-mod.html"><a href="pred-mod.html#automated-machine-learning-automl"><i class="fa fa-check"></i><b>12.5</b> Automated Machine Learning (AutoML)</a></li>
-<li class="chapter" data-level="12.6" data-path="pred-mod.html"><a href="pred-mod.html#review-questions-10"><i class="fa fa-check"></i><b>12.6</b> Review Questions</a></li>
+<li class="chapter" data-level="12.5" data-path="pred-mod.html"><a href="pred-mod.html#review-questions-10"><i class="fa fa-check"></i><b>12.5</b> Review Questions</a></li>
 </ul></li>
 <li class="chapter" data-level="13" data-path="unsup-lrn.html"><a href="unsup-lrn.html"><i class="fa fa-check"></i><b>13</b> Unsupervised Learning</a>
 <ul>
@@ -343,6 +348,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="pred-mod" class="section level1" number="12">
 <h1><span class="header-section-number">12</span> Predictive Models</h1>
+<p>In people analytics, inferential models like those covered in Chapters <a href="lm.html#lm">10</a> and <a href="lme.html#lme">11</a> are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or <em>predict</em> the most likely future values. This type of modeling is often referred to as <strong>predictive analytics</strong> and is the subject of this chapter.</p>
+<p>A branch of Artificial Intelligence (AI) known as Machine Learning (ML) is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is simply a bad idea. Despite the glamour predictive analytics has seen in recent years, and the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting.</p>
+<p>It is both a blessing and a curse that a predictive model can be built with a single line of code in R, and it is dangerous to blindly make recommendations on the basis of the output. A simpler model that you can understand and explain is generally a better option than a more complex one that you cannot. There is a high probability that stakeholders will ask deeper questions about <em>why</em> a particular segment of the workforce is predicted to exit at higher rates, for example, and answering these questions requires a deeper understanding of the factors that led to them being classified as such.</p>
+<p>People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is a difficult endeavor. Spoiler alert: There is no crystal ball that will change this reality.</p>
 <div id="bias-variance-trade-off" class="section level2" number="12.1">
 <h2><span class="header-section-number">12.1</span> Bias-Variance Trade-Off</h2>
 </div>
@@ -351,15 +360,46 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div id="balancing-classes" class="section level2" number="12.3">
 <h2><span class="header-section-number">12.3</span> Balancing Classes</h2>
+<p>Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class’s representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.</p>
 </div>
 <div id="model-performance" class="section level2" number="12.4">
 <h2><span class="header-section-number">12.4</span> Model Performance</h2>
+<p>While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents.</p>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="pred-mod.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function for assessing model performance with two arguments: (1) actual and (2) predicted classes</span></span>
+<span id="cb381-2"><a href="pred-mod.html#cb381-2" aria-hidden="true" tabindex="-1"></a>assess.prediction <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, predicted){</span>
+<span id="cb381-3"><a href="pred-mod.html#cb381-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb381-4"><a href="pred-mod.html#cb381-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check for missing values; metrics will be computed on non-missing values only</span></span>
+<span id="cb381-5"><a href="pred-mod.html#cb381-5" aria-hidden="true" tabindex="-1"></a>  predicted <span class="ot">&lt;-</span> predicted[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
+<span id="cb381-6"><a href="pred-mod.html#cb381-6" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
+<span id="cb381-7"><a href="pred-mod.html#cb381-7" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(predicted)]</span>
+<span id="cb381-8"><a href="pred-mod.html#cb381-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb381-9"><a href="pred-mod.html#cb381-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Produce counts for model performance metrics</span></span>
+<span id="cb381-10"><a href="pred-mod.html#cb381-10" aria-hidden="true" tabindex="-1"></a>  TP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># true positives</span></span>
+<span id="cb381-11"><a href="pred-mod.html#cb381-11" aria-hidden="true" tabindex="-1"></a>  TN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># true negatives</span></span>
+<span id="cb381-12"><a href="pred-mod.html#cb381-12" aria-hidden="true" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># false positives</span></span>
+<span id="cb381-13"><a href="pred-mod.html#cb381-13" aria-hidden="true" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># false negatives</span></span>
+<span id="cb381-14"><a href="pred-mod.html#cb381-14" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">&lt;-</span> TP <span class="sc">+</span> FN <span class="co"># total positives</span></span>
+<span id="cb381-15"><a href="pred-mod.html#cb381-15" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> FP <span class="sc">+</span> TN <span class="co"># total negatives</span></span>
+<span id="cb381-16"><a href="pred-mod.html#cb381-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb381-17"><a href="pred-mod.html#cb381-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Store rates to variables</span></span>
+<span id="cb381-18"><a href="pred-mod.html#cb381-18" aria-hidden="true" tabindex="-1"></a>  accuracy <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="fu">sum</span>(truth <span class="sc">==</span> predicted) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">length</span>(truth), <span class="dv">3</span>)</span>
+<span id="cb381-19"><a href="pred-mod.html#cb381-19" aria-hidden="true" tabindex="-1"></a>  sensitivity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> P, <span class="dv">3</span>)</span>
+<span id="cb381-20"><a href="pred-mod.html#cb381-20" aria-hidden="true" tabindex="-1"></a>  specificity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TN <span class="sc">/</span> N, <span class="dv">3</span>)</span>
+<span id="cb381-21"><a href="pred-mod.html#cb381-21" aria-hidden="true" tabindex="-1"></a>  precision <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
+<span id="cb381-22"><a href="pred-mod.html#cb381-22" aria-hidden="true" tabindex="-1"></a>  false.discovery <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP<span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
+<span id="cb381-23"><a href="pred-mod.html#cb381-23" aria-hidden="true" tabindex="-1"></a>  FPR <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> N, <span class="dv">3</span>)</span>
+<span id="cb381-24"><a href="pred-mod.html#cb381-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb381-25"><a href="pred-mod.html#cb381-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return results as slots in a list</span></span>
+<span id="cb381-26"><a href="pred-mod.html#cb381-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">accuracy =</span> accuracy, </span>
+<span id="cb381-27"><a href="pred-mod.html#cb381-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">sensitivity =</span> sensitivity, </span>
+<span id="cb381-28"><a href="pred-mod.html#cb381-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">specificity =</span> specificity, </span>
+<span id="cb381-29"><a href="pred-mod.html#cb381-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">precision =</span> precision, </span>
+<span id="cb381-30"><a href="pred-mod.html#cb381-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">false.discovery =</span> false.discovery, </span>
+<span id="cb381-31"><a href="pred-mod.html#cb381-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">FPR =</span> FPR)</span>
+<span id="cb381-32"><a href="pred-mod.html#cb381-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
-<div id="automated-machine-learning-automl" class="section level2" number="12.5">
-<h2><span class="header-section-number">12.5</span> Automated Machine Learning (AutoML)</h2>
-</div>
-<div id="review-questions-10" class="section level2" number="12.6">
-<h2><span class="header-section-number">12.6</span> Review Questions</h2>
+<div id="review-questions-10" class="section level2" number="12.5">
+<h2><span class="header-section-number">12.5</span> Review Questions</h2>
 
 </div>
 </div>

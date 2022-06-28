@@ -2,9 +2,7 @@
 
   **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
   
-  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before filtering down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
-  
-  **Basics**
+## Basics
   
   There are three main *clauses* in a SQL query: (a) `SELECT`, (b) `FROM`, and (c) `WHERE`. The `SELECT` and `FROM` clauses are required, though the optional `WHERE` clause is frequently needed.
   
@@ -22,6 +20,8 @@
   
   When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
   
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before paring down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+    
   Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The `sqldf` library allows us to write SQL to query a data frame in R in lieu of a database. In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
   
   First, let's load the data sets:
@@ -72,7 +72,7 @@ sqldf::sqldf(sql_string)
   
   To optimize query performance, it is important to order conditions in the `WHERE` clause beginning with the condition that will exclude the largest number of records. Conditions are executed sequentially, and each subsequent condition must evaluate all records that remain following any preceding filtering. Limiting the number of records that must be searched when evaluating each condition will reduce the time it takes the query to return results. For example, if two conditions are needed and one excludes 5,000 records while the other excludes 10, the condition that excludes 5,000 records should be listed first in the `WHERE` clause.
   
-  **Aggregate Functions**
+## Aggregate Functions
   
   Next, let's take a look at average organization tenure by job for those in the Research & Development department:
   
@@ -146,7 +146,7 @@ sqldf::sqldf(sql_string)
 
 ```
 
-  **Joins**
+## Joins
   
   In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
 
@@ -332,7 +332,7 @@ employees <- list(demographics,
                   
 ```
 
-  **Subqueries**
+## Subqueries
   
   **Subqueries** are queries nested within other queries. Subqueries are often referred to as **inner queries**, while the main queries are referred to as **outer queries**.
   
@@ -368,7 +368,7 @@ sqldf::sqldf(sql_string)
 
 ```
 
-  **Virtual Tables**
+## Virtual Tables
   
   An alternative to a subquery is creating a **virtual table** in the `FROM` clause. When using an `INNER JOIN` to connect `demographics` to the virtual table `ids`, which provides a list of employee ids for those with more than a year of organization tenure, any records in `demographics` or `job` that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a `LEFT JOIN` is used to join `job` to `demographics` since records in `demographics` will be filtered based on `employee_id` matches in the virtual table. With this approach, our `WHERE` clause is limited to the `department = 'Research & Development'` condition:
 
@@ -405,7 +405,7 @@ sqldf::sqldf(sql_string)
 
   As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.
 
-  **Window Functions**
+## Window Functions
   
   **Window functions** are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we've covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.
   

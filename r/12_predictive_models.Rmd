@@ -1,6 +1,12 @@
 # Predictive Models {#pred-mod}
 
-
+  In people analytics, inferential models like those covered in Chapters \@ref(lm) and \@ref(lme) are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or *predict* the most likely future values. This type of modeling is often referred to as **predictive analytics** and is the subject of this chapter.
+  
+  A branch of Artificial Intelligence (AI) known as Machine Learning (ML) is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is simply a bad idea. Despite the glamour predictive analytics has seen in recent years, and the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting.
+  
+  It is both a blessing and a curse that a predictive model can be built with a single line of code in R, and it is dangerous to blindly make recommendations on the basis of the output. A simpler model that you can understand and explain is generally a better option than a more complex one that you cannot. There is a high probability that stakeholders will ask deeper questions about *why* a particular segment of the workforce is predicted to exit at higher rates, for example, and answering these questions requires a deeper understanding of the factors that led to them being classified as such.
+  
+  People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is a difficult endeavor. Spoiler alert: There is no crystal ball that will change this reality.
 
 ## Bias-Variance Trade-Off
 
@@ -12,13 +18,48 @@
 
 ## Balancing Classes
 
-
+  Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.
 
 ## Model Performance
 
+  While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents. 
 
+```{r, message = FALSE, warning = FALSE}
 
-## Automated Machine Learning (AutoML)
+# Develop function for assessing model performance with two arguments: (1) actual and (2) predicted classes
+assess.prediction <- function(truth, predicted){
+  
+  # Check for missing values; metrics will be computed on non-missing values only
+  predicted <- predicted[!is.na(truth)]
+  truth <- truth[!is.na(truth)]
+  truth <- truth[!is.na(predicted)]
+  
+  # Produce counts for model performance metrics
+  TP <- sum(truth == 1 & predicted == 1) # true positives
+  TN <- sum(truth == 0 & predicted == 0) # true negatives
+  FP <- sum(truth == 0 & predicted == 1) # false positives
+  FN <- sum(truth == 1 & predicted == 0) # false negatives
+  P <- TP + FN # total positives
+  N <- FP + TN # total negatives
+  
+  # Store rates to variables
+  accuracy <- signif(sum(truth == predicted) * 100 / length(truth), 3)
+  sensitivity <- signif(100 * TP / P, 3)
+  specificity <- signif(100 * TN / N, 3)
+  precision <- signif(100 * TP / (TP + FP), 3)
+  false.discovery <- signif(100 * FP/ (TP + FP), 3)
+  FPR <- signif(100 * FP / N, 3)
+  
+  # Return results as slots in a list
+  list(accuracy = accuracy, 
+       sensitivity = sensitivity, 
+       specificity = specificity, 
+       precision = precision, 
+       false.discovery = false.discovery, 
+       FPR = FPR)
+}
+
+```
 
 
 ## Review Questions
