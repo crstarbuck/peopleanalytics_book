@@ -6,13 +6,63 @@
   
   It is both a blessing and a curse that a predictive model can be built with a single line of code in R, and it is dangerous to blindly make recommendations on the basis of the output. A simpler model that you can understand and explain is generally a better option than a more complex one that you cannot. There is a high probability that stakeholders will ask deeper questions about *why* a particular segment of the workforce is predicted to exit at higher rates, for example, and answering these questions requires a deeper understanding of the factors that led to them being classified as such.
   
-  People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is a difficult endeavor. Spoiler alert: There is no crystal ball that will soften this reality.
+  People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is an inherently difficult endeavor. Spoiler alert: There is no crystal ball that will soften this reality.
+
+## Cross-Validation
+
+  Predictive modeling involves training a model on a data set referred to as a **training set** and using the model to make predictions for observations in a separate data set known as the **test set** or **validation set**. Since the model is blind to data in the test set, since only data in the training set are used to *train* the model, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. This procedure is known as **cross-validation**. While there are many methods of partitioning data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.
+  
+  Let's explore a few of the most common cross-validation methods.
+  
+  **Validation Set Approach**
+  
+  The **validation set approach** is the most basic form of cross-validation. This approach involves defining proportions by which to partition data into training and test sets -- usually 2/3 and 1/3, respectively. The model is trained on the training set and then differences between actual $y$ and predicted $\hat y$ values are calculated on the test set to evaluate model performance.
+  
+  **Leave-One-Out**
+  
+  **Leave-one out** cross-validation fits a model using $n-1$ observations $n$ times. The test error is then evaluated by calculating differences between actual $y$ and predicted $\hat y$ values for all omitted observations.
+  
+  **$k$-Fold**
+  
+  **$k$-fold** cross-validation randomly partitions observations into $k$ groups, or *folds*, that are approximately equal in size. The first fold is treated as the test set, and the model is trained on the remaining $k-1$ folds. This procedure is repeated $k$ times, each with a different set of observations (*fold*) as the test set. The test error is then evaluated by calculating differences between actual $y$ and predicted $\hat y$ values across all test sets.
+  
+## Model Performance
+
+  There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predicting modeling applications will be categorized as either *classification* or *forecasting* to reflect the families of use cases germane to people analytics.
+  
+  **Classification**
+  
+  In a classification setting, predictions are either right or wrong. Therefore, calculating the error rate across test data is straightforward:
+  
+  $$ \frac{1}{n} \displaystyle\sum_{i=1}^{n} I(y_i \ne \hat y_i), $$
+  
+  where $I$ is an indicator variable equal to $1$ if $y_i \ne \hat y_i$ and $0$ if $y_i = \hat y_i$.
+  
+  **Forecasting**
+  
+  * Mean absolute deviation (MAD): 
+  
+  $$ \frac{\sum|y_i - \hat y_i|}{n} $$
+
+  * Mean square error (MSE): 
+  
+  $$ \frac{\sum(y_i - \hat y_i)^2}{n} $$
+  
+  * Mean absolute percentage error (MAPE): 
+  
+  $$ (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| $$
+  
 
 ## Bias-Variance Trade-Off
 
 
+  As shown in Figure \@ref(fig:bias-var-tradeoff), 
 
-## Cross-Validation
+```{r bias-var-tradeoff, out.width = "75%", echo = FALSE, fig.cap = 'Bias-Variance Tradeoff', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/bias_variance_tradeoff.png")
+
+```
 
 
 
@@ -20,7 +70,9 @@
 
   Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.
 
-## Model Performance
+## Predictive Modeling
+
+
 
   While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents. 
 
