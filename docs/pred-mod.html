@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-06-29" />
+<meta name="date" content="2022-06-30" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -291,7 +291,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <ul>
 <li class="chapter" data-level="12.1" data-path="pred-mod.html"><a href="pred-mod.html#cross-validation"><i class="fa fa-check"></i><b>12.1</b> Cross-Validation</a></li>
 <li class="chapter" data-level="12.2" data-path="pred-mod.html"><a href="pred-mod.html#model-performance"><i class="fa fa-check"></i><b>12.2</b> Model Performance</a></li>
-<li class="chapter" data-level="12.3" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-trade-off"><i class="fa fa-check"></i><b>12.3</b> Bias-Variance Trade-Off</a></li>
+<li class="chapter" data-level="12.3" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-tradeoff"><i class="fa fa-check"></i><b>12.3</b> Bias-Variance Tradeoff</a></li>
 <li class="chapter" data-level="12.4" data-path="pred-mod.html"><a href="pred-mod.html#balancing-classes"><i class="fa fa-check"></i><b>12.4</b> Balancing Classes</a></li>
 <li class="chapter" data-level="12.5" data-path="pred-mod.html"><a href="pred-mod.html#predictive-modeling"><i class="fa fa-check"></i><b>12.5</b> Predictive Modeling</a></li>
 <li class="chapter" data-level="12.6" data-path="pred-mod.html"><a href="pred-mod.html#review-questions-10"><i class="fa fa-check"></i><b>12.6</b> Review Questions</a></li>
@@ -356,43 +356,68 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is an inherently difficult endeavor. Spoiler alert: There is no crystal ball that will soften this reality.</p>
 <div id="cross-validation" class="section level2" number="12.1">
 <h2><span class="header-section-number">12.1</span> Cross-Validation</h2>
-<p>Predictive modeling involves training a model on a data set referred to as a <strong>training set</strong> and using the model to make predictions for observations in a separate data set known as the <strong>test set</strong> or <strong>validation set</strong>. Since the model is blind to data in the test set, since only data in the training set are used to <em>train</em> the model, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. This procedure is known as <strong>cross-validation</strong>. While there are many methods of partitioning data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.</p>
-<p>Let’s explore a few of the most common cross-validation methods.</p>
+<p>Predictive modeling involves training a model on a data set referred to as a <strong>training set</strong> and using the model to make predictions for observations in a separate data set known as the <strong>test set</strong> or <strong>validation set</strong>. Since the model is blind to data in the test set, since only data in the training set are used to <em>train</em> the model, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. This procedure is known as <strong>cross-validation (CV)</strong>. While there are many methods of partitioning data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.</p>
+<p>Let’s explore a few of the most common CV methods.</p>
 <p><strong>Validation Set Approach</strong></p>
-<p>The <strong>validation set approach</strong> is the most basic form of cross-validation. This approach involves defining proportions by which to partition data into training and test sets – usually 2/3 and 1/3, respectively. The model is trained on the training set and then differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values are calculated on the test set to evaluate model performance.</p>
+<p>The <strong>validation set approach</strong> is the most basic form of CV. This approach involves defining proportions by which to partition data into training and test sets – usually 2/3 and 1/3, respectively. The model is trained on the training set and then differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values are calculated on the test set to evaluate model performance.</p>
 <p><strong>Leave-One-Out</strong></p>
-<p><strong>Leave-one out</strong> cross-validation fits a model using <span class="math inline">\(n-1\)</span> observations <span class="math inline">\(n\)</span> times. The test error is then evaluated by calculating differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values for all omitted observations.</p>
-<p><strong><span class="math inline">\(k\)</span>-Fold</strong></p>
-<p><strong><span class="math inline">\(k\)</span>-fold</strong> cross-validation randomly partitions observations into <span class="math inline">\(k\)</span> groups, or <em>folds</em>, that are approximately equal in size. The first fold is treated as the test set, and the model is trained on the remaining <span class="math inline">\(k-1\)</span> folds. This procedure is repeated <span class="math inline">\(k\)</span> times, each with a different set of observations (<em>fold</em>) as the test set. The test error is then evaluated by calculating differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values across all test sets.</p>
+<p><strong>Leave-one out</strong> CV fits a model using <span class="math inline">\(n-1\)</span> observations <span class="math inline">\(n\)</span> times. The test error is then evaluated by calculating differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values for all omitted observations.</p>
+<p><span class="math inline">\(\textbf k\)</span><strong>-Fold</strong></p>
+<p><span class="math inline">\(\textbf k\)</span><strong>-fold</strong> CV randomly partitions observations into <span class="math inline">\(k\)</span> groups, or <em>folds</em>, that are approximately equal in size. The first fold is treated as the test set, and the model is trained on the remaining <span class="math inline">\(k-1\)</span> folds. This procedure is repeated <span class="math inline">\(k\)</span> times, each with a different set of observations (<em>fold</em>) as the test set. The test error is then evaluated by calculating differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values across all test sets.</p>
 </div>
 <div id="model-performance" class="section level2" number="12.2">
 <h2><span class="header-section-number">12.2</span> Model Performance</h2>
 <p>There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predicting modeling applications will be categorized as either <em>classification</em> or <em>forecasting</em> to reflect the families of use cases germane to people analytics.</p>
 <p><strong>Classification</strong></p>
-<p>In a classification setting, predictions are either right or wrong. Therefore, calculating the error rate across test data is straightforward:</p>
+<p>In a classification setting, predictions are either right or wrong. Therefore, calculating the overall error rate across test data is straightforward:</p>
 <p><span class="math display">\[ \frac{1}{n} \displaystyle\sum_{i=1}^{n} I(y_i \ne \hat y_i), \]</span></p>
 <p>where <span class="math inline">\(I\)</span> is an indicator variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(y_i \ne \hat y_i\)</span> and <span class="math inline">\(0\)</span> if <span class="math inline">\(y_i = \hat y_i\)</span>.</p>
-<p><strong>Forecasting</strong></p>
+<p>A <strong>confusion matrix</strong> is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure <a href="#fig:confusion-matrix"><strong>??</strong></a>:</p>
 <ul>
-<li>Mean absolute deviation (MAD):</li>
+<li><strong>True Positive</strong>: Number of correct true predictions</li>
+<li><strong>True Negative</strong>: Number of correct false predictions</li>
+<li><strong>False Positive</strong>: Number of incorrect true predictions (type 1 error)</li>
+<li><strong>False Negative</strong>: Number of incorrect false predictions (type 2 error)</li>
+<li><strong>Accuracy</strong>: Rate of correct predictions overall</li>
+<li><strong>Sensitivity</strong>: Rate of actual true cases predicted correctly (also known as <strong>Recall</strong>)</li>
+<li><strong>Specificity</strong>: Rate of actual false cases predicted correctly</li>
+<li><strong>Precision</strong>: Rate of predicted true cases predicted correctly</li>
+<li><strong>Negative Predictive Value</strong>: Rate of predicted false cases predicted correctly</li>
+</ul>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:confusion-mtx"></span>
+<img src="graphics/confusion_matrix.png" alt="Confusion Matrix" width="75%" />
+<p class="caption">
+Figure 12.1: Confusion Matrix
+</p>
+</div>
+<p><strong>Forecasting</strong></p>
+<p>While predictions are either right or wrong in a classification context, evaluating model performance in a forecasting context involves assessing the <em>magnitude</em> of differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values – usually across time periods. There are many methods for assessing forecasting model performance, and we will focus on some of the most common.</p>
+<ul>
+<li>Mean absolute deviation (MAD): Average absolute difference between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values</li>
 </ul>
 <p><span class="math display">\[ \frac{\sum|y_i - \hat y_i|}{n} \]</span></p>
 <ul>
-<li>Mean square error (MSE):</li>
+<li>Mean square error (MSE): Average squared difference between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values</li>
 </ul>
 <p><span class="math display">\[ \frac{\sum(y_i - \hat y_i)^2}{n} \]</span></p>
+<p>Squaring differences accomplishes two key objectives: (1) converts negative differences to positive consistent with the MAD approach, and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., <span class="math inline">\(1^2 = 1\)</span>, <span class="math inline">\(2^2 = 4\)</span>, <span class="math inline">\(3^2 = 9\)</span>, <span class="math inline">\(4^2 = 16\)</span>). MSE is perhaps the most pervasive model performance measure in predictive modeling.</p>
 <ul>
-<li>Mean absolute percentage error (MAPE):</li>
+<li>Mean absolute percentage error (MAPE): Average absolute difference expressed as a percentage</li>
 </ul>
 <p><span class="math display">\[ (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| \]</span></p>
 </div>
-<div id="bias-variance-trade-off" class="section level2" number="12.3">
-<h2><span class="header-section-number">12.3</span> Bias-Variance Trade-Off</h2>
-<p>As shown in Figure <a href="pred-mod.html#fig:bias-var-tradeoff">12.1</a>,</p>
+<div id="bias-variance-tradeoff" class="section level2" number="12.3">
+<h2><span class="header-section-number">12.3</span> Bias-Variance Tradeoff</h2>
+<p><strong>Bias-variance tradeoff</strong> refers to the important endeavor of minimizing two sources of error that prevent models from generalizing beyond their training data: <em>bias</em> and <em>variance</em>.</p>
+<ul>
+<li><strong>Bias</strong>: Error from erroneous assumptions in the model. High bias results from models that are too simplistic to accurately capture the relationships between predictors and the outcome; this is known as <strong>underfitting</strong>.</li>
+<li><strong>Variance</strong>: Error from sensitivity to small fluctuations in training data. High variance results from models that capture random noise rather than the significant patterns in the training data; this is known as <strong>overfitting</strong>.</li>
+</ul>
+<p>As a general rule, the more flexible the model, the more variance and less bias. As shown in Figure <a href="pred-mod.html#fig:bias-var-tradeoff">12.2</a>, minimizing test error by achieving a model with optimal fit to the data requires limiting both bias and variance.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:bias-var-tradeoff"></span>
 <img src="graphics/bias_variance_tradeoff.png" alt="Bias-Variance Tradeoff" width="75%" />
 <p class="caption">
-Figure 12.1: Bias-Variance Tradeoff
+Figure 12.2: Bias-Variance Tradeoff
 </p>
 </div>
 </div>
@@ -403,8 +428,8 @@ Figure 12.1: Bias-Variance Tradeoff
 <div id="predictive-modeling" class="section level2" number="12.5">
 <h2><span class="header-section-number">12.5</span> Predictive Modeling</h2>
 <p>While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents.</p>
-<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="pred-mod.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function for assessing model performance with two arguments: (1) actual and (2) predicted classes</span></span>
-<span id="cb381-2"><a href="pred-mod.html#cb381-2" aria-hidden="true" tabindex="-1"></a>assess.prediction <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, predicted){</span>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="pred-mod.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function for assessing classification model performance</span></span>
+<span id="cb381-2"><a href="pred-mod.html#cb381-2" aria-hidden="true" tabindex="-1"></a>classifer.perf <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, predicted){</span>
 <span id="cb381-3"><a href="pred-mod.html#cb381-3" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb381-4"><a href="pred-mod.html#cb381-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check for missing values; metrics will be computed on non-missing values only</span></span>
 <span id="cb381-5"><a href="pred-mod.html#cb381-5" aria-hidden="true" tabindex="-1"></a>  predicted <span class="ot">&lt;-</span> predicted[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
@@ -424,7 +449,7 @@ Figure 12.1: Bias-Variance Tradeoff
 <span id="cb381-19"><a href="pred-mod.html#cb381-19" aria-hidden="true" tabindex="-1"></a>  sensitivity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> P, <span class="dv">3</span>)</span>
 <span id="cb381-20"><a href="pred-mod.html#cb381-20" aria-hidden="true" tabindex="-1"></a>  specificity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TN <span class="sc">/</span> N, <span class="dv">3</span>)</span>
 <span id="cb381-21"><a href="pred-mod.html#cb381-21" aria-hidden="true" tabindex="-1"></a>  precision <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
-<span id="cb381-22"><a href="pred-mod.html#cb381-22" aria-hidden="true" tabindex="-1"></a>  false.discovery <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP<span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
+<span id="cb381-22"><a href="pred-mod.html#cb381-22" aria-hidden="true" tabindex="-1"></a>  false.discovery <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
 <span id="cb381-23"><a href="pred-mod.html#cb381-23" aria-hidden="true" tabindex="-1"></a>  FPR <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> N, <span class="dv">3</span>)</span>
 <span id="cb381-24"><a href="pred-mod.html#cb381-24" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb381-25"><a href="pred-mod.html#cb381-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return results as slots in a list</span></span>
