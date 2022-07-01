@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-06-30" />
+<meta name="date" content="2022-07-01" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -292,7 +292,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.1" data-path="pred-mod.html"><a href="pred-mod.html#cross-validation"><i class="fa fa-check"></i><b>12.1</b> Cross-Validation</a></li>
 <li class="chapter" data-level="12.2" data-path="pred-mod.html"><a href="pred-mod.html#model-performance"><i class="fa fa-check"></i><b>12.2</b> Model Performance</a></li>
 <li class="chapter" data-level="12.3" data-path="pred-mod.html"><a href="pred-mod.html#bias-variance-tradeoff"><i class="fa fa-check"></i><b>12.3</b> Bias-Variance Tradeoff</a></li>
-<li class="chapter" data-level="12.4" data-path="pred-mod.html"><a href="pred-mod.html#balancing-classes"><i class="fa fa-check"></i><b>12.4</b> Balancing Classes</a></li>
+<li class="chapter" data-level="12.4" data-path="pred-mod.html"><a href="pred-mod.html#tree-based-algorithms"><i class="fa fa-check"></i><b>12.4</b> Tree-Based Algorithms</a></li>
 <li class="chapter" data-level="12.5" data-path="pred-mod.html"><a href="pred-mod.html#predictive-modeling"><i class="fa fa-check"></i><b>12.5</b> Predictive Modeling</a></li>
 <li class="chapter" data-level="12.6" data-path="pred-mod.html"><a href="pred-mod.html#review-questions-10"><i class="fa fa-check"></i><b>12.6</b> Review Questions</a></li>
 </ul></li>
@@ -372,7 +372,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>In a classification setting, predictions are either right or wrong. Therefore, calculating the overall error rate across test data is straightforward:</p>
 <p><span class="math display">\[ \frac{1}{n} \displaystyle\sum_{i=1}^{n} I(y_i \ne \hat y_i), \]</span></p>
 <p>where <span class="math inline">\(I\)</span> is an indicator variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(y_i \ne \hat y_i\)</span> and <span class="math inline">\(0\)</span> if <span class="math inline">\(y_i = \hat y_i\)</span>.</p>
-<p>A <strong>confusion matrix</strong> is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure <a href="#fig:confusion-matrix"><strong>??</strong></a>:</p>
+<p>A <strong>confusion matrix</strong> is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure <a href="pred-mod.html#fig:confusion-mtx">12.1</a>:</p>
 <ul>
 <li><strong>True Positive</strong>: Number of correct true predictions</li>
 <li><strong>True Negative</strong>: Number of correct false predictions</li>
@@ -381,11 +381,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><strong>Accuracy</strong>: Rate of correct predictions overall</li>
 <li><strong>Sensitivity</strong>: Rate of actual true cases predicted correctly (also known as <strong>Recall</strong>)</li>
 <li><strong>Specificity</strong>: Rate of actual false cases predicted correctly</li>
-<li><strong>Precision</strong>: Rate of predicted true cases predicted correctly</li>
-<li><strong>Negative Predictive Value</strong>: Rate of predicted false cases predicted correctly</li>
+<li><strong>Precision</strong>: Rate of correct predictions among all cases predicted true</li>
+<li><strong>Negative Predictive Value</strong>: Rate of correct predictions among all cases predicted false</li>
 </ul>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:confusion-mtx"></span>
-<img src="graphics/confusion_matrix.png" alt="Confusion Matrix" width="75%" />
+<img src="graphics/confusion_matrix.png" alt="Confusion Matrix" width="100%" />
 <p class="caption">
 Figure 12.1: Confusion Matrix
 </p>
@@ -415,51 +415,99 @@ Figure 12.1: Confusion Matrix
 </ul>
 <p>As a general rule, the more flexible the model, the more variance and less bias. As shown in Figure <a href="pred-mod.html#fig:bias-var-tradeoff">12.2</a>, minimizing test error by achieving a model with optimal fit to the data requires limiting both bias and variance.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:bias-var-tradeoff"></span>
-<img src="graphics/bias_variance_tradeoff.png" alt="Bias-Variance Tradeoff" width="75%" />
+<img src="graphics/bias_variance_tradeoff.png" alt="Bias-variance tradeoff. Dashed line represents optimal model performance." width="75%" />
 <p class="caption">
-Figure 12.2: Bias-Variance Tradeoff
+Figure 12.2: Bias-variance tradeoff. Dashed line represents optimal model performance.
 </p>
 </div>
 </div>
-<div id="balancing-classes" class="section level2" number="12.4">
-<h2><span class="header-section-number">12.4</span> Balancing Classes</h2>
-<p>Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class’s representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.</p>
+<div id="tree-based-algorithms" class="section level2" number="12.4">
+<h2><span class="header-section-number">12.4</span> Tree-Based Algorithms</h2>
+<p>While there are many flexible ML algorithms, such as <strong>Extreme Gradient Boosting (XGBoost)</strong> and <strong>Support Vector Machines (SVM)</strong>, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more interpretable tree-based algorithms that are more suitable for people analytics.</p>
+<p><strong>Decision Trees</strong></p>
+<p>In addition to the inferential models covered in previous chapters, <strong>decision trees</strong> are also excellent tools that lend to simple and effective narratives about factors influencing outcomes in either a regression or classification setting. As illustrated in Figure <a href="pred-mod.html#fig:decision-tree">12.3</a>, decision trees resemble a tree that depicts a set of decisions as well as consequences of those decisions. The top-level <code>Department</code> variable is known as a root node, and the remaining <code>Tenure</code>, <code>Performance Rating</code>, and <code>Remote</code> nodes are known as interior nodes. Decisions represented in <code>Active</code> and <code>Inactive</code> boxes are referred to as leaf, terminal, or end nodes.</p>
+<p>As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It’s important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node – though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the <span class="math inline">\(n\)</span>-count is small).</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:decision-tree"></span>
+<img src="graphics/decision_tree.png" alt="Decision tree for employee attrition prediction." width="75%" />
+<p class="caption">
+Figure 12.3: Decision tree for employee attrition prediction.
+</p>
+</div>
+<p>The accuracy of predictions based on a deep tree with an excessive number of partitions and few observations will likely be unacceptable beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement on random guessing (e.g., 50/50 chance in a binary classification setting).</p>
+<p><strong>Random Forests</strong></p>
+<p>A <strong>random forest</strong> is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. This is a case of <em>wisdom of the crowd</em> decision-making in which a large number of uncorrelated trees (models) functioning as a committee will outperform individual trees.</p>
+<p>To understand the mechanics of a random forest, consider an investment strategy in which you diversify an investment portfolio by spreading investments across different assets. By investing in assets that are uncorrelated, there is a lower likelihood that the portfolio’s value will be negatively impacted by a negative event impacting a single holding. In the same way, a random forest constructs an ensemble of trees that are each based on different randomized subsets of data and combinations of features to amalgamate the information and arrive at more accurate predictions. The potential for poor performance from a single tree is mitigated by the many trees working in concert with one another.</p>
+<p>Though random forests combine information from many decision trees, there are still intuitive ways of understanding which features are most important in segmenting employees to understand drivers of various outcomes.</p>
 </div>
 <div id="predictive-modeling" class="section level2" number="12.5">
 <h2><span class="header-section-number">12.5</span> Predictive Modeling</h2>
-<p>While there are packages in R which provide accuracy metrics for predictive models, we will create a function to better understand what each metric represents.</p>
-<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="pred-mod.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function for assessing classification model performance</span></span>
-<span id="cb381-2"><a href="pred-mod.html#cb381-2" aria-hidden="true" tabindex="-1"></a>classifer.perf <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, predicted){</span>
-<span id="cb381-3"><a href="pred-mod.html#cb381-3" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb381-4"><a href="pred-mod.html#cb381-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check for missing values; metrics will be computed on non-missing values only</span></span>
-<span id="cb381-5"><a href="pred-mod.html#cb381-5" aria-hidden="true" tabindex="-1"></a>  predicted <span class="ot">&lt;-</span> predicted[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
-<span id="cb381-6"><a href="pred-mod.html#cb381-6" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
-<span id="cb381-7"><a href="pred-mod.html#cb381-7" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(predicted)]</span>
-<span id="cb381-8"><a href="pred-mod.html#cb381-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb381-9"><a href="pred-mod.html#cb381-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Produce counts for model performance metrics</span></span>
-<span id="cb381-10"><a href="pred-mod.html#cb381-10" aria-hidden="true" tabindex="-1"></a>  TP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># true positives</span></span>
-<span id="cb381-11"><a href="pred-mod.html#cb381-11" aria-hidden="true" tabindex="-1"></a>  TN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># true negatives</span></span>
-<span id="cb381-12"><a href="pred-mod.html#cb381-12" aria-hidden="true" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># false positives</span></span>
-<span id="cb381-13"><a href="pred-mod.html#cb381-13" aria-hidden="true" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># false negatives</span></span>
-<span id="cb381-14"><a href="pred-mod.html#cb381-14" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">&lt;-</span> TP <span class="sc">+</span> FN <span class="co"># total positives</span></span>
-<span id="cb381-15"><a href="pred-mod.html#cb381-15" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> FP <span class="sc">+</span> TN <span class="co"># total negatives</span></span>
-<span id="cb381-16"><a href="pred-mod.html#cb381-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb381-17"><a href="pred-mod.html#cb381-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Store rates to variables</span></span>
-<span id="cb381-18"><a href="pred-mod.html#cb381-18" aria-hidden="true" tabindex="-1"></a>  accuracy <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="fu">sum</span>(truth <span class="sc">==</span> predicted) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">length</span>(truth), <span class="dv">3</span>)</span>
-<span id="cb381-19"><a href="pred-mod.html#cb381-19" aria-hidden="true" tabindex="-1"></a>  sensitivity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> P, <span class="dv">3</span>)</span>
-<span id="cb381-20"><a href="pred-mod.html#cb381-20" aria-hidden="true" tabindex="-1"></a>  specificity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TN <span class="sc">/</span> N, <span class="dv">3</span>)</span>
-<span id="cb381-21"><a href="pred-mod.html#cb381-21" aria-hidden="true" tabindex="-1"></a>  precision <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
-<span id="cb381-22"><a href="pred-mod.html#cb381-22" aria-hidden="true" tabindex="-1"></a>  false.discovery <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
-<span id="cb381-23"><a href="pred-mod.html#cb381-23" aria-hidden="true" tabindex="-1"></a>  FPR <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> N, <span class="dv">3</span>)</span>
-<span id="cb381-24"><a href="pred-mod.html#cb381-24" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb381-25"><a href="pred-mod.html#cb381-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return results as slots in a list</span></span>
-<span id="cb381-26"><a href="pred-mod.html#cb381-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">accuracy =</span> accuracy, </span>
-<span id="cb381-27"><a href="pred-mod.html#cb381-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">sensitivity =</span> sensitivity, </span>
-<span id="cb381-28"><a href="pred-mod.html#cb381-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">specificity =</span> specificity, </span>
-<span id="cb381-29"><a href="pred-mod.html#cb381-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">precision =</span> precision, </span>
-<span id="cb381-30"><a href="pred-mod.html#cb381-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">false.discovery =</span> false.discovery, </span>
-<span id="cb381-31"><a href="pred-mod.html#cb381-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">FPR =</span> FPR)</span>
-<span id="cb381-32"><a href="pred-mod.html#cb381-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>We will now integrate these concepts into attrition prediction (classification) and forecasting (regression) examples. The high-level prediction workflow will follow four steps:</p>
+<ul>
+<li><strong>Step 1</strong>: Partition data into training (2/3) and test (1/3) sets for cross-validation.</li>
+<li><strong>Step 2</strong>: Build models using training data.</li>
+<li><strong>Step 3</strong>: Use models to make predictions on test data.</li>
+<li><strong>Step 4</strong>: Evaluate model performance.</li>
+</ul>
+<p><strong>Prediction</strong></p>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="pred-mod.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb381-2"><a href="pred-mod.html#cb381-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb381-3"><a href="pred-mod.html#cb381-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb381-4"><a href="pred-mod.html#cb381-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb381-5"><a href="pred-mod.html#cb381-5" aria-hidden="true" tabindex="-1"></a>prediction_dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</span></code></pre></div>
+<ul>
+<li><p><strong>Step 1</strong>: Partition data into training (2/3) and test (1/3) sets for cross-validation.</p></li>
+<li><p><strong>Step 2</strong>: Build models using training data.</p>
+<p>Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our <code>employees</code> data set, there are 1,233 observations for employees who remained with the organization but only 237 observations for employees who left. Therefore, we will introduce a popular technique to address this known as <strong>Synthetic Minority Oversampling Technique (SMOTE)</strong>. Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class’s representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are in these data at present.</p></li>
+</ul>
+<p>While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility of each metric.</p>
+<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="pred-mod.html#cb382-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function for assessing classification model performance</span></span>
+<span id="cb382-2"><a href="pred-mod.html#cb382-2" aria-hidden="true" tabindex="-1"></a>classifer.perf <span class="ot">&lt;-</span> <span class="cf">function</span>(truth, predicted){</span>
+<span id="cb382-3"><a href="pred-mod.html#cb382-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb382-4"><a href="pred-mod.html#cb382-4" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Check for missing values; metrics will be computed on non-missing values only</span></span>
+<span id="cb382-5"><a href="pred-mod.html#cb382-5" aria-hidden="true" tabindex="-1"></a>  predicted <span class="ot">&lt;-</span> predicted[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
+<span id="cb382-6"><a href="pred-mod.html#cb382-6" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(truth)]</span>
+<span id="cb382-7"><a href="pred-mod.html#cb382-7" aria-hidden="true" tabindex="-1"></a>  truth <span class="ot">&lt;-</span> truth[<span class="sc">!</span><span class="fu">is.na</span>(predicted)]</span>
+<span id="cb382-8"><a href="pred-mod.html#cb382-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb382-9"><a href="pred-mod.html#cb382-9" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Produce counts for model performance metrics</span></span>
+<span id="cb382-10"><a href="pred-mod.html#cb382-10" aria-hidden="true" tabindex="-1"></a>  TP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># true positives</span></span>
+<span id="cb382-11"><a href="pred-mod.html#cb382-11" aria-hidden="true" tabindex="-1"></a>  TN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># true negatives</span></span>
+<span id="cb382-12"><a href="pred-mod.html#cb382-12" aria-hidden="true" tabindex="-1"></a>  FP <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">1</span>) <span class="co"># false positives</span></span>
+<span id="cb382-13"><a href="pred-mod.html#cb382-13" aria-hidden="true" tabindex="-1"></a>  FN <span class="ot">&lt;-</span> <span class="fu">sum</span>(truth <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> predicted <span class="sc">==</span> <span class="dv">0</span>) <span class="co"># false negatives</span></span>
+<span id="cb382-14"><a href="pred-mod.html#cb382-14" aria-hidden="true" tabindex="-1"></a>  P <span class="ot">&lt;-</span> TP <span class="sc">+</span> FN <span class="co"># total positives</span></span>
+<span id="cb382-15"><a href="pred-mod.html#cb382-15" aria-hidden="true" tabindex="-1"></a>  N <span class="ot">&lt;-</span> FP <span class="sc">+</span> TN <span class="co"># total negatives</span></span>
+<span id="cb382-16"><a href="pred-mod.html#cb382-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb382-17"><a href="pred-mod.html#cb382-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Store rates to variables</span></span>
+<span id="cb382-18"><a href="pred-mod.html#cb382-18" aria-hidden="true" tabindex="-1"></a>  accuracy <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="fu">sum</span>(truth <span class="sc">==</span> predicted) <span class="sc">*</span> <span class="dv">100</span> <span class="sc">/</span> <span class="fu">length</span>(truth), <span class="dv">3</span>)</span>
+<span id="cb382-19"><a href="pred-mod.html#cb382-19" aria-hidden="true" tabindex="-1"></a>  sensitivity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> P, <span class="dv">3</span>)</span>
+<span id="cb382-20"><a href="pred-mod.html#cb382-20" aria-hidden="true" tabindex="-1"></a>  specificity <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TN <span class="sc">/</span> N, <span class="dv">3</span>)</span>
+<span id="cb382-21"><a href="pred-mod.html#cb382-21" aria-hidden="true" tabindex="-1"></a>  precision <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> TP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
+<span id="cb382-22"><a href="pred-mod.html#cb382-22" aria-hidden="true" tabindex="-1"></a>  false.discovery <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> (TP <span class="sc">+</span> FP), <span class="dv">3</span>)</span>
+<span id="cb382-23"><a href="pred-mod.html#cb382-23" aria-hidden="true" tabindex="-1"></a>  FPR <span class="ot">&lt;-</span> <span class="fu">signif</span>(<span class="dv">100</span> <span class="sc">*</span> FP <span class="sc">/</span> N, <span class="dv">3</span>)</span>
+<span id="cb382-24"><a href="pred-mod.html#cb382-24" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb382-25"><a href="pred-mod.html#cb382-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Return results as slots in a list</span></span>
+<span id="cb382-26"><a href="pred-mod.html#cb382-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">accuracy =</span> accuracy, </span>
+<span id="cb382-27"><a href="pred-mod.html#cb382-27" aria-hidden="true" tabindex="-1"></a>       <span class="at">sensitivity =</span> sensitivity, </span>
+<span id="cb382-28"><a href="pred-mod.html#cb382-28" aria-hidden="true" tabindex="-1"></a>       <span class="at">specificity =</span> specificity, </span>
+<span id="cb382-29"><a href="pred-mod.html#cb382-29" aria-hidden="true" tabindex="-1"></a>       <span class="at">precision =</span> precision, </span>
+<span id="cb382-30"><a href="pred-mod.html#cb382-30" aria-hidden="true" tabindex="-1"></a>       <span class="at">false.discovery =</span> false.discovery, </span>
+<span id="cb382-31"><a href="pred-mod.html#cb382-31" aria-hidden="true" tabindex="-1"></a>       <span class="at">FPR =</span> FPR)</span>
+<span id="cb382-32"><a href="pred-mod.html#cb382-32" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<ul>
+<li><p><strong>Step 3</strong>: Use models to make predictions on test data.</p></li>
+<li><p><strong>Step 4</strong>: Evaluate model performance.</p></li>
+</ul>
+<p><strong>Forecasting</strong></p>
+<div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="pred-mod.html#cb383-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb383-2"><a href="pred-mod.html#cb383-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb383-3"><a href="pred-mod.html#cb383-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb383-4"><a href="pred-mod.html#cb383-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb383-5"><a href="pred-mod.html#cb383-5" aria-hidden="true" tabindex="-1"></a>forecasting_dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/turnover_trends.csv&quot;</span>)</span></code></pre></div>
+<ul>
+<li><p><strong>Step 1</strong>: Partition data into training (2/3) and test (1/3) sets for cross-validation.</p></li>
+<li><p><strong>Step 2</strong>: Build models using training data.</p></li>
+<li><p><strong>Step 3</strong>: Use models to make predictions on test data.</p></li>
+<li><p><strong>Step 4</strong>: Evaluate model performance.</p></li>
+</ul>
 </div>
 <div id="review-questions-10" class="section level2" number="12.6">
 <h2><span class="header-section-number">12.6</span> Review Questions</h2>

@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-06-30}
+\date{2022-07-01}
 
 \begin{document}
 \maketitle
@@ -651,7 +651,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpR3cppN/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpf06pl5/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -9238,7 +9238,7 @@ In a classification setting, predictions are either right or wrong. Therefore, c
 
 where \(I\) is an indicator variable equal to \(1\) if \(y_i \ne \hat y_i\) and \(0\) if \(y_i = \hat y_i\).
 
-A \textbf{confusion matrix} is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure \ref{fig:confusion-matrix}:
+A \textbf{confusion matrix} is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure \ref{fig:confusion-mtx}:
 
 \begin{itemize}
 \tightlist
@@ -9257,14 +9257,14 @@ A \textbf{confusion matrix} is often used in classification to parse the overall
 \item
   \textbf{Specificity}: Rate of actual false cases predicted correctly
 \item
-  \textbf{Precision}: Rate of predicted true cases predicted correctly
+  \textbf{Precision}: Rate of correct predictions among all cases predicted true
 \item
-  \textbf{Negative Predictive Value}: Rate of predicted false cases predicted correctly
+  \textbf{Negative Predictive Value}: Rate of correct predictions among all cases predicted false
 \end{itemize}
 
 \begin{figure}
 
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/confusion_matrix} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/confusion_matrix} 
 
 }
 
@@ -9322,16 +9322,76 @@ As a general rule, the more flexible the model, the more variance and less bias.
 
 }
 
-\caption{Bias-Variance Tradeoff}\label{fig:bias-var-tradeoff}
+\caption{Bias-variance tradeoff. Dashed line represents optimal model performance.}\label{fig:bias-var-tradeoff}
 \end{figure}
 
-\hypertarget{balancing-classes}{%
-\section{Balancing Classes}\label{balancing-classes}}
+\hypertarget{tree-based-algorithms}{%
+\section{Tree-Based Algorithms}\label{tree-based-algorithms}}
 
-Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In our case, there are 1,233 observations for employees who remained with the organization, but only 237 observations for employees who left. Therefore, we will use a popular technique to address this known as Synthetic Minority Oversampling Technique (SMOTE). Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the class with fewest observations (the underrepresented, or minority, class) to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are at present.
+While there are many flexible ML algorithms, such as \textbf{Extreme Gradient Boosting (XGBoost)} and \textbf{Support Vector Machines (SVM)}, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more interpretable tree-based algorithms that are more suitable for people analytics.
+
+\textbf{Decision Trees}
+
+In addition to the inferential models covered in previous chapters, \textbf{decision trees} are also excellent tools that lend to simple and effective narratives about factors influencing outcomes in either a regression or classification setting. As illustrated in Figure \ref{fig:decision-tree}, decision trees resemble a tree that depicts a set of decisions as well as consequences of those decisions. The top-level \texttt{Department} variable is known as a root node, and the remaining \texttt{Tenure}, \texttt{Performance\ Rating}, and \texttt{Remote} nodes are known as interior nodes. Decisions represented in \texttt{Active} and \texttt{Inactive} boxes are referred to as leaf, terminal, or end nodes.
+
+As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the \(n\)-count is small).
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/decision_tree} 
+
+}
+
+\caption{Decision tree for employee attrition prediction.}\label{fig:decision-tree}
+\end{figure}
+
+The accuracy of predictions based on a deep tree with an excessive number of partitions and few observations will likely be unacceptable beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement on random guessing (e.g., 50/50 chance in a binary classification setting).
+
+\textbf{Random Forests}
+
+A \textbf{random forest} is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. This is a case of \emph{wisdom of the crowd} decision-making in which a large number of uncorrelated trees (models) functioning as a committee will outperform individual trees.
+
+To understand the mechanics of a random forest, consider an investment strategy in which you diversify an investment portfolio by spreading investments across different assets. By investing in assets that are uncorrelated, there is a lower likelihood that the portfolio's value will be negatively impacted by a negative event impacting a single holding. In the same way, a random forest constructs an ensemble of trees that are each based on different randomized subsets of data and combinations of features to amalgamate the information and arrive at more accurate predictions. The potential for poor performance from a single tree is mitigated by the many trees working in concert with one another.
+
+Though random forests combine information from many decision trees, there are still intuitive ways of understanding which features are most important in segmenting employees to understand drivers of various outcomes.
 
 \hypertarget{predictive-modeling}{%
 \section{Predictive Modeling}\label{predictive-modeling}}
+
+We will now integrate these concepts into attrition prediction (classification) and forecasting (regression) examples. The high-level prediction workflow will follow four steps:
+
+\begin{itemize}
+\tightlist
+\item
+  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+\item
+  \textbf{Step 2}: Build models using training data.
+\item
+  \textbf{Step 3}: Use models to make predictions on test data.
+\item
+  \textbf{Step 4}: Evaluate model performance.
+\end{itemize}
+
+\textbf{Prediction}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{\# Load employee data}
+\NormalTok{prediction\_dat }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+\item
+  \textbf{Step 2}: Build models using training data.
+
+  Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our \texttt{employees} data set, there are 1,233 observations for employees who remained with the organization but only 237 observations for employees who left. Therefore, we will introduce a popular technique to address this known as \textbf{Synthetic Minority Oversampling Technique (SMOTE)}. Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are in these data at present.
+\end{itemize}
 
 While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility of each metric.
 
@@ -9371,6 +9431,36 @@ While there are packages in R which provide performance metrics for predictive m
 \NormalTok{\}}
 \end{Highlighting}
 \end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Step 3}: Use models to make predictions on test data.
+\item
+  \textbf{Step 4}: Evaluate model performance.
+\end{itemize}
+
+\textbf{Forecasting}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{\# Load employee data}
+\NormalTok{forecasting\_dat }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/turnover\_trends.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\item
+  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+\item
+  \textbf{Step 2}: Build models using training data.
+\item
+  \textbf{Step 3}: Use models to make predictions on test data.
+\item
+  \textbf{Step 4}: Evaluate model performance.
+\end{itemize}
 
 \hypertarget{review-questions-10}{%
 \section{Review Questions}\label{review-questions-10}}
