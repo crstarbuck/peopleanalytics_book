@@ -91,7 +91,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Tree-Based Algorithms
 
-  While there are many flexible ML algorithms, such as **Extreme Gradient Boosting (XGBoost)** and **Support Vector Machines (SVM)**, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more interpretable tree-based algorithms that are more suitable for people analytics. 
+  While there are many flexible ML algorithms, such as **Extreme Gradient Boosting (XGBoost)**, **Artificial Neural Networks (ANN)**, and **Support Vector Machines (SVM)**, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more *interpretable* tree-based algorithms that are more suitable for people analytics. 
   
   **Decision Trees**
   
@@ -109,7 +109,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Random Forests**
   
-  A **random forest** is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. This is a case of *wisdom of the crowd* decision-making in which a large number of uncorrelated trees (models) functioning as a committee should outperform individual trees.
+  A **random forest (RF)** is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. This is a case of *wisdom of the crowd* decision-making in which a large number of uncorrelated trees (models) functioning as a committee should outperform individual trees.
   
   To understand the mechanics of a random forest, consider an investment strategy in which you diversify an investment portfolio by spreading investments across different assets. By investing in assets that are uncorrelated, there is a lower likelihood that the portfolio's value will be negatively impacted by a negative event impacting a single holding. In the same way, a random forest constructs an ensemble of trees that are each based on different randomized subsets of data and combinations of features to amalgamate the information and arrive at more accurate predictions. The potential for poor performance from a single tree is mitigated by the many trees working in concert with one another.
   
@@ -126,6 +126,8 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   **Classification**
   
+  To demonstrate the prediction workflow steps for classification, we will leverage our `employees` data set:
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Load library
@@ -134,17 +136,96 @@ library(dplyr)
 # Load employee data
 prediction_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
-```
+# One-hot encode active outcome variable, setting inactives to 1 and actives to 0
+prediction_dat$active <- ifelse(prediction_dat$active == 'No', 1, 0)
 
+```
 
   * **Step 1**: Partition data into training (2/3) and test (1/3) sets for cross-validation.
   
+  For this example, we will implement the validation set approach for CV.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Randomly select 2/3 of employees for the training set
+training_ids <- sample(prediction_dat$employee_id, size = nrow(prediction_dat) * 2/3, replace = FALSE)
+
+# Create training data
+training_dat <- prediction_dat %>% filter(employee_id %in% training_ids)
+
+# Create test data using remaining observations
+test_dat <- prediction_dat %>% filter(!employee_id %in% training_ids)
+
+# Return Boolean to validate that all observations are accounted for
+nrow(training_dat) + nrow(test_dat) == nrow(prediction_dat)
+
+```
+  
   * **Step 2**: Build models using training data.
   
-    Machine learning (ML) algorithms are sensitive to imbalanced classes; that is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our `employees` data set, there are 1,233 observations for employees who remained with the organization but only 237 observations for employees who left. Therefore, we will introduce a popular technique to address this known as **Synthetic Minority Oversampling Technique (SMOTE)**. Simply put, this technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class's representation in the dataset and balance the classes. Note that the classes do not have to be perfectly balanced, but they need to be better balanced than they are in these data at present.
+  Machine learning (ML) algorithms are sensitive to imbalanced classes. That is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our `employees` data set, there are 1,233 observations for active employees but only 237 observations for inactive employees. Therefore, we will introduce a popular technique to address this known as **Synthetic Minority Oversampling Technique (SMOTE)**, which will be important for the RF model we will train. This technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class's representation in the dataset and achieve balanced classes.
     
-  While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility of each metric. 
+  While functions exist for implementing SMOTE, such as the `SMOTE()` function from the `DMwR` library, in the spirit of demystifying black box ML approaches we will step through this procedure without the use of an available function:
+    
+```{r, message = FALSE, warning = FALSE}
 
+# Calculate class representation delta in training data
+training_class_delta <- nrow(training_dat %>% filter(active == 0)) - nrow(training_dat %>% filter(active == 1))
+
+# Oversample the underrepresented inactive class by training_class_delta to align observation counts with active class
+# Note: A loop is not the most efficient, but it is leveraged here to simplify instruction on SMOTE mechanics
+for (i in 1:training_class_delta){
+  
+  # Sample employee id from underrepresented class
+  oversampled_id <- sample(training_dat[training_dat$active == 1, 'employee_id'], size = 1, replace = TRUE)
+  
+  # Store observation for sampled employee id
+  new_obs <- unique(training_dat %>% filter(employee_id == oversampled_id))
+  
+  # Append sampled observation to training data frame
+  training_dat <- rbind(training_dat, new_obs)
+}
+
+# Return Boolean to validate that classes are equal in the training data
+nrow(training_dat %>% filter(active == 0)) == nrow(training_dat %>% filter(active == 1))
+
+```
+
+  Next, we will fit a binomial logistic regression model using a subset of predictors from the oversampled training data:
+
+```{r glm-train-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(flextable)
+
+# Fit binomial logistic regression model
+glm.fit <- glm(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat, family = binomial)
+
+# Produce tabular summary of regression model output
+flextable::as_flextable(glm.fit)
+
+```
+
+  As we can see, results of the binomial logistic regression model indicate that all predictors are important in classifying employees into active and inactive classes for these training data.
+  
+  Using a similar syntax, we can fit a RF using the `randomForest()` function from the package by the same name:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(randomForest)
+
+# Tune hyper-parameters for RF
+rf.fit <- randomForest(active ~ overtime + job_lvl + engagement + interview_rating, data = training_dat)
+
+```
+    
+  While RFs generally offer a significant lift in performance beyond a single decision tree, we could also apply *tuning wrappers* around the `randomForest()` function to tune the model's hyperparameters. Experimenting with a range of values for parameters, such as `mtry` for the number of variables to randomly sample and `ntree` for the number of trees to grow, may further improve model performance. Hyperparameter tuning is beyond the scope of this book, but Kuhn and Johnson (2013) is an excellent resource for a more exhaustive treatment on ML models.
+  
+  * **Step 3**: Use models to make predictions on test data.
+  
+  While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility of each metric:
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Develop function for assessing classification model performance
@@ -181,12 +262,40 @@ classifer.perf <- function(truth, predicted){
 }
 
 ```
-  
-  * **Step 3**: Use models to make predictions on test data.
+
+  We can use the `predict()` function in conjunction with an object holding the trained model to predict values for the test data. We will store and label model performance metrics in a single data frame for easy comparison:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Initialize empty data frame
+perf.metrics <- NULL
+
+# Predict with logistic regression model
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(
+  val = assess.prediction(test$CLASS, ifelse(predict(glm.fit, test, type = "response") > .5, 1, 0)),
+  method = paste0("LOG")))
+
+# Predict with RF model
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(
+  val = assess.prediction(test$CLASS, predict(rfRes,subset(test, select = predictors))),
+  method = paste0("RF")))
+
+```
   
   * **Step 4**: Evaluate model performance.
   
+```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = '.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+ggplot(perf.metrics, aes(x = method, y = val.accuracy, fill = method)) + geom_bar(stat="identity") + geom_text(data = perf.metrics, aes(label = val.accuracy), vjust = 1.5, colour = "white", size = 5) + labs(x = "Method", y = "Accuracy (%)", title = "Accuracy by Model Type")
+
+```
   
+```{r, message = FALSE, warning = FALSE}
+
+# Produce variable importance plat
+varImpPlot(rfRes, type = 2)
+
+```
   
   **Forecasting**
   
