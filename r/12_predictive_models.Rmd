@@ -109,7 +109,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Random Forests**
   
-  A **random forest (RF)** is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. This is a case of *wisdom of the crowd* decision-making in which a large number of uncorrelated trees (models) functioning as a committee should outperform individual trees.
+  A **random forest (RF)** is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. The process of fitting multiple models on different subsets of training data and then combining predictions across all models is referred to as **bagging**. This is a case of *wisdom of the crowd* decision-making in which a large number of uncorrelated trees (models) functioning as a committee should outperform individual trees.
   
   To understand the mechanics of a random forest, consider an investment strategy in which you diversify an investment portfolio by spreading investments across different assets. By investing in assets that are uncorrelated, there is a lower likelihood that the portfolio's value will be negatively impacted by a negative event impacting a single holding. In the same way, a random forest constructs an ensemble of trees that are each based on different randomized subsets of data and combinations of features to amalgamate the information and arrive at more accurate predictions. The potential for poor performance from a single tree is mitigated by the many trees working in concert with one another.
   
@@ -172,28 +172,31 @@ nrow(training_dat) + nrow(test_dat) == nrow(prediction_dat)
 # Calculate class representation delta in training data
 training_class_delta <- nrow(training_dat %>% filter(active == 0)) - nrow(training_dat %>% filter(active == 1))
 
+# Copy training data to separate data frame for oversampling
+training_dat_os <- training_dat
+
 # Oversample the underrepresented inactive class by training_class_delta to align observation counts with active class
 # Note: A loop is not the most efficient, but it is leveraged here to simplify instruction on SMOTE mechanics
 for (i in 1:training_class_delta){
   
   # Sample employee id from underrepresented class
-  oversampled_id <- sample(training_dat[training_dat$active == 1, 'employee_id'], size = 1, replace = TRUE)
+  oversampled_id <- sample(training_dat_os[training_dat_os$active == 1, 'employee_id'], size = 1, replace = TRUE)
   
   # Store observation for sampled employee id
-  new_obs <- unique(training_dat %>% filter(employee_id == oversampled_id))
+  new_obs <- unique(training_dat_os %>% filter(employee_id == oversampled_id))
   
   # Append sampled observation to training data frame
-  training_dat <- rbind(training_dat, new_obs)
+  training_dat_os <- rbind(training_dat_os, new_obs)
 }
 
 # Return Boolean to validate that classes are equal in the training data
-nrow(training_dat %>% filter(active == 0)) == nrow(training_dat %>% filter(active == 1))
+nrow(training_dat_os %>% filter(active == 0)) == nrow(training_dat_os %>% filter(active == 1))
 
 ```
 
-  Next, we will fit a binomial logistic regression model using a subset of predictors from the oversampled training data:
-
-```{r glm-train-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+  Next, we will fit a binomial logistic regression model using a subset of predictors from the oversampled training data. For comparison, let's summarize a model using original and oversampled data.
+  
+```{r glm-train-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on original data.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(flextable)
@@ -206,7 +209,17 @@ flextable::as_flextable(glm.fit)
 
 ```
 
-  As we can see, results of the binomial logistic regression model indicate that all predictors are important in classifying employees into active and inactive classes for these training data.
+```{r glm-train-os-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on oversampled data.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Fit binomial logistic regression model
+glm.os.fit <- glm(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat_os, family = binomial)
+
+# Produce tabular summary of regression model output
+flextable::as_flextable(glm.os.fit)
+
+```
+
+  As we can see, results of the two binomial logistic regression models are consistent in the sense that only `overtime` and `interview_rating` emerge as significant in classifying employees into active and inactive classes. Since the oversampled data has a larger $n$-count, there is greater power to detect effects, and we see this reflected in the larger coefficients and lower standard errors.
   
   Using a similar syntax, we can fit a RF using the `randomForest()` function from the package by the same name:
   
@@ -215,8 +228,11 @@ flextable::as_flextable(glm.fit)
 # Load library
 library(randomForest)
 
-# Tune hyper-parameters for RF
-rf.fit <- randomForest(active ~ overtime + job_lvl + engagement + interview_rating, data = training_dat)
+# Train RF model using original data
+rf.fit <- randomForest::randomForest(active ~ overtime + job_lvl + engagement + interview_rating, data = training_dat)
+
+# Train RF model using oversampled data
+rf.os.fit <- randomForest::randomForest(active ~ overtime + job_lvl + engagement + interview_rating, data = training_dat_os)
 
 ```
     
@@ -224,61 +240,74 @@ rf.fit <- randomForest(active ~ overtime + job_lvl + engagement + interview_rati
   
   * **Step 3**: Use models to make predictions on test data.
   
-  While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility of each metric:
+  While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility into how each metric is calculated:
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Develop function for assessing classification model performance
-classifer.perf <- function(truth, predicted){
+# Develop function that returns a data frame of model performance statistics
+classifier.perf <- function(model, actual, predicted){
   
   # Check for missing values; metrics will be computed on non-missing values only
-  predicted <- predicted[!is.na(truth)]
-  truth <- truth[!is.na(truth)]
-  truth <- truth[!is.na(predicted)]
+  predicted <- predicted[!is.na(actual)]
+  actual <- actual[!is.na(actual)]
+  actual <- actual[!is.na(predicted)]
   
   # Produce counts for model performance metrics
-  TP <- sum(truth == 1 & predicted == 1) # true positives
-  TN <- sum(truth == 0 & predicted == 0) # true negatives
-  FP <- sum(truth == 0 & predicted == 1) # false positives
-  FN <- sum(truth == 1 & predicted == 0) # false negatives
+  TP <- sum(actual == 1 & predicted == 1) # true positives
+  TN <- sum(actual == 0 & predicted == 0) # true negatives
+  FP <- sum(actual == 0 & predicted == 1) # false positives
+  FN <- sum(actual == 1 & predicted == 0) # false negatives
   P <- TP + FN # total positives
   N <- FP + TN # total negatives
   
   # Store rates to variables
-  accuracy <- signif(sum(truth == predicted) * 100 / length(truth), 3)
-  sensitivity <- signif(100 * TP / P, 3)
-  specificity <- signif(100 * TN / N, 3)
-  precision <- signif(100 * TP / (TP + FP), 3)
-  false.discovery <- signif(100 * FP / (TP + FP), 3)
-  FPR <- signif(100 * FP / N, 3)
+  accuracy <- signif(100 * (sum(actual == predicted) / length(actual)), 3)
+  sensitivity <- signif(100 * (TP / (TP + FN)), 3)
+  specificity <- signif(100 * (TN / (TN + FP)), 3)
+  precision <- signif(100 * (TP / (TP + FP)), 3)
+  neg_pred_val <- signif(100 * (TN / (TN + FN)), 3)
   
-  # Return results as slots in a list
-  list(accuracy = accuracy, 
-       sensitivity = sensitivity, 
-       specificity = specificity, 
-       precision = precision, 
-       false.discovery = false.discovery, 
-       FPR = FPR)
+  mdl <- rep(model, times = 5)
+  stat_nm <- c("accuracy", "sensitivity", "specificity", "precision", "neg_pred_val")
+  stat_vl <- c(accuracy, sensitivity, specificity, precision, neg_pred_val)
+  
+  # Return model performance statistics in a data frame
+  return(data.frame(mdl, stat_nm, stat_vl))
+  
 }
 
 ```
 
-  We can use the `predict()` function in conjunction with an object holding the trained model to predict values for the test data. We will store and label model performance metrics in a single data frame for easy comparison:
+  We can use the `predict()` function in conjunction with the object holding the trained model to predict class values for our test data. We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Initialize empty data frame
+# Initialize empty data frame for model performance stats
 perf.metrics <- NULL
 
 # Predict with logistic regression model
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(
-  val = assess.prediction(test$CLASS, ifelse(predict(glm.fit, test, type = "response") > .5, 1, 0)),
-  method = paste0("LOG")))
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
+                      model = "GLM",
+                      actual = test_dat$active,
+                      predicted = ifelse(predict(glm.fit, test_dat, type = "response") > .5, 1, 0))))
+
+# Predict with logistic regression model (SMOTE)
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
+                      model = "GLM (SMOTE)",
+                      actual = test_dat$active,
+                      predicted = ifelse(predict(glm.os.fit, test_dat, type = "response") > .5, 1, 0))))
 
 # Predict with RF model
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(
-  val = assess.prediction(test$CLASS, predict(rfRes,subset(test, select = predictors))),
-  method = paste0("RF")))
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
+                      model = "RF",
+                      actual = test_dat$active,
+                      predicted = ifelse(predict(rf.fit, test_dat, type = "response") > .5, 1, 0))))
+
+# Predict with RF model (SMOTE)
+perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
+                      model = "RF (SMOTE)",
+                      actual = test_dat$active,
+                      predicted = ifelse(predict(rf.os.fit, test_dat, type = "response") > .5, 1, 0))))
 
 ```
   
@@ -286,14 +315,27 @@ perf.metrics <- rbind(perf.metrics, cbind.data.frame(
   
 ```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = '.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-ggplot(perf.metrics, aes(x = method, y = val.accuracy, fill = method)) + geom_bar(stat="identity") + geom_text(data = perf.metrics, aes(label = val.accuracy), vjust = 1.5, colour = "white", size = 5) + labs(x = "Method", y = "Accuracy (%)", title = "Accuracy by Model Type")
+# Load library
+library(ggplot2)
+
+# Sort performance statistics in df
+perf.metrics$stat_nm <- factor(perf.metrics$stat_nm, levels = c("accuracy", "sensitivity", "specificity", "precision", "neg_pred_val"))
+
+# Visualize performance stats by model type
+ggplot2::ggplot(perf.metrics,
+ggplot2::aes(x = stat_nm, y = stat_vl)) +
+ggplot2::labs(x = "Performance Statistic", y = "Performance Value") +
+ggplot2::geom_bar(aes(fill = mdl), position = "dodge", stat = "identity") +
+ggplot2::theme_bw() +
+ggplot2::scale_fill_brewer(palette = "Blues", direction = -1) + 
+ggplot2::guides(fill = guide_legend(title = "Model"))
 
 ```
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Produce variable importance plat
-varImpPlot(rfRes, type = 2)
+varImpPlot(rf.fit, type = 2)
 
 ```
   
