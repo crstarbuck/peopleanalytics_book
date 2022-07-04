@@ -27,7 +27,7 @@ The mean of a set of numeric values can be calculated using the `mean()` functio
 ```{r, message = FALSE}
 
 # Fill vector x with integers
-x <- c(1,1,1,2,2,2,3,3,4,50)
+x <- c(1, 2, 3, 3, 100, 200, 300)
 
 # Calculate average of vector x
 mean(x)
@@ -36,7 +36,7 @@ mean(x)
 
   **Median**
   
-  The **median** represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed, or there is an extreme value like we observe in vector x, the median is a better measure of central tendency. 
+  The **median** represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed or there is an extreme value, the median *may* be a better measure of central tendency. 
   
   The `median()` function in R can be used to handle the sorting and midpoint selection:
   
@@ -47,8 +47,37 @@ median(x)
 
 ```
   
-  In this example, the median is only 2 while the mean is 6.9 (which is not representative of any of the values in vector $x$). Large deltas between mean and median values are evidence of outliers.
+  In this example, the median is only `3` while the mean is `87`. Large deltas between mean and median values provide important information about the distribution of data. 
   
+  In this example, a single value has significant leverage on these measures of central tendency. To demonstrate, let's eliminate one instance of `3` from the vector and recalculate the mean and median:
+  
+```{r, message = FALSE}
+
+# Fill vector x1 with integers
+x1 <- c(1, 2, 3, 100, 200, 300)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate mean of vector x1
+mean(x1)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate median of vector x1
+median(x1)
+
+```
+
+  By removing a single value from this vector, the mean increased from `87` to `101` and the median from `3` to `51.5`! 
+  
+  In some cases, outliers may be the cause of large discrepancies between mean and median values since the mean can be sensitive to extreme values. However, differences in mean and median values for `x` and `x1` in our example are *not* due to an extreme value (outlier), as `3` is similar to half of the values in the vector. This highlights the importance of understanding the data distribution and evaluating *both* the mean and median. 
+  
+  The reality is that both the mean and median can be misleading -- and even inappropriate. Consider an example of a hyper-growth company that has hired the majority of its workforce in the past few months. It is unlikely that either the mean or median organization tenure will be a useful metric.
+
   **Mode**
   
   The **mode** is the most frequent number in a set of values.
@@ -56,6 +85,9 @@ median(x)
   While `mean()` and `median()` are standard functions in R, `mode()` returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):
   
 ```{r, message = FALSE}
+
+# Fill vector x2 with integers
+x2 <- c(1, 2, 3, 3, 100, 200, 300, 300)
 
 # Create function to calculate statistical mode(s)
 stat.mode <- function(x) {
@@ -65,11 +97,11 @@ stat.mode <- function(x) {
 }
 
 # Return mode(s) of vector x
-stat.mode(x)
+stat.mode(x2)
 
 ```
   
-  In this case, we have a bimodal distribution since both 1 and 2 occur most frequently.
+  In this case, we have a bimodal distribution since both `3` and `300` occur most frequently.
   
   **Range**
   

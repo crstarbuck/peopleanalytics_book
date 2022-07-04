@@ -99,7 +99,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the $n$-count is small). 
   
-```{r decision-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction.', fig.align = 'center'}
+```{r decision-tree, out.width = "75%", echo = FALSE, fig.cap = 'Conceptual decision tree for employee attrition prediction.', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/decision_tree.png")
 
@@ -129,9 +129,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   To demonstrate the prediction workflow steps for classification, we will leverage our `employees` data set:
   
 ```{r, message = FALSE, warning = FALSE}
-
-# Load library
-library(dplyr)
 
 # Load employee data
 prediction_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
@@ -175,8 +172,11 @@ training_class_delta <- nrow(training_dat %>% filter(active == 0)) - nrow(traini
 # Copy training data to separate data frame for oversampling
 training_dat_os <- training_dat
 
+# Set seed for reproducible results
+set.seed(123)
+
 # Oversample the underrepresented inactive class by training_class_delta to align observation counts with active class
-# Note: A loop is not the most efficient, but it is leveraged here to simplify instruction on SMOTE mechanics
+# Note: A loop is not the most efficient -- especially with large data sets -- but it is leveraged here to simplify instruction on SMOTE mechanics
 for (i in 1:training_class_delta){
   
   # Sample employee id from underrepresented class
@@ -278,42 +278,47 @@ classifier.perf <- function(model, actual, predicted){
 
 ```
 
-  We can use the `predict()` function in conjunction with the object holding the trained model to predict class values for our test data. We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:
+  We can use the `predict()` function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into one class versus the other. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives). 
+  
+  We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Initialize empty data frame for model performance stats
 perf.metrics <- NULL
 
+# Set probability threshold for classification
+prob_threshold <- .7
+
 # Predict with logistic regression model
 perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
                       model = "GLM",
                       actual = test_dat$active,
-                      predicted = ifelse(predict(glm.fit, test_dat, type = "response") > .5, 1, 0))))
+                      predicted = ifelse(predict(glm.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with logistic regression model (SMOTE)
 perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
                       model = "GLM (SMOTE)",
                       actual = test_dat$active,
-                      predicted = ifelse(predict(glm.os.fit, test_dat, type = "response") > .5, 1, 0))))
+                      predicted = ifelse(predict(glm.os.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with RF model
 perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
                       model = "RF",
                       actual = test_dat$active,
-                      predicted = ifelse(predict(rf.fit, test_dat, type = "response") > .5, 1, 0))))
+                      predicted = ifelse(predict(rf.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with RF model (SMOTE)
 perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
                       model = "RF (SMOTE)",
                       actual = test_dat$active,
-                      predicted = ifelse(predict(rf.os.fit, test_dat, type = "response") > .5, 1, 0))))
+                      predicted = ifelse(predict(rf.os.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 ```
   
   * **Step 4**: Evaluate model performance.
   
-```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = '.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = 'Classification performance for binomial logistic regression and RF models using balanced (SMOTE) and imbalanced classes.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -324,20 +329,46 @@ perf.metrics$stat_nm <- factor(perf.metrics$stat_nm, levels = c("accuracy", "sen
 # Visualize performance stats by model type
 ggplot2::ggplot(perf.metrics,
 ggplot2::aes(x = stat_nm, y = stat_vl)) +
-ggplot2::labs(x = "Performance Statistic", y = "Performance Value") +
+ggplot2::labs(x = "Performance Statistic", y = "Performance Value (%)") +
 ggplot2::geom_bar(aes(fill = mdl), position = "dodge", stat = "identity") +
 ggplot2::theme_bw() +
-ggplot2::scale_fill_brewer(palette = "Blues", direction = -1) + 
+ggplot2::scale_fill_manual(values = c("#003366", "#0033FF", "#0099FF", "#66CCFF")) +
 ggplot2::guides(fill = guide_legend(title = "Model"))
 
 ```
   
-```{r, message = FALSE, warning = FALSE}
+  As we can see in Figure \@ref(fig:class-mdl-perf), with our stringent probability threshold set at `.7` for class delineation, all models had perfect specificity (correctly predicting those who stay) and precision (all employees who were predicted to attrit did). However, we see notable differences in sensitivity across the model types, and this is generally a very important performance measure in a predictive attrition project since the cost of not flagging employees who attrit can be costly. Sensitivity for the RF model trained on balanced classes (SMOTE) performed much better than its imbalanced RF counterpart (`95.6%` vs. `71.6%`), reinforcing that ML models are sensitive (no pun intended) to imbalanced classes. 
+  
+  The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a **Variable Importance Plot** on RF output using the `varImpPlot()` function from the `randomForest`` library to understand the relative importance of each predictor in the model.
+  
+```{r var-imp-plot, out.width = "100%", echo = FALSE, fig.cap = 'Variable importance plot for RF model.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce variable importance plat
-varImpPlot(rf.fit, type = 2)
+randomForest::varImpPlot(rf.fit, type = 2)
 
 ```
+  
+  Variable importance plots are based on the mean decrease in **Gini importance**. Gini importance measures the average gain of purity by splits of a given variable. In other words, if a variable is useful it tends to split mixed labeled nodes (nodes with both employees who separated and employees who stayed) into pure single class nodes. The most important variables are at the top of the variable importance plot, indicating that without these variables nodes will not be as pure and as a result, classification performance will not be as strong.
+  
+  Figure \@ref(fig:var-imp-plot) shows that `interview_rating` is far more important than the second most important predictor, `overtime`. This is consistent with what we observed in the results of the binomial logistic regression models too.
+  
+  Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions:
+  
+```{r rpart-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE).', fig.align = 'center'}
+
+# Load libraries
+library(rpart)
+library(rpart.plot)
+
+# Construct decision tree on balanced training data
+tree <- rpart(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat_os, method = "class")
+
+# Visualize decision tree
+rpart.plot(tree)
+
+```  
+  
+  As shown in Figure \@ref(fig:rpart-tree), the only predictor on which the data are split is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving, which is expected given we balanced the classes using SMOTE. Among employees with `interview_rating >= 3.5`, there is a 1 percent chance of leaving and among employees with `interview_rating < 3.5`, there is a 99 percent chance of leaving. Given the excellent performance splitting data only on `interview_rating`, no further partitioning is necessary since it would likely result in modeling noise and overfitting.
   
   **Forecasting**
   
