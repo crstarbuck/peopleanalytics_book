@@ -339,7 +339,7 @@ ggplot2::guides(fill = guide_legend(title = "Model"))
   
   As we can see in Figure \@ref(fig:class-mdl-perf), with our stringent probability threshold set at `.7` for class delineation, all models had perfect specificity (correctly predicting those who stay) and precision (all employees who were predicted to attrit did). However, we see notable differences in sensitivity across the model types, and this is generally a very important performance measure in a predictive attrition project since the cost of not flagging employees who attrit can be costly. Sensitivity for the RF model trained on balanced classes (SMOTE) performed much better than its imbalanced RF counterpart (`95.6%` vs. `71.6%`), reinforcing that ML models are sensitive (no pun intended) to imbalanced classes. 
   
-  The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a **Variable Importance Plot** on RF output using the `varImpPlot()` function from the `randomForest`` library to understand the relative importance of each predictor in the model.
+  The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a **Variable Importance Plot** on RF output using the `varImpPlot()` function from the `randomForest` library to understand the relative importance of each predictor in the model.
   
 ```{r var-imp-plot, out.width = "100%", echo = FALSE, fig.cap = 'Variable importance plot for RF model.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -352,7 +352,7 @@ randomForest::varImpPlot(rf.fit, type = 2)
   
   Figure \@ref(fig:var-imp-plot) shows that `interview_rating` is far more important than the second most important predictor, `overtime`. This is consistent with what we observed in the results of the binomial logistic regression models too.
   
-  Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions:
+  Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions. `rpart` is an acronym for *recursive partitioning and regression trees*:
   
 ```{r rpart-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE).', fig.align = 'center'}
 
@@ -368,7 +368,7 @@ rpart.plot(tree)
 
 ```  
   
-  As shown in Figure \@ref(fig:rpart-tree), the only predictor on which the data are split is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving, which is expected given we balanced the classes using SMOTE. Among employees with `interview_rating >= 3.5`, there is a 1 percent chance of leaving and among employees with `interview_rating < 3.5`, there is a 99 percent chance of leaving. Given the excellent performance splitting data only on `interview_rating`, no further partitioning is necessary since it would likely result in modeling noise and overfitting.
+  As shown in Figure \@ref(fig:rpart-tree), the most important predictor for splitting the data is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving, which is expected given we balanced the classes using SMOTE. Among employees with `interview_rating < 3.5`, there is a 99 percent chance of leaving and among employees with `interview_rating >= 3.5`, there is a 1 percent chance of leaving (`1 - .99 = .01`). Additional partitioning by `overtime` further increases node purity since classes are mixed for those with interview ratings between `3.3` and `3.6`. However, given the excellent performance splitting data only on `interview_rating`, further partitioning will likely result in modeling noise and overfitting.
   
   **Forecasting**
   
