@@ -119,7 +119,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   We will now integrate these concepts into attrition classification and forecasting examples. The high-level prediction workflow will follow four steps:
   
-  * **Step 1**: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  * **Step 1**: Partition data into training and test sets for cross-validation.
   * **Step 2**: Build models using training data.
   * **Step 3**: Use models to make predictions on test data.
   * **Step 4**: Evaluate model performance.
@@ -130,6 +130,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ```{r, message = FALSE, warning = FALSE}
 
+# Load library
+library(dplyr)
+
 # Load employee data
 prediction_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
 
@@ -138,11 +141,14 @@ prediction_dat$active <- ifelse(prediction_dat$active == 'No', 1, 0)
 
 ```
 
-  * **Step 1**: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  * **Step 1**: Partition data into training and test sets for cross-validation.
   
   For this example, we will implement the validation set approach for CV.
   
 ```{r, message = FALSE, warning = FALSE}
+
+# Set seed for reproducible training and test sets
+set.seed(9876)
 
 # Randomly select 2/3 of employees for the training set
 training_ids <- sample(prediction_dat$employee_id, size = nrow(prediction_dat) * 2/3, replace = FALSE)
@@ -150,7 +156,7 @@ training_ids <- sample(prediction_dat$employee_id, size = nrow(prediction_dat) *
 # Create training data
 training_dat <- prediction_dat %>% filter(employee_id %in% training_ids)
 
-# Create test data using remaining observations
+# Create test data using remaining 1/3 of observations
 test_dat <- prediction_dat %>% filter(!employee_id %in% training_ids)
 
 # Return Boolean to validate that all observations are accounted for
@@ -173,7 +179,7 @@ training_class_delta <- nrow(training_dat %>% filter(active == 0)) - nrow(traini
 training_dat_os <- training_dat
 
 # Set seed for reproducible results
-set.seed(123)
+set.seed(9876)
 
 # Oversample the underrepresented inactive class by training_class_delta to align observation counts with active class
 # Note: A loop is not the most efficient -- especially with large data sets -- but it is leveraged here to simplify instruction on SMOTE mechanics
@@ -244,8 +250,8 @@ rf.os.fit <- randomForest::randomForest(active ~ overtime + job_lvl + engagement
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Develop function that returns a data frame of model performance statistics
-classifier.perf <- function(model, actual, predicted){
+# Develop function that returns a data frame of classification model performance statistics
+classifier.perf <- function(actual, predicted){
   
   # Check for missing values; metrics will be computed on non-missing values only
   predicted <- predicted[!is.na(actual)]
@@ -267,12 +273,12 @@ classifier.perf <- function(model, actual, predicted){
   precision <- signif(100 * (TP / (TP + FP)), 3)
   neg_pred_val <- signif(100 * (TN / (TN + FN)), 3)
   
-  mdl <- rep(model, times = 5)
+  # Format output
   stat_nm <- c("accuracy", "sensitivity", "specificity", "precision", "neg_pred_val")
   stat_vl <- c(accuracy, sensitivity, specificity, precision, neg_pred_val)
   
   # Return model performance statistics in a data frame
-  return(data.frame(mdl, stat_nm, stat_vl))
+  return(data.frame(stat_nm, stat_vl))
   
 }
 
@@ -285,32 +291,36 @@ classifier.perf <- function(model, actual, predicted){
 ```{r, message = FALSE, warning = FALSE}
 
 # Initialize empty data frame for model performance stats
-perf.metrics <- NULL
+class.perf.metrics <- NULL
 
 # Set probability threshold for classification
 prob_threshold <- .7
 
 # Predict with logistic regression model
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
-                      model = "GLM",
+class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
+                      model = rep("GLM", nrow(test_dat)),
+                      classifier.perf(
                       actual = test_dat$active,
                       predicted = ifelse(predict(glm.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with logistic regression model (SMOTE)
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
-                      model = "GLM (SMOTE)",
+class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
+                      model = rep("GLM (SMOTE)", nrow(test_dat)),
+                      classifier.perf(
                       actual = test_dat$active,
                       predicted = ifelse(predict(glm.os.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with RF model
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
-                      model = "RF",
+class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
+                      model = rep("RF", nrow(test_dat)),
+                      classifier.perf(
                       actual = test_dat$active,
                       predicted = ifelse(predict(rf.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
 # Predict with RF model (SMOTE)
-perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
-                      model = "RF (SMOTE)",
+class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
+                      model = rep("RF (SMOTE)", nrow(test_dat)),
+                      classifier.perf(
                       actual = test_dat$active,
                       predicted = ifelse(predict(rf.os.fit, test_dat, type = "response") >= prob_threshold, 1, 0))))
 
@@ -324,13 +334,13 @@ perf.metrics <- rbind(perf.metrics, cbind.data.frame(classifier.perf(
 library(ggplot2)
 
 # Sort performance statistics in df
-perf.metrics$stat_nm <- factor(perf.metrics$stat_nm, levels = c("accuracy", "sensitivity", "specificity", "precision", "neg_pred_val"))
+class.perf.metrics$stat_nm <- factor(class.perf.metrics$stat_nm, levels = c("accuracy", "sensitivity", "specificity", "precision", "neg_pred_val"))
 
 # Visualize performance stats by model type
-ggplot2::ggplot(perf.metrics,
+ggplot2::ggplot(class.perf.metrics,
 ggplot2::aes(x = stat_nm, y = stat_vl)) +
-ggplot2::labs(x = "Performance Statistic", y = "Performance Value (%)") +
-ggplot2::geom_bar(aes(fill = mdl), position = "dodge", stat = "identity") +
+ggplot2::labs(x = "\nPerformance Statistic", y = "Performance Value (%)") +
+ggplot2::geom_bar(aes(fill = model), position = "dodge", stat = "identity") +
 ggplot2::theme_bw() +
 ggplot2::scale_fill_manual(values = c("#003366", "#0033FF", "#0099FF", "#66CCFF")) +
 ggplot2::guides(fill = guide_legend(title = "Model"))
@@ -368,9 +378,11 @@ rpart.plot(tree)
 
 ```  
   
-  As shown in Figure \@ref(fig:rpart-tree), the most important predictor for splitting the data is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving, which is expected given we balanced the classes using SMOTE. Among employees with `interview_rating < 3.5`, there is a 99 percent chance of leaving and among employees with `interview_rating >= 3.5`, there is a 1 percent chance of leaving (`1 - .99 = .01`). Additional partitioning by `overtime` further increases node purity since classes are mixed for those with interview ratings between `3.3` and `3.6`. However, given the excellent performance splitting data only on `interview_rating`, further partitioning will likely result in modeling noise and overfitting.
+  As shown in Figure \@ref(fig:rpart-tree), the most important predictor for splitting the data is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving and staying, which is expected given we balanced the classes using SMOTE. A prediction that is no better than a fair coin toss is of course not helpful. Walking down to the leaf nodes, we can see that for the 50% of employees with `interview_rating >= 3.5`, the algorithm predicts they will stay (`status = 0`); for the 50% of employees with `interview_rating < 3.5`, the algorithm predicts they will leave (`status = 1`). Given what we observed in the results of the binomial logistic regression output, additional partitioning by `overtime` may further increase node purity on the test data since classes are mixed for those with interview ratings between `3.3` and `3.6`. However, given the strong performance splitting data only on `interview_rating`, further partitioning will likely result in modeling noise and overfitting.
   
   **Forecasting**
+  
+  To demonstrate the prediction workflow steps for forecasting, we will leverage our `turnover_trends` data set:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -380,17 +392,148 @@ library(dplyr)
 # Load employee data
 forecasting_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/turnover_trends.csv")
 
+# One-hot encode remote status
+forecasting_dat$remote <- ifelse(forecasting_dat$remote == 'Yes', 1, 0)
+
 ```
   
-  * **Step 1**: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  * **Step 1**: Partition data into training and test sets for cross-validation.
+  
+  Since we have 60 months of data for each combination of `job`, `level`, and `remote` in the data, we will select combinations for which `turnover_rate` can be projected for future months. To simplify, we will train models using data for the first 48 months and test using the final 12 months.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Create training data
+train_dat_1 <- forecasting_dat %>% filter(job == 'People Scientist' & level == '1' & year %in% 1:4)
+train_dat_2 <- forecasting_dat %>% filter(job == 'Data Engineer' & level == '2' & year %in% 1:4)
+train_dat_3 <- forecasting_dat %>% filter(job == 'Insights Consultant' & level == '3' & year %in% 1:4)
+
+# Create test data
+test_dat_1 <- forecasting_dat %>% filter(job == 'People Scientist' & level == '1' & remote == 1 & year == 5)
+test_dat_2 <- forecasting_dat %>% filter(job == 'Data Engineer' & level == '2' & remote == 0 & year == 5)
+test_dat_3 <- forecasting_dat %>% filter(job == 'Insights Consultant' & level == '3' & remote == 1 & year == 5)
+
+```
   
   * **Step 2**: Build models using training data.
   
+  Given the significant quadratic and cubic terms identified in Chapter \@ref(lme), we will fit cubic regression models on the training data.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Fit cubic models
+train.cube.fit.1 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_1)
+train.cube.fit.2 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_2)
+train.cube.fit.3 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_3)
+
+```
+
+```{r train-cube-fit-1, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 1.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Produce tabular summary of regression model output
+flextable::as_flextable(train.cube.fit.1)
+
+```
+
+```{r train-cube-fit-2, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 2.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Produce tabular summary of regression model output
+flextable::as_flextable(train.cube.fit.2)
+
+```
+
+```{r train-cube-fit-3, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 3.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Produce tabular summary of regression model output
+flextable::as_flextable(train.cube.fit.3)
+
+```
+
+  As expected, all linear, quadratic, and cubic terms are statistically significant.
+  
   * **Step 3**: Use models to make predictions on test data.
   
+  We will again build a function to evaluate the performance of the fitted models applied to test data rather than using delivered functions. The following function will return *mean absolute deviation (MAD)*, *mean squared error (MSE)*, and *mean absolute percentage error (MAPE)*:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Develop function that returns a data frame of forecasting model performance statistics
+forecast.perf <- function(actual, predicted){
+  
+  # Check for missing values; metrics will be computed on non-missing values only
+  predicted <- predicted[!is.na(actual)]
+  actual <- actual[!is.na(actual)]
+  actual <- actual[!is.na(predicted)]
+  
+  # Store rates to variables
+  mad <- round(mean(abs(actual - predicted)), 2)
+  mse <- round(mean((actual - predicted)^2), 2)
+  mape <- round(mean(abs((actual - predicted) / actual)) * 100, 2)
+  
+  # Return model performance statistics in a data frame
+  return(data.frame(mad, mse, mape))
+  
+}
+
+```
+
+  For this forecast, we will also produce a prediction interval. A **prediction interval** is a range of values that is likely to contain the outcome value for a single new observation given a set of predictors. For example, a 95% prediction interval of `[10 15]` indicates that we can be 95% confident that the observation for which a prediction is being made will have an actual outcome value between `10` and `15`. Note that this is very different from a confidence interval in inferential statistics, which is a range of values that likely contains the value of an unknown population parameter.
+  
+  We can produce a prediction interval by passing an additional `interval = 'predict'` argument into the `predict()` function:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Initialize empty data frames for model predictions and performance stats
+forecast.metrics <- NULL
+forecast.err.rates <- NULL
+  
+# Predict on test_dat_1
+forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
+                           data = "test_dat_1",
+                           month = test_dat_1$month,
+                           actual = test_dat_1$turnover_rate,
+                           predicted = predict(train.cube.fit.1, test_dat_1, type = "response"),
+                           lwr_bound = as.data.frame(predict(train.cube.fit.1, test_dat_1, type = "response", interval = "predict"))$lwr,
+                           upr_bound = as.data.frame(predict(train.cube.fit.1, test_dat_1, type = "response", interval = "predict"))$upr))
+
+forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
+                            data = "test_dat_1",
+                            forecast.perf(actual = test_dat_1$turnover_rate, predicted = predict(train.cube.fit.1, test_dat_1, type = "response"))))
+
+# Predict on test_dat_2
+forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
+                           data = "test_dat_2",
+                           month = test_dat_2$month,
+                           actual = test_dat_2$turnover_rate,
+                           predicted = predict(train.cube.fit.2, test_dat_2, type = "response"),
+                           lwr_bound = as.data.frame(predict(train.cube.fit.2, test_dat_2, type = "response", interval = "predict"))$lwr,
+                           upr_bound = as.data.frame(predict(train.cube.fit.2, test_dat_2, type = "response", interval = "predict"))$upr))
+
+forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
+                            data = "test_dat_2",
+                            forecast.perf(actual = test_dat_2$turnover_rate, predicted = predict(train.cube.fit.2, test_dat_2, type = "response"))))
+
+# Predict on test_dat_3
+forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
+                           data = "test_dat_3",
+                           month = test_dat_3$month,
+                           actual = test_dat_3$turnover_rate,
+                           predicted = predict(train.cube.fit.3, test_dat_3, type = "response"),
+                           lwr_bound = as.data.frame(predict(train.cube.fit.3, test_dat_3, type = "response", interval = "predict"))$lwr,
+                           upr_bound = as.data.frame(predict(train.cube.fit.3, test_dat_3, type = "response", interval = "predict"))$upr))
+
+forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
+                            data = "test_dat_3",
+                            forecast.perf(actual = test_dat_3$turnover_rate, predicted = predict(train.cube.fit.3, test_dat_3, type = "response"))))
+
+```
+  
+
+
   * **Step 4**: Evaluate model performance.
 
 
 
 ## Review Questions
 
+1. 
