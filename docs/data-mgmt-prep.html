@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-07-04" />
+<meta name="date" content="2022-07-06" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -402,11 +402,11 @@ Figure 8.5: Type 1 SCD
 <h2><span class="header-section-number">8.2</span> Data Screening &amp; Cleaning</h2>
 <p>The initial data review process is sometimes referred to as <strong>exploratory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations. An analytics ideal is <em>unimpeachable data quality</em>, which is to say that the rigor of upstream processes and downstream data screening is such that stakeholders become confident enough to channel more energy towards actioning on results than questioning the quality. Suspect data quality is often surfaced during the initial EDA step and affords the opportunity to address and avoid stakeholders discounting results during later phases of the project.</p>
 <p>A handy function in base R for initial data screening is <code>summary()</code>:</p>
-<div class="sourceCode" id="cb237"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb237-1"><a href="data-mgmt-prep.html#cb237-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb237-2"><a href="data-mgmt-prep.html#cb237-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</span>
-<span id="cb237-3"><a href="data-mgmt-prep.html#cb237-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb237-4"><a href="data-mgmt-prep.html#cb237-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize df</span></span>
-<span id="cb237-5"><a href="data-mgmt-prep.html#cb237-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees)</span></code></pre></div>
+<div class="sourceCode" id="cb242"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb242-1"><a href="data-mgmt-prep.html#cb242-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb242-2"><a href="data-mgmt-prep.html#cb242-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv&quot;</span>)</span>
+<span id="cb242-3"><a href="data-mgmt-prep.html#cb242-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb242-4"><a href="data-mgmt-prep.html#cb242-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize df</span></span>
+<span id="cb242-5"><a href="data-mgmt-prep.html#cb242-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees)</span></code></pre></div>
 <pre><code>##   employee_id      active          stock_opt_lvl      trainings    
 ##  Min.   :1001   Length:1470        Min.   :0.0000   Min.   :0.000  
 ##  1st Qu.:1368   Class :character   1st Qu.:0.0000   1st Qu.:2.000  
@@ -487,25 +487,25 @@ Figure 8.5: Type 1 SCD
 <p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records – even with a sufficiently large sample – may bias analyses if there are missingness patterns.</p>
 <p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
 <p>Let’s evaluate the <code>employees</code> data frame for missing <code>annual_comp</code> values using the logical <code>is.na()</code> function, and return values of variables relevant in determining one’s annual compensation:</p>
-<div class="sourceCode" id="cb239"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb239-1"><a href="data-mgmt-prep.html#cb239-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store original annual comp for sample employee</span></span>
-<span id="cb239-2"><a href="data-mgmt-prep.html#cb239-2" aria-hidden="true" tabindex="-1"></a>orig_comp <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)</span>
-<span id="cb239-3"><a href="data-mgmt-prep.html#cb239-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb239-4"><a href="data-mgmt-prep.html#cb239-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></span>
-<span id="cb239-5"><a href="data-mgmt-prep.html#cb239-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb239-6"><a href="data-mgmt-prep.html#cb239-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb239-7"><a href="data-mgmt-prep.html#cb239-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Return relevant employee characteristics where annual comp is missing</span></span>
-<span id="cb239-8"><a href="data-mgmt-prep.html#cb239-8" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(employees, <span class="fu">is.na</span>(annual_comp), <span class="at">select =</span> <span class="fu">c</span>(employee_id, job_title, job_lvl))</span></code></pre></div>
+<div class="sourceCode" id="cb244"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb244-1"><a href="data-mgmt-prep.html#cb244-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store original annual comp for sample employee</span></span>
+<span id="cb244-2"><a href="data-mgmt-prep.html#cb244-2" aria-hidden="true" tabindex="-1"></a>orig_comp <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)</span>
+<span id="cb244-3"><a href="data-mgmt-prep.html#cb244-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb244-4"><a href="data-mgmt-prep.html#cb244-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></span>
+<span id="cb244-5"><a href="data-mgmt-prep.html#cb244-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb244-6"><a href="data-mgmt-prep.html#cb244-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb244-7"><a href="data-mgmt-prep.html#cb244-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Return relevant employee characteristics where annual comp is missing</span></span>
+<span id="cb244-8"><a href="data-mgmt-prep.html#cb244-8" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(employees, <span class="fu">is.na</span>(annual_comp), <span class="at">select =</span> <span class="fu">c</span>(employee_id, job_title, job_lvl))</span></code></pre></div>
 <pre><code>##      employee_id              job_title job_lvl
 ## 1176        2176 Manufacturing Director       2</code></pre>
 <p>Next, we can impute the average value of <code>annual_comp</code> based on employees with the same values for the relevant variables:</p>
-<div class="sourceCode" id="cb241"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb241-1"><a href="data-mgmt-prep.html#cb241-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></span>
-<span id="cb241-2"><a href="data-mgmt-prep.html#cb241-2" aria-hidden="true" tabindex="-1"></a>imputed_comp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Manufacturing Director&#39;</span> <span class="sc">&amp;</span> job_lvl <span class="sc">==</span> <span class="dv">2</span>, <span class="at">select =</span> annual_comp), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb241-3"><a href="data-mgmt-prep.html#cb241-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb241-4"><a href="data-mgmt-prep.html#cb241-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Impute missing comp for relevant segment</span></span>
-<span id="cb241-5"><a href="data-mgmt-prep.html#cb241-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> imputed_comp</span>
-<span id="cb241-6"><a href="data-mgmt-prep.html#cb241-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb241-7"><a href="data-mgmt-prep.html#cb241-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display absolute difference between original and imputed comp</span></span>
-<span id="cb241-8"><a href="data-mgmt-prep.html#cb241-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">abs</span>(orig_comp <span class="sc">-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)), <span class="dv">0</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb246"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb246-1"><a href="data-mgmt-prep.html#cb246-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></span>
+<span id="cb246-2"><a href="data-mgmt-prep.html#cb246-2" aria-hidden="true" tabindex="-1"></a>imputed_comp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Manufacturing Director&#39;</span> <span class="sc">&amp;</span> job_lvl <span class="sc">==</span> <span class="dv">2</span>, <span class="at">select =</span> annual_comp), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb246-3"><a href="data-mgmt-prep.html#cb246-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb246-4"><a href="data-mgmt-prep.html#cb246-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Impute missing comp for relevant segment</span></span>
+<span id="cb246-5"><a href="data-mgmt-prep.html#cb246-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> imputed_comp</span>
+<span id="cb246-6"><a href="data-mgmt-prep.html#cb246-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb246-7"><a href="data-mgmt-prep.html#cb246-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display absolute difference between original and imputed comp</span></span>
+<span id="cb246-8"><a href="data-mgmt-prep.html#cb246-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">abs</span>(orig_comp <span class="sc">-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)), <span class="dv">0</span>)</span></code></pre></div>
 <pre><code>##      annual_comp
 ## 1176        1169</code></pre>
 <p>While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. <em>Linear regression</em> and <em>K-Nearest Neighbor (KNN)</em> models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. <strong>Multiple imputation</strong> combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.</p>
@@ -521,13 +521,13 @@ Figure 8.5: Type 1 SCD
 <p>Variables with <strong>low variability</strong> often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.</p>
 <p>When working with survey data, checking for <strong>straightlining</strong> should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases – especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing “I plan to be here in a year” to “I do not plan to be here in a year”), which we expect to be inversely related, this gives added support for discarding these responses.</p>
 <p>Fields with low variability can be easily identified using descriptive statistics from the <code>summary()</code> function. If the <code>Min</code> and <code>Max</code> values are equal, there is no variability in the field’s values. Based on the following descriptives, we should remove <code>standard_hrs</code> from the data:</p>
-<div class="sourceCode" id="cb243"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb243-1"><a href="data-mgmt-prep.html#cb243-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
-<span id="cb243-2"><a href="data-mgmt-prep.html#cb243-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>standard_hrs)</span></code></pre></div>
+<div class="sourceCode" id="cb248"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb248-1"><a href="data-mgmt-prep.html#cb248-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
+<span id="cb248-2"><a href="data-mgmt-prep.html#cb248-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>standard_hrs)</span></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##      80      80      80      80      80      80</code></pre>
 <p>Given that the data dictionary in Chapter <a href="getting-started.html#getting-started">1</a> indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:</p>
-<div class="sourceCode" id="cb245"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb245-1"><a href="data-mgmt-prep.html#cb245-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
-<span id="cb245-2"><a href="data-mgmt-prep.html#cb245-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>perf_rating)</span></code></pre></div>
+<div class="sourceCode" id="cb250"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb250-1"><a href="data-mgmt-prep.html#cb250-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
+<span id="cb250-2"><a href="data-mgmt-prep.html#cb250-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>perf_rating)</span></code></pre></div>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 ##   3.000   3.000   3.000   3.154   3.000   4.000</code></pre>
 <p>Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that could bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.</p>
@@ -551,14 +551,14 @@ Figure 8.6: One-Hot Encoding
 </p>
 </div>
 <p>For a categorical variable with only two values, the <code>ifelse()</code> function can be leveraged to assign values:</p>
-<div class="sourceCode" id="cb247"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb247-1"><a href="data-mgmt-prep.html#cb247-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return unique values of gender field</span></span>
-<span id="cb247-2"><a href="data-mgmt-prep.html#cb247-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(employees<span class="sc">$</span>gender)</span></code></pre></div>
+<div class="sourceCode" id="cb252"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb252-1"><a href="data-mgmt-prep.html#cb252-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return unique values of gender field</span></span>
+<span id="cb252-2"><a href="data-mgmt-prep.html#cb252-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(employees<span class="sc">$</span>gender)</span></code></pre></div>
 <pre><code>## [1] &quot;Female&quot; &quot;Male&quot;</code></pre>
-<div class="sourceCode" id="cb249"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb249-1"><a href="data-mgmt-prep.html#cb249-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gender one-hot encoding</span></span>
-<span id="cb249-2"><a href="data-mgmt-prep.html#cb249-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>gender_ohe <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>gender <span class="sc">==</span> <span class="st">&#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb249-3"><a href="data-mgmt-prep.html#cb249-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb249-4"><a href="data-mgmt-prep.html#cb249-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview records</span></span>
-<span id="cb249-5"><a href="data-mgmt-prep.html#cb249-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(employee_id, gender_ohe)))</span></code></pre></div>
+<div class="sourceCode" id="cb254"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb254-1"><a href="data-mgmt-prep.html#cb254-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gender one-hot encoding</span></span>
+<span id="cb254-2"><a href="data-mgmt-prep.html#cb254-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>gender_ohe <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>gender <span class="sc">==</span> <span class="st">&#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb254-3"><a href="data-mgmt-prep.html#cb254-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb254-4"><a href="data-mgmt-prep.html#cb254-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview records</span></span>
+<span id="cb254-5"><a href="data-mgmt-prep.html#cb254-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(employee_id, gender_ohe)))</span></code></pre></div>
 <pre><code>##   employee_id gender_ohe
 ## 1        1001          1
 ## 2        1002          0
@@ -567,18 +567,18 @@ Figure 8.6: One-Hot Encoding
 ## 5        1005          0
 ## 6        1006          0</code></pre>
 <p>For variables with more than 2 categories, we can leverage the <code>model.matrix()</code> function for one-hot encoding. Let’s illustrate be encoding locations.</p>
-<div class="sourceCode" id="cb251"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb251-1"><a href="data-mgmt-prep.html#cb251-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return counts by department</span></span>
-<span id="cb251-2"><a href="data-mgmt-prep.html#cb251-2" aria-hidden="true" tabindex="-1"></a>employees <span class="sc">%&gt;%</span> <span class="fu">count</span>(dept, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb256"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb256-1"><a href="data-mgmt-prep.html#cb256-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return counts by department</span></span>
+<span id="cb256-2"><a href="data-mgmt-prep.html#cb256-2" aria-hidden="true" tabindex="-1"></a>employees <span class="sc">%&gt;%</span> <span class="fu">count</span>(dept, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>##                     dept   n
 ## 1 Research &amp; Development 961
 ## 2                  Sales 446
 ## 3        Human Resources  63</code></pre>
 <p>By default, the <code>model.matrix()</code> function will produce a matrix of 1/0 values for <span class="math inline">\(k-1\)</span> categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using <code>-1</code> in the first argument passed to <code>model.matrix()</code> and then choose the reference group for the analysis in a subsequent step.</p>
-<div class="sourceCode" id="cb253"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb253-1"><a href="data-mgmt-prep.html#cb253-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Department one-hot encoding</span></span>
-<span id="cb253-2"><a href="data-mgmt-prep.html#cb253-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>dept<span class="dv">-1</span>, <span class="at">data =</span> employees)</span>
-<span id="cb253-3"><a href="data-mgmt-prep.html#cb253-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb253-4"><a href="data-mgmt-prep.html#cb253-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview data</span></span>
-<span id="cb253-5"><a href="data-mgmt-prep.html#cb253-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
+<div class="sourceCode" id="cb258"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb258-1"><a href="data-mgmt-prep.html#cb258-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Department one-hot encoding</span></span>
+<span id="cb258-2"><a href="data-mgmt-prep.html#cb258-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>dept<span class="dv">-1</span>, <span class="at">data =</span> employees)</span>
+<span id="cb258-3"><a href="data-mgmt-prep.html#cb258-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb258-4"><a href="data-mgmt-prep.html#cb258-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview data</span></span>
+<span id="cb258-5"><a href="data-mgmt-prep.html#cb258-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
 <pre><code>##   deptHuman Resources deptResearch &amp; Development deptSales
 ## 1                   0                          0         1
 ## 2                   0                          1         0
@@ -587,11 +587,11 @@ Figure 8.6: One-Hot Encoding
 ## 5                   0                          1         0
 ## 6                   0                          1         0</code></pre>
 <p>We will drop the department with the lowest <span class="math inline">\(n\)</span> rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span>, we can use the <code>colSums()</code> function to sum each column and the <code>which.min()</code> function to identify which has the lowest sum (i.e., smallest department by employee count).</p>
-<div class="sourceCode" id="cb255"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb255-1"><a href="data-mgmt-prep.html#cb255-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop department with lowest sum (lowest n-count)</span></span>
-<span id="cb255-2"><a href="data-mgmt-prep.html#cb255-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> dept_ohe[, <span class="sc">-</span><span class="fu">which.min</span>(<span class="fu">colSums</span>(dept_ohe))]</span>
-<span id="cb255-3"><a href="data-mgmt-prep.html#cb255-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb255-4"><a href="data-mgmt-prep.html#cb255-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview refined one-hot encoded data</span></span>
-<span id="cb255-5"><a href="data-mgmt-prep.html#cb255-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
+<div class="sourceCode" id="cb260"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb260-1"><a href="data-mgmt-prep.html#cb260-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop department with lowest sum (lowest n-count)</span></span>
+<span id="cb260-2"><a href="data-mgmt-prep.html#cb260-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> dept_ohe[, <span class="sc">-</span><span class="fu">which.min</span>(<span class="fu">colSums</span>(dept_ohe))]</span>
+<span id="cb260-3"><a href="data-mgmt-prep.html#cb260-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb260-4"><a href="data-mgmt-prep.html#cb260-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview refined one-hot encoded data</span></span>
+<span id="cb260-5"><a href="data-mgmt-prep.html#cb260-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
 <pre><code>##   deptResearch &amp; Development deptSales
 ## 1                          0         1
 ## 2                          1         0
@@ -599,11 +599,11 @@ Figure 8.6: One-Hot Encoding
 ## 4                          1         0
 ## 5                          1         0
 ## 6                          1         0</code></pre>
-<div class="sourceCode" id="cb257"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb257-1"><a href="data-mgmt-prep.html#cb257-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine employees and matrix containing one-hot encoded departments</span></span>
-<span id="cb257-2"><a href="data-mgmt-prep.html#cb257-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, dept_ohe)</span>
-<span id="cb257-3"><a href="data-mgmt-prep.html#cb257-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb257-4"><a href="data-mgmt-prep.html#cb257-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop original department field</span></span>
-<span id="cb257-5"><a href="data-mgmt-prep.html#cb257-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(dept))</span></code></pre></div>
+<div class="sourceCode" id="cb262"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb262-1"><a href="data-mgmt-prep.html#cb262-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine employees and matrix containing one-hot encoded departments</span></span>
+<span id="cb262-2"><a href="data-mgmt-prep.html#cb262-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, dept_ohe)</span>
+<span id="cb262-3"><a href="data-mgmt-prep.html#cb262-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb262-4"><a href="data-mgmt-prep.html#cb262-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop original department field</span></span>
+<span id="cb262-5"><a href="data-mgmt-prep.html#cb262-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(dept))</span></code></pre></div>
 </div>
 <div id="feature-engineering" class="section level2" number="8.4">
 <h2><span class="header-section-number">8.4</span> Feature Engineering</h2>

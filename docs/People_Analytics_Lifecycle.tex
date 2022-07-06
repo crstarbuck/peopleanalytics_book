@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-04}
+\date{2022-07-06}
 
 \begin{document}
 \maketitle
@@ -652,7 +652,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpAcf8Ny/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp01G0Cg/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -2904,9 +2904,9 @@ The \texttt{median()} function in R can be used to handle the sorting and midpoi
 ## [1] 3
 \end{verbatim}
 
-In this example, the median is only \texttt{3} while the mean is \texttt{87}. Large deltas between mean and median values provide important information about the distribution of data.
+In this example, the median is only \texttt{3} while the mean is \(\bar{x} = 87\). Large deltas between mean and median values provide important information about the distribution of data.
 
-In this example, a single value has significant leverage on these measures of central tendency. To demonstrate, let's eliminate one instance of \texttt{3} from the vector and recalculate the mean and median:
+Here, a single value has significant leverage on these measures of central tendency. To demonstrate, let's eliminate one instance of \texttt{3} from the vector and recalculate the mean and median:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -2937,11 +2937,44 @@ In this example, a single value has significant leverage on these measures of ce
 ## [1] 51.5
 \end{verbatim}
 
-By removing a single value from this vector, the mean increased from \texttt{87} to \texttt{101} and the median from \texttt{3} to \texttt{51.5}!
+By removing a single value from this vector, the mean increased from \(\bar{x} = 87\) to \(\bar{x} = 101\) and the median from \texttt{3} to \texttt{51.5}!
 
-In some cases, outliers may be the cause of large discrepancies between mean and median values since the mean can be sensitive to extreme values. However, differences in mean and median values for \texttt{x} and \texttt{x1} in our example are \emph{not} due to an extreme value (outlier), as \texttt{3} is similar to half of the values in the vector. This highlights the importance of understanding the data distribution and evaluating \emph{both} the mean and median.
+Note that differences in mean and median values for \texttt{x} and \texttt{x1} are \emph{not} due to an extreme value (outlier), as \texttt{3} is similar to half of the values in the vector. However, in some cases extreme values may be the cause of large discrepancies between mean and median values since the mean can be sensitive to extreme values. Consider the following set of values:
 
-The reality is that both the mean and median can be misleading -- and even inappropriate. Consider an example of a hyper-growth company that has hired the majority of its workforce in the past few months. It is unlikely that either the mean or median organization tenure will be a useful metric.
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fill vector x2 with integers}
+\NormalTok{x2 }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{4}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{1000}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate mean of vector x2}
+\FunctionTok{mean}\NormalTok{(x2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 169.1667
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate median of vector x2}
+\FunctionTok{median}\NormalTok{(x2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 3.5
+\end{verbatim}
+
+In this case, the value of \texttt{1000} has a significant influence on the mean (\(\bar{x} = 169.2\)) but the median of \texttt{3.5} is representative of the middle of values in this vector.
+
+It is important to understand the data distribution and evaluate \emph{both} the mean and median. The reality is that both the mean and median can be misleading -- and even inappropriate. It would not be too useful to calculate median organization tenure, for example, for a hyper-growth company that has hired the majority of its workforce in the past few months; long-tenured employees would be lost in this metric.
+
+The larger the \(n\)-count, the less influential an extreme value will be on \(\bar{x}\). As we will learn in Chapter \ref{inf-stats}, sample size is fundamental to our ability to achieve precise estimates of population parameters based on sample statistics.
 
 \textbf{Mode}
 
@@ -2952,7 +2985,7 @@ While \texttt{mean()} and \texttt{median()} are standard functions in R, \texttt
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Fill vector x2 with integers}
-\NormalTok{x2 }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{200}\NormalTok{, }\DecValTok{300}\NormalTok{, }\DecValTok{300}\NormalTok{)}
+\NormalTok{x3 }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{100}\NormalTok{, }\DecValTok{200}\NormalTok{, }\DecValTok{300}\NormalTok{, }\DecValTok{300}\NormalTok{)}
 
 \CommentTok{\# Create function to calculate statistical mode(s)}
 \NormalTok{stat.mode }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
@@ -2961,8 +2994,8 @@ While \texttt{mean()} and \texttt{median()} are standard functions in R, \texttt
 \NormalTok{  ux[tab }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(tab)]}
 \NormalTok{\}}
 
-\CommentTok{\# Return mode(s) of vector x}
-\FunctionTok{stat.mode}\NormalTok{(x2)}
+\CommentTok{\# Return mode(s) of vector x3}
+\FunctionTok{stat.mode}\NormalTok{(x3)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -3165,7 +3198,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-91-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-94-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -4073,11 +4106,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-112-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-115-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-112}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-115}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -4121,11 +4154,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-113-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-116-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-113}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-116}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -9404,7 +9437,7 @@ We will now integrate these concepts into attrition classification and forecasti
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  \textbf{Step 1}: Partition data into training and test sets for cross-validation.
 \item
   \textbf{Step 2}: Build models using training data.
 \item
@@ -9419,6 +9452,9 @@ To demonstrate the prediction workflow steps for classification, we will leverag
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+
 \CommentTok{\# Load employee data}
 \NormalTok{prediction\_dat }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
 
@@ -9430,20 +9466,23 @@ To demonstrate the prediction workflow steps for classification, we will leverag
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  \textbf{Step 1}: Partition data into training and test sets for cross-validation.
 \end{itemize}
 
 For this example, we will implement the validation set approach for CV.
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\# Set seed for reproducible training and test sets}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{9876}\NormalTok{)}
+
 \CommentTok{\# Randomly select 2/3 of employees for the training set}
 \NormalTok{training\_ids }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(prediction\_dat}\SpecialCharTok{$}\NormalTok{employee\_id, }\AttributeTok{size =} \FunctionTok{nrow}\NormalTok{(prediction\_dat) }\SpecialCharTok{*} \DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{FALSE}\NormalTok{)}
 
 \CommentTok{\# Create training data}
 \NormalTok{training\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
-\CommentTok{\# Create test data using remaining observations}
+\CommentTok{\# Create test data using remaining 1/3 of observations}
 \NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
 \CommentTok{\# Return Boolean to validate that all observations are accounted for}
@@ -9474,7 +9513,7 @@ While functions exist for implementing SMOTE, such as the \texttt{SMOTE()} funct
 \NormalTok{training\_dat\_os }\OtherTok{\textless{}{-}}\NormalTok{ training\_dat}
 
 \CommentTok{\# Set seed for reproducible results}
-\FunctionTok{set.seed}\NormalTok{(}\DecValTok{123}\NormalTok{)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{9876}\NormalTok{)}
 
 \CommentTok{\# Oversample the underrepresented inactive class by training\_class\_delta to align observation counts with active class}
 \CommentTok{\# Note: A loop is not the most efficient {-}{-} especially with large data sets {-}{-} but it is leveraged here to simplify instruction on SMOTE mechanics}
@@ -9545,43 +9584,43 @@ Next, we will fit a binomial logistic regression model using a subset of predict
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Null\ deviance:\ 855.8\ on\ 979\ degrees\ of\ freedom}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Null\ deviance:\ 869\ on\ 979\ degrees\ of\ freedom}}}} \\
 
 
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ deviance:\ 41.98\ on\ 975\ degrees\ of\ freedom}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ deviance:\ 44.47\ on\ 975\ degrees\ of\ freedom}}}} \\
 
 \endfoot
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{81.933}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{16.013}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{5.117}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{85.759}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{16.459}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{5.210}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{overtimeYes}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{3.547}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.958}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{3.701}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0002}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{overtimeYes}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.516}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.877}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.870}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0041}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ **}}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{job\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.359}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.496}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.723}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.4696}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{job\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.137}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.480}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.285}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.7753}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.278}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.657}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.423}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.6725}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.684}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.630}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-1.086}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.2775}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{interview\_rating}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-24.129}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{4.686}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-5.149}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{interview\_rating}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-24.918}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{4.767}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-5.227}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 \hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
 
@@ -9633,43 +9672,43 @@ Next, we will fit a binomial logistic regression model using a subset of predict
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Null\ deviance:\ 2287\ on\ 1649\ degrees\ of\ freedom}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Null\ deviance:\ 2276\ on\ 1641\ degrees\ of\ freedom}}}} \\
 
 
 
 
 
-\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ deviance:\ 95.84\ on\ 1645\ degrees\ of\ freedom}}}} \\
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.48in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ deviance:\ 88.66\ on\ 1637\ degrees\ of\ freedom}}}} \\
 
 \endfoot
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{102.220}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{14.720}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{6.944}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{131.129}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{19.566}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{6.702}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{overtimeYes}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{4.897}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.776}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{6.314}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{overtimeYes}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.271}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.676}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{3.359}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0008}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{job\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.231}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.294}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.785}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.4327}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{job\_lvl}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.048}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.367}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.130}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.8962}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.966}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.400}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-2.413}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0158}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ *}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{engagement}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.412}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.427}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.964}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.3353}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\ \ \ }}}} \\
 
 
 
 
 
-\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{interview\_rating}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-29.185}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{4.254}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-6.861}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.36in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{interview\_rating}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-37.875}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{5.646}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.77in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-6.708}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.78in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
 
 \hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
 
@@ -9706,8 +9745,8 @@ While there are packages in R which provide performance metrics for predictive m
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Develop function that returns a data frame of model performance statistics}
-\NormalTok{classifier.perf }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(model, actual, predicted)\{}
+\CommentTok{\# Develop function that returns a data frame of classification model performance statistics}
+\NormalTok{classifier.perf }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(actual, predicted)\{}
   
   \CommentTok{\# Check for missing values; metrics will be computed on non{-}missing values only}
 \NormalTok{  predicted }\OtherTok{\textless{}{-}}\NormalTok{ predicted[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(actual)]}
@@ -9729,12 +9768,12 @@ While there are packages in R which provide performance metrics for predictive m
 \NormalTok{  precision }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ (TP }\SpecialCharTok{/}\NormalTok{ (TP }\SpecialCharTok{+}\NormalTok{ FP)), }\DecValTok{3}\NormalTok{)}
 \NormalTok{  neg\_pred\_val }\OtherTok{\textless{}{-}} \FunctionTok{signif}\NormalTok{(}\DecValTok{100} \SpecialCharTok{*}\NormalTok{ (TN }\SpecialCharTok{/}\NormalTok{ (TN }\SpecialCharTok{+}\NormalTok{ FN)), }\DecValTok{3}\NormalTok{)}
   
-\NormalTok{  mdl }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(model, }\AttributeTok{times =} \DecValTok{5}\NormalTok{)}
+  \CommentTok{\# Format output}
 \NormalTok{  stat\_nm }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"accuracy"}\NormalTok{, }\StringTok{"sensitivity"}\NormalTok{, }\StringTok{"specificity"}\NormalTok{, }\StringTok{"precision"}\NormalTok{, }\StringTok{"neg\_pred\_val"}\NormalTok{)}
 \NormalTok{  stat\_vl }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(accuracy, sensitivity, specificity, precision, neg\_pred\_val)}
   
   \CommentTok{\# Return model performance statistics in a data frame}
-  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(mdl, stat\_nm, stat\_vl))}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(stat\_nm, stat\_vl))}
   
 \NormalTok{\}}
 \end{Highlighting}
@@ -9747,32 +9786,36 @@ We will predict the class using both binomial logistic regression and RF models,
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Initialize empty data frame for model performance stats}
-\NormalTok{perf.metrics }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{class.perf.metrics }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
 
 \CommentTok{\# Set probability threshold for classification}
 \NormalTok{prob\_threshold }\OtherTok{\textless{}{-}}\NormalTok{ .}\DecValTok{7}
 
 \CommentTok{\# Predict with logistic regression model}
-\NormalTok{perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}\FunctionTok{classifier.perf}\NormalTok{(}
-                      \AttributeTok{model =} \StringTok{"GLM"}\NormalTok{,}
+\NormalTok{class.perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(class.perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}
+                      \AttributeTok{model =} \FunctionTok{rep}\NormalTok{(}\StringTok{"GLM"}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(test\_dat)),}
+                      \FunctionTok{classifier.perf}\NormalTok{(}
                       \AttributeTok{actual =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{active,}
                       \AttributeTok{predicted =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{predict}\NormalTok{(glm.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}=}\NormalTok{ prob\_threshold, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))))}
 
 \CommentTok{\# Predict with logistic regression model (SMOTE)}
-\NormalTok{perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}\FunctionTok{classifier.perf}\NormalTok{(}
-                      \AttributeTok{model =} \StringTok{"GLM (SMOTE)"}\NormalTok{,}
+\NormalTok{class.perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(class.perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}
+                      \AttributeTok{model =} \FunctionTok{rep}\NormalTok{(}\StringTok{"GLM (SMOTE)"}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(test\_dat)),}
+                      \FunctionTok{classifier.perf}\NormalTok{(}
                       \AttributeTok{actual =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{active,}
                       \AttributeTok{predicted =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{predict}\NormalTok{(glm.os.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}=}\NormalTok{ prob\_threshold, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))))}
 
 \CommentTok{\# Predict with RF model}
-\NormalTok{perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}\FunctionTok{classifier.perf}\NormalTok{(}
-                      \AttributeTok{model =} \StringTok{"RF"}\NormalTok{,}
+\NormalTok{class.perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(class.perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}
+                      \AttributeTok{model =} \FunctionTok{rep}\NormalTok{(}\StringTok{"RF"}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(test\_dat)),}
+                      \FunctionTok{classifier.perf}\NormalTok{(}
                       \AttributeTok{actual =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{active,}
                       \AttributeTok{predicted =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rf.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}=}\NormalTok{ prob\_threshold, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))))}
 
 \CommentTok{\# Predict with RF model (SMOTE)}
-\NormalTok{perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}\FunctionTok{classifier.perf}\NormalTok{(}
-                      \AttributeTok{model =} \StringTok{"RF (SMOTE)"}\NormalTok{,}
+\NormalTok{class.perf.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(class.perf.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}
+                      \AttributeTok{model =} \FunctionTok{rep}\NormalTok{(}\StringTok{"RF (SMOTE)"}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(test\_dat)),}
+                      \FunctionTok{classifier.perf}\NormalTok{(}
                       \AttributeTok{actual =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{active,}
                       \AttributeTok{predicted =} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rf.os.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{) }\SpecialCharTok{\textgreater{}=}\NormalTok{ prob\_threshold, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{))))}
 \end{Highlighting}
@@ -9795,7 +9838,7 @@ We will predict the class using both binomial logistic regression and RF models,
 
 As we can see in Figure \ref{fig:class-mdl-perf}, with our stringent probability threshold set at \texttt{.7} for class delineation, all models had perfect specificity (correctly predicting those who stay) and precision (all employees who were predicted to attrit did). However, we see notable differences in sensitivity across the model types, and this is generally a very important performance measure in a predictive attrition project since the cost of not flagging employees who attrit can be costly. Sensitivity for the RF model trained on balanced classes (SMOTE) performed much better than its imbalanced RF counterpart (\texttt{95.6\%} vs.~\texttt{71.6\%}), reinforcing that ML models are sensitive (no pun intended) to imbalanced classes.
 
-The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a \textbf{Variable Importance Plot} on RF output using the \texttt{varImpPlot()} function from the `randomForest`` library to understand the relative importance of each predictor in the model.
+The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a \textbf{Variable Importance Plot} on RF output using the \texttt{varImpPlot()} function from the \texttt{randomForest} library to understand the relative importance of each predictor in the model.
 
 \begin{figure}
 
@@ -9825,9 +9868,11 @@ Let's compare the information from the RF's Variable Importance Plot to a single
 \caption{Decision tree for employee attrition prediction using training data with balanced classes (SMOTE).}\label{fig:rpart-tree}
 \end{figure}
 
-As shown in Figure \ref{fig:rpart-tree}, the only predictor on which the data are split is \texttt{interview\_rating} when using a single decision tree. At the root node, there is a 50 percent chance of leaving, which is expected given we balanced the classes using SMOTE. Among employees with \texttt{interview\_rating\ \textgreater{}=\ 3.5}, there is a 1 percent chance of leaving and among employees with \texttt{interview\_rating\ \textless{}\ 3.5}, there is a 99 percent chance of leaving. Given the excellent performance splitting data only on \texttt{interview\_rating}, no further partitioning is necessary since it would likely result in modeling noise and overfitting.
+As shown in Figure \ref{fig:rpart-tree}, the most important predictor for splitting the data is \texttt{interview\_rating} when using a single decision tree. At the root node, there is a 50 percent chance of leaving and staying, which is expected given we balanced the classes using SMOTE. A prediction that is no better than a fair coin toss is of course not helpful. Walking down to the leaf nodes, we can see that for the 50\% of employees with \texttt{interview\_rating\ \textgreater{}=\ 3.5}, the algorithm predicts they will stay (\texttt{status\ =\ 0}); for the 50\% of employees with \texttt{interview\_rating\ \textless{}\ 3.5}, the algorithm predicts they will leave (\texttt{status\ =\ 1}). Given what we observed in the results of the binomial logistic regression output, additional partitioning by \texttt{overtime} may further increase node purity on the test data since classes are mixed for those with interview ratings between \texttt{3.3} and \texttt{3.6}. However, given the strong performance splitting data only on \texttt{interview\_rating}, further partitioning will likely result in modeling noise and overfitting.
 
 \textbf{Forecasting}
+
+To demonstrate the prediction workflow steps for forecasting, we will leverage our \texttt{turnover\_trends} data set:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9840,18 +9885,283 @@ As shown in Figure \ref{fig:rpart-tree}, the only predictor on which the data ar
 \end{Shaded}
 
 \begin{itemize}
+\tightlist
 \item
-  \textbf{Step 1}: Partition data into training (2/3) and test (1/3) sets for cross-validation.
+  \textbf{Step 1}: Partition data into training and test sets for cross-validation.
+\end{itemize}
+
+Since we have 60 months of data for each combination of \texttt{job}, \texttt{level}, and \texttt{remote} in the data, we will select a combination for which \texttt{turnover\_rate} can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Create training data}
+\NormalTok{train\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)}
+
+\CommentTok{\# Create test data}
+\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{5}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
 \item
   \textbf{Step 2}: Build models using training data.
+\end{itemize}
+
+Given the significant quadratic and cubic terms identified in Chapter \ref{lme}, we will fit a cubic regression model on the training data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Fit cubic model}
+\NormalTok{train.cube.fit }\OtherTok{\textless{}{-}} \FunctionTok{lm}\NormalTok{(turnover\_rate }\SpecialCharTok{\textasciitilde{}}\NormalTok{ year }\SpecialCharTok{+}\NormalTok{ month }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(month}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{I}\NormalTok{(month}\SpecialCharTok{\^{}}\DecValTok{3}\NormalTok{) }\SpecialCharTok{+}\NormalTok{ remote, }\AttributeTok{data =}\NormalTok{ train\_dat)}
+
+\CommentTok{\# Produce tabular summary of regression model output}
+\NormalTok{flextable}\SpecialCharTok{::}\FunctionTok{as\_flextable}\NormalTok{(train.cube.fit)}
+\end{Highlighting}
+\end{Shaded}
+
+\providecommand{\docline}[3]{\noalign{\global\setlength{\arrayrulewidth}{#1}}\arrayrulecolor[HTML]{#2}\cline{#3}}
+
+\setlength{\tabcolsep}{2pt}
+
+\renewcommand*{\arraystretch}{1.5}
+
+\begin{longtable}[c]{|p{1.02in}|p{0.88in}|p{1.29in}|p{0.80in}|p{0.75in}|p{0.40in}}
+
+
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\endfirsthead
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Estimate}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Standard\ Error}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{t\ value}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Pr(>|t|)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}\endhead
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedleft}p{\dimexpr 5.15in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{\textit{Signif.\ codes:\ 0\ <=\ '***'\ <\ 0.001\ <\ '**'\ <\ 0.01\ <\ '*'\ <\ 0.05}}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.15in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.15in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Residual\ standard\ error:\ 0.253\ on\ 90\ degrees\ of\ freedom}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.15in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{Multiple\ R-squared:\ 0.9499,\ Adjusted\ R-squared:\ 0.9471}}}} \\
+
+
+
+
+
+\multicolumn{6}{!{\color[HTML]{FFFFFF}\vrule width 0pt}>{\raggedright}p{\dimexpr 5.15in+10\tabcolsep+5\arrayrulewidth}!{\color[HTML]{FFFFFF}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{F-statistic:\ 341.4\ on\ 90\ and\ 5\ DF,\ p-value:\ 0.0000}}}} \\
+
+\endfoot
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{(Intercept)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.765}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.159}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{17.343}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{year}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.113}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.023}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-4.893}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{month}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{2.410}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.094}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{25.753}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{I(month\\\textasciicircum2)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-0.410}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.016}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-25.014}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{I(month\\\textasciicircum3)}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.020}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.001}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{24.064}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+
+
+
+
+\multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 1.02in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{remoteYes}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.88in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-1.640}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 1.29in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.052}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.8in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{-31.756}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedleft}p{\dimexpr 0.75in+0\tabcolsep+0\arrayrulewidth}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{0.0000}}}} & \multicolumn{1}{!{\color[HTML]{000000}\vrule width 0pt}>{\raggedright}p{\dimexpr 0.4in+0\tabcolsep+0\arrayrulewidth}!{\color[HTML]{000000}\vrule width 0pt}}{\fontsize{11}{11}\selectfont{\textcolor[HTML]{000000}{\global\setmainfont{Helvetica}{***}}}} \\
+
+\hhline{>{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}->{\arrayrulecolor[HTML]{666666}\global\arrayrulewidth=2pt}-}
+
+
+
+\end{longtable}
+
+All linear, quadratic, and cubic terms on \texttt{month} are statistically significant at the \(p < .001\) level.
+
+\begin{itemize}
+\tightlist
 \item
   \textbf{Step 3}: Use models to make predictions on test data.
+\end{itemize}
+
+We will again build a function to evaluate the performance of the fitted models applied to test data rather than using delivered functions. The following function will return \emph{mean absolute deviation (MAD)}, \emph{mean squared error (MSE)}, and \emph{mean absolute percentage error (MAPE)}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Develop function that returns a data frame of forecasting model performance statistics}
+\NormalTok{forecast.perf }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(actual, predicted)\{}
+  
+  \CommentTok{\# Check for missing values; metrics will be computed on non{-}missing values only}
+\NormalTok{  predicted }\OtherTok{\textless{}{-}}\NormalTok{ predicted[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(actual)]}
+\NormalTok{  actual }\OtherTok{\textless{}{-}}\NormalTok{ actual[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(actual)]}
+\NormalTok{  actual }\OtherTok{\textless{}{-}}\NormalTok{ actual[}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(predicted)]}
+  
+  \CommentTok{\# Store rates to variables}
+\NormalTok{  mad }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{mean}\NormalTok{(}\FunctionTok{abs}\NormalTok{(actual }\SpecialCharTok{{-}}\NormalTok{ predicted)), }\DecValTok{2}\NormalTok{)}
+\NormalTok{  mse }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{mean}\NormalTok{((actual }\SpecialCharTok{{-}}\NormalTok{ predicted)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{), }\DecValTok{2}\NormalTok{)}
+\NormalTok{  mape }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{mean}\NormalTok{(}\FunctionTok{abs}\NormalTok{((actual }\SpecialCharTok{{-}}\NormalTok{ predicted) }\SpecialCharTok{/}\NormalTok{ actual)) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{2}\NormalTok{)}
+  
+  \CommentTok{\# Return model performance statistics in a data frame}
+  \FunctionTok{return}\NormalTok{(}\FunctionTok{data.frame}\NormalTok{(mad, mse, mape))}
+  
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+For this forecast, we will also produce a prediction interval. A \textbf{prediction interval} is a range of values that is likely to contain the outcome value for a single new observation given a set of predictors. For example, a 95\% prediction interval of \texttt{{[}10\ 15{]}} indicates that we can be 95\% confident that the observation for which a prediction is being made will have an actual outcome value between \texttt{10} and \texttt{15}. Note that this is very different from a confidence interval in inferential statistics, which is a range of values that likely contains the value of an unknown population parameter.
+
+We can produce a prediction interval by passing an additional \texttt{interval\ =\ \textquotesingle{}predict\textquotesingle{}} argument into the \texttt{predict()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Initialize empty data frames for model predictions and performance stats}
+\NormalTok{forecast.metrics }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{forecast.err.rates }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+  
+\CommentTok{\# Predict on test\_dat}
+\NormalTok{forecast.metrics }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(forecast.metrics, }\FunctionTok{cbind.data.frame}\NormalTok{(}
+                          \AttributeTok{month =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{month,}
+                          \AttributeTok{actual =}\NormalTok{ test\_dat}\SpecialCharTok{$}\NormalTok{turnover\_rate,}
+                          \AttributeTok{predicted =} \FunctionTok{predict}\NormalTok{(train.cube.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{),}
+                          \AttributeTok{lwr\_bound =} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{predict}\NormalTok{(train.cube.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{, }\AttributeTok{interval =} \StringTok{"predict"}\NormalTok{))}\SpecialCharTok{$}\NormalTok{lwr,}
+                          \AttributeTok{upr\_bound =} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{predict}\NormalTok{(train.cube.fit, test\_dat, }\AttributeTok{type =} \StringTok{"response"}\NormalTok{, }\AttributeTok{interval =} \StringTok{"predict"}\NormalTok{))}\SpecialCharTok{$}\NormalTok{upr))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{itemize}
+\tightlist
 \item
   \textbf{Step 4}: Evaluate model performance.
 \end{itemize}
 
+Next, we can pass a vector of actual and corresponding predicted values into the \texttt{forecast.perf()} function to return MAD, MSE, and MAPE performance metrics for the fitted model applied to year 5 data.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate error rates for year 5 forecast}
+\FunctionTok{forecast.perf}\NormalTok{(}\AttributeTok{actual =}\NormalTok{ forecast.metrics}\SpecialCharTok{$}\NormalTok{actual, }\AttributeTok{predicted =}\NormalTok{ forecast.metrics}\SpecialCharTok{$}\NormalTok{predicted)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    mad   mse  mape
+## 1 3.84 14.75 48.39
+\end{verbatim}
+
+Given 95\% of the variance in turnover rates was explained by the cubic regression model fitted to our training data (\(R^2 = .95)\), these error rates are surprisingly high for the test data.
+
+Evaluating the average turnover rate by year will help in reconciling the high \(R^2\) on the training data with the high error rates on the test data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate year{-}wise turnover rate mean}
+\NormalTok{yr1\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr2\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr3\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr4\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{4}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr5\_avg }\OtherTok{\textless{}{-}}\NormalTok{ test\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+
+\CommentTok{\# Display year{-}wise turnover rate mean}
+\FunctionTok{print}\NormalTok{(}\FunctionTok{c}\NormalTok{(yr1\_avg, yr2\_avg, yr3\_avg, yr4\_avg, yr5\_avg))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## $Mean
+## [1] 4.506667
+## 
+## $Mean
+## [1] 4.816667
+## 
+## $Mean
+## [1] 4.046667
+## 
+## $Mean
+## [1] 4.386667
+## 
+## $Mean
+## [1] 7.996667
+\end{verbatim}
+
+There is clearly a significant difference in average turnover for year 5 (test data) relative to years 1-4 (training data). Since the fitted model had no visibility into year 5 data, it did not account for the spike in turnover beyond year 4.
+
+Differences are further evidenced in Figure \ref{fig:mdl-yr4-5}, in which actual values for year 5 are far and away outside the 95\% prediction interval.
+
+\textbackslash begin\{figure\}
+
+\{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/mdl-yr4-5-1}
+
+\}
+
+\textbackslash caption\{Left: Fitted model (red dashed line) against year 4 data in training set (black dots). Right: Fitted model (red dashed line) with poor fit to year 5 data in test set (black dots). The 95\% prediction interval is represented by the red shaded area around the fit line.\}\label{fig:mdl-yr4-5}
+\textbackslash end\{figure\}
+
+This is an important lesson that highlights the centrality of cross-validation in evaluating whether predictive models will generalize beyond the available data. We can easily fit a model that performs well on training data and claim that the model has exceptional accuracy. However, what matters in predictive modeling is how well the model performs on data it has not seen as part of the training process.
+
 \hypertarget{review-questions-10}{%
 \section{Review Questions}\label{review-questions-10}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  What factors influence the balance between model interpretability and flexibility?
+\item
+  How does cross-validation (CV) help improve the performance of predictive models?
+\item
+  What is bias-variance tradeoff?
+\item
+  In a classification setting, what performance metrics are available in a confusion matrix?
+\item
+  What are some measures used to evaluate the performance of a forecast?
+\item
+  What is Synthetic Minority Oversampling Technique (SMOTE), and how does it help improve the performance of machine learning (ML) models?
+\item
+  How is the stack ranking of predictors in a variable importance plot determined?
+\item
+  How does a prediction interval differ from a confidence interval?
+\item
+  How can a prediction interval be calculated in R?
+\item
+  What does high \(R^2\) on training data and high \(MSE\) on test data indicate about the utility of a predictive model?
+\end{enumerate}
 
 \hypertarget{unsup-lrn}{%
 \chapter{Unsupervised Learning}\label{unsup-lrn}}

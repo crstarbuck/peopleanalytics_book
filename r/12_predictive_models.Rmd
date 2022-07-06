@@ -392,64 +392,37 @@ library(dplyr)
 # Load employee data
 forecasting_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/turnover_trends.csv")
 
-# One-hot encode remote status
-forecasting_dat$remote <- ifelse(forecasting_dat$remote == 'Yes', 1, 0)
-
 ```
   
   * **Step 1**: Partition data into training and test sets for cross-validation.
   
-  Since we have 60 months of data for each combination of `job`, `level`, and `remote` in the data, we will select combinations for which `turnover_rate` can be projected for future months. To simplify, we will train models using data for the first 48 months and test using the final 12 months.
+  Since we have 60 months of data for each combination of `job`, `level`, and `remote` in the data, we will select a combination for which `turnover_rate` can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
   
 ```{r, message = FALSE, warning = FALSE}
 
 # Create training data
-train_dat_1 <- forecasting_dat %>% filter(job == 'People Scientist' & level == '1' & year %in% 1:4)
-train_dat_2 <- forecasting_dat %>% filter(job == 'Data Engineer' & level == '2' & year %in% 1:4)
-train_dat_3 <- forecasting_dat %>% filter(job == 'Insights Consultant' & level == '3' & year %in% 1:4)
+train_dat <- forecasting_dat %>% filter(job == 'People Scientist' & level == 1 & year %in% 1:4)
 
 # Create test data
-test_dat_1 <- forecasting_dat %>% filter(job == 'People Scientist' & level == '1' & remote == 1 & year == 5)
-test_dat_2 <- forecasting_dat %>% filter(job == 'Data Engineer' & level == '2' & remote == 0 & year == 5)
-test_dat_3 <- forecasting_dat %>% filter(job == 'Insights Consultant' & level == '3' & remote == 1 & year == 5)
+test_dat <- forecasting_dat %>% filter(job == 'People Scientist' & level == 1 & remote == 'Yes' & year == 5)
 
 ```
   
   * **Step 2**: Build models using training data.
   
-  Given the significant quadratic and cubic terms identified in Chapter \@ref(lme), we will fit cubic regression models on the training data.
-  
-```{r, message = FALSE, warning = FALSE}
+  Given the significant quadratic and cubic terms identified in Chapter \@ref(lme), we will fit a cubic regression model on the training data.
 
-# Fit cubic models
-train.cube.fit.1 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_1)
-train.cube.fit.2 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_2)
-train.cube.fit.3 <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat_3)
+```{r train-cube-fit, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-```
-
-```{r train-cube-fit-1, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 1.', fig.align = 'center', message = FALSE, warning = FALSE}
+# Fit cubic model
+train.cube.fit <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat)
 
 # Produce tabular summary of regression model output
-flextable::as_flextable(train.cube.fit.1)
+flextable::as_flextable(train.cube.fit)
 
 ```
 
-```{r train-cube-fit-2, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 2.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Produce tabular summary of regression model output
-flextable::as_flextable(train.cube.fit.2)
-
-```
-
-```{r train-cube-fit-3, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set 3.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Produce tabular summary of regression model output
-flextable::as_flextable(train.cube.fit.3)
-
-```
-
-  As expected, all linear, quadratic, and cubic terms are statistically significant.
+  All linear, quadratic, and cubic terms on `month` are statistically significant at the $p < .001$ level.
   
   * **Step 3**: Use models to make predictions on test data.
   
@@ -487,53 +460,96 @@ forecast.perf <- function(actual, predicted){
 forecast.metrics <- NULL
 forecast.err.rates <- NULL
   
-# Predict on test_dat_1
+# Predict on test_dat
 forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
-                           data = "test_dat_1",
-                           month = test_dat_1$month,
-                           actual = test_dat_1$turnover_rate,
-                           predicted = predict(train.cube.fit.1, test_dat_1, type = "response"),
-                           lwr_bound = as.data.frame(predict(train.cube.fit.1, test_dat_1, type = "response", interval = "predict"))$lwr,
-                           upr_bound = as.data.frame(predict(train.cube.fit.1, test_dat_1, type = "response", interval = "predict"))$upr))
-
-forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
-                            data = "test_dat_1",
-                            forecast.perf(actual = test_dat_1$turnover_rate, predicted = predict(train.cube.fit.1, test_dat_1, type = "response"))))
-
-# Predict on test_dat_2
-forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
-                           data = "test_dat_2",
-                           month = test_dat_2$month,
-                           actual = test_dat_2$turnover_rate,
-                           predicted = predict(train.cube.fit.2, test_dat_2, type = "response"),
-                           lwr_bound = as.data.frame(predict(train.cube.fit.2, test_dat_2, type = "response", interval = "predict"))$lwr,
-                           upr_bound = as.data.frame(predict(train.cube.fit.2, test_dat_2, type = "response", interval = "predict"))$upr))
-
-forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
-                            data = "test_dat_2",
-                            forecast.perf(actual = test_dat_2$turnover_rate, predicted = predict(train.cube.fit.2, test_dat_2, type = "response"))))
-
-# Predict on test_dat_3
-forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
-                           data = "test_dat_3",
-                           month = test_dat_3$month,
-                           actual = test_dat_3$turnover_rate,
-                           predicted = predict(train.cube.fit.3, test_dat_3, type = "response"),
-                           lwr_bound = as.data.frame(predict(train.cube.fit.3, test_dat_3, type = "response", interval = "predict"))$lwr,
-                           upr_bound = as.data.frame(predict(train.cube.fit.3, test_dat_3, type = "response", interval = "predict"))$upr))
-
-forecast.err.rates <- rbind(forecast.err.rates, cbind.data.frame(
-                            data = "test_dat_3",
-                            forecast.perf(actual = test_dat_3$turnover_rate, predicted = predict(train.cube.fit.3, test_dat_3, type = "response"))))
+                          month = test_dat$month,
+                          actual = test_dat$turnover_rate,
+                          predicted = predict(train.cube.fit, test_dat, type = "response"),
+                          lwr_bound = as.data.frame(predict(train.cube.fit, test_dat, type = "response", interval = "predict"))$lwr,
+                          upr_bound = as.data.frame(predict(train.cube.fit, test_dat, type = "response", interval = "predict"))$upr))
 
 ```
-  
-
 
   * **Step 4**: Evaluate model performance.
 
+  Next, we can pass a vector of actual and corresponding predicted values into the  `forecast.perf()` function to return MAD, MSE, and MAPE performance metrics for the fitted model applied to year 5 data.
 
+```{r, message = FALSE, warning = FALSE}
 
+# Calculate error rates for year 5 forecast
+forecast.perf(actual = forecast.metrics$actual, predicted = forecast.metrics$predicted)
+
+```
+  Given 95% of the variance in turnover rates was explained by the cubic regression model fitted to our training data ($R^2 = .95)$, these error rates are surprisingly high for the test data.
+  
+  Evaluating the average turnover rate by year will help in reconciling the high $R^2$ on the training data with the high error rates on the test data:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Calculate year-wise turnover rate mean
+yr1_avg <- train_dat %>% filter(remote == 'Yes' & year == 1) %>% summarize(Mean = mean(turnover_rate))
+yr2_avg <- train_dat %>% filter(remote == 'Yes' & year == 2) %>% summarize(Mean = mean(turnover_rate))
+yr3_avg <- train_dat %>% filter(remote == 'Yes' & year == 3) %>% summarize(Mean = mean(turnover_rate))
+yr4_avg <- train_dat %>% filter(remote == 'Yes' & year == 4) %>% summarize(Mean = mean(turnover_rate))
+yr5_avg <- test_dat %>% summarize(Mean = mean(turnover_rate))
+
+# Display year-wise turnover rate mean
+print(c(yr1_avg, yr2_avg, yr3_avg, yr4_avg, yr5_avg))
+
+```
+
+  There is clearly a significant difference in average turnover for year 5 (test data) relative to years 1-4 (training data). Since the fitted model had no visibility into year 5 data, it did not account for the spike in turnover beyond year 4. 
+  
+  Differences are further evidenced in Figure \@ref(fig:mdl-yr4-5), in which actual values for year 5 are far and away outside the 95% prediction interval.
+
+```{r mdl-yr4-5, out.width = "100%", echo = FALSE, fig.cap = 'Left: Fitted model (red dashed line) against year 4 data in training set (black dots). Right: Fitted model (red dashed line) with poor fit to year 5 data in test set (black dots). The 95% prediction interval is represented by the red shaded area around the fit line.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Juxtapose year 4 turnover trend (training data) against fitted model
+p_yr4 <- ggplot2::ggplot(subset(train_dat, year == 4 & remote == 'Yes'), aes(x = month, y = turnover_rate)) +
+         ggplot2::geom_point()  +
+         ggplot2::scale_x_continuous(breaks = 1:12) +
+         ggplot2::labs(title = "Year 4 Turnover Trend", x = "Month", y = "Turnover Rate") +
+         ggplot2::geom_function(fun = function(x) {train.cube.fit$coefficients[[2]]*4 + train.cube.fit$coefficients[[3]]*x + train.cube.fit$coefficients[[4]]*x^2 + train.cube.fit$coefficients[[5]]*x^3 + train.cube.fit$coefficients[[6]] + train.cube.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+         ggplot2::theme_bw() +
+         ggplot2::theme(legend.position = "none") +
+         ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Juxtapose year 5 turnover trend (test data) against fitted model
+p_yr5 <- ggplot2::ggplot(forecast.metrics, aes(x = month, y = actual)) +
+         ggplot2::geom_point() +
+         ggplot2::scale_x_continuous(breaks = 1:12) +
+         ggplot2::labs(title = "Year 5 Turnover Trend", x = "Month", y = "Turnover Rate") +
+         ggplot2::geom_function(fun = function(x) {train.cube.fit$coefficients[[2]]*5 + train.cube.fit$coefficients[[3]]*x + train.cube.fit$coefficients[[4]]*x^2 + train.cube.fit$coefficients[[5]]*x^3 + train.cube.fit$coefficients[[6]] + train.cube.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
+         ggplot2::geom_ribbon(data = forecast.metrics, aes(month, ymin = lwr_bound, ymax = upr_bound, fill = "red"), alpha = 0.4) +
+         ggplot2::theme_bw() +
+         ggplot2::theme(legend.position = "none") +
+         ggplot2::theme(plot.title = element_text(hjust = 0.5))
+
+# Display visuals side-by-side
+ggpubr::ggarrange(p_yr4, p_yr5, ncol = 2, nrow = 1)
+
+```
+
+  This is an important lesson that highlights the centrality of cross-validation in evaluating whether predictive models will generalize beyond the available data. We can easily fit a model that performs well on training data and claim that the model has exceptional accuracy. However, what matters in predictive modeling is how well the model performs on data it has not seen as part of the training process.  
+  
 ## Review Questions
 
-1. 
+1. What factors influence the balance between model interpretability and flexibility?
+
+2. How does cross-validation (CV) help improve the performance of predictive models?
+
+3. What is bias-variance tradeoff?
+
+4. In a classification setting, what performance metrics are available in a confusion matrix?
+
+5. What are some measures used to evaluate the performance of a forecast?
+
+6. What is Synthetic Minority Oversampling Technique (SMOTE), and how does it help improve the performance of machine learning (ML) models?
+
+7. How is the stack ranking of predictors in a variable importance plot determined?
+
+8. How does a prediction interval differ from a confidence interval?
+
+9. How can a prediction interval be calculated in R?
+
+10. What does high $R^2$ on training data and high $MSE$ on test data indicate about the utility of a predictive model?
