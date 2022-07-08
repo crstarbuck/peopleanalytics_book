@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-06}
+\date{2022-07-07}
 
 \begin{document}
 \maketitle
@@ -248,6 +248,8 @@ The goal of the code provided in this book is not to represent the most performa
 \hypertarget{data}{%
 \subsection{Data}\label{data}}
 
+\textbf{Employees}
+
 The primary data set used in this book is \texttt{employees}, which contains information on active and terminated employees. Fields are defined in the data dictionary provided below:
 
 \begin{itemize}
@@ -326,7 +328,11 @@ The primary data set used in this book is \texttt{employees}, which contains inf
   \texttt{interview\_rating}: Average rating across the interview loop for the onsite stage of the employee's recruiting process, where 1 = \emph{Definitely Not} and 5 = \emph{Definitely Yes}
 \end{itemize}
 
-The secondary data set used in this book is \texttt{turnover\_trends}, which contains trailing 12-month turnover rates for each month across a five-year horizon. Fields are defined in the data dictionary provided below:
+Most of these data have also been broken into separate topical data sets to support data wrangling examples in Chapter \ref{sql-intro}: \texttt{benefits}, \texttt{demographics}, \texttt{job}, \texttt{payroll}, \texttt{performance}, \texttt{prior\_employment}, \texttt{status}, \texttt{survey\_response}, and \texttt{tenure}.
+
+\textbf{Turnover Trends}
+
+The \texttt{turnover\_trends} data set contains trailing 12-month turnover rates for each month across a five-year period. Fields are defined in the data dictionary provided below:
 
 \begin{itemize}
 \tightlist
@@ -342,6 +348,52 @@ The secondary data set used in this book is \texttt{turnover\_trends}, which con
   \texttt{remote}: Flag set to \emph{Yes} for a remote worker and \emph{No} for a non-remote worker
 \item
   \texttt{turnover\_rate}: monthly turnover rate, calculated by dividing the termination count into the average headcount (beginning headcount + ending headcount / 2) for the respective month
+\end{itemize}
+
+\textbf{Survey Responses}
+
+The \texttt{survey\_responses} data set contains responses to survey items measured on a 5-point Likert scale, where 1 = \emph{Highly Unfavorable} and 5 = \emph{Highly Favorable}. Each observation represents a unique survey respondent.
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{action\_taking}
+\item
+  \texttt{belonging}
+\item
+  \texttt{collaboration}
+\item
+  \texttt{communication}
+\item
+  \texttt{culture}
+\item
+  \texttt{discretionary\_effort}
+\item
+  \texttt{inclusion}
+\item
+  \texttt{engagement\_1}
+\item
+  \texttt{engagement\_2}
+\item
+  \texttt{engagement\_3}
+\item
+  \texttt{happiness}
+\item
+  \texttt{operating\_efficiency}
+\item
+  \texttt{psych\_safety}
+\item
+  \texttt{retention\_1}
+\item
+  \texttt{retention\_2}
+\item
+  \texttt{retention\_3}
+\item
+  \texttt{role\_clarity}
+\item
+  \texttt{senior\_leadership}
+\item
+  \texttt{work\_life\_balance}
 \end{itemize}
 
 \hypertarget{d-framework}{%
@@ -652,7 +704,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp01G0Cg/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpt8c9Od/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -1522,7 +1574,7 @@ When implementing aggregate functions in a \texttt{SELECT} clause, such as count
 
 When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before paring down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.
 
-Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The \texttt{sqldf} library allows us to write SQL to query a data frame in R in lieu of a database. In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
+Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the \texttt{sqldf} library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The \texttt{sqldf} library allows us to write SQL to query data frames via an embedded database engine (SQLite by default). In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
 
 First, let's load the data sets:
 
@@ -1537,7 +1589,7 @@ First, let's load the data sets:
 \NormalTok{payroll }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/payroll.csv"}\NormalTok{)}
 \NormalTok{performance }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/performance.csv"}\NormalTok{)}
 \NormalTok{prior\_employment }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/prior\_employment.csv"}\NormalTok{)}
-\NormalTok{survey\_response }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/survey\_response.csv"}\NormalTok{)}
+\NormalTok{sentiment }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/sentiment.csv"}\NormalTok{)}
 \NormalTok{tenure }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/tenure.csv"}\NormalTok{)}
 
 \CommentTok{\# Return row and column counts}
@@ -1901,7 +1953,7 @@ When integrating data within R, the \texttt{tidyverse} provides a more efficient
 \NormalTok{                  payroll,}
 \NormalTok{                  performance,}
 \NormalTok{                  prior\_employment,}
-\NormalTok{                  survey\_response,}
+\NormalTok{                  sentiment,}
 \NormalTok{                  tenure) }\SpecialCharTok{\%\textgreater{}\%}
                   \FunctionTok{reduce}\NormalTok{(left\_join, }\AttributeTok{by =} \StringTok{"employee\_id"}\NormalTok{)}
 \end{Highlighting}
@@ -10165,6 +10217,16 @@ This is an important lesson that highlights the centrality of cross-validation i
 
 \hypertarget{unsup-lrn}{%
 \chapter{Unsupervised Learning}\label{unsup-lrn}}
+
+The inferential and predictive models covered thus far can be categorized as \textbf{supervised learning} models. For each observation \(x_i\) in the data, there is an associated response \(y_i\) in a supervised learning setting, and the goal is to fit a model that relates \(y\) to one or more predictors to understand relationships or predict future values on the basis of the identified associations. However, in an \textbf{unsupervised learning} setting, no response \(y_i\) is associated with \(x_i\). As a result, we cannot \emph{supervise} the analysis and are limited to understanding how observations cluster or group together based on patterns across the available \(p\) attributes.
+
+People analytics often involves the unique challenge of analyzing high-dimensional data with a large number of \(p\) attributes but relatively few \(n\) observations -- a phenomenon often referred to as the \emph{curse of dimensionality}. Given the sample size requirements covered in previous chapters, we ideally want \(n\) to be an order of magnitude larger than \(p\) to support statistical power and increase our chances of detecting meaningful patterns and population effects in sample data. Since people data sets are often wide and short, \textbf{dimension reduction} is important for reducing the dimensions to a limited subset that captures the majority of the information and optimizes the \(n:p\) ratio.
+
+Consider a case in which a colleague uses verbose rhetoric to convey a simple message that could be effectively communicated with fewer words. The superfluous language is unnecessary and does not provide additional information or value. This is analogous to dimension reduction in that we are interested in identifying a limited set of meaningful attributes and discarding redundant and unimportant information that does not contribute to the analysis objectives.
+
+Dimension reduction is most common in the context of surveys. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs, or individual dimensions of multidimensional constructs, that are relatively uncorrelated with survey items used to measure independent constructs. Intuitively, we know that highly correlated variables do not individually capture unique information, as one is a sufficient proxy to capture the available signal in the data. Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements.
+
+This chapter will cover dimension reduction fundamentals as well as technical implementation frameworks germane to people analytics.
 
 \hypertarget{factor-analysis}{%
 \section{Factor Analysis}\label{factor-analysis}}
