@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-07-07" />
+<meta name="date" content="2022-07-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,10 @@
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
 <link href="libs/tabwid-1.0.0/scrool.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
 
 
 <style type="text/css">
@@ -299,8 +303,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13" data-path="unsup-lrn.html"><a href="unsup-lrn.html"><i class="fa fa-check"></i><b>13</b> Unsupervised Learning</a>
 <ul>
 <li class="chapter" data-level="13.1" data-path="unsup-lrn.html"><a href="unsup-lrn.html#factor-analysis"><i class="fa fa-check"></i><b>13.1</b> Factor Analysis</a></li>
-<li class="chapter" data-level="13.2" data-path="unsup-lrn.html"><a href="unsup-lrn.html#clustering"><i class="fa fa-check"></i><b>13.2</b> Clustering</a></li>
-<li class="chapter" data-level="13.3" data-path="unsup-lrn.html"><a href="unsup-lrn.html#review-questions-11"><i class="fa fa-check"></i><b>13.3</b> Review Questions</a></li>
+<li class="chapter" data-level="13.2" data-path="unsup-lrn.html"><a href="unsup-lrn.html#principal-components-analysis-pca"><i class="fa fa-check"></i><b>13.2</b> Principal Components Analysis (PCA)</a></li>
+<li class="chapter" data-level="13.3" data-path="unsup-lrn.html"><a href="unsup-lrn.html#clustering"><i class="fa fa-check"></i><b>13.3</b> Clustering</a></li>
+<li class="chapter" data-level="13.4" data-path="unsup-lrn.html"><a href="unsup-lrn.html#review-questions-11"><i class="fa fa-check"></i><b>13.4</b> Review Questions</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="data-viz.html"><a href="data-viz.html"><i class="fa fa-check"></i><b>14</b> Data Visualization</a>
 <ul>
@@ -392,8 +397,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="r" class="section level3" number="1.2.1">
 <h3><span class="header-section-number">1.2.1</span> R</h3>
 <p>While there are many commercial-grade analytics toolsets, R is open-sourced statistical and data visualization software that can be downloaded free of charge. It is incredibly powerful, and there is a package (or at least the ability to easily create one) for every conceivable statistical technique and data visualization. It is also widely used in highly regulated environments. As of this writing, R Markdown – the dynamic document creator in which I am writing this book – allows for coding in 56 different languages! Therefore, the debate around whether to use Python, Julia, or something else is now moot; we need not sacrifice the advantages of other languages by choosing one.</p>
-<p>Please note that while R basics are covered, this is not a book on how to code. It is assumed that you already understand programming fundamentals. If this is not the case, an introductory programming course is highly recommended; this is one of the best investments you can make for a successful career in analytics. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses. Coding is to analytics professionals what typing was for Baby Boomers decades ago; a lack of coding proficiency is a major limiting factor on one’s potential in this field.</p>
-<p>The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. Programming expertise is important for optimizing these approaches for production applications.</p>
+<p>Please note that while R basics are covered, this is not a book on how to code. An introductory programming course is highly recommended, and this is one of the best investments you can make for a successful career in analytics. The ability to write code is now table stakes for anyone in an analytics-oriented field, as this is the best way to develop reproducible analyses. Coding is to analytics professionals what typing was for Baby Boomers decades ago; a lack of coding proficiency is a major limiting factor on one’s potential in this field.</p>
+<p>The goal of the code provided in this book is not to represent the most performant, succinct, or productionalizable approaches. The code herein is intended only to facilitate understanding and demonstrate how concepts can be implemented in people analytics settings. The most performant approaches are often at odds with more intuitive alternatives. Programming expertise is important for optimizing these approaches for production applications.</p>
 </div>
 <div id="data" class="section level3" number="1.2.2">
 <h3><span class="header-section-number">1.2.2</span> Data</h3>
@@ -451,25 +456,25 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Survey Responses</strong></p>
 <p>The <code>survey_responses</code> data set contains responses to survey items measured on a 5-point Likert scale, where 1 = <em>Highly Unfavorable</em> and 5 = <em>Highly Favorable</em>. Each observation represents a unique survey respondent.</p>
 <ul>
-<li><code>action_taking</code></li>
-<li><code>belonging</code></li>
-<li><code>collaboration</code></li>
-<li><code>communication</code></li>
-<li><code>culture</code></li>
-<li><code>discretionary_effort</code></li>
-<li><code>inclusion</code></li>
-<li><code>engagement_1</code></li>
-<li><code>engagement_2</code></li>
-<li><code>engagement_3</code></li>
-<li><code>happiness</code></li>
-<li><code>operating_efficiency</code></li>
-<li><code>psych_safety</code></li>
-<li><code>retention_1</code></li>
-<li><code>retention_2</code></li>
-<li><code>retention_3</code></li>
-<li><code>role_clarity</code></li>
-<li><code>senior_leadership</code></li>
-<li><code>work_life_balance</code></li>
+<li><code>action</code>: action taking</li>
+<li><code>belong</code>: belonging</li>
+<li><code>collab</code>: collaboration</li>
+<li><code>comm</code>: communication</li>
+<li><code>culture</code>: culture</li>
+<li><code>effort</code>: discretionary effort</li>
+<li><code>incl</code>: inclusion</li>
+<li><code>eng_1</code>: engagement item 1 of 3</li>
+<li><code>eng_2</code>: engagement item 2 of 3</li>
+<li><code>eng_3</code>: engagement item 3 of 3</li>
+<li><code>happ</code>: happiness</li>
+<li><code>opeff</code>: operating_efficiency</li>
+<li><code>psafety</code>: psychological safety</li>
+<li><code>ret_1</code>: retention item 1 of 3</li>
+<li><code>ret_2</code>: retention item 2 of 3</li>
+<li><code>ret_3</code>: retention item 3 of 3</li>
+<li><code>rclarity</code>: role clarity</li>
+<li><code>ldrshp</code>: senior leadership</li>
+<li><code>wlbal</code>: work-life balance</li>
 </ul>
 </div>
 </div>

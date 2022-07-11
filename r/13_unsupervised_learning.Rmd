@@ -32,13 +32,79 @@
 library(dplyr)
 
 # Load survey response data
-prediction_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_responses.csv")
+survey_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/survey_responses.csv")
+
+# Show dimensions of survey data
+dim(survey_dat)
 
 ```
   
   **Confirmatory Factor Analysis (CFA)**
   
-  **Confirmatory factor analysis (CFA)** is used to test how well data aligns with a theoretical factor structure.  
+  **Confirmatory factor analysis (CFA)** is used to test how well data aligns with a theoretical factor structure.
+  
+  We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are need to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which drive one's decision to leave an organization beyond engagement, so we would not expect levels of engagement to *always* be associated with a commensurate change in retention.
+
+  We can illustrate this using `survey_responses` data, which contains three items for each engagement and retention. Let's evaluate pairwise relationships between the items: 
+
+```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'Bivariate correlations and data distributions for engagement and retention survey items.', fig.align = 'center'}
+
+# Load library
+library(GGally)
+
+# Visualize correlation matrix
+GGally::ggpairs(subset(survey_dat, select = c("eng_1", "eng_2", "eng_3", "ret_1", "ret_2", "ret_3")))
+
+```
+  As expected, `eng_1`, `eng_2`, and `eng_3` have stronger correlations with each other ($r \ge .64$) than with `ret_1`, `ret_2`, or `ret_3` ($r \le .47$).
+  
+  CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the `lavaan` package in R to perform CFA. 
+  
+  Step one is defining the model within a string per the syntax required by `lavaan`:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(lavaan)
+
+# Model specification; each line represents a separate latent factor
+model <- paste('engagement =~ eng_1 + eng_2 + eng_3
+                retention =~ ret_1 + ret_2 + ret_3')
+
+```
+
+  Step two is fitting the model to the data using the `cfa()` function from the `lavaan` package:  
+
+```{r, message = FALSE, warning = FALSE}
+
+# Fit the model
+cfa.fit <- lavaan::cfa(model, data = survey_dat)
+
+```
+
+  We can also create what is known as a **path diagram** to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as **structural equation modeling (SEM)**; therefore, CFA is a subset of the SEM umbrella.
+  
+  The `lavaanPlot()` package can be used to create and visualize path diagrams in R:
+
+```{r path-diagram, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'Path diagram showing survey items as indicators of latent engagement and retention factors.', fig.align = 'center'}
+
+# Load library
+library(lavaanPlot)
+
+# Visualize path diagram
+lavaanPlot::lavaanPlot(model = cfa.fit, coefs = TRUE, stand = TRUE)
+
+```
+
+  Step three is interpreting the output of the fitted model:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Summarize the model
+summary(cfa.fit, fit.measures = TRUE)
+
+```
+
 
 
 

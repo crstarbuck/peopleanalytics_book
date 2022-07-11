@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-07-07" />
+<meta name="date" content="2022-07-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -55,6 +55,10 @@
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
 <link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
 <link href="libs/tabwid-1.0.0/scrool.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
 
 
 <style type="text/css">
@@ -299,8 +303,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="13" data-path="unsup-lrn.html"><a href="unsup-lrn.html"><i class="fa fa-check"></i><b>13</b> Unsupervised Learning</a>
 <ul>
 <li class="chapter" data-level="13.1" data-path="unsup-lrn.html"><a href="unsup-lrn.html#factor-analysis"><i class="fa fa-check"></i><b>13.1</b> Factor Analysis</a></li>
-<li class="chapter" data-level="13.2" data-path="unsup-lrn.html"><a href="unsup-lrn.html#clustering"><i class="fa fa-check"></i><b>13.2</b> Clustering</a></li>
-<li class="chapter" data-level="13.3" data-path="unsup-lrn.html"><a href="unsup-lrn.html#review-questions-11"><i class="fa fa-check"></i><b>13.3</b> Review Questions</a></li>
+<li class="chapter" data-level="13.2" data-path="unsup-lrn.html"><a href="unsup-lrn.html#principal-components-analysis-pca"><i class="fa fa-check"></i><b>13.2</b> Principal Components Analysis (PCA)</a></li>
+<li class="chapter" data-level="13.3" data-path="unsup-lrn.html"><a href="unsup-lrn.html#clustering"><i class="fa fa-check"></i><b>13.3</b> Clustering</a></li>
+<li class="chapter" data-level="13.4" data-path="unsup-lrn.html"><a href="unsup-lrn.html#review-questions-11"><i class="fa fa-check"></i><b>13.4</b> Review Questions</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="data-viz.html"><a href="data-viz.html"><i class="fa fa-check"></i><b>14</b> Data Visualization</a>
 <ul>
@@ -362,7 +367,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>R Studio can be downloaded here: <a href="https://www.rstudio.com/products/rstudio/download/#download" class="uri">https://www.rstudio.com/products/rstudio/download/#download</a></p>
 <p><strong>Installing Packages</strong></p>
 <p>Libraries from several R packages will be utilized in this book. The line of code below can be executed within R or R Studio to install all at once:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-intro.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;tidyverse&quot;</span>, <span class="st">&quot;corrplot&quot;</span>, <span class="st">&quot;psych&quot;</span>, <span class="st">&quot;moments&quot;</span>, <span class="st">&quot;ggpubr&quot;</span>, <span class="st">&quot;GGally&quot;</span>, <span class="st">&quot;sqldf&quot;</span>, <span class="st">&quot;caret&quot;</span>, <span class="st">&quot;car&quot;</span>, <span class="st">&quot;reshape2&quot;</span>, <span class="st">&quot;flextable&quot;</span>, <span class="st">&quot;lmtest&quot;</span>, <span class="st">&quot;equatiomatic&quot;</span>, <span class="st">&quot;pwr&quot;</span>, <span class="st">&quot;nnet&quot;</span>, <span class="st">&quot;MASS&quot;</span>, <span class="st">&quot;brant&quot;</span>, <span class="st">&quot;lme4&quot;</span>, <span class="st">&quot;lmerTest&quot;</span>, <span class="st">&quot;rpart&quot;</span>, <span class="st">&quot;rpart.plot&quot;</span>), <span class="at">dependencies =</span> <span class="cn">TRUE</span>, <span class="at">repos =</span> <span class="st">&quot;http://cran.us.r-project.org&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="r-intro.html#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">&quot;tidyverse&quot;</span>, <span class="st">&quot;corrplot&quot;</span>, <span class="st">&quot;psych&quot;</span>, <span class="st">&quot;moments&quot;</span>, <span class="st">&quot;ggpubr&quot;</span>, <span class="st">&quot;GGally&quot;</span>, <span class="st">&quot;sqldf&quot;</span>, <span class="st">&quot;caret&quot;</span>, <span class="st">&quot;car&quot;</span>, <span class="st">&quot;reshape2&quot;</span>, <span class="st">&quot;flextable&quot;</span>, <span class="st">&quot;lmtest&quot;</span>, <span class="st">&quot;equatiomatic&quot;</span>, <span class="st">&quot;pwr&quot;</span>, <span class="st">&quot;nnet&quot;</span>, <span class="st">&quot;MASS&quot;</span>, <span class="st">&quot;brant&quot;</span>, <span class="st">&quot;lme4&quot;</span>, <span class="st">&quot;lmerTest&quot;</span>, <span class="st">&quot;rpart&quot;</span>, <span class="st">&quot;rpart.plot&quot;</span>, <span class="st">&quot;lavaan&quot;</span>, <span class="st">&quot;lavaanPlot&quot;</span>), <span class="at">dependencies =</span> <span class="cn">TRUE</span>, <span class="at">repos =</span> <span class="st">&quot;http://cran.us.r-project.org&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##   There are binary versions available but the source versions are later:
 ##            binary source needs_compilation
@@ -374,12 +379,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ## car        3.0-12  3.1-0             FALSE
 ## flextable   0.7.0  0.7.2             FALSE
 ## MASS       7.3-56 7.3-57              TRUE
-## lme4       1.1-28 1.1-29              TRUE
+## lme4       1.1-28 1.1-30              TRUE
 ## rpart.plot  3.1.0  3.1.1             FALSE
+## lavaan     0.6-11 0.6-12             FALSE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpU78pZO/downloaded_packages</code></pre>
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp4IgAYu/downloaded_packages</code></pre>
 <p><strong>Case Sensitivity</strong></p>
 <p>It’s important to note that everything in R is case-sensitive. When working with functions, be sure to match the case when typing the function name. For example, <code>Mean()</code> is not the same as <code>mean()</code>; since <code>mean()</code> is the correct case for the function, capitalized characters will result in an error when executing the function.</p>
 <p><strong>Help</strong></p>
