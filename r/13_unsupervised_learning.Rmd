@@ -12,19 +12,19 @@
 
 ## Factor Analysis
 
-  The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides the conceptual support for the construct -- the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of *operationalizing* the conceptual scheme into a measurement approach.
+  The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides conceptual support for the construct -- the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of *operationalizing* the conceptual scheme into a measurement approach.
   
-  There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue. However, in the social sciences we often need indicators of latent constructs that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES). 
+  There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of latent constructs that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES). 
   
-  Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct.   
+  Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the $n:p$ ratio in supervised learning settings.
 
   **Exploratory Factor Analysis (EFA)**
   
   **Exploratory factor analysis (EFA)** is a variable reduction technique by which factors are extracted from data as part of the development process for new survey instruments. 
   
-  A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework which underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and candidates for removal. Outside these principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.
+  A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework that underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and eligible for removal. Aside from the principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.
   
-  
+  To illustrate the steps for EFA, we will leverage the `survey_responses` data.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -38,16 +38,86 @@ survey_dat <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple
 dim(survey_dat)
 
 ```
+
+  EFA steps will be illustrated by implementing the three-step **principal components analysis (PCA)** extraction method outlined by Hair et al. (2006) on the `survey_responses` data:
   
+  1. Assess factorability of the data
+  2. Extract the components
+  3. Rotate and interpret the components
+  
+  With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. To evaluate factorability, we need a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** should reach statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
+  
+  The `KMO()` and `cortest.bartlett()` functions from the `psych` library can be used for the KMO statistic and Bartlett's test, respectively:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(psych)
+
+# Kaiser-Meyer-Olkin (KMO) statistic
+psych::KMO(survey_dat)
+
+```  
+
+```{r, message = FALSE, warning = FALSE}
+
+# Bartlett's Test of Sphericity
+psych::cortest.bartlett(cor(survey_dat), nrow(survey_dat))
+
+```  
+
+  Data satisfy the factorability requirements since $KMO = .94$ and Bartlett’s test is significant at the $p < .001$ level. 
+  For the second step, we will visually inspect a **scree plot** and determine how many factors are necessary for explaining the majority of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor (or principal component). While the mathematics of PCA is out of scope for this book, principal components are essentially the result of a linear transformation of the vector space by combining variables to reduce dimensionality.
+  
+  We can use base R's `prcomp()` function to extract principal components from the data:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Perform PCA
+pca <- prcomp(survey_dat, scale = TRUE)
+
+# Calculate explained variance for each principal component
+pca_var = pca$sdev^2 / sum(pca$sdev^2)
+
+# Create scree plot
+ggplot2::qplot(1:19, pca_var) + 
+ggplot2::geom_line() + 
+ggplot2::xlab("Principal Component") + 
+ggplot2::ylab("Variance Explained") +
+ggplot2::ylim(0, 1)
+
+```
+  
+  We are looking for the *elbow* in this scree plot...
+  
+  For the third step, a direct oblimin method of rotation of the factor matrix was leveraged to aid in the interpretation of results. An oblique, rather than orthogonal, rotation is selected here since it is best suited for obtaining several theoretically meaningful factors when underlying dimensions are assumed to be correlated (Hair et al., 2006).
+
+  The `fa()` function from the `psych` package can be used to implement EFA in R.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Principal axis factoring using 19 factors and oblimin rotation
+efa.fit.19 <- psych::fa(survey_dat, nfactors = 19, rotate = 'oblimin')
+
+# Principal axis factoring using 3 factors and oblimin rotation
+efa.fit.3 <- psych::fa(survey_dat, nfactors = 3, rotate = 'oblimin')
+
+```
+
+  
+
   **Confirmatory Factor Analysis (CFA)**
   
   **Confirmatory factor analysis (CFA)** is used to test how well data aligns with a theoretical factor structure.
   
-  We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are need to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which drive one's decision to leave an organization beyond engagement, so we would not expect levels of engagement to *always* be associated with a commensurate change in retention.
+  We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect levels of engagement to *always* be associated with a commensurate change in retention.
 
-  We can illustrate this using `survey_responses` data, which contains three items for each engagement and retention. Let's evaluate pairwise relationships between the items: 
+  We can illustrate this using `survey_responses` data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items: 
 
-```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'Bivariate correlations and data distributions for engagement and retention survey items.', fig.align = 'center'}
+```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Bivariate correlations and data distributions for engagement and retention survey items.', fig.align = 'center'}
 
 # Load library
 library(GGally)
@@ -86,7 +156,7 @@ cfa.fit <- lavaan::cfa(model, data = survey_dat)
   
   The `lavaanPlot()` package can be used to create and visualize path diagrams in R:
 
-```{r path-diagram, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'Path diagram showing survey items as indicators of latent engagement and retention factors.', fig.align = 'center'}
+```{r path-diagram, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Path diagram showing survey items as indicators of latent engagement and retention factors.', fig.align = 'center'}
 
 # Load library
 library(lavaanPlot)
@@ -105,8 +175,16 @@ summary(cfa.fit, fit.measures = TRUE)
 
 ```
 
+  The `lavaan` package provides many fit measures, but we will focus only on the most common for evaluating how well the data fit the measurement model. 
+  
+  * Model Chi-Square ($\chi^2$): Tests whether the covariance matrix derived from the model represents the population covariance (Test Statistic under the Model Test User Model section of the `lavaan` output)
+  * Comparative Fit Index (CFI): Values range from 0 to 1, with $CFI > .90$ indicating good fit
+  * Tucker Lewis Index (TLI): Values range from 0 to 1, with $TLI > .90$ indicating good fit
+  * Root Mean Square Error of Approximation (RMSEA): Values of $.01$, $.05$, and $.08$ indicate excellent, good, and mediocre fit, respectively
 
+  The $\chi^2$ statistic is sometimes referred to a 'badness of fit' measure since rejecting the null hypothesis ($p < .05$) indicates a lack of fit. Since $n = 1,000$, we need to index on the CFI, TLI, and RMSEA fit measures. Though both CFI ($.97$) and TLI ($.94$) are north of the $.90$ threshold for good fit, $\chi^2$ is significant ($p < .001$) and RMSEA is higher than the mediocre fit threshold ($.12 > .08$).
 
+  Kline (2005) is an excellent resource for more extensive coverage of SEM.
 
 ## Principal Components Analysis (PCA)
 
@@ -116,7 +194,7 @@ summary(cfa.fit, fit.measures = TRUE)
 
 
   
-  **$\textbf k$**-Means Clustering**
+  $\textbf k$**-Means Clustering**
   
   
   
