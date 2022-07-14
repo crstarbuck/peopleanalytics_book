@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-07-11" />
+<meta name="date" content="2022-07-13" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -358,16 +358,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>The inferential and predictive models covered thus far can be categorized as <strong>supervised learning</strong> models. For each observation <span class="math inline">\(x_i\)</span> in the data, there is an associated response <span class="math inline">\(y_i\)</span> in a supervised learning setting, and the goal is to fit a model that relates <span class="math inline">\(y\)</span> to one or more predictors to understand relationships or predict future values on the basis of the identified associations. However, in an <strong>unsupervised learning</strong> setting, no response <span class="math inline">\(y_i\)</span> is associated with <span class="math inline">\(x_i\)</span>. As a result, we cannot <em>supervise</em> the analysis and are limited to understanding how observations cluster or group together based on patterns across the available <span class="math inline">\(p\)</span> attributes.</p>
 <p>People analytics often involves the unique challenge of analyzing high-dimensional data with a large number of <span class="math inline">\(p\)</span> attributes but relatively few <span class="math inline">\(n\)</span> observations – a phenomenon often referred to as the <em>curse of dimensionality</em>. Given the sample size requirements covered in previous chapters, we ideally want <span class="math inline">\(n\)</span> to be an order of magnitude larger than <span class="math inline">\(p\)</span> to support statistical power and increase our chances of detecting meaningful patterns and population effects in sample data. Since people data sets are often wide and short, <strong>dimension reduction</strong> is important for reducing the dimensions to a limited subset that captures the majority of the information and optimizes the <span class="math inline">\(n:p\)</span> ratio.</p>
 <p>Consider a case in which a colleague uses verbose rhetoric to convey a simple message that could be effectively communicated with fewer words. The superfluous language is unnecessary and does not provide additional information or value. This is analogous to dimension reduction in that we are interested in identifying a limited set of meaningful attributes and discarding redundant and unimportant information that does not contribute to the analysis objectives.</p>
-<p>Dimension reduction is most common in the context of surveys. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs, or individual dimensions of multidimensional constructs, that are relatively uncorrelated with survey items used to measure independent constructs. Intuitively, we know that highly correlated variables do not individually capture unique information, as one is a sufficient proxy to capture the available signal in the data. Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements.</p>
+<p>Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a <em>subspace</em> of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture <em>some</em> information about distance. The limited information loss in moving from three to two dimensions is likely acceptable given the benefit of capturing the memory of the team in a photograph.</p>
+<p>Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs that are relatively uncorrelated with survey items used to measure other independent constructs. Intuitively, we know that highly correlated variables do not capture unique information, as one is a sufficient proxy to capture the available signal in the larger number of features. As we have covered, models with highly correlated variables can create problems due to multicollinearity, and dimension reduction is an alternative approach to variable selection techniques such as the backward stepwise procedure covered in Chapter <a href="lm.html#lm">10</a>.</p>
 <p>This chapter will cover dimension reduction fundamentals as well as technical implementations.</p>
 <div id="factor-analysis" class="section level2" number="13.1">
 <h2><span class="header-section-number">13.1</span> Factor Analysis</h2>
-<p>The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides the conceptual support for the construct – the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of <em>operationalizing</em> the conceptual scheme into a measurement approach.</p>
-<p>There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue. However, in the social sciences we often need indicators of latent constructs that are difficult – or impossible – to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova’s (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES).</p>
-<p>Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one’s commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive – yet parsimonious – set of survey items that function as indicators of the dimensions of the latent work engagement construct.</p>
+<p>The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides conceptual support for the construct – the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of <em>operationalizing</em> the conceptual scheme into a measurement approach.</p>
+<p>There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of latent constructs that are difficult – or impossible – to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova’s (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES).</p>
+<p>Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one’s commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive – yet parsimonious – set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the <span class="math inline">\(n:p\)</span> ratio in supervised learning settings.</p>
 <p><strong>Exploratory Factor Analysis (EFA)</strong></p>
-<p><strong>Exploratory factor analysis (EFA)</strong> is a variable reduction technique by which factors are extracted from data as part of the development process for new survey instruments.</p>
-<p>A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework which underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and candidates for removal. Outside these principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.</p>
+<p><strong>Exploratory factor analysis (EFA)</strong> is a variable reduction technique by which factors are extracted from data – usually as part of the development process for new survey instruments.</p>
+<p>A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework that underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and eligible for removal. Aside from the principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.</p>
+<p>To illustrate the steps for EFA, we will leverage the <code>survey_responses</code> data.</p>
 <div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="unsup-lrn.html#cb409-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
 <span id="cb409-2"><a href="unsup-lrn.html#cb409-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb409-3"><a href="unsup-lrn.html#cb409-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -377,42 +379,152 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb409-7"><a href="unsup-lrn.html#cb409-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Show dimensions of survey data</span></span>
 <span id="cb409-8"><a href="unsup-lrn.html#cb409-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(survey_dat)</span></code></pre></div>
 <pre><code>## [1] 1000   19</code></pre>
+<p>EFA will be illustrated by implementing the three-step <strong>principal components analysis (PCA)</strong> extraction method outlined by Hair et al. (2006):</p>
+<ol style="list-style-type: decimal">
+<li>Assess factorability of the data</li>
+<li>Extract the components</li>
+<li>Rotate and interpret the components</li>
+</ol>
+<p>With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a <strong>Kaiser-Meyer-Olkin (KMO)</strong> statistic of at least <span class="math inline">\(.60\)</span> (Kaiser, 1974) and <strong>Bartlett’s Test of Sphericity</strong> reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett’s test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.</p>
+<p>The <code>KMO()</code> and <code>cortest.bartlett()</code> functions from the <code>psych</code> library can be used for the KMO statistic and Bartlett’s test, respectively:</p>
+<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="unsup-lrn.html#cb411-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb411-2"><a href="unsup-lrn.html#cb411-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb411-3"><a href="unsup-lrn.html#cb411-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb411-4"><a href="unsup-lrn.html#cb411-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Kaiser-Meyer-Olkin (KMO) statistic</span></span>
+<span id="cb411-5"><a href="unsup-lrn.html#cb411-5" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">KMO</span>(survey_dat)</span></code></pre></div>
+<pre><code>## Kaiser-Meyer-Olkin factor adequacy
+## Call: psych::KMO(r = survey_dat)
+## Overall MSA =  0.94
+## MSA for each item = 
+##   action   belong   collab     comm  culture   effort     incl    eng_1 
+##     0.95     0.96     0.94     0.96     0.97     0.90     0.96     0.86 
+##    eng_2    eng_3     happ    opeff  psafety    ret_1    ret_2    ret_3 
+##     0.91     0.89     0.96     0.96     0.94     0.95     0.94     0.93 
+## rclarity   ldrshp    wlbal 
+##     0.97     0.95     0.93</code></pre>
+<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="unsup-lrn.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bartlett&#39;s Test of Sphericity</span></span>
+<span id="cb413-2"><a href="unsup-lrn.html#cb413-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">cortest.bartlett</span>(<span class="fu">cor</span>(survey_dat), <span class="fu">nrow</span>(survey_dat))</span></code></pre></div>
+<pre><code>## $chisq
+## [1] 10711.67
+## 
+## $p.value
+## [1] 0
+## 
+## $df
+## [1] 171</code></pre>
+<p>Data satisfy the factorability requirements since <span class="math inline">\(KMO = .94\)</span> and Bartlett’s test is significant at the <span class="math inline">\(p &lt; .001\)</span> level.</p>
+<p>For the second step, we will visually inspect a <strong>scree plot</strong> and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using <strong>eigenvalues</strong>. While the linear algebraic underpinnings are out of scope for this book, <strong>eigenvectors</strong> are vectors of a linear transformation which have corresponding eigenvalues <span class="math inline">\(\lambda\)</span> that represent factors by which the vectors are scaled. As a general rule, factors with eigenvalues greater than 1 are extracted when running a factor analysis.</p>
+<p>The <code>scree()</code> function from the <code>psych</code> library can be used to generate a scree plot:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:scree-plot"></span>
+<img src="People_Analytics_Lifecycle_files/figure-html/scree-plot-1.png" alt="Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line)." width="100%" />
+<p class="caption">
+Figure 13.1: Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).
+</p>
+</div>
+<p>You may notice the <code>pc = FALSE</code> argument in the <code>scree()</code> function call. This relates to <strong>principal components analysis (PCA)</strong>, which is an alternative method of dimension reduction. Principal components are essentially new independent variables with no information overlap that represent linear transformations of scaled (<span class="math inline">\((x - \bar{x}) / s\)</span>) original variables.</p>
+<p>To illustrate, we can use base R’s <code>prcomp()</code> function to extract principal components from the data:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:pca-var-plot"></span>
+<img src="People_Analytics_Lifecycle_files/figure-html/pca-var-plot-1.png" alt="Plot showing the percent of total variance explained by 19 principal components." width="100%" />
+<p class="caption">
+Figure 13.2: Plot showing the percent of total variance explained by 19 principal components.
+</p>
+</div>
+<p>Note that while we can theoretically have as many factors as we have variables (<span class="math inline">\(p = 19\)</span>), this defeats the purpose of dimension reduction – whether factor analysis or PCA. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.</p>
+<p>As shown in Figure <a href="unsup-lrn.html#fig:scree-plot">13.1</a>, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the <em>elbow</em> to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-19 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information.</p>
+<p>In a supervised learning context, we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as <strong>principal components regression (PCR)</strong>. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since the limited dimensions comes at the expense of limited interpretability.</p>
+<p>For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique – rather than orthogonal – rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).</p>
+<p>The <code>fa()</code> (factor analysis) function from the <code>psych</code> package can be used for the implementation in R.</p>
+<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="unsup-lrn.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Principal axis factoring using 19 factors and oblimin rotation</span></span>
+<span id="cb415-2"><a href="unsup-lrn.html#cb415-2" aria-hidden="true" tabindex="-1"></a>efa.fit <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa</span>(survey_dat, <span class="at">nfactors =</span> <span class="dv">19</span>, <span class="at">rotate =</span> <span class="st">&#39;oblimin&#39;</span>)</span>
+<span id="cb415-3"><a href="unsup-lrn.html#cb415-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb415-4"><a href="unsup-lrn.html#cb415-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display factor loadings</span></span>
+<span id="cb415-5"><a href="unsup-lrn.html#cb415-5" aria-hidden="true" tabindex="-1"></a>efa.fit<span class="sc">$</span>loadings</span></code></pre></div>
+<pre><code>## 
+## Loadings:
+##          MR2    MR1    MR4    MR8    MR3    MR5    MR13   MR18   MR7    MR15  
+## action                  0.103                              0.133  0.297       
+## belong                         0.127  0.297         0.116  0.270              
+## collab                                0.803                                   
+## comm                    0.437  0.136  0.113                                   
+## culture          0.107  0.196  0.141  0.143  0.145                            
+## effort    0.456                                                          0.213
+## incl                           0.800                                          
+## eng_1     0.893                                                               
+## eng_2     0.507                                     0.119  0.178         0.179
+## eng_3     0.762                                                               
+## happ             0.119         0.116                0.191  0.111  0.234       
+## opeff                   0.722                                                 
+## psafety                 0.125  0.200  0.164  0.233                            
+## ret_1            0.210                       0.114  0.114                0.109
+## ret_2                                               0.780                     
+## ret_3            0.863                                                        
+## rclarity         0.118         0.112         0.120                            
+## ldrshp           0.186  0.186  0.126                              0.156       
+## wlbal                                        0.800                            
+##          MR6    MR12   MR17   MR14   MR16   MR11   MR9    MR10   MR19  
+## action   -0.125         0.149               -0.165                     
+## belong                               -0.122                            
+## collab                                                                 
+## comm                    0.145                                          
+## culture          0.332                                                 
+## effort                 -0.154        -0.112 -0.169         0.100       
+## incl                                                                   
+## eng_1                                                                  
+## eng_2                                               0.112              
+## eng_3                                                     -0.164       
+## happ      0.103                                    -0.193              
+## opeff                                                                  
+## psafety  -0.173 -0.116                       0.180  0.102 -0.133       
+## ret_1                          0.224  0.166        -0.198              
+## ret_2                                                                  
+## ret_3                                                                  
+## rclarity  0.459                                                        
+## ldrshp                         0.194                0.214  0.113       
+## wlbal                                                                  
+## 
+##                  MR2   MR1   MR4   MR8   MR3   MR5  MR13  MR18   MR7  MR15
+## SS loadings    1.855 0.905 0.841 0.793 0.815 0.774 0.696 0.152 0.199 0.121
+## Proportion Var 0.098 0.048 0.044 0.042 0.043 0.041 0.037 0.008 0.010 0.006
+## Cumulative Var 0.098 0.145 0.190 0.231 0.274 0.315 0.351 0.359 0.370 0.376
+##                  MR6  MR12  MR17  MR14  MR16  MR11   MR9  MR10  MR19
+## SS loadings    0.279 0.153 0.094 0.125 0.091 0.119 0.156 0.117 0.000
+## Proportion Var 0.015 0.008 0.005 0.007 0.005 0.006 0.008 0.006 0.000
+## Cumulative Var 0.391 0.399 0.404 0.411 0.415 0.422 0.430 0.436 0.436</code></pre>
+<p>The <code>SS loadings</code> represent eigenvalues for each factor. The factor loadings indicate which variables are part of each factor (i.e., highly correlated variables which cluster together).</p>
 <p><strong>Confirmatory Factor Analysis (CFA)</strong></p>
 <p><strong>Confirmatory factor analysis (CFA)</strong> is used to test how well data aligns with a theoretical factor structure.</p>
-<p>We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent – yet likely correlated – constructs. If multiple items are need to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which drive one’s decision to leave an organization beyond engagement, so we would not expect levels of engagement to <em>always</em> be associated with a commensurate change in retention.</p>
-<p>We can illustrate this using <code>survey_responses</code> data, which contains three items for each engagement and retention. Let’s evaluate pairwise relationships between the items:</p>
-<pre><code>## Warning: package &#39;GGally&#39; was built under R version 4.0.2</code></pre>
+<p>We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent – yet likely correlated – constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one’s decision to leave an organization beyond engagement, so we would not expect levels of engagement to <em>always</em> be associated with a commensurate change in retention.</p>
+<p>We can illustrate this using <code>survey_responses</code> data, which contains three items for both engagement and retention. Let’s first evaluate pairwise relationships between the items:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-eng-ret"></span>
 <img src="People_Analytics_Lifecycle_files/figure-html/ggpairs-eng-ret-1.png" alt="Bivariate correlations and data distributions for engagement and retention survey items." width="100%" />
 <p class="caption">
-Figure 13.1: Bivariate correlations and data distributions for engagement and retention survey items.
+Figure 13.3: Bivariate correlations and data distributions for engagement and retention survey items.
 </p>
 </div>
 <p>As expected, <code>eng_1</code>, <code>eng_2</code>, and <code>eng_3</code> have stronger correlations with each other (<span class="math inline">\(r \ge .64\)</span>) than with <code>ret_1</code>, <code>ret_2</code>, or <code>ret_3</code> (<span class="math inline">\(r \le .47\)</span>).</p>
 <p>CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the <code>lavaan</code> package in R to perform CFA.</p>
 <p>Step one is defining the model within a string per the syntax required by <code>lavaan</code>:</p>
-<div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="unsup-lrn.html#cb412-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb412-2"><a href="unsup-lrn.html#cb412-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb412-3"><a href="unsup-lrn.html#cb412-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb412-4"><a href="unsup-lrn.html#cb412-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Model specification; each line represents a separate latent factor</span></span>
-<span id="cb412-5"><a href="unsup-lrn.html#cb412-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&#39;engagement =~ eng_1 + eng_2 + eng_3</span></span>
-<span id="cb412-6"><a href="unsup-lrn.html#cb412-6" aria-hidden="true" tabindex="-1"></a><span class="st">                retention =~ ret_1 + ret_2 + ret_3&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="unsup-lrn.html#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb417-2"><a href="unsup-lrn.html#cb417-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb417-3"><a href="unsup-lrn.html#cb417-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb417-4"><a href="unsup-lrn.html#cb417-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Model specification; each line represents a separate latent factor</span></span>
+<span id="cb417-5"><a href="unsup-lrn.html#cb417-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&#39;engagement =~ eng_1 + eng_2 + eng_3</span></span>
+<span id="cb417-6"><a href="unsup-lrn.html#cb417-6" aria-hidden="true" tabindex="-1"></a><span class="st">                retention =~ ret_1 + ret_2 + ret_3&#39;</span>)</span></code></pre></div>
 <p>Step two is fitting the model to the data using the <code>cfa()</code> function from the <code>lavaan</code> package:</p>
-<div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="unsup-lrn.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
-<span id="cb413-2"><a href="unsup-lrn.html#cb413-2" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span></code></pre></div>
+<div class="sourceCode" id="cb418"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb418-1"><a href="unsup-lrn.html#cb418-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb418-2"><a href="unsup-lrn.html#cb418-2" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span></code></pre></div>
 <p>We can also create what is known as a <strong>path diagram</strong> to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as <strong>structural equation modeling (SEM)</strong>; therefore, CFA is a subset of the SEM umbrella.</p>
 <p>The <code>lavaanPlot()</code> package can be used to create and visualize path diagrams in R:</p>
-<pre><code>## Warning: package &#39;lavaanPlot&#39; was built under R version 4.0.2</code></pre>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:path-diagram"></span>
 <div id="htmlwidget-b7ffb5ab7faad80aaa10" style="width:100%;height:480px;" class="grViz html-widget"></div>
 <script type="application/json" data-for="htmlwidget-b7ffb5ab7faad80aaa10">{"x":{"diagram":" digraph plot { \n graph [ overlap = true, fontsize = 10 ] \n node [ shape = box ] \n node [shape = box] \n eng_1; eng_2; eng_3; ret_1; ret_2; ret_3 \n node [shape = oval] \n engagement; retention \n \n edge [ color = black ] \n  engagement->eng_1 [label = \"0.84\"] engagement->eng_2 [label = \"0.84\"] engagement->eng_3 [label = \"0.79\"] retention->ret_1 [label = \"0.81\"] retention->ret_2 [label = \"0.86\"] retention->ret_3 [label = \"0.83\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p class="caption">
-Figure 13.2: Path diagram showing survey items as indicators of latent engagement and retention factors.
+Figure 13.4: Path diagram showing survey items as indicators of latent engagement and retention factors.
 </p>
 </div>
 <p>Step three is interpreting the output of the fitted model:</p>
-<div class="sourceCode" id="cb415"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb415-1"><a href="unsup-lrn.html#cb415-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the model</span></span>
-<span id="cb415-2"><a href="unsup-lrn.html#cb415-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cfa.fit, <span class="at">fit.measures =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="unsup-lrn.html#cb419-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the model</span></span>
+<span id="cb419-2"><a href="unsup-lrn.html#cb419-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cfa.fit, <span class="at">fit.measures =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## lavaan 0.6-12 ended normally after 26 iterations
 ## 
 ##   Estimator                                         ML
@@ -490,13 +602,22 @@ Figure 13.2: Path diagram showing survey items as indicators of latent engagemen
 ##    .ret_3             0.213    0.014   14.812    0.000
 ##     engagement        0.630    0.041   15.441    0.000
 ##     retention         0.895    0.061   14.577    0.000</code></pre>
+<p>The <code>lavaan</code> package provides many fit measures, but we will focus only on the most common for evaluating how well the data fit the measurement model.</p>
+<ul>
+<li>Model Chi-Square (<span class="math inline">\(\chi^2\)</span>): Tests whether the covariance matrix derived from the model represents the population covariance (Test Statistic under the Model Test User Model section of the <code>lavaan</code> output)</li>
+<li>Comparative Fit Index (CFI): Values range from 0 to 1, with <span class="math inline">\(CFI &gt; .90\)</span> indicating good fit</li>
+<li>Tucker Lewis Index (TLI): Values range from 0 to 1, with <span class="math inline">\(TLI &gt; .90\)</span> indicating good fit</li>
+<li>Root Mean Square Error of Approximation (RMSEA): Values of <span class="math inline">\(.01\)</span>, <span class="math inline">\(.05\)</span>, and <span class="math inline">\(.08\)</span> indicate excellent, good, and mediocre fit, respectively</li>
+</ul>
+<p>The <span class="math inline">\(\chi^2\)</span> statistic is sometimes referred to a ‘badness of fit’ measure since rejecting the null hypothesis (<span class="math inline">\(p &lt; .05\)</span>) indicates a lack of fit. Since <span class="math inline">\(n = 1,000\)</span>, we need to index on the CFI, TLI, and RMSEA fit measures. Though both CFI (<span class="math inline">\(.97\)</span>) and TLI (<span class="math inline">\(.94\)</span>) are north of the <span class="math inline">\(.90\)</span> threshold for good fit, <span class="math inline">\(\chi^2\)</span> is significant (<span class="math inline">\(p &lt; .001\)</span>) and RMSEA is higher than the mediocre fit threshold (<span class="math inline">\(.12 &gt; .08\)</span>).</p>
+<p>Kline (2005) is an excellent resource for more extensive coverage of SEM.</p>
 </div>
 <div id="principal-components-analysis-pca" class="section level2" number="13.2">
 <h2><span class="header-section-number">13.2</span> Principal Components Analysis (PCA)</h2>
 </div>
 <div id="clustering" class="section level2" number="13.3">
 <h2><span class="header-section-number">13.3</span> Clustering</h2>
-<p><strong><span class="math inline">\(\textbf k\)</span></strong>-Means Clustering**</p>
+<p><span class="math inline">\(\textbf k\)</span><strong>-Means Clustering</strong></p>
 <p><strong>Hierarchical Clustering</strong></p>
 </div>
 <div id="review-questions-11" class="section level2" number="13.4">

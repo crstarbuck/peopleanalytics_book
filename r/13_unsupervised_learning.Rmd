@@ -6,7 +6,9 @@
   
   Consider a case in which a colleague uses verbose rhetoric to convey a simple message that could be effectively communicated with fewer words. The superfluous language is unnecessary and does not provide additional information or value. This is analogous to dimension reduction in that we are interested in identifying a limited set of meaningful attributes and discarding redundant and unimportant information that does not contribute to the analysis objectives.
   
-  Dimension reduction is most common in the context of surveys. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs, or individual dimensions of multidimensional constructs, that are relatively uncorrelated with survey items used to measure independent constructs. Intuitively, we know that highly correlated variables do not individually capture unique information, as one is a sufficient proxy to capture the available signal in the data. Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements.
+  Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a *subspace* of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture *some* information about distance. The limited information loss in moving from three to two dimensions is likely acceptable given the benefit of capturing the memory of the team in a photograph.
+  
+  Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs that are relatively uncorrelated with survey items used to measure other independent constructs. Intuitively, we know that highly correlated variables do not capture unique information, as one is a sufficient proxy to capture the available signal in the larger number of features. As we have covered, models with highly correlated variables can create problems due to multicollinearity, and dimension reduction is an alternative approach to variable selection techniques such as the backward stepwise procedure covered in Chapter \@ref(lm).
   
   This chapter will cover dimension reduction fundamentals as well as technical implementations.
 
@@ -20,7 +22,7 @@
 
   **Exploratory Factor Analysis (EFA)**
   
-  **Exploratory factor analysis (EFA)** is a variable reduction technique by which factors are extracted from data as part of the development process for new survey instruments. 
+  **Exploratory factor analysis (EFA)** is a variable reduction technique by which factors are extracted from data -- usually as part of the development process for new survey instruments. 
   
   A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework that underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and eligible for removal. Aside from the principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.
   
@@ -39,13 +41,13 @@ dim(survey_dat)
 
 ```
 
-  EFA steps will be illustrated by implementing the three-step **principal components analysis (PCA)** extraction method outlined by Hair et al. (2006) on the `survey_responses` data:
+  EFA will be illustrated by implementing a three-step extraction method outlined by Hair et al. (2006):
   
   1. Assess factorability of the data
-  2. Extract the components
-  3. Rotate and interpret the components
+  2. Extract the factors
+  3. Rotate and interpret the factors
   
-  With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. To evaluate factorability, we need a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** should reach statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
+  With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
   
   The `KMO()` and `cortest.bartlett()` functions from the `psych` library can be used for the KMO statistic and Bartlett's test, respectively:
   
@@ -66,12 +68,28 @@ psych::cortest.bartlett(cor(survey_dat), nrow(survey_dat))
 
 ```  
 
-  Data satisfy the factorability requirements since $KMO = .94$ and Bartlett’s test is significant at the $p < .001$ level. 
-  For the second step, we will visually inspect a **scree plot** and determine how many factors are necessary for explaining the majority of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor (or principal component). While the mathematics of PCA is out of scope for this book, principal components are essentially the result of a linear transformation of the vector space by combining variables to reduce dimensionality.
+  Data satisfy the factorability requirements since $KMO = .91$ and Bartlett’s test is significant at the $p < .001$ level. 
   
-  We can use base R's `prcomp()` function to extract principal components from the data:
+  For the second step, we will visually inspect a **scree plot** and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using **eigenvalues**. While the linear algebraic underpinnings are out of scope for this book, it is important to understand that **eigenvectors** are vectors of a linear transformation which have corresponding eigenvalues $\lambda$ that represent factors by which the vectors are scaled. As a general rule, factors with $\lambda \ge 1$ are extracted when running a factor analysis.
   
-```{r, message = FALSE, warning = FALSE}
+  The `scree()` function from the `psych` library can be used to generate a scree plot:
+  
+```{r scree-plot, out.width = "100%", echo = FALSE, fig.cap = 'Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Produce scree plot
+psych::scree(survey_dat, pc = FALSE)
+
+```
+  
+  Based on Figure \@ref(fig:scree-plot), factors 1 and 2 appear to provide relatively outsized information gain as $\lambda > 1$ for both.
+  
+  You may notice the `pc = FALSE` argument in the `scree()` function call. This relates to **principal components analysis (PCA)**, which is an alternative method of dimension reduction. Principal components are new independent variables that represent linear transformations of scaled ($(x - \bar{x}) / s$) versions of the observed variables. While we will focus on factor analysis and PCA in this section, which are most common in the social sciences, there are additional dimension reduction techniques one could explore (e.g., **parallel analysis**).
+  
+  While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like motivation or belonging, so we instead measure indicators of the latent variables using question sets on surveys.
+  
+  To illustrate how to extract principal components, we can use base R's `prcomp()` function:
+  
+```{r pca-var-plot, out.width = "100%", echo = FALSE, fig.cap = 'Plot showing the percent of total variance explained by 12 principal components.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -80,34 +98,55 @@ library(ggplot2)
 pca <- prcomp(survey_dat, scale = TRUE)
 
 # Calculate explained variance for each principal component
-pca_var = pca$sdev^2 / sum(pca$sdev^2)
+pca_var = (pca$sdev^2 / sum(pca$sdev^2)) * 100
 
 # Create scree plot
-ggplot2::qplot(1:19, pca_var) + 
+ggplot2::qplot(1:length(pca_var), pca_var) + 
 ggplot2::geom_line() + 
+ggplot2::scale_x_continuous(breaks = 1:length(pca_var)) +
 ggplot2::xlab("Principal Component") + 
-ggplot2::ylab("Variance Explained") +
-ggplot2::ylim(0, 1)
+ggplot2::ylab("Variance Explained (%)") +
+ggplot2::theme_bw()
 
 ```
   
-  We are looking for the *elbow* in this scree plot...
+  Note that while we can theoretically have as many factors as we have variables ($p = 12$), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
   
-  For the third step, a direct oblimin method of rotation of the factor matrix was leveraged to aid in the interpretation of results. An oblique, rather than orthogonal, rotation is selected here since it is best suited for obtaining several theoretically meaningful factors when underlying dimensions are assumed to be correlated (Hair et al., 2006).
+  As shown in Figure \@ref(fig:pca-var-plot), principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the *elbow* to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer more meaningful variables.
+  
+  As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as **principal components regression (PCR)**. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
+  
+  For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
-  The `fa()` function from the `psych` package can be used to implement EFA in R.
+  The `fa()` (factor analysis) function from the `psych` package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and $n$-count.
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Principal axis factoring using 19 factors and oblimin rotation
-efa.fit.19 <- psych::fa(survey_dat, nfactors = 19, rotate = 'oblimin')
-
 # Principal axis factoring using 3 factors and oblimin rotation
-efa.fit.3 <- psych::fa(survey_dat, nfactors = 3, rotate = 'oblimin')
+efa.fit <- psych::fa(survey_dat, nfactors = 3, rotate = 'oblimin')
+
+# Display factor loadings
+efa.fit$loadings
 
 ```
 
+  The sum of squared loadings (`SS loadings`) are the eigenvalues for each factor. It is also helpful to review the percent of total variance explained by each factor (`Proportion Var`) along with the cumulative percent of total variance (`Cumulative Var`). We can see that the three factors have $\lambda \ge 1$, which together explain 59 percent of the total variance in the data.
   
+  By reviewing the factor loadings, we gain an understanding of which variables are part of each factor (i.e., highly correlated variables which cluster together). Factor loadings represent the correlation of each item with the respective factor. While there is not a consensus on thresholds, a general rule of thumb is that *absolute* factor loadings should be at least $.5$. Items with lower factor loadings should be removed from the measurement model.
+  
+  For the first factor `MR1`, the three retention items cluster together with happiness and leadership (after rounding). This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization. 
+  
+  Loadings for the second factor `MR2` indicate that the three engagement items cluster together with discretionary effort. This makes intuitive sense, as we would expect highly engaged employees to contribute higher levels of effort towards their work. 
+  
+  Loadings for the third factor `MR3` show that belonging, inclusion, and psychological safety cluster together. In other words, employees who feel a stronger sense of belonging and perceive the environment to be more inclusive tend to experience a more favorable climate with respect to psychological safety.
+  
+  We can visualize this information using the `fa.diagram()` function from the `psych` library:
+  
+```{r fct-ld-diagram, out.width = "100%", echo = FALSE, fig.cap = 'Diagram showing factor loadings (correlations) for each item with the respective factor.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+psych::fa.diagram(efa.fit)
+
+```
 
   **Confirmatory Factor Analysis (CFA)**
   
@@ -126,6 +165,7 @@ library(GGally)
 GGally::ggpairs(subset(survey_dat, select = c("eng_1", "eng_2", "eng_3", "ret_1", "ret_2", "ret_3")))
 
 ```
+  
   As expected, `eng_1`, `eng_2`, and `eng_3` have stronger correlations with each other ($r \ge .64$) than with `ret_1`, `ret_2`, or `ret_3` ($r \le .47$).
   
   CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the `lavaan` package in R to perform CFA. 
@@ -186,10 +226,7 @@ summary(cfa.fit, fit.measures = TRUE)
 
   Kline (2005) is an excellent resource for more extensive coverage of SEM.
 
-## Principal Components Analysis (PCA)
 
-
-  
 ## Clustering
 
 
