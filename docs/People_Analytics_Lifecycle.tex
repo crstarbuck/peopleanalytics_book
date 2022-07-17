@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-13}
+\date{2022-07-14}
 
 \begin{document}
 \maketitle
@@ -357,15 +357,7 @@ The \texttt{survey\_responses} data set contains responses to survey items measu
 \begin{itemize}
 \tightlist
 \item
-  \texttt{action}: action taking
-\item
   \texttt{belong}: belonging
-\item
-  \texttt{collab}: collaboration
-\item
-  \texttt{comm}: communication
-\item
-  \texttt{culture}: culture
 \item
   \texttt{effort}: discretionary effort
 \item
@@ -379,8 +371,6 @@ The \texttt{survey\_responses} data set contains responses to survey items measu
 \item
   \texttt{happ}: happiness
 \item
-  \texttt{opeff}: operating\_efficiency
-\item
   \texttt{psafety}: psychological safety
 \item
   \texttt{ret\_1}: retention item 1 of 3
@@ -389,11 +379,7 @@ The \texttt{survey\_responses} data set contains responses to survey items measu
 \item
   \texttt{ret\_3}: retention item 3 of 3
 \item
-  \texttt{rclarity}: role clarity
-\item
   \texttt{ldrshp}: senior leadership
-\item
-  \texttt{wlbal}: work-life balance
 \end{itemize}
 
 \hypertarget{d-framework}{%
@@ -486,6 +472,8 @@ To respect the nuances of the problem statement, it is important to unpack it an
   Q3: \ldots{}
 \end{itemize}
 
+To ensure it is possible (and appropriate) to take action in response to these questions, consider the following after drafting each question: ``What would I do if I knew the answer?''
+
 \textbf{Research Hypotheses}
 
 Once research questions are developed, what do you expect to find based on anecdotal stories or empirical findings? As a next step, these expectations should be expressed in the form of research hypotheses. Please note that these research hypotheses are different from statistical hypotheses (both will be covered in detail in later chapters).
@@ -505,9 +493,9 @@ To ensure the hypotheses lend to actionable analyses, it is important to conside
 \begin{itemize}
 \tightlist
 \item
-  What will be done if the hypotheses are empirically supported?
+  What will be done if the hypotheses are supported?
 \item
-  What will be done if the hypotheses are \emph{not} empirically supported?
+  What will be done if the hypotheses are \emph{not} supported?
 \end{itemize}
 
 \textbf{Assumptions}
@@ -698,14 +686,14 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## caret      6.0-91 6.0-92              TRUE
 ## car        3.0-12  3.1-0             FALSE
 ## flextable   0.7.0  0.7.2             FALSE
-## MASS       7.3-56 7.3-57              TRUE
+## MASS       7.3-56 7.3-58              TRUE
 ## lme4       1.1-28 1.1-30              TRUE
 ## rpart.plot  3.1.0  3.1.1             FALSE
 ## lavaan     0.6-11 0.6-12             FALSE
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpCIF5aH/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmprNgj18/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -3028,6 +3016,8 @@ In this case, the value of \texttt{1000} has a significant influence on the mean
 It is important to understand the data distribution and evaluate \emph{both} the mean and median. The reality is that both the mean and median can be misleading -- and even inappropriate. It would not be too useful to calculate median organization tenure, for example, for a hyper-growth company that has hired the majority of its workforce in the past few months; long-tenured employees would be lost in this metric.
 
 The larger the \(n\)-count, the less influential an extreme value will be on \(\bar{x}\). As we will learn in Chapter \ref{inf-stats}, sample size is fundamental to our ability to achieve precise estimates of population parameters based on sample statistics.
+
+While the focus of this section is central tendency, it is important to recognize that outlying values are often the more actionable data points in an analysis since these cases may represent those with significantly different experiences relative to the average employee. Understanding the \emph{distribution} of data is critical, and the spread of data around measures of central tendency will receive considerable attention throughout this book.
 
 \textbf{Mode}
 
@@ -10273,10 +10263,10 @@ To illustrate the steps for EFA, we will leverage the \texttt{survey\_responses}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1000   19
+## [1] 1000   12
 \end{verbatim}
 
-EFA will be illustrated by implementing the three-step \textbf{principal components analysis (PCA)} extraction method outlined by Hair et al.~(2006):
+EFA will be illustrated by implementing a three-step extraction method outlined by Hair et al.~(2006):
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -10284,9 +10274,9 @@ EFA will be illustrated by implementing the three-step \textbf{principal compone
 \item
   Assess factorability of the data
 \item
-  Extract the components
+  Extract the factors
 \item
-  Rotate and interpret the components
+  Rotate and interpret the factors
 \end{enumerate}
 
 With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a \textbf{Kaiser-Meyer-Olkin (KMO)} statistic of at least \(.60\) (Kaiser, 1974) and \textbf{Bartlett's Test of Sphericity} reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
@@ -10306,14 +10296,12 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 \begin{verbatim}
 ## Kaiser-Meyer-Olkin factor adequacy
 ## Call: psych::KMO(r = survey_dat)
-## Overall MSA =  0.94
+## Overall MSA =  0.91
 ## MSA for each item = 
-##   action   belong   collab     comm  culture   effort     incl    eng_1 
-##     0.95     0.96     0.94     0.96     0.97     0.90     0.96     0.86 
-##    eng_2    eng_3     happ    opeff  psafety    ret_1    ret_2    ret_3 
-##     0.91     0.89     0.96     0.96     0.94     0.95     0.94     0.93 
-## rclarity   ldrshp    wlbal 
-##     0.97     0.95     0.93
+##  belong  effort    incl   eng_1   eng_2   eng_3    happ psafety   ret_1   ret_2 
+##    0.94    0.90    0.90    0.84    0.90    0.89    0.93    0.91    0.93    0.91 
+##   ret_3  ldrshp 
+##    0.90    0.93
 \end{verbatim}
 
 \begin{Shaded}
@@ -10325,18 +10313,18 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 
 \begin{verbatim}
 ## $chisq
-## [1] 10711.67
+## [1] 7024.14
 ## 
 ## $p.value
 ## [1] 0
 ## 
 ## $df
-## [1] 171
+## [1] 66
 \end{verbatim}
 
-Data satisfy the factorability requirements since \(KMO = .94\) and Bartlett's test is significant at the \(p < .001\) level.
+Data satisfy the factorability requirements since \(KMO = .91\) and Bartlett's test is significant at the \(p < .001\) level.
 
-For the second step, we will visually inspect a \textbf{scree plot} and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using \textbf{eigenvalues}. While the linear algebraic underpinnings are out of scope for this book, \textbf{eigenvectors} are vectors of a linear transformation which have corresponding eigenvalues \(\lambda\) that represent factors by which the vectors are scaled. As a general rule, factors with eigenvalues greater than 1 are extracted when running a factor analysis.
+For the second step, we will visually inspect a \textbf{scree plot} and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using \textbf{eigenvalues}. While the linear algebraic underpinnings are out of scope for this book, it is important to understand that \textbf{eigenvectors} are vectors of a linear transformation which have corresponding eigenvalues \(\lambda\) that represent factors by which the vectors are scaled. As a general rule, factors with \(\lambda \ge 1\) are extracted when running a factor analysis.
 
 The \texttt{scree()} function from the \texttt{psych} library can be used to generate a scree plot:
 
@@ -10349,9 +10337,13 @@ The \texttt{scree()} function from the \texttt{psych} library can be used to gen
 \caption{Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).}\label{fig:scree-plot}
 \end{figure}
 
-You may notice the \texttt{pc\ =\ FALSE} argument in the \texttt{scree()} function call. This relates to \textbf{principal components analysis (PCA)}, which is an alternative method of dimension reduction. Principal components are essentially new independent variables with no information overlap that represent linear transformations of scaled (\((x - \bar{x}) / s\)) original variables.
+Based on Figure \ref{fig:scree-plot}, factors 1 and 2 appear to provide relatively outsized information gain as \(\lambda > 1\) for both.
 
-To illustrate, we can use base R's \texttt{prcomp()} function to extract principal components from the data:
+You may notice the \texttt{pc\ =\ FALSE} argument in the \texttt{scree()} function call. This relates to \textbf{principal components analysis (PCA)}, which is an alternative method of dimension reduction. Principal components are new independent variables that represent linear transformations of scaled (\((x - \bar{x}) / s\)) versions of the observed variables. While we will focus on factor analysis and PCA in this section, which are most common in the social sciences, there are additional dimension reduction techniques one could explore (e.g., \textbf{parallel analysis}).
+
+While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like motivation or belonging, so we instead measure indicators of the latent variables using question sets on surveys.
+
+To illustrate how to extract principal components, we can use base R's \texttt{prcomp()} function:
 
 \begin{figure}
 
@@ -10359,23 +10351,23 @@ To illustrate, we can use base R's \texttt{prcomp()} function to extract princip
 
 }
 
-\caption{Plot showing the percent of total variance explained by 19 principal components.}\label{fig:pca-var-plot}
+\caption{Plot showing the percent of total variance explained by 12 principal components.}\label{fig:pca-var-plot}
 \end{figure}
 
-Note that while we can theoretically have as many factors as we have variables (\(p = 19\)), this defeats the purpose of dimension reduction -- whether factor analysis or PCA. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
+Note that while we can theoretically have as many factors as we have variables (\(p = 12\)), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
 
-As shown in Figure \ref{fig:scree-plot}, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the \emph{elbow} to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-19 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information.
+As shown in Figure \ref{fig:pca-var-plot}, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the \emph{elbow} to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer more meaningful variables.
 
-In a supervised learning context, we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as \textbf{principal components regression (PCR)}. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since the limited dimensions comes at the expense of limited interpretability.
+As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as \textbf{principal components regression (PCR)}. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
 
 For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
-The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can be used for the implementation in R.
+The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and \(n\)-count.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Principal axis factoring using 19 factors and oblimin rotation}
-\NormalTok{efa.fit }\OtherTok{\textless{}{-}}\NormalTok{ psych}\SpecialCharTok{::}\FunctionTok{fa}\NormalTok{(survey\_dat, }\AttributeTok{nfactors =} \DecValTok{19}\NormalTok{, }\AttributeTok{rotate =} \StringTok{\textquotesingle{}oblimin\textquotesingle{}}\NormalTok{)}
+\CommentTok{\# Principal axis factoring using 3 factors and oblimin rotation}
+\NormalTok{efa.fit }\OtherTok{\textless{}{-}}\NormalTok{ psych}\SpecialCharTok{::}\FunctionTok{fa}\NormalTok{(survey\_dat, }\AttributeTok{nfactors =} \DecValTok{3}\NormalTok{, }\AttributeTok{rotate =} \StringTok{\textquotesingle{}oblimin\textquotesingle{}}\NormalTok{)}
 
 \CommentTok{\# Display factor loadings}
 \NormalTok{efa.fit}\SpecialCharTok{$}\NormalTok{loadings}
@@ -10385,58 +10377,46 @@ The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can
 \begin{verbatim}
 ## 
 ## Loadings:
-##          MR2    MR1    MR4    MR8    MR3    MR5    MR13   MR18   MR7    MR15  
-## action                  0.103                              0.133  0.297       
-## belong                         0.127  0.297         0.116  0.270              
-## collab                                0.803                                   
-## comm                    0.437  0.136  0.113                                   
-## culture          0.107  0.196  0.141  0.143  0.145                            
-## effort    0.456                                                          0.213
-## incl                           0.800                                          
-## eng_1     0.893                                                               
-## eng_2     0.507                                     0.119  0.178         0.179
-## eng_3     0.762                                                               
-## happ             0.119         0.116                0.191  0.111  0.234       
-## opeff                   0.722                                                 
-## psafety                 0.125  0.200  0.164  0.233                            
-## ret_1            0.210                       0.114  0.114                0.109
-## ret_2                                               0.780                     
-## ret_3            0.863                                                        
-## rclarity         0.118         0.112         0.120                            
-## ldrshp           0.186  0.186  0.126                              0.156       
-## wlbal                                        0.800                            
-##          MR6    MR12   MR17   MR14   MR16   MR11   MR9    MR10   MR19  
-## action   -0.125         0.149               -0.165                     
-## belong                               -0.122                            
-## collab                                                                 
-## comm                    0.145                                          
-## culture          0.332                                                 
-## effort                 -0.154        -0.112 -0.169         0.100       
-## incl                                                                   
-## eng_1                                                                  
-## eng_2                                               0.112              
-## eng_3                                                     -0.164       
-## happ      0.103                                    -0.193              
-## opeff                                                                  
-## psafety  -0.173 -0.116                       0.180  0.102 -0.133       
-## ret_1                          0.224  0.166        -0.198              
-## ret_2                                                                  
-## ret_3                                                                  
-## rclarity  0.459                                                        
-## ldrshp                         0.194                0.214  0.113       
-## wlbal                                                                  
+##         MR1    MR2    MR3   
+## belong   0.185  0.104  0.576
+## effort          0.784       
+## incl                   0.740
+## eng_1   -0.100  0.898       
+## eng_2    0.125  0.764       
+## eng_3           0.791       
+## happ     0.624         0.268
+## psafety                0.732
+## ret_1    0.747              
+## ret_2    0.866              
+## ret_3    0.886              
+## ldrshp   0.497         0.349
 ## 
-##                  MR2   MR1   MR4   MR8   MR3   MR5  MR13  MR18   MR7  MR15
-## SS loadings    1.855 0.905 0.841 0.793 0.815 0.774 0.696 0.152 0.199 0.121
-## Proportion Var 0.098 0.048 0.044 0.042 0.043 0.041 0.037 0.008 0.010 0.006
-## Cumulative Var 0.098 0.145 0.190 0.231 0.274 0.315 0.351 0.359 0.370 0.376
-##                  MR6  MR12  MR17  MR14  MR16  MR11   MR9  MR10  MR19
-## SS loadings    0.279 0.153 0.094 0.125 0.091 0.119 0.156 0.117 0.000
-## Proportion Var 0.015 0.008 0.005 0.007 0.005 0.006 0.008 0.006 0.000
-## Cumulative Var 0.391 0.399 0.404 0.411 0.415 0.422 0.430 0.436 0.436
+##                  MR1   MR2   MR3
+## SS loadings    2.793 2.657 1.627
+## Proportion Var 0.233 0.221 0.136
+## Cumulative Var 0.233 0.454 0.590
 \end{verbatim}
 
-The \texttt{SS\ loadings} represent eigenvalues for each factor. The factor loadings indicate which variables are part of each factor (i.e., highly correlated variables which cluster together).
+The sum of squared loadings (\texttt{SS\ loadings}) are the eigenvalues for each factor. It is also helpful to review the percent of total variance explained by each factor (\texttt{Proportion\ Var}) along with the cumulative percent of total variance (\texttt{Cumulative\ Var}). We can see that the three factors have \(\lambda \ge 1\), which together explain 59 percent of the total variance in the data.
+
+By reviewing the factor loadings, we gain an understanding of which variables are part of each factor (i.e., highly correlated variables which cluster together). Factor loadings represent the correlation of each item with the respective factor. While there is not a consensus on thresholds, a general rule of thumb is that \emph{absolute} factor loadings should be at least \(.5\). Items with lower factor loadings should be removed from the measurement model.
+
+For the first factor \texttt{MR1}, the three retention items cluster together with happiness and leadership (after rounding). This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization.
+
+Loadings for the second factor \texttt{MR2} indicate that the three engagement items cluster together with discretionary effort. This makes intuitive sense, as we would expect highly engaged employees to contribute higher levels of effort towards their work.
+
+Loadings for the third factor \texttt{MR3} show that belonging, inclusion, and psychological safety cluster together. In other words, employees who feel a stronger sense of belonging and perceive the environment to be more inclusive tend to experience a more favorable climate with respect to psychological safety.
+
+We can visualize this information using the \texttt{fa.diagram()} function from the \texttt{psych} library:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/fct-ld-diagram-1} 
+
+}
+
+\caption{Diagram showing factor loadings (correlations) for each item with the respective factor.}\label{fig:fct-ld-diagram}
+\end{figure}
 
 \textbf{Confirmatory Factor Analysis (CFA)}
 
@@ -10593,9 +10573,6 @@ The \texttt{lavaan} package provides many fit measures, but we will focus only o
 The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p < .05\)) indicates a lack of fit. Since \(n = 1,000\), we need to index on the CFI, TLI, and RMSEA fit measures. Though both CFI (\(.97\)) and TLI (\(.94\)) are north of the \(.90\) threshold for good fit, \(\chi^2\) is significant (\(p < .001\)) and RMSEA is higher than the mediocre fit threshold (\(.12 > .08\)).
 
 Kline (2005) is an excellent resource for more extensive coverage of SEM.
-
-\hypertarget{principal-components-analysis-pca}{%
-\section{Principal Components Analysis (PCA)}\label{principal-components-analysis-pca}}
 
 \hypertarget{clustering}{%
 \section{Clustering}\label{clustering}}

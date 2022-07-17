@@ -4,7 +4,7 @@
 
 ## Variable Types
 
-  The framing of variables in research hypotheses guides the treatment of each in our analyses. In this section, we will discuss the function of *independent*, *dependent*, *control*, *moderating*, and *mediating* variables.
+  The framing of variables in research hypotheses guides the treatment of each in our analyses. In this section, we will discuss the function of *independent*, *dependent*, *control*, *moderating*, and *mediating* variables as well as the broader classification of these variables as either *endogenous* or *exogenous*.
 
 ### Independent Variables (IV)
 
@@ -57,6 +57,14 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```
 
   <br />
+  
+### Endogenous vs. Exogenous Variables
+
+  Variables are sometimes referred to as either *endogenous* or *exogenous* in the context of linear regression, which will be covered in later chapters. Endogenous and exogenous variables are especially important in econometrics and economic modeling in which analysts seek to understand causal factors influencing outcomes of interest.
+  
+  An **endogenous variable** is a dependent variable whose values can be determined or explained based on the other variables in a statistical model. In other words, values of the dependent variable change predictably with values of other variables in the model. By contrast, an **exogenous variable** is an independent variable on which other variables in the model have no direct or systematic impact.
+  
+  For example, if we are interested in studying the factors influencing year-to-date (YTD) sales among salespeople, we may consider independent variables such as years of sales experience. If YTD sales is a function of one's sales experience, YTD sales is an endogenous variable since its values can be explained -- at least in part -- by the values of the independent factor (sales experience). Since one's experience in sales is independent of other variables in the model (i.e., YTD sales does not influence a person's years of experience), experience is an exogenous variable.
   
 ## Measurement Scales
 
@@ -197,8 +205,8 @@ sample(employees$employee_id, n, replace = F)
 
 # Return employee counts by department
 employees %>%
-group_by(dept) %>%
-summarise(n = n())
+dplyr::group_by(dept) %>%
+dplyr::summarise(n = n())
 
 ```
 
@@ -208,13 +216,13 @@ summarise(n = n())
 
 # Obtain and store stratified random sample
 strat_sample <- employees %>%
-                group_by(dept) %>%
-                sample_frac(size = .5)
+                dplyr::group_by(dept) %>%
+                dplyr::sample_frac(size = .5)
 
 # Return sample counts by department
 strat_sample %>%
-group_by(dept) %>%
-summarise(n = n())
+dplyr::group_by(dept) %>%
+dplyr::summarise(n = n())
 
 ```
 
@@ -236,7 +244,7 @@ clusters <- sample(unique(employees$cluster), size = 5, replace = F)
 
 # Store cluster sample
 clust_sample <- employees %>%
-                filter(cluster %in% clusters)
+                dplyr::filter(cluster %in% clusters)
 
 # Display dimensions of the cluster sample object
 dim(clust_sample)
