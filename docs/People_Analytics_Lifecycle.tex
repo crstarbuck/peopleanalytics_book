@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-14}
+\date{2022-07-17}
 
 \begin{document}
 \maketitle
@@ -693,7 +693,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmprNgj18/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpHdKIIf/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -822,7 +822,7 @@ In-line code comments can also be added where needed to reduce the number of lin
 \hypertarget{vectors}{%
 \section{Vectors}\label{vectors}}
 
-A \textbf{vector} is the most basic data object in R. Vectors contain a collection of data elements of the same data type. For example, a vector may contain a series of numbers, set of characters, collection of dates, or logical \texttt{TRUE} or \texttt{FALSE} results.
+A \textbf{vector} is the most basic data object in R. Vectors contain a collection of data elements of the same data type, which we will denote as \(x_1, x_2, ..., x_n\) in this book, where \(n\) is the number of observations or length of the vector. A vector may contain a series of numbers, set of characters, collection of dates, or logical \texttt{TRUE} or \texttt{FALSE} results.
 
 In this example, we introduce the combine function \texttt{c()}, which allows us to fill an object with more than one value:
 
@@ -1944,7 +1944,7 @@ When integrating data within R, the \texttt{tidyverse} provides a more efficient
 \NormalTok{                  prior\_employment,}
 \NormalTok{                  sentiment,}
 \NormalTok{                  tenure) }\SpecialCharTok{\%\textgreater{}\%}
-                  \FunctionTok{reduce}\NormalTok{(left\_join, }\AttributeTok{by =} \StringTok{"employee\_id"}\NormalTok{)}
+\NormalTok{                  purrr}\SpecialCharTok{::}\FunctionTok{reduce}\NormalTok{(left\_join, }\AttributeTok{by =} \StringTok{"employee\_id"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2241,7 +2241,7 @@ This chapter will survey the type and function of study variables, measurement s
 \hypertarget{variable-types}{%
 \section{Variable Types}\label{variable-types}}
 
-The framing of variables in research hypotheses guides the treatment of each in our analyses. In this section, we will discuss the function of \emph{independent}, \emph{dependent}, \emph{control}, \emph{moderating}, and \emph{mediating} variables.
+The framing of variables in research hypotheses guides the treatment of each in our analyses. In this section, we will discuss the function of \emph{independent}, \emph{dependent}, \emph{control}, \emph{moderating}, and \emph{mediating} variables as well as the broader classification of these variables as either \emph{endogenous} or \emph{exogenous}.
 
 \hypertarget{independent-variables-iv}{%
 \subsection{Independent Variables (IV)}\label{independent-variables-iv}}
@@ -2298,6 +2298,15 @@ Translating research hypotheses into conceptual models of hypothesized relations
 
 \caption{Conceptual Model of Hypothesized Relationships among Variables}\label{fig:concept-mdl}
 \end{figure}
+
+\hypertarget{endogenous-vs.-exogenous-variables}{%
+\subsection{Endogenous vs.~Exogenous Variables}\label{endogenous-vs.-exogenous-variables}}
+
+Variables are sometimes referred to as either \emph{endogenous} or \emph{exogenous} in the context of linear regression, which will be covered in later chapters. Endogenous and exogenous variables are especially important in econometrics and economic modeling in which analysts seek to understand causal factors influencing outcomes of interest.
+
+An \textbf{endogenous variable} is a dependent variable whose values can be determined or explained based on the other variables in a statistical model. In other words, values of the dependent variable change predictably with values of other variables in the model. By contrast, an \textbf{exogenous variable} is an independent variable on which other variables in the model have no direct or systematic impact.
+
+For example, if we are interested in studying the factors influencing year-to-date (YTD) sales among salespeople, we may consider independent variables such as years of sales experience. If YTD sales is a function of one's sales experience, YTD sales is an endogenous variable since its values can be explained -- at least in part -- by the values of the independent factor (sales experience). Since one's experience in sales is independent of other variables in the model (i.e., YTD sales does not influence a person's years of experience), experience is an exogenous variable.
 
 \hypertarget{measurement-scales}{%
 \section{Measurement Scales}\label{measurement-scales}}
@@ -2457,8 +2466,8 @@ Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of
 \begin{Highlighting}[]
 \CommentTok{\# Return employee counts by department}
 \NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}
-\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
-\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{())}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2477,13 +2486,13 @@ Next, we will randomly select \(\frac{1}{2}\) of employees within each departmen
 \begin{Highlighting}[]
 \CommentTok{\# Obtain and store stratified random sample}
 \NormalTok{strat\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-                \FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
-                \FunctionTok{sample\_frac}\NormalTok{(}\AttributeTok{size =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{sample\_frac}\NormalTok{(}\AttributeTok{size =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
 
 \CommentTok{\# Return sample counts by department}
 \NormalTok{strat\_sample }\SpecialCharTok{\%\textgreater{}\%}
-\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
-\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{())}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =} \FunctionTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
 
@@ -2514,7 +2523,7 @@ Let's demonstrate how to implement cluster sampling in R:
 
 \CommentTok{\# Store cluster sample}
 \NormalTok{clust\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-                \FunctionTok{filter}\NormalTok{(cluster }\SpecialCharTok{\%in\%}\NormalTok{ clusters)}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(cluster }\SpecialCharTok{\%in\%}\NormalTok{ clusters)}
 
 \CommentTok{\# Display dimensions of the cluster sample object}
 \FunctionTok{dim}\NormalTok{(clust\_sample)}
@@ -4943,7 +4952,7 @@ For variables with more than 2 categories, we can leverage the \texttt{model.mat
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Return counts by department}
-\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9534,10 +9543,10 @@ For this example, we will implement the validation set approach for CV.
 \NormalTok{training\_ids }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(prediction\_dat}\SpecialCharTok{$}\NormalTok{employee\_id, }\AttributeTok{size =} \FunctionTok{nrow}\NormalTok{(prediction\_dat) }\SpecialCharTok{*} \DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{FALSE}\NormalTok{)}
 
 \CommentTok{\# Create training data}
-\NormalTok{training\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
+\NormalTok{training\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
 \CommentTok{\# Create test data using remaining 1/3 of observations}
-\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
+\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
 \CommentTok{\# Return Boolean to validate that all observations are accounted for}
 \FunctionTok{nrow}\NormalTok{(training\_dat) }\SpecialCharTok{+} \FunctionTok{nrow}\NormalTok{(test\_dat) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(prediction\_dat)}
@@ -9561,7 +9570,7 @@ While functions exist for implementing SMOTE, such as the \texttt{SMOTE()} funct
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Calculate class representation delta in training data}
-\NormalTok{training\_class\_delta }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\NormalTok{training\_class\_delta }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
 
 \CommentTok{\# Copy training data to separate data frame for oversampling}
 \NormalTok{training\_dat\_os }\OtherTok{\textless{}{-}}\NormalTok{ training\_dat}
@@ -9577,14 +9586,14 @@ While functions exist for implementing SMOTE, such as the \texttt{SMOTE()} funct
 \NormalTok{  oversampled\_id }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(training\_dat\_os[training\_dat\_os}\SpecialCharTok{$}\NormalTok{active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{\textquotesingle{}employee\_id\textquotesingle{}}\NormalTok{], }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{)}
   
   \CommentTok{\# Store observation for sampled employee id}
-\NormalTok{  new\_obs }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{==}\NormalTok{ oversampled\_id))}
+\NormalTok{  new\_obs }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{==}\NormalTok{ oversampled\_id))}
   
   \CommentTok{\# Append sampled observation to training data frame}
 \NormalTok{  training\_dat\_os }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(training\_dat\_os, new\_obs)}
 \NormalTok{\}}
 
 \CommentTok{\# Return Boolean to validate that classes are equal in the training data}
-\FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -9949,10 +9958,10 @@ Since we have 60 months of data for each combination of \texttt{job}, \texttt{le
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Create training data}
-\NormalTok{train\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)}
+\NormalTok{train\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)}
 
 \CommentTok{\# Create test data}
-\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{5}\NormalTok{)}
+\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{5}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -10147,11 +10156,11 @@ Evaluating the average turnover rate by year will help in reconciling the high \
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Calculate year{-}wise turnover rate mean}
-\NormalTok{yr1\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr2\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr3\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr4\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{4}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr5\_avg }\OtherTok{\textless{}{-}}\NormalTok{ test\_dat }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr1\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr2\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr3\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr4\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{4}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr5\_avg }\OtherTok{\textless{}{-}}\NormalTok{ test\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
 
 \CommentTok{\# Display year{-}wise turnover rate mean}
 \FunctionTok{print}\NormalTok{(}\FunctionTok{c}\NormalTok{(yr1\_avg, yr2\_avg, yr3\_avg, yr4\_avg, yr5\_avg))}

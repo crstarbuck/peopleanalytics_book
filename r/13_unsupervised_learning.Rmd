@@ -20,7 +20,7 @@
   
   Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the $n:p$ ratio in supervised learning settings.
 
-  **Exploratory Factor Analysis (EFA)**
+### Exploratory Factor Analysis (EFA)
   
   **Exploratory factor analysis (EFA)** is a variable reduction technique by which factors are extracted from data -- usually as part of the development process for new survey instruments. 
   
@@ -41,11 +41,13 @@ dim(survey_dat)
 
 ```
 
-  EFA will be illustrated by implementing a three-step extraction method outlined by Hair et al. (2006):
+  EFA is implemented via a three-step procedure:
   
   1. Assess factorability of the data
   2. Extract the factors
   3. Rotate and interpret the factors
+  
+  **Step 1: Factorability Assessment**
   
   With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
   
@@ -69,6 +71,8 @@ psych::cortest.bartlett(cor(survey_dat), nrow(survey_dat))
 ```  
 
   Data satisfy the factorability requirements since $KMO = .91$ and Bartlett’s test is significant at the $p < .001$ level. 
+  
+  **Step 2: Factor Extraction**
   
   For the second step, we will visually inspect a **scree plot** and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using **eigenvalues**. While the linear algebraic underpinnings are out of scope for this book, it is important to understand that **eigenvectors** are vectors of a linear transformation which have corresponding eigenvalues $\lambda$ that represent factors by which the vectors are scaled. As a general rule, factors with $\lambda \ge 1$ are extracted when running a factor analysis.
   
@@ -116,6 +120,8 @@ ggplot2::theme_bw()
   
   As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as **principal components regression (PCR)**. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
   
+  **Step 3: Factor Rotation & Interpretation**
+    
   For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
   The `fa()` (factor analysis) function from the `psych` package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and $n$-count.
@@ -148,13 +154,13 @@ psych::fa.diagram(efa.fit)
 
 ```
 
-  **Confirmatory Factor Analysis (CFA)**
+### Confirmatory Factor Analysis (CFA)
   
   **Confirmatory factor analysis (CFA)** is used to test how well data aligns with a theoretical factor structure.
   
   We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect levels of engagement to *always* be associated with a commensurate change in retention.
 
-  We can illustrate this using `survey_responses` data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items: 
+  We can illustrate using our `survey_responses` data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items: 
 
 ```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Bivariate correlations and data distributions for engagement and retention survey items.', fig.align = 'center'}
 
@@ -168,7 +174,15 @@ GGally::ggpairs(subset(survey_dat, select = c("eng_1", "eng_2", "eng_3", "ret_1"
   
   As expected, `eng_1`, `eng_2`, and `eng_3` have stronger correlations with each other ($r \ge .64$) than with `ret_1`, `ret_2`, or `ret_3` ($r \le .47$).
   
-  CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the `lavaan` package in R to perform CFA. 
+  CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the `lavaan` package in R to perform CFA.
+  
+  CFA is implemented via a three-step procedure:
+  
+  1. Define the model
+  2. Fit the model
+  3. Interpret the output
+  
+  **Step 1: Model Definition**
   
   Step one is defining the model within a string per the syntax required by `lavaan`:
 
@@ -183,6 +197,8 @@ model <- paste('engagement =~ eng_1 + eng_2 + eng_3
 
 ```
 
+  **Step 2: Model Fitting**
+  
   Step two is fitting the model to the data using the `cfa()` function from the `lavaan` package:  
 
 ```{r, message = FALSE, warning = FALSE}
@@ -206,6 +222,8 @@ lavaanPlot::lavaanPlot(model = cfa.fit, coefs = TRUE, stand = TRUE)
 
 ```
 
+  **Step 3: Model Interpretation**
+  
   Step three is interpreting the output of the fitted model:
 
 ```{r, message = FALSE, warning = FALSE}
@@ -241,17 +259,17 @@ summary(cfa.fit, fit.measures = TRUE)
 
 ## Review Questions
 
-1. 
+1. How can high dimensional data create problems in analytics, and how do dimension reduction techniques remediate these issues?
 
-2. 
+2. What is the difference between Exploratory Factor Analysis (EFA) and Confirmatory Factor Analysis (CFA)?
 
-3. 
+3. What is the difference between Exploratory Factor Analysis (EFA) and Principal Components Analysis (PCA)?
 
-4. 
+4. What is Structural Equation Modeling (SEM), and what are some use cases for it in people analytics?
 
-5. 
+5. How can we test whether data satisfy the eligibility criteria for factor analysis?
 
-6. 
+6. How are factor loadings interpreted to ascertain which variables are members of each factor?
 
 7. 
 
