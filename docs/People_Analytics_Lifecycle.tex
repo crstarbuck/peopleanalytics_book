@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-17}
+\date{2022-07-18}
 
 \begin{document}
 \maketitle
@@ -328,7 +328,7 @@ The primary data set used in this book is \texttt{employees}, which contains inf
   \texttt{interview\_rating}: Average rating across the interview loop for the onsite stage of the employee's recruiting process, where 1 = \emph{Definitely Not} and 5 = \emph{Definitely Yes}
 \end{itemize}
 
-Most of these data have also been broken into separate topical data sets to support data wrangling examples in Chapter \ref{sql-intro}: \texttt{benefits}, \texttt{demographics}, \texttt{job}, \texttt{payroll}, \texttt{performance}, \texttt{prior\_employment}, \texttt{status}, \texttt{survey\_response}, and \texttt{tenure}.
+Most of these fields have also been broken into separate topical data sets to support data wrangling examples in Chapter \ref{sql-intro}: \texttt{benefits}, \texttt{demographics}, \texttt{job}, \texttt{payroll}, \texttt{performance}, \texttt{prior\_employment}, \texttt{status}, \texttt{survey\_response}, and \texttt{tenure}.
 
 \textbf{Turnover Trends}
 
@@ -680,6 +680,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ##   There are binary versions available but the source versions are later:
 ##            binary source needs_compilation
 ## texPreview    1.5  2.0.0             FALSE
+## tidyverse   1.3.1  1.3.2             FALSE
 ## corrplot     0.89   0.92             FALSE
 ## psych       2.2.3  2.2.5             FALSE
 ## moments      0.14 0.14.1             FALSE
@@ -693,7 +694,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpHdKIIf/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpsq26He/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -2306,7 +2307,7 @@ Variables are sometimes referred to as either \emph{endogenous} or \emph{exogeno
 
 An \textbf{endogenous variable} is a dependent variable whose values can be determined or explained based on the other variables in a statistical model. In other words, values of the dependent variable change predictably with values of other variables in the model. By contrast, an \textbf{exogenous variable} is an independent variable on which other variables in the model have no direct or systematic impact.
 
-For example, if we are interested in studying the factors influencing year-to-date (YTD) sales among salespeople, we may consider independent variables such as years of sales experience. If YTD sales is a function of one's sales experience, YTD sales is an endogenous variable since its values can be explained -- at least in part -- by the values of the independent factor (sales experience). Since one's experience in sales is independent of other variables in the model (i.e., YTD sales does not influence a person's years of experience), experience is an exogenous variable.
+For example, if we are interested in studying the factors influencing year-to-date (YTD) sales among salespeople, we may consider an independent variable such as years of sales experience. If YTD sales is a function of one's sales experience, YTD sales is an endogenous variable since its values can be explained -- at least in part -- by the values of the independent factor (sales experience). Since one's experience in sales is independent of other variables in the model (i.e., YTD sales does not influence a person's years of experience), experience is an exogenous variable.
 
 \hypertarget{measurement-scales}{%
 \section{Measurement Scales}\label{measurement-scales}}
@@ -10250,7 +10251,8 @@ There are clear measurement approaches for business metrics such as leads genera
 
 Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the \(n:p\) ratio in supervised learning settings.
 
-\textbf{Exploratory Factor Analysis (EFA)}
+\hypertarget{exploratory-factor-analysis-efa}{%
+\subsection{Exploratory Factor Analysis (EFA)}\label{exploratory-factor-analysis-efa}}
 
 \textbf{Exploratory factor analysis (EFA)} is a variable reduction technique by which factors are extracted from data -- usually as part of the development process for new survey instruments.
 
@@ -10272,10 +10274,10 @@ To illustrate the steps for EFA, we will leverage the \texttt{survey\_responses}
 \end{Shaded}
 
 \begin{verbatim}
-## [1] 1000   12
+## [1] 400  12
 \end{verbatim}
 
-EFA will be illustrated by implementing a three-step extraction method outlined by Hair et al.~(2006):
+EFA is implemented via a three-step procedure:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -10287,6 +10289,8 @@ EFA will be illustrated by implementing a three-step extraction method outlined 
 \item
   Rotate and interpret the factors
 \end{enumerate}
+
+\textbf{Step 1: Factorability Assessment}
 
 With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a \textbf{Kaiser-Meyer-Olkin (KMO)} statistic of at least \(.60\) (Kaiser, 1974) and \textbf{Bartlett's Test of Sphericity} reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
 
@@ -10305,10 +10309,10 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 \begin{verbatim}
 ## Kaiser-Meyer-Olkin factor adequacy
 ## Call: psych::KMO(r = survey_dat)
-## Overall MSA =  0.91
+## Overall MSA =  0.9
 ## MSA for each item = 
 ##  belong  effort    incl   eng_1   eng_2   eng_3    happ psafety   ret_1   ret_2 
-##    0.94    0.90    0.90    0.84    0.90    0.89    0.93    0.91    0.93    0.91 
+##    0.94    0.86    0.86    0.86    0.89    0.89    0.92    0.90    0.91    0.89 
 ##   ret_3  ldrshp 
 ##    0.90    0.93
 \end{verbatim}
@@ -10322,7 +10326,7 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 
 \begin{verbatim}
 ## $chisq
-## [1] 7024.14
+## [1] 2933.161
 ## 
 ## $p.value
 ## [1] 0
@@ -10331,7 +10335,9 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 ## [1] 66
 \end{verbatim}
 
-Data satisfy the factorability requirements since \(KMO = .91\) and Bartlett's test is significant at the \(p < .001\) level.
+Data satisfy the factorability requirements since \(KMO = .90\) (\texttt{Overall\ MSA}) and Bartlett's test is significant at the \(p < .001\) level.
+
+\textbf{Step 2: Factor Extraction}
 
 For the second step, we will visually inspect a \textbf{scree plot} and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using \textbf{eigenvalues}. While the linear algebraic underpinnings are out of scope for this book, it is important to understand that \textbf{eigenvectors} are vectors of a linear transformation which have corresponding eigenvalues \(\lambda\) that represent factors by which the vectors are scaled. As a general rule, factors with \(\lambda \ge 1\) are extracted when running a factor analysis.
 
@@ -10369,6 +10375,8 @@ As shown in Figure \ref{fig:pca-var-plot}, principal components are sorted in de
 
 As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as \textbf{principal components regression (PCR)}. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
 
+\textbf{Step 3: Factor Rotation \& Interpretation}
+
 For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
 The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and \(n\)-count.
@@ -10387,23 +10395,23 @@ The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can
 ## 
 ## Loadings:
 ##         MR1    MR2    MR3   
-## belong   0.185  0.104  0.576
-## effort          0.784       
-## incl                   0.740
-## eng_1   -0.100  0.898       
-## eng_2    0.125  0.764       
-## eng_3           0.791       
-## happ     0.624         0.268
-## psafety                0.732
-## ret_1    0.747              
-## ret_2    0.866              
-## ret_3    0.886              
-## ldrshp   0.497         0.349
+## belong   0.283         0.456
+## effort  -0.114  0.869       
+## incl                   0.747
+## eng_1           0.886       
+## eng_2    0.172  0.782       
+## eng_3           0.799       
+## happ     0.558         0.355
+## psafety                0.609
+## ret_1    0.791              
+## ret_2    0.922        -0.111
+## ret_3    0.822              
+## ldrshp   0.556         0.276
 ## 
 ##                  MR1   MR2   MR3
-## SS loadings    2.793 2.657 1.627
-## Proportion Var 0.233 0.221 0.136
-## Cumulative Var 0.233 0.454 0.590
+## SS loadings    2.906 2.817 1.363
+## Proportion Var 0.242 0.235 0.114
+## Cumulative Var 0.242 0.477 0.590
 \end{verbatim}
 
 The sum of squared loadings (\texttt{SS\ loadings}) are the eigenvalues for each factor. It is also helpful to review the percent of total variance explained by each factor (\texttt{Proportion\ Var}) along with the cumulative percent of total variance (\texttt{Cumulative\ Var}). We can see that the three factors have \(\lambda \ge 1\), which together explain 59 percent of the total variance in the data.
@@ -10427,13 +10435,14 @@ We can visualize this information using the \texttt{fa.diagram()} function from 
 \caption{Diagram showing factor loadings (correlations) for each item with the respective factor.}\label{fig:fct-ld-diagram}
 \end{figure}
 
-\textbf{Confirmatory Factor Analysis (CFA)}
+\hypertarget{confirmatory-factor-analysis-cfa}{%
+\subsection{Confirmatory Factor Analysis (CFA)}\label{confirmatory-factor-analysis-cfa}}
 
 \textbf{Confirmatory factor analysis (CFA)} is used to test how well data aligns with a theoretical factor structure.
 
-We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect levels of engagement to \emph{always} be associated with a commensurate change in retention.
+We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to \emph{always} be associated with a commensurate change in retention.
 
-We can illustrate this using \texttt{survey\_responses} data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items:
+We can illustrate using our \texttt{survey\_responses} data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items:
 
 \begin{figure}
 
@@ -10444,9 +10453,22 @@ We can illustrate this using \texttt{survey\_responses} data, which contains thr
 \caption{Bivariate correlations and data distributions for engagement and retention survey items.}\label{fig:ggpairs-eng-ret}
 \end{figure}
 
-As expected, \texttt{eng\_1}, \texttt{eng\_2}, and \texttt{eng\_3} have stronger correlations with each other (\(r \ge .64\)) than with \texttt{ret\_1}, \texttt{ret\_2}, or \texttt{ret\_3} (\(r \le .47\)).
+As expected, \texttt{eng\_1}, \texttt{eng\_2}, and \texttt{eng\_3} have stronger correlations with each other (\(r \ge .70\)) than with \texttt{ret\_1}, \texttt{ret\_2}, or \texttt{ret\_3} (\(r \le .52\)).
 
-CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the \texttt{lavaan} package in R to perform CFA.
+CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the \texttt{lavaan} package in R to perform CFA, which is implemented via a three-step procedure:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Define the model
+\item
+  Fit the model
+\item
+  Interpret the output
+\end{enumerate}
+
+\textbf{Step 1: Model Definition}
 
 Step one is defining the model within a string per the syntax required by \texttt{lavaan}:
 
@@ -10461,6 +10483,8 @@ Step one is defining the model within a string per the syntax required by \textt
 \end{Highlighting}
 \end{Shaded}
 
+\textbf{Step 2: Model Fitting}
+
 Step two is fitting the model to the data using the \texttt{cfa()} function from the \texttt{lavaan} package:
 
 \begin{Shaded}
@@ -10470,66 +10494,71 @@ Step two is fitting the model to the data using the \texttt{cfa()} function from
 \end{Highlighting}
 \end{Shaded}
 
-We can also create what is known as a \textbf{path diagram} to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as \textbf{structural equation modeling (SEM)}; therefore, CFA is a subset of the SEM umbrella.
+We can also create what is known as a \textbf{path diagram} to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as \textbf{structural equation modeling (SEM)}; CFA is a subset of the SEM umbrella.
 
 The \texttt{lavaanPlot()} package can be used to create and visualize path diagrams in R:
 
 \label{fig:path-diagram}Path diagram showing survey items as indicators of latent engagement and retention factors.
 
+Factor loadings are shown for each indicator of the latent variable in Figure \ref{fig:path-diagram}. All are well above the \emph{absolute} threshold of at least \(.5\).
+
+\textbf{Step 3: Model Interpretation}
+
 Step three is interpreting the output of the fitted model:
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\NormalTok{cfa.fit }\OtherTok{\textless{}{-}}\NormalTok{ lavaan}\SpecialCharTok{::}\FunctionTok{cfa}\NormalTok{(model, }\AttributeTok{data =}\NormalTok{ survey\_dat)}
 \CommentTok{\# Summarize the model}
 \FunctionTok{summary}\NormalTok{(cfa.fit, }\AttributeTok{fit.measures =} \ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-## lavaan 0.6-12 ended normally after 26 iterations
+## lavaan 0.6-12 ended normally after 25 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
 ##   Number of model parameters                        13
 ## 
-##   Number of observations                          1000
+##   Number of observations                           400
 ## 
 ## Model Test User Model:
 ##                                                       
-##   Test statistic                               116.834
+##   Test statistic                                35.477
 ##   Degrees of freedom                                 8
 ##   P-value (Chi-square)                           0.000
 ## 
 ## Model Test Baseline Model:
 ## 
-##   Test statistic                              3247.688
+##   Test statistic                              1495.174
 ##   Degrees of freedom                                15
 ##   P-value                                        0.000
 ## 
 ## User Model versus Baseline Model:
 ## 
-##   Comparative Fit Index (CFI)                    0.966
-##   Tucker-Lewis Index (TLI)                       0.937
+##   Comparative Fit Index (CFI)                    0.981
+##   Tucker-Lewis Index (TLI)                       0.965
 ## 
 ## Loglikelihood and Information Criteria:
 ## 
-##   Loglikelihood user model (H0)              -6391.875
-##   Loglikelihood unrestricted model (H1)      -6333.457
+##   Loglikelihood user model (H0)              -2456.223
+##   Loglikelihood unrestricted model (H1)      -2438.484
 ##                                                       
-##   Akaike (AIC)                               12809.749
-##   Bayesian (BIC)                             12873.550
-##   Sample-size adjusted Bayesian (BIC)        12832.261
+##   Akaike (AIC)                                4938.446
+##   Bayesian (BIC)                              4990.335
+##   Sample-size adjusted Bayesian (BIC)         4949.085
 ## 
 ## Root Mean Square Error of Approximation:
 ## 
-##   RMSEA                                          0.117
-##   90 Percent confidence interval - lower         0.098
-##   90 Percent confidence interval - upper         0.136
-##   P-value RMSEA <= 0.05                          0.000
+##   RMSEA                                          0.093
+##   90 Percent confidence interval - lower         0.063
+##   90 Percent confidence interval - upper         0.125
+##   P-value RMSEA <= 0.05                          0.011
 ## 
 ## Standardized Root Mean Square Residual:
 ## 
-##   SRMR                                           0.049
+##   SRMR                                           0.040
 ## 
 ## Parameter Estimates:
 ## 
@@ -10541,28 +10570,28 @@ Step three is interpreting the output of the fitted model:
 ##                    Estimate  Std.Err  z-value  P(>|z|)
 ##   engagement =~                                       
 ##     eng_1             1.000                           
-##     eng_2             0.879    0.031   28.448    0.000
-##     eng_3             0.913    0.034   26.851    0.000
+##     eng_2             0.880    0.044   19.827    0.000
+##     eng_3             0.963    0.050   19.355    0.000
 ##   retention =~                                        
 ##     ret_1             1.000                           
-##     ret_2             0.755    0.027   28.404    0.000
-##     ret_3             0.723    0.026   27.642    0.000
+##     ret_2             0.799    0.039   20.384    0.000
+##     ret_3             0.699    0.038   18.562    0.000
 ## 
 ## Covariances:
 ##                    Estimate  Std.Err  z-value  P(>|z|)
 ##   engagement ~~                                       
-##     retention         0.364    0.032   11.542    0.000
+##     retention         0.406    0.051    7.932    0.000
 ## 
 ## Variances:
 ##                    Estimate  Std.Err  z-value  P(>|z|)
-##    .eng_1             0.254    0.019   13.371    0.000
-##    .eng_2             0.197    0.015   13.416    0.000
-##    .eng_3             0.322    0.019   16.622    0.000
-##    .ret_1             0.484    0.030   16.129    0.000
-##    .ret_2             0.174    0.014   12.426    0.000
-##    .ret_3             0.213    0.014   14.812    0.000
-##     engagement        0.630    0.041   15.441    0.000
-##     retention         0.895    0.061   14.577    0.000
+##    .eng_1             0.235    0.027    8.839    0.000
+##    .eng_2             0.188    0.021    9.013    0.000
+##    .eng_3             0.265    0.027    9.820    0.000
+##    .ret_1             0.482    0.044   10.952    0.000
+##    .ret_2             0.095    0.018    5.145    0.000
+##    .ret_3             0.215    0.020   10.571    0.000
+##     engagement        0.649    0.064   10.188    0.000
+##     retention         0.917    0.097    9.458    0.000
 \end{verbatim}
 
 The \texttt{lavaan} package provides many fit measures, but we will focus only on the most common for evaluating how well the data fit the measurement model.
@@ -10572,16 +10601,20 @@ The \texttt{lavaan} package provides many fit measures, but we will focus only o
 \item
   Model Chi-Square (\(\chi^2\)): Tests whether the covariance matrix derived from the model represents the population covariance (Test Statistic under the Model Test User Model section of the \texttt{lavaan} output)
 \item
-  Comparative Fit Index (CFI): Values range from 0 to 1, with \(CFI > .90\) indicating good fit
+  Comparative Fit Index (CFI): Values range from 0 to 1, with \(CFI > .95\) indicating good fit
 \item
-  Tucker Lewis Index (TLI): Values range from 0 to 1, with \(TLI > .90\) indicating good fit
+  Tucker Lewis Index (TLI): Values range from 0 to 1, with \(TLI > .95\) indicating good fit
 \item
-  Root Mean Square Error of Approximation (RMSEA): Values of \(.01\), \(.05\), and \(.08\) indicate excellent, good, and mediocre fit, respectively
+  Root Mean Square Error of Approximation (RMSEA): Values of \(.01\), \(.05\), and \(.08\) indicate excellent, good, and mediocre fit, respectively (though some texts suggest \(.10\) is an adequate threshold for mediocre fit)
+\item
+  Standardized Root Mean Square Residual (SRMR): Square root of the difference between residuals of the sample covariance matrix and the hypothesized model, with \(SRMR < .08\) indicating good fit
 \end{itemize}
 
-The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p < .05\)) indicates a lack of fit. Since \(n = 1,000\), we need to index on the CFI, TLI, and RMSEA fit measures. Though both CFI (\(.97\)) and TLI (\(.94\)) are north of the \(.90\) threshold for good fit, \(\chi^2\) is significant (\(p < .001\)) and RMSEA is higher than the mediocre fit threshold (\(.12 > .08\)).
+Given data sets are often small in people analytics, it is important to note that RMSEA often exceeds thresholds with small \(df\) and \(n\) -- even when the model is correctly specified (Kenny, Kaniskan, \& McCoach, 2015). Therefore, it is important to index more on fit indices such as \(CFI\) and \(LTI\) in determining how well the data fit the measurement model.
 
-Kline (2005) is an excellent resource for more extensive coverage of SEM.
+The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p < .05\)) indicates a lack of fit. Though \(\chi^2\) is significant (\(p < .001\)), both CFI (\(.98\)) and TLI (\(.97\)) are above the \(.95\) threshold for good fit. In addition, \(SRMR = .04\) is beneath the threshold of \(.08\) and \(RMSEA = .09\) is between the mediocre fit threshold range of \(.08\) and \(.10\). Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model.
+
+For more extensive coverage of SEM, Kline (2005) is an excellent resource.
 
 \hypertarget{clustering}{%
 \section{Clustering}\label{clustering}}
@@ -10595,13 +10628,18 @@ Kline (2005) is an excellent resource for more extensive coverage of SEM.
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
-\tightlist
 \item
+  How can high dimensional data create problems in analytics, and how do dimension reduction techniques remediate these issues?
 \item
+  What is the difference between Exploratory Factor Analysis (EFA) and Confirmatory Factor Analysis (CFA)?
 \item
+  What is the difference between Exploratory Factor Analysis (EFA) and Principal Components Analysis (PCA)?
 \item
+  What is Structural Equation Modeling (SEM), and what are some use cases for it in people analytics?
 \item
+  How can we test whether data satisfy the eligibility criteria for factor analysis?
 \item
+  How are factor loadings interpreted to ascertain which variables are members of each factor?
 \item
 \item
 \item
@@ -10754,6 +10792,8 @@ James, G., Witten, D., Hastie, T., \& Tibshirani, R. (2013). An Introduction to 
 Kahneman, D. (2011). Thinking, fast and slow. New York: Farrar, Straus and Giroux.
 
 Kaiser, H. (1974). An index of factorial simplicity. Psychometrika, 39(1), 31-36.
+
+Kenny, D. A., Kaniskan, B., \& McCoach, D. B. (2015). The performance of RMSEA in models with small degrees of freedom. Sociological Methods \& Research, 44(3), 486--507. \url{https://doi.org/10.1177/0049124114543236}
 
 Kerlinger, F., \& Lee, H. (2000). Foundations of behavioral research (4th ed.). Melbourne: Wadsworth.
 
