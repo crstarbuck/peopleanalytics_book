@@ -43,9 +43,9 @@ dim(survey_dat)
 
   EFA is implemented via a three-step procedure:
   
-  1. Assess factorability of the data
-  2. Extract the factors
-  3. Rotate and interpret the factors
+  1. Assess the factorability of the data.
+  2. Extract the factors.
+  3. Rotate and interpret the factors.
   
   **Step 1: Factorability Assessment**
   
@@ -176,9 +176,9 @@ GGally::ggpairs(subset(survey_dat, select = c("eng_1", "eng_2", "eng_3", "ret_1"
   
   CFA enables us to move beyond inter-item correlations to quantify the extent to which latent variables in our data fit an expected theoretical model. We can leverage the `lavaan` package in R to perform CFA, which is implemented via a three-step procedure:
   
-  1. Define the model
-  2. Fit the model
-  3. Interpret the output
+  1. Define the model.
+  2. Fit the model.
+  3. Interpret the output.
   
   **Step 1: Model Definition**
   
@@ -249,15 +249,95 @@ summary(cfa.fit, fit.measures = TRUE)
 
 ## Clustering
 
+  **Clustering** is a ML technique that groups observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. Clustering is similar to factor analysis in that it is also unsupervised since there is not a response variable, but it differs in that it does not seek to find a low-dimensional representation of observations that capture a large portion of variance in the data; clustering aims to find homogeneous subgroups among observations.
+  
+  Clustering is common in marketing in which it is implemented to create customer segments with shared characteristics. By grouping customers based on attributes such as income, household size, occupation, and geography, companies can tailor marketing campaigns to each segment based on what is most likely to appeal to the unique needs of each.
+  
+  In people analytics, clustering has important applications as well. For example, clustering can be implemented to define personas based on unique talent development needs (e.g., early tech career, newly promoted people leaders) or attrition risk (e.g, rising stars with hot skills, low performers in high churn roles, high performers in specialized roles). Data privacy regulations often prevent assigning a predictive score to individuals; therefore, grouping employees based on relative attrition risk levels can support action planning at the segment level.
+  
+  This section will cover two popular clustering techniques: $k$*-means* and *hierarchical* clustering.
+  
+  $\textbf K$**-Means Clustering**
+  
+  $\textbf K$**-means clustering** is a simple approach to grouping observations into $K$ distinct clusters. $K$-means clustering is implemented via a four-step process:
+  
+  1. Define $K$.
+  2. Randomly assign observations to one of $K$ clusters.
+  3. For each of the $K$ clusters, compute the cluster centroid.
+  4. Assign each observation to the cluster with the closet centroid (middle).
+  
+  To assign observations to the cluster with the nearest centroid, a distance metric needs to be selected in order to measure the distance between each observation and cluster centroids. While calculating the distance between observations in two dimensions is simple, distance in higher dimensional space is more challenging. We will focus on the most common distance metric, **Euclidean distance**, though there are many others (e.g., Manhattan, Jaccard, Minkowski, Cosine). The Euclidean distance between two data points is the straight line distance based on the observations' coordinates using the **Pythagorean theorem**:
+  
+  $$ a^2 + b^2 = c^2, $$
 
+  where $a$ and $b$ are sides of a triangle that intersect to form a right angle, and $c$ is the hypotenuse (the side opposite the right angle).
   
-  $\textbf k$**-Means Clustering**
+  Let's implement $K$-means clustering using numeric variables in the `employees` data. Since the scale of variables matters when comparing distances between observations and cluster centers, we will first scale the variables to have $\bar{x} = 0$ and $s = 1$ in support of a consistent, apples-to-apples comparison:
   
+```{r, message = FALSE, warning = FALSE}
+
+# Load employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Filter employee data to numeric variables
+idx <- which(sapply(employees, is.numeric)) # store indices of numeric variables
+employees <- employees[, idx] # filter df using indices
+
+# Drop unimportant and sparsely populated sales variables
+employees <- subset(employees, select = -c(employee_id, standard_hrs, ytd_leads, ytd_sales))
+
+# Center and scale data
+employees_trans <- scale(employees, center = TRUE, scale = TRUE)
+
+```
+
+  Next, we need to define $K$. One way to determine the optimal number of clusters is to leverage the `fviz_nbclust()` function from the `factoextra` library to visualize the sum of squared differences between observations and cluster centers against the range of clusters:
   
+```{r kmeans-elbow-plot, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Total within sum of squares (WSS) across cluster count.', fig.align = 'center'}
+
+# Load library
+library(factoextra)
+
+# Determine optimal number of clusters
+factoextra::fviz_nbclust(employees_trans, kmeans, method = "wss")
+
+```
+
+  When interpreting Figure \@ref(fig:kmeans-elbow-plot), we are looking for the *elbow* which marks the inflection point at which the sum of squares begins to level off. The goal is to achieve the fewest number of clusters, optimizing for subgroups that are distinctly different *between* and highly similar *within*. The elbow indicates the optimal number of clusters, as additional clusters beyond the elbow do not offer a meaningful improvement in achieving homogeneous subgroups of the observations. 
   
+  There is a discernible elbow at three clusters in Figure \@ref(fig:kmeans-elbow-plot). Intuitively, fewer clusters promotes action taking in people analytics since clusters need to be defined, and this becomes increasingly challenging as the number of clusters increases. With a large number of clusters, it may be difficult to meaningfully tailor career development or retention strategies, for example, to the unique needs of employees assigned to each cluster as the distinction between each subgroup becomes more opaque.
+  
+  We can now implement $K$-means clustering, with $K = 3$, using the `kmeans()` function in base R:
+
+```{r, message = FALSE, warning = FALSE}
+
+# Perform K-means clustering
+km <- kmeans(employees_trans, centers = 3)
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Return n-count of clusters
+km$size
+
+```
+
+```{r, message = FALSE, warning = FALSE}
+
+# Calculate mean of each cluster using original data
+aggregate(employees, by = list(cluster = km$cluster), mean)
+
+```
+
   **Hierarchical Clustering**
 
 
+  
+  1. Calculate pairwise distances
+  2. Group observations into clusters
+  
+  
 
 ## Review Questions
 

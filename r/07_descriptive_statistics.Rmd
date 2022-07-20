@@ -1,0 +1,641 @@
+# Descriptive Statistics {#desc-stats}
+
+  This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book. Univariate and bivariate analyses can be either descriptive or inferential, and this chapter will cover descriptive techniques while Chapter \@ref(inf-stats) will cover inferential methods.
+
+## Univariate Analysis
+
+  **Univariate analysis** is the simplest form of statistical analysis, which explores each variable independently. 
+  
+  **Descriptive statistics** are rudimentary analysis techniques that help describe and summarize a variable's data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.
+
+  There are two categories of descriptive statistics: (a) **measures of central tendency** describe the central position in a set of data; and (b) **measures of spread** describe how dispersed the data are.
+
+### Measures of Central Tendency
+
+  **Mean**
+  
+  Perhaps the most intuitive measure of central tendency is the **mean**, which is often referred to as the average. The mean of a sample is denoted by $\bar{x}$ and is defined by:
+  
+  $$ \bar{x} = \frac{\displaystyle\sum_{i=1}^{n} x_{i}}{n} $$
+
+  The population mean is denoted by $\mu$ and is defined by:
+
+  $$ \mu = \frac{\displaystyle\sum_{i=1}^{n} x_{i}}{N} $$
+  
+The mean of a set of numeric values can be calculated using the `mean()` function in R:
+
+```{r, message = FALSE}
+
+# Fill vector x with integers
+x <- c(1, 2, 3, 3, 100, 200, 300)
+
+# Calculate average of vector x
+mean(x)
+
+```
+
+  **Median**
+  
+  The **median** represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed or there is an extreme value, the median *may* be a better measure of central tendency. 
+  
+  The `median()` function in R can be used to handle the sorting and midpoint selection:
+  
+```{r, message = FALSE}
+
+# Calculate median of vector x
+median(x)
+
+```
+  
+  In this example, the median is only `3` while the mean is $\bar{x} = 87$. Large deltas between mean and median values provide important information about the distribution of data. 
+  
+  Here, a single value has significant leverage on these measures of central tendency. To demonstrate, let's eliminate one instance of `3` from the vector and recalculate the mean and median:
+  
+```{r, message = FALSE}
+
+# Fill vector x1 with integers
+x1 <- c(1, 2, 3, 100, 200, 300)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate mean of vector x1
+mean(x1)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate median of vector x1
+median(x1)
+
+```
+
+  By removing a single value from this vector, the mean increased from $\bar{x} = 87$ to $\bar{x} = 101$ and the median from `3` to `51.5`! 
+  
+  Note that differences in mean and median values for `x` and `x1` are *not* due to an extreme value (outlier), as `3` is similar to half of the values in the vector. However, in some cases extreme values may be the cause of large discrepancies between mean and median values since the mean can be sensitive to extreme values. Consider the following set of values:
+  
+```{r, message = FALSE}
+
+# Fill vector x2 with integers
+x2 <- c(1, 2, 3, 4, 5, 1000)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate mean of vector x2
+mean(x2)
+
+```
+
+```{r, message = FALSE}
+
+# Calculate median of vector x2
+median(x2)
+
+```  
+  
+  In this case, the value of `1000` has a significant influence on the mean ($\bar{x} = 169.2$) but the median of `3.5` is representative of the middle of values in this vector.
+  
+  It is important to understand the data distribution and evaluate *both* the mean and median. The reality is that both the mean and median can be misleading -- and even inappropriate. It would not be too useful to calculate median organization tenure, for example, for a hyper-growth company that has hired the majority of its workforce in the past few months; long-tenured employees would be lost in this metric.
+  
+  The larger the $n$-count, the less influential an extreme value will be on $\bar{x}$. As we will learn in Chapter \@ref(inf-stats), sample size is fundamental to our ability to achieve precise estimates of population parameters based on sample statistics.
+  
+  While the focus of this section is central tendency, it is important to recognize that outlying values are often the more actionable data points in an analysis since these cases may represent those with significantly different experiences relative to the average employee. Understanding the *distribution* of data is critical, and the spread of data around measures of central tendency will receive considerable attention throughout this book.
+
+  **Mode**
+  
+  The **mode** is the most frequent number in a set of values.
+  
+  While `mean()` and `median()` are standard functions in R, `mode()` returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):
+  
+```{r, message = FALSE}
+
+# Fill vector x2 with integers
+x3 <- c(1, 2, 3, 3, 100, 200, 300, 300)
+
+# Create function to calculate statistical mode(s)
+stat.mode <- function(x) {
+  ux <- unique(x)
+  tab <- tabulate(match(x, ux))
+  ux[tab == max(tab)]
+}
+
+# Return mode(s) of vector x3
+stat.mode(x3)
+
+```
+  
+  In this case, we have a bimodal distribution since both `3` and `300` occur most frequently.
+  
+  **Range**
+  
+  The **range** is the difference between the maximum and minimum values in a set of numbers. 
+  
+  The `range()` function in R returns the minimum and maximum numbers:
+  
+```{r, message = FALSE}
+
+# Return lowest and highest values of vector x
+range(x)
+
+```
+
+We can leverage the `max()` and `min()` functions to calculate the difference between these values:
+
+```{r, message = FALSE}
+
+# Calculate range of vector x
+max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
+
+```
+
+In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and ratios cut by time series (day, month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:
+
+  * Time to Fill: average days between job requisition posting and offer acceptance
+  * Offer Acceptance Rate: percent of offers extended to candidates that are accepted
+  * Pass-Through Rate: percent of candidates in a particular stage of the recruiting process who passed through to the next stage
+  * Progress to Goal: percent of approved positions that have been filled
+  * cNPS/eNPS: candidate and employee NPS (-100 to 100)
+  * Headcount: counts and percent of workforce across worker types (employee, intern, contingent)
+  * Diversity: counts and percent of workforce across gender, ethnicity, and generational cohorts
+  * Positions: count and percent of open, committed, and filled seats
+  * Hires: counts and rates
+  * Career Moves: counts and rates
+  * Turnover: counts and rates (usually terms / average headcount over the period)
+  * Workforce Growth: net changes over time, accounting for hires, internal transfers, and exits
+  * Span of Control: ratio of people leaders to individual contributors
+  * Layers/Tiers: average and median number of layers removed from CEO
+  * Engagement: average score or top-box favorability score
+
+### Measures of Spread
+
+  **Variance**
+  
+  **Variance** is a measure of variability in the data. Variance is calculated using the average of squared differences -- or deviations -- from the mean.
+  
+  Variance of a population is defined by:
+  
+  $$ \sigma^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\mu)^{2}}{N} $$
+  
+  Variance of a sample is defined by:
+  
+  $$ s^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^{2}}{n-1} $$
+  
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+ 
+ In R, the sample variance can be calculated using the `var()` function:
+ 
+```{r, warning = FALSE, message = FALSE}
+
+# Load library for data wrangling
+library(dplyr)
+
+# Read employee data
+employees <- read.csv("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/data/employees.csv")
+
+# Calculate sample variance for annual compensation
+var(employees$annual_comp)
+
+```
+
+  Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of $s^2 (\frac{n - 1}{n})$, it is simple to convert output from `var()` to the population variance:
+  
+```{r, message = FALSE}
+
+# Store number of observations
+n = length(employees$annual_comp)
+
+# Calculate population variance for annual compensation
+var(employees$annual_comp) * (n - 1) / n
+
+```
+
+  **Standard Deviation**
+  
+  The **standard deviation** is simply the square root of the variance.
+  
+  The standard deviation of a population is defined by:
+  
+  $$ \sigma = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \mu)^{2}}{N}} $$
+  
+  The standard deviation of a sample is defined by:
+  
+  $$ s = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \bar{x})^{2}}{n - 1}} $$
+  
+  Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable's original units.
+  
+   In R, the sample standard deviation can be calculated using the `sd()` function:
+
+```{r, message = FALSE}
+
+# Calculate sample standard deviation for annual compensation
+sd(employees$annual_comp)
+
+```
+
+  Since the population standard deviation differs from the sample standard deviation by a factor of $s \sqrt \frac{n - 1}{n}$, it is simple to convert output from `sd()` to the population standard deviation:
+
+```{r, message = FALSE}
+
+# Calculate population standard deviation for annual compensation
+sd(employees$annual_comp) * sqrt((n - 1) / n)
+
+```
+
+  **Quartiles**
+  
+  **Quartiles** are a staple of exploratory data analysis (EDA). A quartile is a type of quantile that partitions data into four equally sized parts after ordering the data. Note that each partition is equally sized with respect to the number of data points -- not the range of values in each. Quartiles are also related to **percentiles**. For example, Q1 is the 25th percentile -- the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.
+  
+  The **Interquartile Range (IQR)** represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than $Q1 - 1.5 * IQR$ or greater than $Q3 + 1.5 * IQR$ are generally considered outliers.
+  
+  In R, the `quantile()` function returns the values that bookend each quartile:
+
+```{r, message = FALSE}
+
+# Return quartiles for annual compensation
+quantile(employees$annual_comp)
+
+```
+
+  Based on this output, we know that 25% of people in our data earn annual compensation of 99,840 USD or less, 137,280 USD is the median annual compensation, and 75% of people earn annual compensation of 174,200 USD or less.
+  
+  **Boxplots** are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the `ggplot2` library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the `ggplot()` function:
+  
+```{r, message = FALSE}
+
+# Produce boxplots to visualize compensation distribution by education level and gender
+ggplot2::ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
+ggplot2::labs(x = "Education Level", y = "Annual Compensation") + 
+ggplot2::guides(col = guide_legend("Gender")) +
+ggplot2::theme_bw() +
+ggplot2::geom_boxplot()
+
+```  
+  
+  Boxplots can be interpreted as follows:
+  * Horizontal lines represent median compensation values.
+  * The box in the middle of each distribution represents the IQR.
+  * The end of the line above the IQR represents the threshold for outliers in the upper range: $Q3 + 1.5 * IQR$.
+  * The end of the line below the IQR represents the threshold for outliers in the lower range: $Q1 - 1.5 * IQR$.
+  * Data points represent outliers: $x > Q3 + 1.5 * IQR$ or $x < Q1 - 1.5 * IQR$.
+  
+  We can also return a specific percentile value using the `probs` argument in the `quantile()` function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
+
+```{r, message = FALSE}
+
+# Return 80th percentile annual compensation value
+quantile(employees$annual_comp, probs = .8)
+
+```
+
+  In addition, the `summary()` function returns several common descriptive statistics for an object:
+
+```{r, message = FALSE}
+
+# Return common descriptives
+summary(employees$annual_comp)
+
+```
+
+  **Skewness**
+  
+  **Skewness** is a measure of the horizontal distance between the mode and mean -- a representation of symmetric distortion. In most practical settings, data are not normally distributed. That is, the data are skewed either positively (right-tailed distribution) or negatively (left-tailed distribution). The coefficient of skewness is one of many ways in which we can ascertain the degree of skew in the data. The skewness of sample data is defined as:
+  
+  $$ Sk = \frac{1}{n} \frac{\displaystyle\sum_{i=1}^{n} (x_i-\bar{x})^3}{s^3} $$
+
+  A positive skewness coefficient indicates positive skew, while a negative coefficient indicates negative skew. The order of descriptive statistics can also be leveraged to ascertain the direction of skew in the data:
+  
+  * Positive skewness: mode < median < mean
+  * Negative skewness: mode > median > mean
+  * Symmetrical distribution: mode = median = mean
+  
+  Figure \@ref(fig:skewness) illustrates the placement of these descriptive statistics in each of the three types of distributions:
+  
+<br />
+
+```{r skewness, out.width = "100%", echo = FALSE, fig.cap = 'Skewness', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/skewness.png")
+
+```
+
+<br />
+
+  The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable's scale. Alternatively, we can simply evaluate this using the coefficient of skewness:
+  
+  * If skewness is between -0.5 - 0.5, the data are considered symmetrical.
+  * If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.
+  * If skewness is < -1 or > 1, the data are highly skewed.
+  
+  Since there is not a base R function for skewness, we can leverage the moments library to calculate skewness:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Load library
+library(moments)
+
+# Calculate skewness for org tenure, rounded to two significant figures via the round() function
+round(moments::skewness(employees$org_tenure), 2)
+
+```
+
+  **Statistical Moments**, after which this library was named, play an important role in specifying the appropriate probability distribution for a set of data. Moments are a set of statistical parameters used to describe the characteristics of a distribution. Skewness is the third statistical moment in the set; hence the sum of cubed differences and cubic polynomial in the denominator of the formula above. The complete set of moments comprises: (1) expected value or mean, (2) variance and standard deviation, (3) skewness, and (4) kurtosis.
+
+  We can verify that the `skewness()` function from the moments library returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+```{r, message = FALSE}
+
+# Store components of skewness calculation
+n = length(employees$org_tenure)
+x = employees$org_tenure
+x_bar = mean(employees$org_tenure)
+s = sd(employees$org_tenure)
+
+# Calculate skewness manually, rounded to two significant figures via the round() function
+round(1/n * (sum((x - x_bar)^3) / s^3), 2)
+
+```
+
+  A skewness coefficient of 2.27 indicates that organization tenure is positively skewed. We can visualize the data to confirm the expected right-tailed distribution:
+
+```{r org-tenure-distribution, fig.cap = "Organization Tenure Distribution", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Produce histogram to visualize sample distribution
+ggplot2::ggplot() + 
+ggplot2::aes(employees$org_tenure) + 
+ggplot2::labs(x = "Organization Tenure", y = "Density") + 
+ggplot2::geom_histogram(aes(y = ..density..), fill = "#414141") +
+ggplot2::geom_density(fill = "#ADD8E6", alpha = 0.6) +
+ggplot2::theme_bw()
+
+```
+
+  **Kurtosis**
+  
+  While skewness provides information on the symmetry of a distribution, **kurtosis** provides information on the heaviness of a distribution's tails ("tailedness"). Kurtosis is the fourth statistical moment, defined by:
+  
+  $$ K = \frac{1}{n} \frac{\displaystyle\sum_{i=1}^{n} (x_i-\bar{x})^4}{s^4} $$
+
+  Note that the quartic functions characteristic of the fourth statistical moment are the only differences from the skewness formula we reviewed in the prior section (which featured cubic functions).
+  
+  The terms **leptokurtic** and **platykurtic** are often used to describe distributions with light and heavy tails, respectively. "Platy-" in platykurtic is the same root as "platypus", and I've found it helpful to recall the characteristics of the flat platypus when characterizing frequency distributions as platkurtic (wide and flat) vs. its antithesis, leptokurtic (tall and skinny). The normal (or Gaussian) distribution is referred to as a **mesokurtic** distribution in the context of kurtosis.
+  
+  Figure \@ref(fig:kurtosis) illustrates the three kurtosis categorizations:
+
+```{r kurtosis, out.width = "75%", echo = FALSE, fig.cap = 'Kurtosis', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/kurtosis.jpg")
+
+```
+
+  Kurtosis is measured relative to a normal distribution. Normal distributions have a kurtosis coefficient of 3. Therefore, the kurtosis coefficient is greater than 3 for leptokurtic distributions and less than 3 for platykurtic distributions.
+
+  The moments library can also be used to calculate kurtosis in R:
+
+```{r, message = FALSE}
+
+# Calculate kurtosis for org tenure, rounded to one significant figure
+round(moments::kurtosis(employees$org_tenure), 1)
+
+```
+
+  We can verify that the `kurtosis()` function returns the expected value (per the aforementioned formula) by validating against a manual calculation:
+
+```{r, message = FALSE}
+
+# Calculate kurtosis manually, rounded to one significant figure
+round(1/n * (sum((x - x_bar)^4) / s^4), 1)
+
+```
+
+  Our kurtosis coefficient of 13.4 indicates a leptokurtic distribution which is supported by the visual in Figure \@ref(fig:org-tenure-distribution).
+  
+  It is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.
+  
+## Bivariate Analysis  
+
+  While univariate analysis explores each variable independently, **bivariate analysis** explores statistical relationships between two variables.
+
+### Covariance
+  
+  While variance provides an understanding of how values for a single variable vary, **covariance** is an unstandardized measure of how two variables vary together. Values can range from $-\infty$ to $+\infty$, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).
+  
+  Covariance of a sample is defined by:
+
+  $$ cov_{x,y} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})(y_{i}-\bar{y})}{n-1} $$
+
+  It's important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables' units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong. 
+  
+  In R, we can compute the covariance between a pair of numeric variables by passing the two vectors into the `cov()` function:
+  
+```{r, message = FALSE}
+
+# Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)
+cov(employees$annual_comp, employees$age, use = "complete.obs")
+
+```
+  
+  In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+  
+  Just as we multiplied the sample variance by $(n - 1) / n$ to obtain the population variance, we can apply the same approach to convert the sample covariance returned by `cov()` to the population covariance:
+  
+```{r, message = FALSE}
+
+# Calculate population covariance between annual compensation and age
+cov(employees$annual_comp, employees$age, use = "complete.obs") * (n - 1) / n
+
+```
+
+  The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the `cov()` function:
+
+```{r, message = FALSE}
+
+# Generate a covariance matrix among select continuous variables
+cov(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
+
+```
+
+  Using the default Pearson method, the `cov()` function will return sample variances for each variable down the diagonal, since covariance is not applicable in the context of a variable with itself. We can confirm by producing the variance for age:
+
+```{r, message = FALSE}
+
+# Return sample variance for age
+var(employees$age)
+
+```
+
+  As expected, the variance for age ($s^{2} = 83.5$) matches the value found in the age x age cell of the covariance matrix.
+
+### Correlation
+
+  **Correlation** is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. **Pearson's product-moment correlation coefficient** $r$ is defined by:
+
+  $$ r_{x,y} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^2 \displaystyle\sum_{i=1}^{n} (y_{i}-\bar{y})^2}} $$
+
+  In R, Pearson's $r$ can be calculated using the `cor()` function:
+
+```{r, message = FALSE}
+
+# Calculate the correlation between annual compensation and age
+cor(employees$annual_comp, employees$age, use = "complete.obs")
+
+```
+
+  While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson's $r$ of .02 indicates that the strength of the positive association is weak ($r$ = 0 represents the absence of a relationship). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:
+  
+  * Weak = Absolute value of correlation coefficients between 0 and .3
+  * Moderate = Absolute value of correlation coefficients between .4 and .6
+  * Strong = Absolute value of correlation coefficients between .7 and 1
+  
+  There are several correlation coefficients, and the measurement scale of $x$ and $y$ determine the appropriate type:
+  
+<br />
+
+```{r corr-table, out.width = "100%", echo = FALSE, fig.cap = 'Proper Applications of Correlation Coefficients', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_table.png")
+
+```
+
+<br />
+  
+  Pearson's $r$ can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).
+  
+  When one or both variables are ordinal, we can leverage **Spearman's** $\rho$ or **Kendall's** $\tau$, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let's look at Spearman's $\rho$, which is defined as:
+  
+  $$ \rho = 1 - {\frac {6 \sum d_i^2}{n(n^2 - 1)}} $$
+  
+  We can override the default Pearson method in the `cor()` function to implement a specific form of rank correlation using the `method` argument:
+
+```{r corr-lvl-ed, message = FALSE}
+
+# Calculate the correlation between job level and education level using Spearman's method
+cor(employees$job_lvl, employees$ed_lvl, method = "spearman", use = "complete.obs")
+
+```
+
+  The $\rho$ coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass `method = "kendall"` to this `cor()` function to implement Kendall's $\tau$.
+  
+  The **Phi Coefficient** ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
+  
+```{r phi-tbl, out.width="50%", echo = FALSE, fig.cap = '2x2 Table for Random Variables x and y', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/phi_coefficient_formula.png")
+
+```
+
+  The $\phi$ coefficient is defined as:
+  
+  $$ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} $$
+  
+  To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs. low performance). We can leverage the `psych` library to calculate $\phi$ in R:
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Set females to 1 and everything else to 0
+employees$gender_code <- ifelse(employees$gender == 'Female', 1, 0)
+
+# Set stock options to 1 if level > 0
+employees$stock_option_code <- ifelse(employees$stock_opt_lvl > 0, 1, 0)
+
+# Create a 2x2 contingency table
+contingency_tbl <- table(employees$gender_code, employees$stock_option_code)
+
+# Calculate the Phi Coefficient between dichotomous variables
+psych::phi(contingency_tbl)
+
+``` 
+  
+  $\phi$ is essentially 0, which means stock options are distributed equitably across gender categories (good news!). While there are not differences in the proportion of males and females who receive at least some stock options, examining whether there is equity in the amount of stock grants and refreshes may be a good next step.
+  
+  A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the `cor()` function:
+  
+```{r, message = FALSE}
+
+# Generate a correlation matrix among select continuous variables
+cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
+
+```
+
+  Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between `org_tenure` and `job_tenure` ($r = .7$). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
+  
+  A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
+  
+```{r corrplot-comp, out.width = "100%", echo = FALSE, fig.cap = 'Corrplot correlation matrix', fig.align = 'center',}
+
+# Store correlation matrix to object M
+M <- cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
+
+# Visualize correlation matrix
+corrplot::corrplot(M, method = "color",  
+                   type = "upper", order = "hclust", # Apply hierarchical clustering for ordering coefficients above the diagonal
+                   addCoef.col = "black", # Add correlation coefficient
+                   tl.col="grey", tl.srt = 45, # Label color and rotation
+                   diag = FALSE # Hide correlation coefficient on the principal diagonal
+                   )
+
+```
+
+  The GGally library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
+
+```{r ggpairs-comp, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions.', fig.align = 'center'}
+
+# Visualize correlation matrix
+GGally::ggpairs(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")))
+
+```
+
+  We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \@ref(lm).
+
+  It's important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone -- especially in the absence of sound theoretical underpinnings -- can be dangerous. 
+  
+```{r corr-comic, out.width = "75%", echo = FALSE, fig.cap = 'Correlation comic (Source: www.explainxkcd.com)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/correlation_comic.png")
+
+```
+  
+<br />
+  
+  Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
+  
+```{r spur-corr-1, out.width = "100%", echo = FALSE, fig.cap = 'Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_maine_divorce.png")
+
+```
+  
+<br />
+  
+```{r spur-corr-2, out.width = "100%", echo = FALSE, fig.cap = 'Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/spurious_corr_mozzarella_cheese.png")
+
+```
+
+  In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
+  
+## Review Questions
+   
+1. How does the mean and median compare with respect to sensitivity to extreme values (outliers)?
+
+2. What does the standard deviation tell us about the spread of data, and how does it compare to the variance?
+   
+3. How does the order of the mean, median, and mode differ between positively and negatively skewed distributions?
+
+4. Do large covariance coefficients always indicate strong bivariate associations? Why or why not?
+   
+5. What information is represented in boxplots?
+   
+6. Do do quartiles relate to percentiles?
+   
+7. What type of correlation coefficient should be used when evaluating the relationship between a pair of rank-ordered variables?
+   
+8. What type of correlation coefficient should be used when evaluating the relationship between a pair of dichotomous variables?
+   
+9. How would you characterize the shape of platykurtic, leptokurtic, and mesokurtic distributions?
+   
+10. When using the Pearson method, what do the values down the diagonal of a *covariance* matrix represent?

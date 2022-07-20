@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-18}
+\date{2022-07-20}
 
 \begin{document}
 \maketitle
@@ -671,7 +671,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{, }\StringTok{"factoextra"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -680,6 +680,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ##   There are binary versions available but the source versions are later:
 ##            binary source needs_compilation
 ## texPreview    1.5  2.0.0             FALSE
+## ade4       1.7-18 1.7-19              TRUE
 ## tidyverse   1.3.1  1.3.2             FALSE
 ## corrplot     0.89   0.92             FALSE
 ## psych       2.2.3  2.2.5             FALSE
@@ -694,7 +695,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmpsq26He/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpZjHeor/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -2895,6 +2896,487 @@ Given the potential for alternative explanations of any observed differences or 
   How can the Hawthorne Effect impact the integrity of an experiment?
 \end{enumerate}
 
+\hypertarget{data-mgmt-prep}{%
+\chapter{Data Management \& Preparation}\label{data-mgmt-prep}}
+
+To begin a data analysis, we must first access and organize the relevant data. These tasks -- together with data preparation steps outlined in this chapter -- account for a large part of the work analytics professionals do.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/data_scientist_tasks} 
+
+}
+
+\caption{What Data Scientists Really Do}\label{fig:ds-tasks}
+\end{figure}
+
+\hypertarget{data-management}{%
+\section{Data Management}\label{data-management}}
+
+Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}. To properly and efficiently extract data -- often through the use of SQL as covered in Chapter \ref{sql-intro} -- it is important to first understand some of the most common ways in which data are stored and structured.
+
+A \textbf{data lake} stores myriad types of data -- both structured and unstructured -- in its native format until needed. \textbf{Structured data} refers to data that fits a predefined data model, such as hire dates formatted as \texttt{MM/DD/YYYY} or zip codes stored as a five-digit string. \textbf{Unstructured data} has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables.
+
+The main difference between a data lake and data warehouse is the type of data they are designed to store. A \textbf{data warehouse (DW)} is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \ref{fig:dw-schema}, data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
+
+Figure \ref{fig:dw-schema} illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_schema} 
+
+}
+
+\caption{Related Tables Organized within Schemas}\label{fig:dw-schema}
+\end{figure}
+
+Tables in a DW are related using a set of keys. Each table needs a \textbf{Primary Key (PK)}, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a \emph{composite key}. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A \textbf{Foreign Key (FK)} is a column whose values correspond to the values of a PK in another table. \textbf{Referential integrity} is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
+
+Figure \ref{fig:dw-erd} shows an \textbf{Entity Relationship Diagram (ERD)} that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \ref{fig:dw-schema} is listed as a FK.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd} 
+
+}
+
+\caption{Entity Relationship Diagram (ERD)}\label{fig:dw-erd}
+\end{figure}
+
+A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+
+Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
+
+Note that the combination of \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} and \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} indicate \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} is set to the worker's termination date for rows that represent the \emph{last known attributes} along with \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}}:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_2_table} 
+
+}
+
+\caption{Type 2 SCD}\label{fig:type-2-tbl}
+\end{figure}
+
+While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table} 
+
+}
+
+\caption{Type 1 SCD}\label{fig:type-1-tbl}
+\end{figure}
+
+A \textbf{data mart} is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+
+\textbf{Modern Data Architecture}
+
+Though a deep treatment of data architecture is beyond the scope of this book, it is important to acknowledge the significant advancements in infrastructure and computation since these complex SCD architectures were introduced by Kimball (1996). These developments have greatly improved the efficiency with which analysts can translate data into information and insight. The primitive systems in place decades ago required expensive \textbf{ETL} jobs to \textbf{extract (E)} data from source systems, \textbf{transform (T)} data using complex transformation rules, and \textbf{load (L)} the transformed data to relational tables -- which then required complex queries to wrangle and analyze the data.
+
+With modern cloud environments, the significant investment associated with humans designing, developing, and maintaining these complex architectures is often difficult to justify given how inexpensive storage and compute have become. Increasingly, the heavy computational tasks have migrated out of data pipelines and into the analytics layer wherein analytics teams have more flexibility and control. Today, daily snapshots containing \emph{all} current and historical records can be copied and stored within partitioned DW tables for a negligible increase in storage costs, and this greatly simplifies data pipeline complexity and engineering support requirements. This changing dynamic has given rise to a new breed of data engineers focused on optimizing the heavy computation requirements of analytics teams.
+
+\hypertarget{data-screening-cleaning}{%
+\section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
+
+The initial data review process is sometimes referred to as \textbf{exploratory data analysis (EDA)}. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations. An analytics ideal is \emph{unimpeachable data quality}, which is to say that the rigor of upstream processes and downstream data screening is such that stakeholders become confident enough to channel more energy towards actioning on results than questioning the quality. Suspect data quality is often surfaced during the initial EDA step and affords the opportunity to address and avoid stakeholders discounting results during later phases of the project.
+
+A handy function in base R for initial data screening is \texttt{summary()}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load employee data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
+
+\CommentTok{\# Summarize df}
+\FunctionTok{summary}\NormalTok{(employees)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   employee_id      active          stock_opt_lvl      trainings    
+##  Min.   :1001   Length:1470        Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:1368   Class :character   1st Qu.:0.0000   1st Qu.:2.000  
+##  Median :1736   Mode  :character   Median :1.0000   Median :3.000  
+##  Mean   :1736                      Mean   :0.7939   Mean   :2.799  
+##  3rd Qu.:2103                      3rd Qu.:1.0000   3rd Qu.:3.000  
+##  Max.   :2470                      Max.   :3.0000   Max.   :6.000  
+##                                                                    
+##       age         commute_dist        ed_lvl        ed_field        
+##  Min.   :18.00   Min.   : 1.000   Min.   :1.000   Length:1470       
+##  1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000   Class :character  
+##  Median :36.00   Median : 7.000   Median :3.000   Mode  :character  
+##  Mean   :36.92   Mean   : 9.193   Mean   :2.913                     
+##  3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000                     
+##  Max.   :60.00   Max.   :29.000   Max.   :5.000                     
+##                                                                     
+##     gender          marital_sts            dept             engagement  
+##  Length:1470        Length:1470        Length:1470        Min.   :1.00  
+##  Class :character   Class :character   Class :character   1st Qu.:2.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median :3.00  
+##                                                           Mean   :2.73  
+##                                                           3rd Qu.:3.00  
+##                                                           Max.   :4.00  
+##                                                                         
+##     job_lvl       job_title           overtime         business_travel   
+##  Min.   :1.000   Length:1470        Length:1470        Length:1470       
+##  1st Qu.:1.000   Class :character   Class :character   Class :character  
+##  Median :2.000   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :2.064                                                           
+##  3rd Qu.:3.000                                                           
+##  Max.   :5.000                                                           
+##                                                                          
+##   hourly_rate       daily_comp     monthly_comp    annual_comp    
+##  Min.   : 30.00   Min.   :240.0   Min.   : 5200   Min.   : 62400  
+##  1st Qu.: 48.00   1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840  
+##  Median : 66.00   Median :528.0   Median :11440   Median :137280  
+##  Mean   : 65.89   Mean   :527.1   Mean   :11421   Mean   :137054  
+##  3rd Qu.: 83.75   3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200  
+##  Max.   :100.00   Max.   :800.0   Max.   :17333   Max.   :208000  
+##                                                                   
+##    ytd_leads       ytd_sales       standard_hrs salary_hike_pct  perf_rating   
+##  Min.   :11.00   Min.   : 15496   Min.   :80    Min.   :11.00   Min.   :3.000  
+##  1st Qu.:45.00   1st Qu.: 56997   1st Qu.:80    1st Qu.:12.00   1st Qu.:3.000  
+##  Median :59.00   Median : 73505   Median :80    Median :14.00   Median :3.000  
+##  Mean   :55.84   Mean   : 77124   Mean   :80    Mean   :15.21   Mean   :3.154  
+##  3rd Qu.:65.00   3rd Qu.: 96002   3rd Qu.:80    3rd Qu.:18.00   3rd Qu.:3.000  
+##  Max.   :95.00   Max.   :281499   Max.   :80    Max.   :25.00   Max.   :4.000  
+##  NA's   :1061    NA's   :1061                                                  
+##  prior_emplr_cnt    env_sat         job_sat         rel_sat     
+##  Min.   :0.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+##  1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
+##  Median :2.000   Median :3.000   Median :3.000   Median :3.000  
+##  Mean   :2.693   Mean   :2.722   Mean   :2.729   Mean   :2.712  
+##  3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000  
+##  Max.   :9.000   Max.   :4.000   Max.   :4.000   Max.   :4.000  
+##                                                                 
+##    wl_balance       work_exp       org_tenure       job_tenure    
+##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.000  
+##  1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000   1st Qu.: 2.000  
+##  Median :2.000   Median :10.00   Median : 5.000   Median : 3.000  
+##  Mean   :1.841   Mean   :11.28   Mean   : 7.032   Mean   : 4.229  
+##  3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000   3rd Qu.: 7.000  
+##  Max.   :2.000   Max.   :40.00   Max.   :72.000   Max.   :18.000  
+##                                                                   
+##    last_promo       mgr_tenure     interview_rating
+##  Min.   : 0.000   Min.   : 0.000   Min.   :2.000   
+##  1st Qu.: 0.000   1st Qu.: 2.000   1st Qu.:3.600   
+##  Median : 1.000   Median : 3.000   Median :4.100   
+##  Mean   : 2.188   Mean   : 4.123   Mean   :3.989   
+##  3rd Qu.: 3.000   3rd Qu.: 7.000   3rd Qu.:4.500   
+##  Max.   :15.000   Max.   :17.000   Max.   :5.000   
+## 
+\end{verbatim}
+
+Note that fields with \texttt{NA\textquotesingle{}s} contain missing values. Also, by default \texttt{employee\_id} is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. \texttt{employee\_id} should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
+
+\textbf{Missingness}
+
+Before considering whether and how to handle missing data, it is important to distinguish between \emph{structural missingness} and \emph{informative missingness} (Kuhn \& Johnson, 2013).
+
+\textbf{Structural missingness} relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.
+
+\textbf{Informative missingness} relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
+
+In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns.
+
+\textbf{Data imputation} refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with \emph{similar characteristics} may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
+
+Let's evaluate the \texttt{employees} data frame for missing \texttt{annual\_comp} values using the logical \texttt{is.na()} function, and return values of variables relevant in determining one's annual compensation:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Store original annual comp for sample employee}
+\NormalTok{orig\_comp }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp)}
+
+\CommentTok{\# Force a NA in lieu of annual comp for illustrative purposes}
+\NormalTok{employees[employees}\SpecialCharTok{$}\NormalTok{employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}annual\_comp\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
+
+\CommentTok{\# Return relevant employee characteristics where annual comp is missing}
+\FunctionTok{subset}\NormalTok{(employees, }\FunctionTok{is.na}\NormalTok{(annual\_comp), }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(employee\_id, job\_title, job\_lvl))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      employee_id              job_title job_lvl
+## 1176        2176 Manufacturing Director       2
+\end{verbatim}
+
+Next, we can impute the average value of \texttt{annual\_comp} based on employees with the same values for the relevant variables:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return average annual comp for employees with similar characteristics, excluding employees with missing comp values}
+\NormalTok{imputed\_comp }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, job\_title }\SpecialCharTok{==} \StringTok{\textquotesingle{}Manufacturing Director\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ job\_lvl }\SpecialCharTok{==} \DecValTok{2}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp), mean, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Impute missing comp for relevant segment}
+\NormalTok{employees[employees}\SpecialCharTok{$}\NormalTok{employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}annual\_comp\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ imputed\_comp}
+
+\CommentTok{\# Display absolute difference between original and imputed comp}
+\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(orig\_comp }\SpecialCharTok{{-}} \FunctionTok{subset}\NormalTok{(employees, employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp)), }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      annual_comp
+## 1176        1169
+\end{verbatim}
+
+While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. \textbf{Multiple imputation} combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.
+
+\textbf{Outliers}
+
+The treatment of outliers is an important, though controversial, subject. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be handled.
+
+The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving poor sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents' claims that their tap water was to blame -- despite some extreme cases in which the tap water was colored orange.
+
+Water companies routinely add chemicals to water to prevent pipe corrosion which can cause lead to seep into drinking water. In Flint's hurry to switch water sources, they failed to address the fact that the Flint River is naturally high in chloride (which corrodes pipes) by adding corrosion-inhibiting chemicals. According to the Lead and Copper Rule (LCR) of 1991, lead consumption should not exceed 15 parts per billion (ppb) in more than 10\% of homes tested -- though no quantity of lead is considered safe to ingest. If the 90th percentile value for sampled homes is greater than 15 ppb, action is required.
+
+Two initial samples of tap water were taken from a concerned resident's home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes in the resident's home. Authorities collected samples of their own and despite federal guidelines requiring \(n \ge 100\) samples, an under-powered analysis was performed using only 71 samples. Of the 71 samples, two with levels above the 15 ppb threshold were discarded, and the removal of these outliers resulted in aggregate lead levels falling beneath the action threshold.
+
+In the end, the tenacity of the growing number of residents with health concerns resulted in new samples being analyzed by a team of researchers at Virginia Tech University. Researchers found that the 90th percentile value among the sample of households -- which included homes with non-lead pipes and water filtration systems -- was 26.8 ppb and the highest individual sample was 158 ppb! The city switched back to the Lake Huron water source in October 2015 (18 months later), and a state of emergency was declared. The State of Michigan has brought numerous criminal charges against state and local officials which include misconduct in office, tampering with evidence, willful neglect of duty, and various counts of conspiracy. Residents also launched a series of class action lawsuits against the Governor (Langkjær-Bain, 2017).
+
+This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated. Simply discarding outliers may truly be a grave mistake! If outliers are attributable to measurement error, it may be appropriate to discard them. If outliers represent properly measured values, they should be investigated. As we will discuss in Chapter \ref{desc-stats}, a common method of outlier detection is identifying values which fall outside the following interval:
+
+\[I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR\]
+
+\textbf{Low Variability}
+
+Variables with \textbf{low variability} often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.
+
+When working with survey data, checking for \textbf{straightlining} should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing ``I plan to be here in a year'' to ``I do not plan to be here in a year''), which we expect to be inversely related, this gives added support for discarding these responses.
+
+Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove \texttt{standard\_hrs} from the data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return descriptives to understand distribution of standard hours}
+\FunctionTok{summary}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{standard\_hrs)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      80      80      80      80      80      80
+\end{verbatim}
+
+Given that the data dictionary in Chapter \ref{getting-started} indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return descriptives to understand distribution of standard hours}
+\FunctionTok{summary}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{perf\_rating)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   3.000   3.000   3.000   3.154   3.000   4.000
+\end{verbatim}
+
+Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that could bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.
+
+\textbf{Inconsistent Categories}
+
+\textbf{Inconsistent categories} impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.
+
+Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.
+
+Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a clean and well-defined set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This warrants either a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream (e.g., in the source system) to avoid duplicative data cleaning procedures across downstream applications.
+
+\textbf{Data Binning}
+
+\textbf{Data binning} refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, extremely granular categories should be avoided -- especially when there is no theoretical basis for such categories facilitating a project's objectives or deepening insights. Where the \(n\)-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. For example, a variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level ``High School Not Completed'' and ``High School Completed'' bins.
+
+For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of `Less Than 1 Year', `1-5 Years', and `More Than 5 Years' will likely result in information loss. Any variability \emph{within} these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
+
+\hypertarget{one-hot-encoding}{%
+\section{One-Hot Encoding}\label{one-hot-encoding}}
+
+\textbf{One-hot encoding}, also known as \textbf{dummy coding}, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, this is not required, as counts and percent of total metrics can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications, categorical variables must be converted into \(k-1\) variables, where \(k\) is the number of categories, using binary (1/0) coding.
+
+Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with ``Remote'' or ``Non-Remote'' values, we may code ``Remote'' values as 1 and ``Non-Remote'' values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.
+
+If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others. That is, when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
+
+\begin{figure}
+
+{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/onehot_encoding} 
+
+}
+
+\caption{One-Hot Encoding}\label{fig:onehot-encoding}
+\end{figure}
+
+For a categorical variable with only two values, the \texttt{ifelse()} function can be leveraged to assign values:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return unique values of gender field}
+\FunctionTok{unique}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{gender)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "Female" "Male"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Gender one{-}hot encoding}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{gender\_ohe }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{gender }\SpecialCharTok{==} \StringTok{\textquotesingle{}Female\textquotesingle{}}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+
+\CommentTok{\# Preview records}
+\FunctionTok{head}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(employee\_id, gender\_ohe)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   employee_id gender_ohe
+## 1        1001          1
+## 2        1002          0
+## 3        1003          0
+## 4        1004          1
+## 5        1005          0
+## 6        1006          0
+\end{verbatim}
+
+For variables with more than 2 categories, we can leverage the \texttt{model.matrix()} function for one-hot encoding. Let's illustrate be encoding locations.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return counts by department}
+\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                     dept   n
+## 1 Research & Development 961
+## 2                  Sales 446
+## 3        Human Resources  63
+\end{verbatim}
+
+By default, the \texttt{model.matrix()} function will produce a matrix of 1/0 values for \(k-1\) categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using \texttt{-1} in the first argument passed to \texttt{model.matrix()} and then choose the reference group for the analysis in a subsequent step.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Department one{-}hot encoding}
+\NormalTok{dept\_ohe }\OtherTok{\textless{}{-}} \FunctionTok{model.matrix}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{dept}\DecValTok{{-}1}\NormalTok{, }\AttributeTok{data =}\NormalTok{ employees)}
+
+\CommentTok{\# Preview data}
+\FunctionTok{head}\NormalTok{(dept\_ohe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   deptHuman Resources deptResearch & Development deptSales
+## 1                   0                          0         1
+## 2                   0                          1         0
+## 3                   0                          1         0
+## 4                   0                          1         0
+## 5                   0                          1         0
+## 6                   0                          1         0
+\end{verbatim}
+
+We will drop the department with the lowest \(n\) rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either \(1\) or \(0\), we can use the \texttt{colSums()} function to sum each column and the \texttt{which.min()} function to identify which has the lowest sum (i.e., smallest department by employee count).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Drop department with lowest sum (lowest n{-}count)}
+\NormalTok{dept\_ohe }\OtherTok{\textless{}{-}}\NormalTok{ dept\_ohe[, }\SpecialCharTok{{-}}\FunctionTok{which.min}\NormalTok{(}\FunctionTok{colSums}\NormalTok{(dept\_ohe))]}
+
+\CommentTok{\# Preview refined one{-}hot encoded data}
+\FunctionTok{head}\NormalTok{(dept\_ohe)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   deptResearch & Development deptSales
+## 1                          0         1
+## 2                          1         0
+## 3                          1         0
+## 4                          1         0
+## 5                          1         0
+## 6                          1         0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Combine employees and matrix containing one{-}hot encoded departments}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(employees, dept\_ohe)}
+
+\CommentTok{\# Drop original department field}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(dept))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{feature-engineering}{%
+\section{Feature Engineering}\label{feature-engineering}}
+
+Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information. This can be easily accomplished using the arithmetic functions we've covered.
+
+\begin{itemize}
+\tightlist
+\item
+  Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
+\item
+  Office/remote worker (binary variable dummy coded as 1/0)
+\item
+  Local/remote manager (binary variable dummy coded as 1/0)
+\item
+  Hire/Rehire (binary variable dummy coded as 1/0)
+\item
+  Hired/acquired (proxy for culture shock effects)
+\item
+  Gender isolation (ratio of employee's gender to number of the same within immediate work
+  group)
+\item
+  Generation isolation (comparison of age bracket to most frequent generational bracket within
+  immediate work group)
+\item
+  Ethnic isolation (ratio of employee's ethnicity to number of the same within immediate work
+  group)
+\item
+  Difference between employee and manager age
+\item
+  Percentage change between last two performance appraisal scores (per competency and/or
+  overall)
+\item
+  Team and department quit outbreak indicators (ratio of terms over x months relative to average
+  headcount over x months)
+\item
+  Industry experience (binary or length in years)
+\end{itemize}
+
+\hypertarget{review-questions-4}{%
+\section{Review Questions}\label{review-questions-4}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  What are the differences between data lakes, data warehouses, and data marts?
+\item
+  What is the difference between a Type 1 and Type 2 table in a DW?
+\item
+  In what ways has modern cloud computing influenced data architecture?
+\item
+  Why is it dangerous to address missing values without domain knowledge of how the data are generated?
+\item
+  How can missing values be addressed when impacted records cannot be eliminated from a data set?
+\item
+  When is one-hot encoding required for categorical variables?
+\item
+  When one-hot encoding a categorical variable with more than two categories, why is an omitted category important?
+\item
+  When binning numeric data, what are some considerations in determining the size of each bin?
+\item
+  Why should variables with low to no variability be dropped?
+\item
+  Where are validation rules ideally situated to limit downstream data cleaning tasks and ensure consistent categorical dimension values?
+\end{enumerate}
+
 \hypertarget{desc-stats}{%
 \chapter{Descriptive Statistics}\label{desc-stats}}
 
@@ -3251,7 +3733,7 @@ Based on this output, we know that 25\% of people in our data earn annual compen
 \end{Highlighting}
 \end{Shaded}
 
-\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-94-1.pdf}
+\includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-105-1.pdf}
 
 Boxplots can be interpreted as follows:
 * Horizontal lines represent median compensation values.
@@ -3715,8 +4197,8 @@ Here are two examples of nearly perfect correlations between variables for which
 
 In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
 
-\hypertarget{review-questions-4}{%
-\section{Review Questions}\label{review-questions-4}}
+\hypertarget{review-questions-5}{%
+\section{Review Questions}\label{review-questions-5}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -4159,11 +4641,11 @@ Let's now see the CLT in action by simulating a random uniform population distri
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-115-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-126-1} 
 
 }
 
-\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-115}
+\caption{Uniform Population Distribution (N = 1000)}\label{fig:unnamed-chunk-126}
 \end{figure}
 
 As expected, these randomly generated data are uniformly distributed. Next, we will draw 100 random samples of various sizes and plot the average of each.
@@ -4207,11 +4689,11 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 
 \begin{figure}
 
-{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-116-1} 
+{\centering \includegraphics{People_Analytics_Lifecycle_files/figure-latex/unnamed-chunk-127-1} 
 
 }
 
-\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-116}
+\caption{Distribution of 10,000 Sample Means of Varied Size}\label{fig:unnamed-chunk-127}
 \end{figure}
 
 Per the CLT, we can see that as n increases, the sample means become more normally distributed.
@@ -4575,8 +5057,8 @@ Let's illustrate by calculating the sample size required for a one-way ANOVA tha
 
 The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 45\) \emph{within each} of the four groups to achieve an 80\% chance of detecting a medium population effect across the four groups when setting \(\alpha = .05\).
 
-\hypertarget{review-questions-5}{%
-\section{Review Questions}\label{review-questions-5}}
+\hypertarget{review-questions-6}{%
+\section{Review Questions}\label{review-questions-6}}
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -4600,487 +5082,6 @@ The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 
   When population parameters are unknown, which test would be appropriate for testing the following null hypothesis: \(\mu_A = \mu_B\)?
 \item
   According to the Empirical Rule, 95\% of normally distributed data lie within how many standard deviations of the mean?
-\end{enumerate}
-
-\hypertarget{data-mgmt-prep}{%
-\chapter{Data Management \& Preparation}\label{data-mgmt-prep}}
-
-To begin a data analysis, we must first access and organize the relevant data. These tasks -- together with data preparation steps outlined in this chapter -- account for a large part of the work analytics professionals do.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/data_scientist_tasks} 
-
-}
-
-\caption{What Data Scientists Really Do}\label{fig:ds-tasks}
-\end{figure}
-
-\hypertarget{data-management}{%
-\section{Data Management}\label{data-management}}
-
-Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a \emph{data lake}, \emph{data warehouse}, or \emph{data mart}. To properly and efficiently extract data -- often through the use of SQL as covered in Chapter \ref{sql-intro} -- it is important to first understand some of the most common ways in which data are stored and structured.
-
-A \textbf{data lake} stores myriad types of data -- both structured and unstructured -- in its native format until needed. \textbf{Structured data} refers to data that fits a predefined data model, such as hire dates formatted as \texttt{MM/DD/YYYY} or zip codes stored as a five-digit string. \textbf{Unstructured data} has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables.
-
-The main difference between a data lake and data warehouse is the type of data they are designed to store. A \textbf{data warehouse (DW)} is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \ref{fig:dw-schema}, data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
-
-Figure \ref{fig:dw-schema} illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company.
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_schema} 
-
-}
-
-\caption{Related Tables Organized within Schemas}\label{fig:dw-schema}
-\end{figure}
-
-Tables in a DW are related using a set of keys. Each table needs a \textbf{Primary Key (PK)}, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a \emph{composite key}. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A \textbf{Foreign Key (FK)} is a column whose values correspond to the values of a PK in another table. \textbf{Referential integrity} is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
-
-Figure \ref{fig:dw-erd} shows an \textbf{Entity Relationship Diagram (ERD)} that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \ref{fig:dw-schema} is listed as a FK.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/dw_erd} 
-
-}
-
-\caption{Entity Relationship Diagram (ERD)}\label{fig:dw-erd}
-\end{figure}
-
-A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as \emph{Type 1} and \emph{Type 2} tables. These tables are sometimes referred to as \textbf{slowly changing dimensions (SCD)}. A \textbf{Type 1 table} is overwritten on a regular cadence (usually daily) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. A Type 1 table is convenient when only current information needs to be queried. A \textbf{Type 2 table} is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a \emph{start date} and \emph{end date} for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
-
-Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
-
-Note that the combination of \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} and \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} indicate \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} is set to the worker's termination date for rows that represent the \emph{last known attributes} along with \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}}:
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_2_table} 
-
-}
-
-\caption{Type 2 SCD}\label{fig:type-2-tbl}
-\end{figure}
-
-While we could select rows where \texttt{current\_record\ =\ \textquotesingle{}Y\textquotesingle{}} to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
-
-\begin{figure}
-
-{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/type_1_table} 
-
-}
-
-\caption{Type 1 SCD}\label{fig:type-1-tbl}
-\end{figure}
-
-A \textbf{data mart} is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
-
-\textbf{Modern Data Architecture}
-
-Though a deep treatment of data architecture is beyond the scope of this book, it is important to acknowledge the significant advancements in infrastructure and computation since these complex SCD architectures were introduced by Kimball (1996). These developments have greatly improved the efficiency with which analysts can translate data into information and insight. The primitive systems in place decades ago required expensive \textbf{ETL} jobs to \textbf{extract (E)} data from source systems, \textbf{transform (T)} data using complex transformation rules, and \textbf{load (L)} the transformed data to relational tables -- which then required complex queries to wrangle and analyze the data.
-
-With modern cloud environments, the significant investment associated with humans designing, developing, and maintaining these complex architectures is often difficult to justify given how inexpensive storage and compute have become. Increasingly, the heavy computational tasks have migrated out of data pipelines and into the analytics layer wherein analytics teams have more flexibility and control. Today, daily snapshots containing \emph{all} current and historical records can be copied and stored within partitioned DW tables for a negligible increase in storage costs, and this greatly simplifies data pipeline complexity and engineering support requirements. This changing dynamic has given rise to a new breed of data engineers focused on optimizing the heavy computation requirements of analytics teams.
-
-\hypertarget{data-screening-cleaning}{%
-\section{Data Screening \& Cleaning}\label{data-screening-cleaning}}
-
-The initial data review process is sometimes referred to as \textbf{exploratory data analysis (EDA)}. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations. An analytics ideal is \emph{unimpeachable data quality}, which is to say that the rigor of upstream processes and downstream data screening is such that stakeholders become confident enough to channel more energy towards actioning on results than questioning the quality. Suspect data quality is often surfaced during the initial EDA step and affords the opportunity to address and avoid stakeholders discounting results during later phases of the project.
-
-A handy function in base R for initial data screening is \texttt{summary()}:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Load employee data}
-\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
-
-\CommentTok{\# Summarize df}
-\FunctionTok{summary}\NormalTok{(employees)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##   employee_id      active          stock_opt_lvl      trainings    
-##  Min.   :1001   Length:1470        Min.   :0.0000   Min.   :0.000  
-##  1st Qu.:1368   Class :character   1st Qu.:0.0000   1st Qu.:2.000  
-##  Median :1736   Mode  :character   Median :1.0000   Median :3.000  
-##  Mean   :1736                      Mean   :0.7939   Mean   :2.799  
-##  3rd Qu.:2103                      3rd Qu.:1.0000   3rd Qu.:3.000  
-##  Max.   :2470                      Max.   :3.0000   Max.   :6.000  
-##                                                                    
-##       age         commute_dist        ed_lvl        ed_field        
-##  Min.   :18.00   Min.   : 1.000   Min.   :1.000   Length:1470       
-##  1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000   Class :character  
-##  Median :36.00   Median : 7.000   Median :3.000   Mode  :character  
-##  Mean   :36.92   Mean   : 9.193   Mean   :2.913                     
-##  3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000                     
-##  Max.   :60.00   Max.   :29.000   Max.   :5.000                     
-##                                                                     
-##     gender          marital_sts            dept             engagement  
-##  Length:1470        Length:1470        Length:1470        Min.   :1.00  
-##  Class :character   Class :character   Class :character   1st Qu.:2.00  
-##  Mode  :character   Mode  :character   Mode  :character   Median :3.00  
-##                                                           Mean   :2.73  
-##                                                           3rd Qu.:3.00  
-##                                                           Max.   :4.00  
-##                                                                         
-##     job_lvl       job_title           overtime         business_travel   
-##  Min.   :1.000   Length:1470        Length:1470        Length:1470       
-##  1st Qu.:1.000   Class :character   Class :character   Class :character  
-##  Median :2.000   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :2.064                                                           
-##  3rd Qu.:3.000                                                           
-##  Max.   :5.000                                                           
-##                                                                          
-##   hourly_rate       daily_comp     monthly_comp    annual_comp    
-##  Min.   : 30.00   Min.   :240.0   Min.   : 5200   Min.   : 62400  
-##  1st Qu.: 48.00   1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840  
-##  Median : 66.00   Median :528.0   Median :11440   Median :137280  
-##  Mean   : 65.89   Mean   :527.1   Mean   :11421   Mean   :137054  
-##  3rd Qu.: 83.75   3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200  
-##  Max.   :100.00   Max.   :800.0   Max.   :17333   Max.   :208000  
-##                                                                   
-##    ytd_leads       ytd_sales       standard_hrs salary_hike_pct  perf_rating   
-##  Min.   :11.00   Min.   : 15496   Min.   :80    Min.   :11.00   Min.   :3.000  
-##  1st Qu.:45.00   1st Qu.: 56997   1st Qu.:80    1st Qu.:12.00   1st Qu.:3.000  
-##  Median :59.00   Median : 73505   Median :80    Median :14.00   Median :3.000  
-##  Mean   :55.84   Mean   : 77124   Mean   :80    Mean   :15.21   Mean   :3.154  
-##  3rd Qu.:65.00   3rd Qu.: 96002   3rd Qu.:80    3rd Qu.:18.00   3rd Qu.:3.000  
-##  Max.   :95.00   Max.   :281499   Max.   :80    Max.   :25.00   Max.   :4.000  
-##  NA's   :1061    NA's   :1061                                                  
-##  prior_emplr_cnt    env_sat         job_sat         rel_sat     
-##  Min.   :0.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
-##  1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
-##  Median :2.000   Median :3.000   Median :3.000   Median :3.000  
-##  Mean   :2.693   Mean   :2.722   Mean   :2.729   Mean   :2.712  
-##  3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000  
-##  Max.   :9.000   Max.   :4.000   Max.   :4.000   Max.   :4.000  
-##                                                                 
-##    wl_balance       work_exp       org_tenure       job_tenure    
-##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.000  
-##  1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000   1st Qu.: 2.000  
-##  Median :2.000   Median :10.00   Median : 5.000   Median : 3.000  
-##  Mean   :1.841   Mean   :11.28   Mean   : 7.032   Mean   : 4.229  
-##  3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000   3rd Qu.: 7.000  
-##  Max.   :2.000   Max.   :40.00   Max.   :72.000   Max.   :18.000  
-##                                                                   
-##    last_promo       mgr_tenure     interview_rating
-##  Min.   : 0.000   Min.   : 0.000   Min.   :2.000   
-##  1st Qu.: 0.000   1st Qu.: 2.000   1st Qu.:3.600   
-##  Median : 1.000   Median : 3.000   Median :4.100   
-##  Mean   : 2.188   Mean   : 4.123   Mean   :3.989   
-##  3rd Qu.: 3.000   3rd Qu.: 7.000   3rd Qu.:4.500   
-##  Max.   :15.000   Max.   :17.000   Max.   :5.000   
-## 
-\end{verbatim}
-
-Note that fields with \texttt{NA\textquotesingle{}s} contain missing values. Also, by default \texttt{employee\_id} is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. \texttt{employee\_id} should actually be treated as a character string since we will not perform any arithmetic operations using these ids.
-
-\textbf{Missingness}
-
-Before considering whether and how to handle missing data, it is important to distinguish between \emph{structural missingness} and \emph{informative missingness} (Kuhn \& Johnson, 2013).
-
-\textbf{Structural missingness} relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.
-
-\textbf{Informative missingness} relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.
-
-In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records -- even with a sufficiently large sample -- may bias analyses if there are missingness patterns.
-
-\textbf{Data imputation} refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with \emph{similar characteristics} may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual's actual age.
-
-Let's evaluate the \texttt{employees} data frame for missing \texttt{annual\_comp} values using the logical \texttt{is.na()} function, and return values of variables relevant in determining one's annual compensation:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Store original annual comp for sample employee}
-\NormalTok{orig\_comp }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp)}
-
-\CommentTok{\# Force a NA in lieu of annual comp for illustrative purposes}
-\NormalTok{employees[employees}\SpecialCharTok{$}\NormalTok{employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}annual\_comp\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}} \ConstantTok{NA}
-
-\CommentTok{\# Return relevant employee characteristics where annual comp is missing}
-\FunctionTok{subset}\NormalTok{(employees, }\FunctionTok{is.na}\NormalTok{(annual\_comp), }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(employee\_id, job\_title, job\_lvl))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##      employee_id              job_title job_lvl
-## 1176        2176 Manufacturing Director       2
-\end{verbatim}
-
-Next, we can impute the average value of \texttt{annual\_comp} based on employees with the same values for the relevant variables:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Return average annual comp for employees with similar characteristics, excluding employees with missing comp values}
-\NormalTok{imputed\_comp }\OtherTok{\textless{}{-}} \FunctionTok{sapply}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, job\_title }\SpecialCharTok{==} \StringTok{\textquotesingle{}Manufacturing Director\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ job\_lvl }\SpecialCharTok{==} \DecValTok{2}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp), mean, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{)}
-
-\CommentTok{\# Impute missing comp for relevant segment}
-\NormalTok{employees[employees}\SpecialCharTok{$}\NormalTok{employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}annual\_comp\textquotesingle{}}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ imputed\_comp}
-
-\CommentTok{\# Display absolute difference between original and imputed comp}
-\FunctionTok{round}\NormalTok{(}\FunctionTok{abs}\NormalTok{(orig\_comp }\SpecialCharTok{{-}} \FunctionTok{subset}\NormalTok{(employees, employee\_id }\SpecialCharTok{==} \StringTok{\textquotesingle{}2176\textquotesingle{}}\NormalTok{, }\AttributeTok{select =}\NormalTok{ annual\_comp)), }\DecValTok{0}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##      annual_comp
-## 1176        1169
-\end{verbatim}
-
-While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. \emph{Linear regression} and \emph{K-Nearest Neighbor (KNN)} models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. \textbf{Multiple imputation} combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.
-
-\textbf{Outliers}
-
-The treatment of outliers is an important, though controversial, subject. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be handled.
-
-The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving poor sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents' claims that their tap water was to blame -- despite some extreme cases in which the tap water was colored orange.
-
-Water companies routinely add chemicals to water to prevent pipe corrosion which can cause lead to seep into drinking water. In Flint's hurry to switch water sources, they failed to address the fact that the Flint River is naturally high in chloride (which corrodes pipes) by adding corrosion-inhibiting chemicals. According to the Lead and Copper Rule (LCR) of 1991, lead consumption should not exceed 15 parts per billion (ppb) in more than 10\% of homes tested -- though no quantity of lead is considered safe to ingest. If the 90th percentile value for sampled homes is greater than 15 ppb, action is required.
-
-Two initial samples of tap water were taken from a concerned resident's home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes in the resident's home. Authorities collected samples of their own and despite federal guidelines requiring \(n \ge 100\) samples, an under-powered analysis was performed using only 71 samples. Of the 71 samples, two with levels above the 15 ppb threshold were discarded, and the removal of these outliers resulted in aggregate lead levels falling beneath the action threshold.
-
-In the end, the tenacity of the growing number of residents with health concerns resulted in new samples being analyzed by a team of researchers at Virginia Tech University. Researchers found that the 90th percentile value among the sample of households -- which included homes with non-lead pipes and water filtration systems -- was 26.8 ppb and the highest individual sample was 158 ppb! The city switched back to the Lake Huron water source in October 2015 (18 months later), and a state of emergency was declared. The State of Michigan has brought numerous criminal charges against state and local officials which include misconduct in office, tampering with evidence, willful neglect of duty, and various counts of conspiracy. Residents also launched a series of class action lawsuits against the Governor (Langkjær-Bain, 2017).
-
-This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated. Simply discarding outliers may truly be a grave mistake! If outliers are attributable to measurement error, it may be appropriate to discard them. If outliers represent properly measured values, they should be investigated. As discussed in Chapter \ref{desc-stats}, a common method of outlier detection is identifying values which fall outside the following interval:
-
-\[I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR\]
-
-\textbf{Low Variability}
-
-Variables with \textbf{low variability} often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.
-
-When working with survey data, checking for \textbf{straightlining} should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases -- especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing ``I plan to be here in a year'' to ``I do not plan to be here in a year''), which we expect to be inversely related, this gives added support for discarding these responses.
-
-Fields with low variability can be easily identified using descriptive statistics from the \texttt{summary()} function. If the \texttt{Min} and \texttt{Max} values are equal, there is no variability in the field's values. Based on the following descriptives, we should remove \texttt{standard\_hrs} from the data:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Return descriptives to understand distribution of standard hours}
-\FunctionTok{summary}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{standard\_hrs)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##      80      80      80      80      80      80
-\end{verbatim}
-
-Given that the data dictionary in Chapter \ref{getting-started} indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Return descriptives to understand distribution of standard hours}
-\FunctionTok{summary}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{perf\_rating)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   3.000   3.000   3.000   3.154   3.000   4.000
-\end{verbatim}
-
-Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that could bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.
-
-\textbf{Inconsistent Categories}
-
-\textbf{Inconsistent categories} impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.
-
-Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.
-
-Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor's, Bachelors, Bachelor's Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a clean and well-defined set of allowable values from which employees can choose (e.g., Bachelor's Degree, Master's Degree, Doctoral Degree). This warrants either a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream (e.g., in the source system) to avoid duplicative data cleaning procedures across downstream applications.
-
-\textbf{Data Binning}
-
-\textbf{Data binning} refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, extremely granular categories should be avoided -- especially when there is no theoretical basis for such categories facilitating a project's objectives or deepening insights. Where the \(n\)-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. For example, a variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level ``High School Not Completed'' and ``High School Completed'' bins.
-
-For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of `Less Than 1 Year', `1-5 Years', and `More Than 5 Years' will likely result in information loss. Any variability \emph{within} these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.
-
-\hypertarget{one-hot-encoding}{%
-\section{One-Hot Encoding}\label{one-hot-encoding}}
-
-\textbf{One-hot encoding}, also known as \textbf{dummy coding}, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, this is not required, as counts and percent of total metrics can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications, categorical variables must be converted into \(k-1\) variables, where \(k\) is the number of categories, using binary (1/0) coding.
-
-Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with ``Remote'' or ``Non-Remote'' values, we may code ``Remote'' values as 1 and ``Non-Remote'' values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.
-
-If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter \ref{lm}, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others. That is, when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure \ref{fig:onehot-encoding}, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.
-
-\begin{figure}
-
-{\centering \includegraphics[width=0.75\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_lifecycle_book/graphics/onehot_encoding} 
-
-}
-
-\caption{One-Hot Encoding}\label{fig:onehot-encoding}
-\end{figure}
-
-For a categorical variable with only two values, the \texttt{ifelse()} function can be leveraged to assign values:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Return unique values of gender field}
-\FunctionTok{unique}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{gender)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-## [1] "Female" "Male"
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Gender one{-}hot encoding}
-\NormalTok{employees}\SpecialCharTok{$}\NormalTok{gender\_ohe }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{gender }\SpecialCharTok{==} \StringTok{\textquotesingle{}Female\textquotesingle{}}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
-
-\CommentTok{\# Preview records}
-\FunctionTok{head}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(employee\_id, gender\_ohe)))}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##   employee_id gender_ohe
-## 1        1001          1
-## 2        1002          0
-## 3        1003          0
-## 4        1004          1
-## 5        1005          0
-## 6        1006          0
-\end{verbatim}
-
-For variables with more than 2 categories, we can leverage the \texttt{model.matrix()} function for one-hot encoding. Let's illustrate be encoding locations.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Return counts by department}
-\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##                     dept   n
-## 1 Research & Development 961
-## 2                  Sales 446
-## 3        Human Resources  63
-\end{verbatim}
-
-By default, the \texttt{model.matrix()} function will produce a matrix of 1/0 values for \(k-1\) categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using \texttt{-1} in the first argument passed to \texttt{model.matrix()} and then choose the reference group for the analysis in a subsequent step.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Department one{-}hot encoding}
-\NormalTok{dept\_ohe }\OtherTok{\textless{}{-}} \FunctionTok{model.matrix}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{dept}\DecValTok{{-}1}\NormalTok{, }\AttributeTok{data =}\NormalTok{ employees)}
-
-\CommentTok{\# Preview data}
-\FunctionTok{head}\NormalTok{(dept\_ohe)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##   deptHuman Resources deptResearch & Development deptSales
-## 1                   0                          0         1
-## 2                   0                          1         0
-## 3                   0                          1         0
-## 4                   0                          1         0
-## 5                   0                          1         0
-## 6                   0                          1         0
-\end{verbatim}
-
-We will drop the department with the lowest \(n\) rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either \(1\) or \(0\), we can use the \texttt{colSums()} function to sum each column and the \texttt{which.min()} function to identify which has the lowest sum (i.e., smallest department by employee count).
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Drop department with lowest sum (lowest n{-}count)}
-\NormalTok{dept\_ohe }\OtherTok{\textless{}{-}}\NormalTok{ dept\_ohe[, }\SpecialCharTok{{-}}\FunctionTok{which.min}\NormalTok{(}\FunctionTok{colSums}\NormalTok{(dept\_ohe))]}
-
-\CommentTok{\# Preview refined one{-}hot encoded data}
-\FunctionTok{head}\NormalTok{(dept\_ohe)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{verbatim}
-##   deptResearch & Development deptSales
-## 1                          0         1
-## 2                          1         0
-## 3                          1         0
-## 4                          1         0
-## 5                          1         0
-## 6                          1         0
-\end{verbatim}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Combine employees and matrix containing one{-}hot encoded departments}
-\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(employees, dept\_ohe)}
-
-\CommentTok{\# Drop original department field}
-\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(dept))}
-\end{Highlighting}
-\end{Shaded}
-
-\hypertarget{feature-engineering}{%
-\section{Feature Engineering}\label{feature-engineering}}
-
-Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information. This can be easily accomplished using the arithmetic functions we've covered.
-
-\begin{itemize}
-\tightlist
-\item
-  Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)
-\item
-  Office/remote worker (binary variable dummy coded as 1/0)
-\item
-  Local/remote manager (binary variable dummy coded as 1/0)
-\item
-  Hire/Rehire (binary variable dummy coded as 1/0)
-\item
-  Hired/acquired (proxy for culture shock effects)
-\item
-  Gender isolation (ratio of employee's gender to number of the same within immediate work
-  group)
-\item
-  Generation isolation (comparison of age bracket to most frequent generational bracket within
-  immediate work group)
-\item
-  Ethnic isolation (ratio of employee's ethnicity to number of the same within immediate work
-  group)
-\item
-  Difference between employee and manager age
-\item
-  Percentage change between last two performance appraisal scores (per competency and/or
-  overall)
-\item
-  Team and department quit outbreak indicators (ratio of terms over x months relative to average
-  headcount over x months)
-\item
-  Industry experience (binary or length in years)
-\end{itemize}
-
-\hypertarget{review-questions-6}{%
-\section{Review Questions}\label{review-questions-6}}
-
-\begin{enumerate}
-\def\labelenumi{\arabic{enumi}.}
-\item
-  What are the differences between data lakes, data warehouses, and data marts?
-\item
-  What is the difference between a Type 1 and Type 2 table in a DW?
-\item
-  In what ways has modern cloud computing influenced data architecture?
-\item
-  Why is it dangerous to address missing values without domain knowledge of how the data are generated?
-\item
-  How can missing values be addressed when impacted records cannot be eliminated from a data set?
-\item
-  When is one-hot encoding required for categorical variables?
-\item
-  When one-hot encoding a categorical variable with more than two categories, why is an omitted category important?
-\item
-  When binning numeric data, what are some considerations in determining the size of each bin?
-\item
-  Why should variables with low to no variability be dropped?
-\item
-  Where are validation rules ideally situated to limit downstream data cleaning tasks and ensure consistent categorical dimension values?
 \end{enumerate}
 
 \hypertarget{aod}{%
@@ -10283,11 +10284,11 @@ EFA is implemented via a three-step procedure:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Assess factorability of the data
+  Assess the factorability of the data.
 \item
-  Extract the factors
+  Extract the factors.
 \item
-  Rotate and interpret the factors
+  Rotate and interpret the factors.
 \end{enumerate}
 
 \textbf{Step 1: Factorability Assessment}
@@ -10461,11 +10462,11 @@ CFA enables us to move beyond inter-item correlations to quantify the extent to 
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Define the model
+  Define the model.
 \item
-  Fit the model
+  Fit the model.
 \item
-  Interpret the output
+  Interpret the output.
 \end{enumerate}
 
 \textbf{Step 1: Model Definition}
@@ -10619,9 +10620,127 @@ For more extensive coverage of SEM, Kline (2005) is an excellent resource.
 \hypertarget{clustering}{%
 \section{Clustering}\label{clustering}}
 
-\(\textbf k\)\textbf{-Means Clustering}
+\textbf{Clustering} is a ML technique that groups observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. Clustering is similar to factor analysis in that it is also unsupervised since there is not a response variable, but it differs in that it does not seek to find a low-dimensional representation of observations that capture a large portion of variance in the data; clustering aims to find homogeneous subgroups among observations.
+
+Clustering is common in marketing in which it is implemented to create customer segments with shared characteristics. By grouping customers based on attributes such as income, household size, occupation, and geography, companies can tailor marketing campaigns to each segment based on what is most likely to appeal to the unique needs of each.
+
+In people analytics, clustering has important applications as well. For example, clustering can be implemented to define personas based on unique talent development needs (e.g., early tech career, newly promoted people leaders) or attrition risk (e.g, rising stars with hot skills, low performers in high churn roles, high performers in specialized roles). Data privacy regulations often prevent assigning a predictive score to individuals; therefore, grouping employees based on relative attrition risk levels can support action planning at the segment level.
+
+This section will cover two popular clustering techniques: \(k\)\emph{-means} and \emph{hierarchical} clustering.
+
+\(\textbf K\)\textbf{-Means Clustering}
+
+\(\textbf K\)\textbf{-means clustering} is a simple approach to grouping observations into \(K\) distinct clusters. \(K\)-means clustering is implemented via a four-step process:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Define \(K\).
+\item
+  Randomly assign observations to one of \(K\) clusters.
+\item
+  For each of the \(K\) clusters, compute the cluster centroid.
+\item
+  Assign each observation to the cluster with the closet centroid (middle).
+\end{enumerate}
+
+To assign observations to the cluster with the nearest centroid, a distance metric needs to be selected in order to measure the distance between each observation and cluster centroids. While calculating the distance between observations in two dimensions is simple, distance in higher dimensional space is more challenging. We will focus on the most common distance metric, \textbf{Euclidean distance}, though there are many others (e.g., Manhattan, Jaccard, Minkowski, Cosine). The Euclidean distance between two data points is the straight line distance based on the observations' coordinates using the \textbf{Pythagorean theorem}:
+
+\[ a^2 + b^2 = c^2, \]
+
+where \(a\) and \(b\) are sides of a triangle that intersect to form a right angle, and \(c\) is the hypotenuse (the side opposite the right angle).
+
+Let's implement \(K\)-means clustering using numeric variables in the \texttt{employees} data. Since the scale of variables matters when comparing distances between observations and cluster centers, we will first scale the variables to have \(\bar{x} = 0\) and \(s = 1\) in support of a consistent, apples-to-apples comparison:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load employee data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_lifecycle\_book/data/employees.csv"}\NormalTok{)}
+
+\CommentTok{\# Filter employee data to numeric variables}
+\NormalTok{idx }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\FunctionTok{sapply}\NormalTok{(employees, is.numeric)) }\CommentTok{\# store indices of numeric variables}
+\NormalTok{employees }\OtherTok{\textless{}{-}}\NormalTok{ employees[, idx] }\CommentTok{\# filter df using indices}
+
+\CommentTok{\# Drop unimportant and sparsely populated sales variables}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \SpecialCharTok{{-}}\FunctionTok{c}\NormalTok{(employee\_id, standard\_hrs, ytd\_leads, ytd\_sales))}
+
+\CommentTok{\# Center and scale data}
+\NormalTok{employees\_trans }\OtherTok{\textless{}{-}} \FunctionTok{scale}\NormalTok{(employees, }\AttributeTok{center =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{scale =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+Next, we need to define \(K\). One way to determine the optimal number of clusters is to leverage the \texttt{fviz\_nbclust()} function from the \texttt{factoextra} library to visualize the sum of squared differences between observations and cluster centers against the range of clusters:
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/kmeans-elbow-plot-1} 
+
+}
+
+\caption{Total within sum of squares (WSS) across cluster count.}\label{fig:kmeans-elbow-plot}
+\end{figure}
+
+When interpreting Figure \ref{fig:kmeans-elbow-plot}, we are looking for the \emph{elbow} which marks the inflection point at which the sum of squares begins to level off. The goal is to achieve the fewest number of clusters, optimizing for subgroups that are distinctly different \emph{between} and highly similar \emph{within}. The elbow indicates the optimal number of clusters, as additional clusters beyond the elbow do not offer a meaningful improvement in achieving homogeneous subgroups of the observations.
+
+There is a discernible elbow at three clusters in Figure \ref{fig:kmeans-elbow-plot}. Intuitively, fewer clusters promotes action taking in people analytics since clusters need to be defined, and this becomes increasingly challenging as the number of clusters increases. With a large number of clusters, it may be difficult to meaningfully tailor career development or retention strategies, for example, to the unique needs of employees assigned to each cluster as the distinction between each subgroup becomes more opaque.
+
+We can now implement \(K\)-means clustering, with \(K = 3\), using the \texttt{kmeans()} function in base R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform K{-}means clustering}
+\NormalTok{km }\OtherTok{\textless{}{-}} \FunctionTok{kmeans}\NormalTok{(employees\_trans, }\AttributeTok{centers =} \DecValTok{3}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Return n{-}count of clusters}
+\NormalTok{km}\SpecialCharTok{$}\NormalTok{size}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 592 603 275
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate mean of each cluster using original data}
+\FunctionTok{aggregate}\NormalTok{(employees, }\AttributeTok{by =} \FunctionTok{list}\NormalTok{(}\AttributeTok{cluster =}\NormalTok{ km}\SpecialCharTok{$}\NormalTok{cluster), mean)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   cluster stock_opt_lvl trainings      age commute_dist   ed_lvl engagement
+## 1       1     0.7787162  2.805743 35.31757     8.907095 2.880068   2.685811
+## 2       2     0.7860697  2.781095 35.38474     9.646766 2.854063   2.792703
+## 3       3     0.8436364  2.825455 43.75636     8.810909 3.112727   2.687273
+##    job_lvl hourly_rate daily_comp monthly_comp annual_comp salary_hike_pct
+## 1 1.834459    47.09291   376.7432      8162.77    97953.24        15.26520
+## 2 1.724710    83.51078   668.0862     14475.20   173702.42        15.24876
+## 3 3.301818    67.72364   541.7891     11738.76   140865.16        15.00364
+##   perf_rating prior_emplr_cnt  env_sat  job_sat  rel_sat wl_balance  work_exp
+## 1    3.148649        2.668919 2.746622 2.859797 2.673986   1.824324  9.315878
+## 2    3.159204        2.645108 2.666667 2.665008 2.706468   1.852405  8.684909
+## 3    3.152727        2.850909 2.789091 2.585455 2.807273   1.854545 21.196364
+##   org_tenure job_tenure last_promo mgr_tenure interview_rating
+## 1   5.146959   3.452703   1.467905   3.300676         3.979730
+## 2   4.552239   2.827529   1.077944   2.878939         3.952570
+## 3  16.527273   8.974545   6.170909   8.621818         4.090545
+\end{verbatim}
 
 \textbf{Hierarchical Clustering}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Calculate pairwise distances
+\item
+  Group observations into clusters
+\end{enumerate}
 
 \hypertarget{review-questions-11}{%
 \section{Review Questions}\label{review-questions-11}}
