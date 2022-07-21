@@ -78,7 +78,7 @@ psych::cortest.bartlett(cor(survey_dat), nrow(survey_dat))
   
   The `scree()` function from the `psych` library can be used to generate a scree plot:
   
-```{r scree-plot, out.width = "100%", echo = FALSE, fig.cap = 'Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r scree-plot, out.width = "100%", fig.cap = 'Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce scree plot
 psych::scree(survey_dat, pc = FALSE)
@@ -93,7 +93,7 @@ psych::scree(survey_dat, pc = FALSE)
   
   To illustrate how to extract principal components, we can use base R's `prcomp()` function:
   
-```{r pca-var-plot, out.width = "100%", echo = FALSE, fig.cap = 'Plot showing the percent of total variance explained by 12 principal components.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r pca-var-plot, out.width = "100%", fig.cap = 'Plot showing the percent of total variance explained by 12 principal components.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -148,7 +148,7 @@ efa.fit$loadings
   
   We can visualize this information using the `fa.diagram()` function from the `psych` library:
   
-```{r fct-ld-diagram, out.width = "100%", echo = FALSE, fig.cap = 'Diagram showing factor loadings (correlations) for each item with the respective factor.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r fct-ld-diagram, out.width = "100%", fig.cap = 'Diagram showing factor loadings (correlations) for each item with the respective factor.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 psych::fa.diagram(efa.fit)
 
@@ -210,7 +210,7 @@ cfa.fit <- lavaan::cfa(model, data = survey_dat)
   
   The `lavaanPlot()` package can be used to create and visualize path diagrams in R:
 
-```{r path-diagram, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Path diagram showing survey items as indicators of latent engagement and retention factors.', fig.align = 'center'}
+```{r path-diagram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Path diagram showing survey items as indicators of latent engagement and retention factors.', fig.align = 'center'}
 
 # Load library
 library(lavaanPlot)
@@ -256,8 +256,8 @@ summary(cfa.fit, fit.measures = TRUE)
   In people analytics, clustering has important applications as well. For example, clustering can be implemented to define personas based on unique talent development needs (e.g., early tech career, newly promoted people leaders) or attrition risk (e.g, rising stars with hot skills, low performers in high churn roles, high performers in specialized roles). Data privacy regulations often prevent assigning a predictive score to individuals; therefore, grouping employees based on relative attrition risk levels can support action planning at the segment level.
   
   This section will cover two popular clustering techniques: $k$*-means* and *hierarchical* clustering.
-  
-  $\textbf K$**-Means Clustering**
+
+### $K$-Means Clustering
   
   $\textbf K$**-means clustering** is a simple approach to grouping observations into $K$ distinct clusters. $K$-means clustering is implemented via a four-step process:
   
@@ -293,7 +293,7 @@ employees_trans <- scale(employees, center = TRUE, scale = TRUE)
 
   Next, we need to define $K$. One way to determine the optimal number of clusters is to leverage the `fviz_nbclust()` function from the `factoextra` library to visualize the sum of squared differences between observations and cluster centers against the range of clusters:
   
-```{r kmeans-elbow-plot, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Total within sum of squares (WSS) across cluster count.', fig.align = 'center'}
+```{r kmeans-elbow-plot, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Total within sum of squares (WSS) across cluster count.', fig.align = 'center'}
 
 # Load library
 library(factoextra)
@@ -323,6 +323,10 @@ km$size
 
 ```
 
+  Of the 1,470 employees in our `employees` data, the $n$ distribution across the $K = 3$ clusters is 592, 603, and 275.
+  
+  We can calculate the mean (and other descriptives) for each variable by cluster to better understand cluster distinctions:
+
 ```{r, message = FALSE, warning = FALSE}
 
 # Calculate mean of each cluster using original data
@@ -330,14 +334,105 @@ aggregate(employees, by = list(cluster = km$cluster), mean)
 
 ```
 
-  **Hierarchical Clustering**
+  We can see that relative to the first two clusters, the third cluster has -- on average -- an older demographic with more education and a higher job level. In addition, employees in the first cluster earn significantly lower compensation, on average, which may be correlated with categorical variables that were initially dropped such as `dept` or `job_title`.
 
+  We can also add a new column in the `employees` data frame with the cluster assignment from $K$-means to facilitate further analysis:
 
+```{r, message = FALSE, warning = FALSE}
+
+# Add cluster assignment to df
+employees <- cbind(employees, km_cluster = km$cluster)
+
+```
+
+  While $K$-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of $K$ is not always ideal. Plotting WSS against cluster count as shown in Figure \@ref(fig:kmeans-elbow-plot) can be helpful in defining $K$, but alternative clustering algorithms exist that do not require $K$ to be manually defined.
+
+### Hierarchical Clustering
+
+  Like $K$-means clustering, **hierarchical clustering** seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike $K$-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a **dendogram**, which is a tree diagram visualizing the hierarchical relationships in data.
   
-  1. Calculate pairwise distances
-  2. Group observations into clusters
+  One key difference between $K$-means and hierarchical clustering is that hierarchical clustering involves linkage methods to measure cluster similarity. There is not a one-size-fits-all option for linkage, as the performance of a given linkage technique can vary based on the structure of the data. Outlined below are the five most common types of linkage in hierarchical clustering:
   
+  1. Complete Linkage: distance between two clusters is defined as the maximum distance between any individual data point in cluster $A$ and any individual data point in cluster $B$
+  2. Single Linkage: distance between two clusters is defined as the minimum distance between any individual data point in cluster $A$ and any individual data point in cluster $B$
+  3. Average Linkage: distance between two clusters is defined as the average distance between data points in cluster $A$ and data points in cluster $B$
+  4. Centroid Method: distance between two clusters is defined as the distance between the centroid of cluster $A$ and the centroid of cluster $B$
+  5. Ward's Method: ANOVA-based approach in which the distance between clusters $A$ and $B$ is based on how the sum of squared distances increases when the clusters are merged
   
+  To implement hierarchical clustering, we will leverage the same centered and scaled data used for $K$-means clustering in the prior section. Note that the `km_cluster` column was only added to the original `employees` data; if this column was present in `employees_trans`, we would need to drop it so that the hierarchical clustering algorithm is not influenced by results of another clustering technique ($K$-means).
+  
+  Since we do not know what linkage method will work best for these data, we will also develop a function that enables us to try a range of techniques and select the one that performs best. The `agnes()` function from the `cluster` library is used to implement hierarchical clustering:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Load library
+library(cluster)
+
+# Define linkage methods
+# Note: centroid is not available for forthcoming agnes() function
+methods <- c("complete", "single", "average", "ward")
+names(methods) <- c("complete", "single", "average", "ward")
+
+# Create function to compute agglomerative coefficient
+agg_coeff <- function(x) {
+
+  cluster::agnes(employees_trans, method = x)$ac
+}
+
+# Compute agglomerative coefficient for each linkage method
+sapply(methods, agg_coeff)
+
+```  
+  
+  Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, so we will implement hierarchical clustering using this linkage option.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Perform hierarchical clustering using Ward's linkage method
+hclust <- cluster::agnes(employees_trans, method = "ward")
+
+``` 
+
+  To produce a dendogram, the `pltree()` function from the `cluster` library can be used in conjunction with the `hclust` object holding the clustering results:
+
+```{r hclust-dendogram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Dendogram for hierarchical clustering of employees using Ward linkage method.', fig.align = 'center'}
+
+cluster::pltree(hclust, main = "Dendogram")
+
+```
+
+  At the bottom of the denogram shown in Figure \@ref(fig:hclust-dendogram), each leaf of the tree represents an individual observation. Since $n = 1,470$, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward's linkage method.
+  
+  To aid in determining the optimal number of clusters, a **gap statistic** can be calculated, which compares the within-cluster variation for different $K$ values to reference values for a random uniform distribution with no clustering. We will use the `clusGap()` function from the `cluster` library to calculate the gap statistic, and then visualize using the `fviz_gap_stat()` function from the `factoextra` library:
+  
+```{r hclust-gap-stat, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Plot of gap statistic against cluster count for hierarchical clustering.', fig.align = 'center'}
+
+# Calculate gap statistic across 1-10 clusters
+gap_stat <- cluster::clusGap(employees_trans, FUN = hcut, nstart = 25, K.max = 10, B = 50)
+
+# Generate plot of gap statistic against cluster count
+factoextra::fviz_gap_stat(gap_stat)
+
+```
+  We ideally want to select the value of $K$ that maximizes the gap statistic. In practice, however, balancing cluster parsimony with maximization of the gap statistic is not always straightforward. Figure \@ref(fig:hclust-gap-stat) indicates that the gap statistic increase is fairly constant across the range of $K = 1$ to $K = 10$ clusters. In this case, we may look to select a value of $K$ based on an inflection point at which the trajectory of increase in the gap statistic begins to slow. Based on this approach, we may select $K = 7$.
+  
+  We can now cut the dendogram into 7 clusters using the `cutree()` function, and then append the cluster to each observation in our original `employees` data:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Compute distance matrix
+d_matrix <- dist(employees_trans, method = "euclidean")
+
+# Perform hierarchical clustering using Ward's method
+hclust_final <- hclust(d_matrix, method = "ward.D2" )
+
+# Cut the dendogram into 7 clusters
+groups <- cutree(hclust_final, k = 7)
+
+# Append cluster labels to original data
+employees <- cbind(employees, hier_cluster = groups)
+
+``` 
 
 ## Review Questions
 
@@ -353,10 +448,10 @@ aggregate(employees, by = list(cluster = km$cluster), mean)
 
 6. How are factor loadings interpreted to ascertain which variables are members of each factor?
 
-7. 
+7. What is a data-informed approach to selecting the optimal value of $K$ in $K$-means clustering?
 
-8. 
+8. What is Euclidean distance, and what is its function in clustering?
 
-9. 
+9. How is a dendogram interpreted in the context of hierarchical clustering?
 
-10. 
+10. When optimizing for both cluster parsimony and gap statistic maximization is not feasible, how can the optimal value of $K$ be determined in hierarchical clustering?

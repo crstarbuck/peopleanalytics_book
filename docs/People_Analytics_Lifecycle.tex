@@ -133,7 +133,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-07-20}
+\date{2022-07-21}
 
 \begin{document}
 \maketitle
@@ -671,7 +671,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{, }\StringTok{"factoextra"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"flextable"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{, }\StringTok{"factoextra"}\NormalTok{, }\StringTok{"cluster"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -695,7 +695,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpZjHeor/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpgMJXab/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -10344,6 +10344,13 @@ For the second step, we will visually inspect a \textbf{scree plot} and determin
 
 The \texttt{scree()} function from the \texttt{psych} library can be used to generate a scree plot:
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Produce scree plot}
+\NormalTok{psych}\SpecialCharTok{::}\FunctionTok{scree}\NormalTok{(survey\_dat, }\AttributeTok{pc =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/scree-plot-1} 
@@ -10360,6 +10367,27 @@ You may notice the \texttt{pc\ =\ FALSE} argument in the \texttt{scree()} functi
 While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like motivation or belonging, so we instead measure indicators of the latent variables using question sets on surveys.
 
 To illustrate how to extract principal components, we can use base R's \texttt{prcomp()} function:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\CommentTok{\# Perform PCA}
+\NormalTok{pca }\OtherTok{\textless{}{-}} \FunctionTok{prcomp}\NormalTok{(survey\_dat, }\AttributeTok{scale =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\# Calculate explained variance for each principal component}
+\NormalTok{pca\_var }\OtherTok{=}\NormalTok{ (pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(pca}\SpecialCharTok{$}\NormalTok{sdev}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)) }\SpecialCharTok{*} \DecValTok{100}
+
+\CommentTok{\# Create scree plot}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{qplot}\NormalTok{(}\DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(pca\_var), pca\_var) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{() }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{breaks =} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(pca\_var)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{xlab}\NormalTok{(}\StringTok{"Principal Component"}\NormalTok{) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ylab}\NormalTok{(}\StringTok{"Variance Explained (\%)"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_bw}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{figure}
 
@@ -10426,6 +10454,12 @@ Loadings for the second factor \texttt{MR2} indicate that the three engagement i
 Loadings for the third factor \texttt{MR3} show that belonging, inclusion, and psychological safety cluster together. In other words, employees who feel a stronger sense of belonging and perceive the environment to be more inclusive tend to experience a more favorable climate with respect to psychological safety.
 
 We can visualize this information using the \texttt{fa.diagram()} function from the \texttt{psych} library:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{psych}\SpecialCharTok{::}\FunctionTok{fa.diagram}\NormalTok{(efa.fit)}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{figure}
 
@@ -10498,6 +10532,16 @@ Step two is fitting the model to the data using the \texttt{cfa()} function from
 We can also create what is known as a \textbf{path diagram} to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as \textbf{structural equation modeling (SEM)}; CFA is a subset of the SEM umbrella.
 
 The \texttt{lavaanPlot()} package can be used to create and visualize path diagrams in R:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(lavaanPlot)}
+
+\CommentTok{\# Visualize path diagram}
+\NormalTok{lavaanPlot}\SpecialCharTok{::}\FunctionTok{lavaanPlot}\NormalTok{(}\AttributeTok{model =}\NormalTok{ cfa.fit, }\AttributeTok{coefs =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{stand =} \ConstantTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
 
 \label{fig:path-diagram}Path diagram showing survey items as indicators of latent engagement and retention factors.
 
@@ -10672,6 +10716,16 @@ Let's implement \(K\)-means clustering using numeric variables in the \texttt{em
 
 Next, we need to define \(K\). One way to determine the optimal number of clusters is to leverage the \texttt{fviz\_nbclust()} function from the \texttt{factoextra} library to visualize the sum of squared differences between observations and cluster centers against the range of clusters:
 
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(factoextra)}
+
+\CommentTok{\# Determine optimal number of clusters}
+\NormalTok{factoextra}\SpecialCharTok{::}\FunctionTok{fviz\_nbclust}\NormalTok{(employees\_trans, kmeans, }\AttributeTok{method =} \StringTok{"wss"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
 \begin{figure}
 
 {\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/kmeans-elbow-plot-1} 
@@ -10705,6 +10759,10 @@ We can now implement \(K\)-means clustering, with \(K = 3\), using the \texttt{k
 ## [1] 592 603 275
 \end{verbatim}
 
+Of the 1,470 employees in our \texttt{employees} data, the \(n\) distribution across the \(K = 3\) clusters is 592, 603, and 275.
+
+We can calculate the mean (and other descriptives) for each variable by cluster to better understand cluster distinctions:
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Calculate mean of each cluster using original data}
@@ -10731,16 +10789,138 @@ We can now implement \(K\)-means clustering, with \(K = 3\), using the \texttt{k
 ## 3  16.527273   8.974545   6.170909   8.621818         4.090545
 \end{verbatim}
 
+We can see that relative to the first two clusters, the third cluster has -- on average -- an older demographic with more education and a higher job level. In addition, employees in the first cluster earn significantly lower compensation, on average, which may be correlated with categorical variables that were initially dropped such as \texttt{dept} or \texttt{job\_title}.
+
+We can also add a new column in the \texttt{employees} data frame with the cluster assignment from \(K\)-means to facilitate further analysis:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Add cluster assignment to df}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(employees, }\AttributeTok{km\_cluster =}\NormalTok{ km}\SpecialCharTok{$}\NormalTok{cluster)}
+\end{Highlighting}
+\end{Shaded}
+
+While \(K\)-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of \(K\) is not always ideal. Plotting WSS against cluster count as shown in Figure \ref{fig:kmeans-elbow-plot} can be helpful in defining \(K\), but alternative clustering algorithms exist that do not require \(K\) to be manually defined.
+
 \textbf{Hierarchical Clustering}
+
+Like \(K\)-means clustering, \textbf{hierarchical clustering} seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike \(K\)-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a \textbf{dendogram}, which is a tree diagram visualizing the hierarchical relationships in data.
+
+One key difference between \(K\)-means and hierarchical clustering is that hierarchical clustering involves linkage methods to measure cluster similarity. There is not a one-size-fits-all option for linkage, as the performance of a given linkage technique can vary based on the structure of the data. Outlined below are the five most common types of linkage in hierarchical clustering:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Calculate pairwise distances
+  Complete Linkage: distance between two clusters is defined as the maximum distance between any individual data point in cluster \(A\) and any individual data point in cluster \(B\)
 \item
-  Group observations into clusters
+  Single Linkage: distance between two clusters is defined as the minimum distance between any individual data point in cluster \(A\) and any individual data point in cluster \(B\)
+\item
+  Average Linkage: distance between two clusters is defined as the average distance between data points in cluster \(A\) and data points in cluster \(B\)
+\item
+  Centroid Method: distance between two clusters is defined as the distance between the centroid of cluster \(A\) and the centroid of cluster \(B\)
+\item
+  Ward's Method: ANOVA-based approach in which the distance between clusters \(A\) and \(B\) is based on how the sum of squared distances increases when the clusters are merged
 \end{enumerate}
+
+To implement hierarchical clustering, we will leverage the same centered and scaled data used for \(K\)-means clustering in the prior section. Note that the \texttt{km\_cluster} column was only added to the original \texttt{employees} data; if this column was present in \texttt{employees\_trans}, we would need to drop it so that the hierarchical clustering algorithm is not influenced by results of another clustering technique (\(K\)-means).
+
+Since we do not know what linkage method will work best for these data, we will also develop a function that enables us to try a range of techniques and select the one that performs best. The \texttt{agnes()} function from the \texttt{cluster} library is used to implement hierarchical clustering:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(cluster)}
+
+\CommentTok{\# Define linkage methods}
+\CommentTok{\# Note: centroid is not available for forthcoming agnes() function}
+\NormalTok{methods }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"complete"}\NormalTok{, }\StringTok{"single"}\NormalTok{, }\StringTok{"average"}\NormalTok{, }\StringTok{"ward"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(methods) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"complete"}\NormalTok{, }\StringTok{"single"}\NormalTok{, }\StringTok{"average"}\NormalTok{, }\StringTok{"ward"}\NormalTok{)}
+
+\CommentTok{\# Create function to compute agglomerative coefficient}
+\NormalTok{agg\_coeff }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(x) \{}
+
+\NormalTok{  cluster}\SpecialCharTok{::}\FunctionTok{agnes}\NormalTok{(employees\_trans, }\AttributeTok{method =}\NormalTok{ x)}\SpecialCharTok{$}\NormalTok{ac}
+\NormalTok{\}}
+
+\CommentTok{\# Compute agglomerative coefficient for each linkage method}
+\FunctionTok{sapply}\NormalTok{(methods, agg\_coeff)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##  complete    single   average      ward 
+## 0.7990373 0.6248688 0.7582732 0.9571736
+\end{verbatim}
+
+Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, so we will implement hierarchical clustering using this linkage option.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Perform hierarchical clustering using Ward\textquotesingle{}s linkage method}
+\NormalTok{hclust }\OtherTok{\textless{}{-}}\NormalTok{ cluster}\SpecialCharTok{::}\FunctionTok{agnes}\NormalTok{(employees\_trans, }\AttributeTok{method =} \StringTok{"ward"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+To produce a dendogram, the \texttt{pltree()} function from the \texttt{cluster} library can be used in conjunction with the \texttt{hclust} object holding the clustering results:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cluster}\SpecialCharTok{::}\FunctionTok{pltree}\NormalTok{(hclust, }\AttributeTok{main =} \StringTok{"Dendogram"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/hclust-dendogram-1} 
+
+}
+
+\caption{Dendogram for hierarchical clustering of employees using Ward linkage method.}\label{fig:hclust-dendogram}
+\end{figure}
+
+At the bottom of the denogram shown in Figure \ref{fig:hclust-dendogram}, each leaf of the tree represents an individual observation. Since \(n = 1,470\), the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward's linkage method.
+
+To aid in determining the optimal number of clusters, a \textbf{gap statistic} can be calculated, which compares the within-cluster variation for different \(K\) values to reference values for a random uniform distribution with no clustering. We will use the \texttt{clusGap()} function from the \texttt{cluster} library to calculate the gap statistic, and then visualize using the \texttt{fviz\_gap\_stat()} function from the \texttt{factoextra} library:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Calculate gap statistic across 1{-}10 clusters}
+\NormalTok{gap\_stat }\OtherTok{\textless{}{-}}\NormalTok{ cluster}\SpecialCharTok{::}\FunctionTok{clusGap}\NormalTok{(employees\_trans, }\AttributeTok{FUN =}\NormalTok{ hcut, }\AttributeTok{nstart =} \DecValTok{25}\NormalTok{, }\AttributeTok{K.max =} \DecValTok{10}\NormalTok{, }\AttributeTok{B =} \DecValTok{50}\NormalTok{)}
+
+\CommentTok{\# Generate plot of gap statistic against cluster count}
+\NormalTok{factoextra}\SpecialCharTok{::}\FunctionTok{fviz\_gap\_stat}\NormalTok{(gap\_stat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{People_Analytics_Lifecycle_files/figure-latex/hclust-gap-stat-1} 
+
+}
+
+\caption{Plot of gap statistic against cluster count for hierarchical clustering.}\label{fig:hclust-gap-stat}
+\end{figure}
+
+We ideally want to select the value of \(K\) that maximizes the gap statistic. In practice, however, balancing cluster parsimony with maximization of the gap statistic is not always straightforward. Figure \ref{fig:hclust-gap-stat} indicates that the gap statistic increase is fairly constant across the range of \(K = 1\) to \(K = 10\) clusters. In this case, we may look to select a value of \(K\) based on an inflection point at which the trajectory of increase in the gap statistic begins to slow. Based on this approach, we may select \(K = 7\).
+
+We can now cut the dendogram into 7 clusters using the \texttt{cutree()} function, and then append the cluster to each observation in our original \texttt{employees} data:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Compute distance matrix}
+\NormalTok{d\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{dist}\NormalTok{(employees\_trans, }\AttributeTok{method =} \StringTok{"euclidean"}\NormalTok{)}
+
+\CommentTok{\# Perform hierarchical clustering using Ward\textquotesingle{}s method}
+\NormalTok{hclust\_final }\OtherTok{\textless{}{-}} \FunctionTok{hclust}\NormalTok{(d\_matrix, }\AttributeTok{method =} \StringTok{"ward.D2"}\NormalTok{ )}
+
+\CommentTok{\# Cut the dendogram into 7 clusters}
+\NormalTok{groups }\OtherTok{\textless{}{-}} \FunctionTok{cutree}\NormalTok{(hclust\_final, }\AttributeTok{k =} \DecValTok{7}\NormalTok{)}
+
+\CommentTok{\# Append cluster labels to original data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(employees, }\AttributeTok{hier\_cluster =}\NormalTok{ groups)}
+\end{Highlighting}
+\end{Shaded}
 
 \hypertarget{review-questions-11}{%
 \section{Review Questions}\label{review-questions-11}}
@@ -10760,9 +10940,13 @@ We can now implement \(K\)-means clustering, with \(K = 3\), using the \texttt{k
 \item
   How are factor loadings interpreted to ascertain which variables are members of each factor?
 \item
+  What is a data-informed approach to selecting the optimal value of \(K\) in \(K\)-means clustering?
 \item
+  What is Euclidean distance, and what is its function in clustering?
 \item
+  How is a dendogram interpreted in the context of hierarchical clustering?
 \item
+  When optimizing for both cluster parsimony and gap statistic maximization is not feasible, how can the optimal value of \(K\) be determined in hierarchical clustering?
 \end{enumerate}
 
 \hypertarget{data-viz}{%
