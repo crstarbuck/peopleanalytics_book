@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>3 Introduction to SQL | An Introduction to People Analytics: With Applications in R</title>
+  <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="3 Introduction to SQL | An Introduction to People Analytics: With Applications in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="github-repo" content="crstarbuck/peopleanalytics-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="3 Introduction to SQL | An Introduction to People Analytics: With Applications in R" />
+  
+  <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  
+
+<meta name="author" content="Craig Starbuck" />
+
+
+<meta name="date" content="2022-07-29" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="r-intro.html"/>
+<link rel="next" href="measure-sampl.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
+<link href="libs/tabwid-1.0.0/scrool.css" rel="stylesheet" />
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">An Introduction to People Analytics: With Applications in R</a></li>
+
+<li class="divider"></li>
+<li><a href="dedication.html#dedication" id="toc-dedication">Dedication</a></li>
+<li><a href="foreword.html#foreword" id="toc-foreword">Foreword</a></li>
+<li><a href="preface.html#preface" id="toc-preface">Preface</a></li>
+<li><a href="getting-started.html#getting-started" id="toc-getting-started"><span class="toc-section-number">1</span> Getting Started</a>
+<ul>
+<li><a href="getting-started.html#guiding-principles" id="toc-guiding-principles"><span class="toc-section-number">1.1</span> Guiding Principles</a>
+<ul>
+<li><a href="getting-started.html#pro-employee-thinking" id="toc-pro-employee-thinking"><span class="toc-section-number">1.1.1</span> Pro Employee Thinking</a></li>
+<li><a href="getting-started.html#quality" id="toc-quality"><span class="toc-section-number">1.1.2</span> Quality</a></li>
+<li><a href="getting-started.html#prioritization" id="toc-prioritization"><span class="toc-section-number">1.1.3</span> Prioritization</a></li>
+</ul></li>
+<li><a href="getting-started.html#tooling" id="toc-tooling"><span class="toc-section-number">1.2</span> Tooling</a></li>
+<li><a href="getting-started.html#data" id="toc-data"><span class="toc-section-number">1.3</span> Data</a>
+<ul>
+<li><a href="getting-started.html#employees" id="toc-employees"><span class="toc-section-number">1.3.1</span> Employees</a></li>
+<li><a href="getting-started.html#turnover-trends" id="toc-turnover-trends"><span class="toc-section-number">1.3.2</span> Turnover Trends</a></li>
+<li><a href="getting-started.html#survey-responses" id="toc-survey-responses"><span class="toc-section-number">1.3.3</span> Survey Responses</a></li>
+</ul></li>
+<li><a href="getting-started.html#d-framework" id="toc-d-framework"><span class="toc-section-number">1.4</span> 4D Framework</a>
+<ul>
+<li><a href="getting-started.html#discover" id="toc-discover"><span class="toc-section-number">1.4.1</span> Discover</a></li>
+<li><a href="getting-started.html#design" id="toc-design"><span class="toc-section-number">1.4.2</span> Design</a></li>
+<li><a href="getting-started.html#develop" id="toc-develop"><span class="toc-section-number">1.4.3</span> Develop</a></li>
+<li><a href="getting-started.html#deliver" id="toc-deliver"><span class="toc-section-number">1.4.4</span> Deliver</a></li>
+</ul></li>
+</ul></li>
+<li><a href="r-intro.html#r-intro" id="toc-r-intro"><span class="toc-section-number">2</span> Introduction to R</a>
+<ul>
+<li><a href="r-intro.html#getting-started-1" id="toc-getting-started-1"><span class="toc-section-number">2.1</span> Getting Started</a></li>
+<li><a href="r-intro.html#vectors" id="toc-vectors"><span class="toc-section-number">2.2</span> Vectors</a></li>
+<li><a href="r-intro.html#matrices" id="toc-matrices"><span class="toc-section-number">2.3</span> Matrices</a></li>
+<li><a href="r-intro.html#factors" id="toc-factors"><span class="toc-section-number">2.4</span> Factors</a></li>
+<li><a href="r-intro.html#data-frames" id="toc-data-frames"><span class="toc-section-number">2.5</span> Data Frames</a></li>
+<li><a href="r-intro.html#lists" id="toc-lists"><span class="toc-section-number">2.6</span> Lists</a></li>
+<li><a href="r-intro.html#loops" id="toc-loops"><span class="toc-section-number">2.7</span> Loops</a></li>
+<li><a href="r-intro.html#user-defined-functions-udfs" id="toc-user-defined-functions-udfs"><span class="toc-section-number">2.8</span> User-Defined Functions (UDFs)</a></li>
+<li><a href="r-intro.html#graphics" id="toc-graphics"><span class="toc-section-number">2.9</span> Graphics</a></li>
+<li><a href="r-intro.html#review-questions" id="toc-review-questions"><span class="toc-section-number">2.10</span> Review Questions</a></li>
+</ul></li>
+<li><a href="sql-intro.html#sql-intro" id="toc-sql-intro"><span class="toc-section-number">3</span> Introduction to SQL</a>
+<ul>
+<li><a href="sql-intro.html#basics" id="toc-basics"><span class="toc-section-number">3.1</span> Basics</a></li>
+<li><a href="sql-intro.html#aggregate-functions" id="toc-aggregate-functions"><span class="toc-section-number">3.2</span> Aggregate Functions</a></li>
+<li><a href="sql-intro.html#joins" id="toc-joins"><span class="toc-section-number">3.3</span> Joins</a></li>
+<li><a href="sql-intro.html#subqueries" id="toc-subqueries"><span class="toc-section-number">3.4</span> Subqueries</a></li>
+<li><a href="sql-intro.html#virtual-tables" id="toc-virtual-tables"><span class="toc-section-number">3.5</span> Virtual Tables</a></li>
+<li><a href="sql-intro.html#window-functions" id="toc-window-functions"><span class="toc-section-number">3.6</span> Window Functions</a></li>
+<li><a href="sql-intro.html#common-table-expressions-ctes" id="toc-common-table-expressions-ctes"><span class="toc-section-number">3.7</span> Common Table Expressions (CTEs)</a></li>
+<li><a href="sql-intro.html#review-questions-1" id="toc-review-questions-1"><span class="toc-section-number">3.8</span> Review Questions</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measure-sampl" id="toc-measure-sampl"><span class="toc-section-number">4</span> Measurement &amp; Sampling</a>
+<ul>
+<li><a href="measure-sampl.html#variable-types" id="toc-variable-types"><span class="toc-section-number">4.1</span> Variable Types</a>
+<ul>
+<li><a href="measure-sampl.html#independent-variables-iv" id="toc-independent-variables-iv"><span class="toc-section-number">4.1.1</span> Independent Variables (IV)</a></li>
+<li><a href="measure-sampl.html#dependent-variables-dv" id="toc-dependent-variables-dv"><span class="toc-section-number">4.1.2</span> Dependent Variables (DV)</a></li>
+<li><a href="measure-sampl.html#control-variables-cv" id="toc-control-variables-cv"><span class="toc-section-number">4.1.3</span> Control Variables (CV)</a></li>
+<li><a href="measure-sampl.html#moderating-variables" id="toc-moderating-variables"><span class="toc-section-number">4.1.4</span> Moderating Variables</a></li>
+<li><a href="measure-sampl.html#mediating-variables" id="toc-mediating-variables"><span class="toc-section-number">4.1.5</span> Mediating Variables</a></li>
+<li><a href="measure-sampl.html#endogenous-vs.-exogenous-variables" id="toc-endogenous-vs.-exogenous-variables"><span class="toc-section-number">4.1.6</span> Endogenous vs. Exogenous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measurement-scales" id="toc-measurement-scales"><span class="toc-section-number">4.2</span> Measurement Scales</a>
+<ul>
+<li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">4.2.1</span> Discrete Variables</a></li>
+<li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">4.2.2</span> Continuous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling" id="toc-sampling"><span class="toc-section-number">4.3</span> Sampling</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.3.1</span> Sampling &amp; Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="research.html#research" id="toc-research"><span class="toc-section-number">5</span> Research Fundamentals</a>
+<ul>
+<li><a href="research.html#research-questions" id="toc-research-questions"><span class="toc-section-number">5.1</span> Research Questions</a></li>
+<li><a href="research.html#research-hypotheses" id="toc-research-hypotheses"><span class="toc-section-number">5.2</span> Research Hypotheses</a></li>
+<li><a href="research.html#internal-vs.-external-validity" id="toc-internal-vs.-external-validity"><span class="toc-section-number">5.3</span> Internal vs. External Validity</a></li>
+<li><a href="research.html#research-methods" id="toc-research-methods"><span class="toc-section-number">5.4</span> Research Methods</a></li>
+<li><a href="research.html#research-designs" id="toc-research-designs"><span class="toc-section-number">5.5</span> Research Designs</a></li>
+<li><a href="research.html#review-questions-3" id="toc-review-questions-3"><span class="toc-section-number">5.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-mgmt-prep.html#data-mgmt-prep" id="toc-data-mgmt-prep"><span class="toc-section-number">6</span> Data Management &amp; Preparation</a>
+<ul>
+<li><a href="data-mgmt-prep.html#data-management" id="toc-data-management"><span class="toc-section-number">6.1</span> Data Management</a></li>
+<li><a href="data-mgmt-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a></li>
+<li><a href="data-mgmt-prep.html#one-hot-encoding" id="toc-one-hot-encoding"><span class="toc-section-number">6.3</span> One-Hot Encoding</a></li>
+<li><a href="data-mgmt-prep.html#feature-engineering" id="toc-feature-engineering"><span class="toc-section-number">6.4</span> Feature Engineering</a></li>
+<li><a href="data-mgmt-prep.html#review-questions-4" id="toc-review-questions-4"><span class="toc-section-number">6.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="desc-stats.html#desc-stats" id="toc-desc-stats"><span class="toc-section-number">7</span> Descriptive Statistics</a>
+<ul>
+<li><a href="desc-stats.html#univariate-analysis" id="toc-univariate-analysis"><span class="toc-section-number">7.1</span> Univariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#measures-of-central-tendency" id="toc-measures-of-central-tendency"><span class="toc-section-number">7.1.1</span> Measures of Central Tendency</a></li>
+<li><a href="desc-stats.html#measures-of-spread" id="toc-measures-of-spread"><span class="toc-section-number">7.1.2</span> Measures of Spread</a></li>
+</ul></li>
+<li><a href="desc-stats.html#bivariate-analysis" id="toc-bivariate-analysis"><span class="toc-section-number">7.2</span> Bivariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#covariance" id="toc-covariance"><span class="toc-section-number">7.2.1</span> Covariance</a></li>
+<li><a href="desc-stats.html#correlation" id="toc-correlation"><span class="toc-section-number">7.2.2</span> Correlation</a></li>
+</ul></li>
+<li><a href="desc-stats.html#review-questions-5" id="toc-review-questions-5"><span class="toc-section-number">7.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="inf-stats.html#inf-stats" id="toc-inf-stats"><span class="toc-section-number">8</span> Statistical Inference</a>
+<ul>
+<li><a href="inf-stats.html#introduction-to-probability" id="toc-introduction-to-probability"><span class="toc-section-number">8.1</span> Introduction to Probability</a>
+<ul>
+<li><a href="inf-stats.html#probability-distributions" id="toc-probability-distributions"><span class="toc-section-number">8.1.1</span> Probability Distributions</a></li>
+<li><a href="inf-stats.html#conditional-probability" id="toc-conditional-probability"><span class="toc-section-number">8.1.2</span> Conditional Probability</a></li>
+</ul></li>
+<li><a href="inf-stats.html#central-limit-theorem" id="toc-central-limit-theorem"><span class="toc-section-number">8.2</span> Central Limit Theorem</a></li>
+<li><a href="inf-stats.html#confidence-intervals" id="toc-confidence-intervals"><span class="toc-section-number">8.3</span> Confidence Intervals</a>
+<ul>
+<li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
+<li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
+<li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
+<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
+<li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
+</ul></li>
+<li><a href="inf-stats.html#review-questions-6" id="toc-review-questions-6"><span class="toc-section-number">8.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="aod.html#aod" id="toc-aod"><span class="toc-section-number">9</span> Analysis of Differences</a>
+<ul>
+<li><a href="aod.html#parametric-vs.-nonparametric-tests" id="toc-parametric-vs.-nonparametric-tests"><span class="toc-section-number">9.1</span> Parametric vs. Nonparametric Tests</a></li>
+<li><a href="aod.html#differences-in-discrete-data" id="toc-differences-in-discrete-data"><span class="toc-section-number">9.2</span> Differences in Discrete Data</a></li>
+<li><a href="aod.html#differences-in-continuous-data" id="toc-differences-in-continuous-data"><span class="toc-section-number">9.3</span> Differences in Continuous Data</a></li>
+<li><a href="aod.html#review-questions-7" id="toc-review-questions-7"><span class="toc-section-number">9.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lm.html#lm" id="toc-lm"><span class="toc-section-number">10</span> Linear Regression</a>
+<ul>
+<li><a href="lm.html#sample-size" id="toc-sample-size"><span class="toc-section-number">10.1</span> Sample Size</a></li>
+<li><a href="lm.html#simple-linear-regression" id="toc-simple-linear-regression"><span class="toc-section-number">10.2</span> Simple Linear Regression</a></li>
+<li><a href="lm.html#multiple-linear-regression" id="toc-multiple-linear-regression"><span class="toc-section-number">10.3</span> Multiple Linear Regression</a></li>
+<li><a href="lm.html#model-comparisons" id="toc-model-comparisons"><span class="toc-section-number">10.4</span> Model Comparisons</a></li>
+<li><a href="lm.html#multilevel-models" id="toc-multilevel-models"><span class="toc-section-number">10.5</span> Multilevel Models</a></li>
+<li><a href="lm.html#moderation" id="toc-moderation"><span class="toc-section-number">10.6</span> Moderation</a></li>
+<li><a href="lm.html#mediation" id="toc-mediation"><span class="toc-section-number">10.7</span> Mediation</a></li>
+<li><a href="lm.html#review-questions-8" id="toc-review-questions-8"><span class="toc-section-number">10.8</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lme.html#lme" id="toc-lme"><span class="toc-section-number">11</span> Non-Linear Regression</a>
+<ul>
+<li><a href="lme.html#polynomial-regression" id="toc-polynomial-regression"><span class="toc-section-number">11.1</span> Polynomial Regression</a></li>
+<li><a href="lme.html#logistic-regression" id="toc-logistic-regression"><span class="toc-section-number">11.2</span> Logistic Regression</a>
+<ul>
+<li><a href="lme.html#binomial-logistic-regression" id="toc-binomial-logistic-regression"><span class="toc-section-number">11.2.1</span> Binomial Logistic Regression</a></li>
+<li><a href="lme.html#multinomial-logistic-regression" id="toc-multinomial-logistic-regression"><span class="toc-section-number">11.2.2</span> Multinomial Logistic Regression</a></li>
+<li><a href="lme.html#ordinal-logistic-regression" id="toc-ordinal-logistic-regression"><span class="toc-section-number">11.2.3</span> Ordinal Logistic Regression</a></li>
+</ul></li>
+<li><a href="lme.html#review-questions-9" id="toc-review-questions-9"><span class="toc-section-number">11.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="pred-mod.html#pred-mod" id="toc-pred-mod"><span class="toc-section-number">12</span> Predictive Modeling</a>
+<ul>
+<li><a href="pred-mod.html#cross-validation" id="toc-cross-validation"><span class="toc-section-number">12.1</span> Cross-Validation</a></li>
+<li><a href="pred-mod.html#model-performance" id="toc-model-performance"><span class="toc-section-number">12.2</span> Model Performance</a></li>
+<li><a href="pred-mod.html#bias-variance-tradeoff" id="toc-bias-variance-tradeoff"><span class="toc-section-number">12.3</span> Bias-Variance Tradeoff</a></li>
+<li><a href="pred-mod.html#tree-based-algorithms" id="toc-tree-based-algorithms"><span class="toc-section-number">12.4</span> Tree-Based Algorithms</a></li>
+<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">12.5</span> Predictive Modeling</a></li>
+<li><a href="pred-mod.html#review-questions-10" id="toc-review-questions-10"><span class="toc-section-number">12.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#unsup-lrn" id="toc-unsup-lrn"><span class="toc-section-number">13</span> Unsupervised Learning</a>
+<ul>
+<li><a href="unsup-lrn.html#factor-analysis" id="toc-factor-analysis"><span class="toc-section-number">13.1</span> Factor Analysis</a>
+<ul>
+<li><a href="unsup-lrn.html#exploratory-factor-analysis-efa" id="toc-exploratory-factor-analysis-efa"><span class="toc-section-number">13.1.1</span> Exploratory Factor Analysis (EFA)</a></li>
+<li><a href="unsup-lrn.html#confirmatory-factor-analysis-cfa" id="toc-confirmatory-factor-analysis-cfa"><span class="toc-section-number">13.1.2</span> Confirmatory Factor Analysis (CFA)</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#clustering" id="toc-clustering"><span class="toc-section-number">13.2</span> Clustering</a>
+<ul>
+<li><a href="unsup-lrn.html#k-means-clustering" id="toc-k-means-clustering"><span class="toc-section-number">13.2.1</span> <span class="math inline">\(K\)</span>-Means Clustering</a></li>
+<li><a href="unsup-lrn.html#hierarchical-clustering" id="toc-hierarchical-clustering"><span class="toc-section-number">13.2.2</span> Hierarchical Clustering</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#review-questions-11" id="toc-review-questions-11"><span class="toc-section-number">13.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-viz.html#data-viz" id="toc-data-viz"><span class="toc-section-number">14</span> Data Visualization</a>
+<ul>
+<li><a href="data-viz.html#design-guidelines" id="toc-design-guidelines"><span class="toc-section-number">14.1</span> Design Guidelines</a></li>
+<li><a href="data-viz.html#visualization-types" id="toc-visualization-types"><span class="toc-section-number">14.2</span> Visualization Types</a>
+<ul>
+<li><a href="data-viz.html#tables" id="toc-tables"><span class="toc-section-number">14.2.1</span> Tables</a></li>
+<li><a href="data-viz.html#heatmaps" id="toc-heatmaps"><span class="toc-section-number">14.2.2</span> Heatmaps</a></li>
+<li><a href="data-viz.html#scatterplots" id="toc-scatterplots"><span class="toc-section-number">14.2.3</span> Scatterplots</a></li>
+<li><a href="data-viz.html#line-graphs" id="toc-line-graphs"><span class="toc-section-number">14.2.4</span> Line Graphs</a></li>
+<li><a href="data-viz.html#slopegraphs" id="toc-slopegraphs"><span class="toc-section-number">14.2.5</span> Slopegraphs</a></li>
+<li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">14.2.6</span> Bar Charts</a></li>
+<li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">14.2.7</span> Waterfall Charts</a></li>
+<li><a href="data-viz.html#area-charts" id="toc-area-charts"><span class="toc-section-number">14.2.8</span> Area Charts</a></li>
+<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">14.2.9</span> Pie Charts</a></li>
+</ul></li>
+<li><a href="data-viz.html#deceptive-visuals" id="toc-deceptive-visuals"><span class="toc-section-number">14.3</span> Deceptive Visuals</a></li>
+<li><a href="data-viz.html#review-questions-12" id="toc-review-questions-12"><span class="toc-section-number">14.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="storytelling.html#storytelling" id="toc-storytelling"><span class="toc-section-number">15</span> Data Storytelling</a>
+<ul>
+<li><a href="storytelling.html#define-success" id="toc-define-success"><span class="toc-section-number">15.1</span> Define Success</a></li>
+<li><a href="storytelling.html#know-your-audience" id="toc-know-your-audience"><span class="toc-section-number">15.2</span> Know Your Audience</a></li>
+<li><a href="storytelling.html#elements-of-good-stories" id="toc-elements-of-good-stories"><span class="toc-section-number">15.3</span> Elements of Good Stories</a>
+<ul>
+<li><a href="storytelling.html#intro" id="toc-intro"><span class="toc-section-number">15.3.1</span> Intro</a></li>
+<li><a href="storytelling.html#climax" id="toc-climax"><span class="toc-section-number">15.3.2</span> Climax</a></li>
+<li><a href="storytelling.html#conclusion" id="toc-conclusion"><span class="toc-section-number">15.3.3</span> Conclusion</a></li>
+</ul></li>
+<li><a href="storytelling.html#craft-the-story" id="toc-craft-the-story"><span class="toc-section-number">15.4</span> Craft the Story</a></li>
+<li><a href="storytelling.html#tldr" id="toc-tldr"><span class="toc-section-number">15.5</span> TL;DR</a></li>
+<li><a href="storytelling.html#versioning" id="toc-versioning"><span class="toc-section-number">15.6</span> Versioning</a></li>
+<li><a href="storytelling.html#telling-the-story" id="toc-telling-the-story"><span class="toc-section-number">15.7</span> Telling the Story</a></li>
+<li><a href="storytelling.html#reference-material" id="toc-reference-material"><span class="toc-section-number">15.8</span> Reference Material</a></li>
+<li><a href="storytelling.html#review-questions-13" id="toc-review-questions-13"><span class="toc-section-number">15.9</span> Review Questions</a></li>
+</ul></li>
+<li><a href="bibli.html#bibli" id="toc-bibli"><span class="toc-section-number">16</span> Bibliography</a></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">An Introduction to People Analytics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="sql-intro" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Introduction to SQL</h1>
+<p><strong>Structured Query Language (SQL)</strong> is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.</p>
+<div id="basics" class="section level2" number="3.1">
+<h2><span class="header-section-number">3.1</span> Basics</h2>
+<p>There are three main <em>clauses</em> in a SQL query: (a) <code>SELECT</code>, (b) <code>FROM</code>, and (c) <code>WHERE</code>. The <code>SELECT</code> and <code>FROM</code> clauses are required, though the optional <code>WHERE</code> clause is frequently needed.</p>
+<ul>
+<li><strong>SELECT</strong>: Specifies the columns to include in the output</li>
+<li><strong>FROM</strong>: Specifies the table(s) in which the relevant data are contained</li>
+<li><strong>WHERE</strong>: Specifies the rows to search</li>
+</ul>
+<p>Despite the clauses being ordered as shown above (<code>SELECT</code> then <code>FROM</code> then <code>WHERE</code>), the <code>FROM</code> clause is the first to execute since we first need to identify the relevant table(s) before filtering rows and selecting columns. The <code>SELECT</code> clause is the last to execute.</p>
+<p>Additional clauses are available for grouping and sorting data.</p>
+<ul>
+<li><strong>GROUP BY</strong>: Specifies the columns by which data should be grouped when using aggregate functions</li>
+<li><strong>HAVING</strong>: Specifies conditions for filtering rows based on aggregate functions</li>
+<li><strong>ORDER BY</strong>: Specifies how data should be sorted in the output</li>
+</ul>
+<p>When implementing aggregate functions in a <code>SELECT</code> clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the <code>GROUP BY</code> clause.</p>
+<p>When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before paring down to the relevant records. Fewer records can help enhance the performance of R scripts – especially when R is running on a local machine, such as a laptop, rather than on a more powerful server.</p>
+<p>Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the <code>sqldf</code> library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The <code>sqldf</code> library allows us to write SQL to query data frames via an embedded database engine (SQLite by default). In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query’s results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.</p>
+<p>First, let’s load the data sets:</p>
+<div class="sourceCode" id="cb99"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb99-1"><a href="sql-intro.html#cb99-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data sets</span></span>
+<span id="cb99-2"><a href="sql-intro.html#cb99-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/employees.csv&quot;</span>)</span>
+<span id="cb99-3"><a href="sql-intro.html#cb99-3" aria-hidden="true" tabindex="-1"></a>status <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/status.csv&quot;</span>)</span>
+<span id="cb99-4"><a href="sql-intro.html#cb99-4" aria-hidden="true" tabindex="-1"></a>benefits <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/benefits.csv&quot;</span>)</span>
+<span id="cb99-5"><a href="sql-intro.html#cb99-5" aria-hidden="true" tabindex="-1"></a>demographics <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/demographics.csv&quot;</span>)</span>
+<span id="cb99-6"><a href="sql-intro.html#cb99-6" aria-hidden="true" tabindex="-1"></a>job <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/job.csv&quot;</span>)</span>
+<span id="cb99-7"><a href="sql-intro.html#cb99-7" aria-hidden="true" tabindex="-1"></a>payroll <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/payroll.csv&quot;</span>)</span>
+<span id="cb99-8"><a href="sql-intro.html#cb99-8" aria-hidden="true" tabindex="-1"></a>performance <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/performance.csv&quot;</span>)</span>
+<span id="cb99-9"><a href="sql-intro.html#cb99-9" aria-hidden="true" tabindex="-1"></a>prior_employment <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/prior_employment.csv&quot;</span>)</span>
+<span id="cb99-10"><a href="sql-intro.html#cb99-10" aria-hidden="true" tabindex="-1"></a>sentiment <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/sentiment.csv&quot;</span>)</span>
+<span id="cb99-11"><a href="sql-intro.html#cb99-11" aria-hidden="true" tabindex="-1"></a>tenure <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/data/tenure.csv&quot;</span>)</span>
+<span id="cb99-12"><a href="sql-intro.html#cb99-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb99-13"><a href="sql-intro.html#cb99-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Return row and column counts</span></span>
+<span id="cb99-14"><a href="sql-intro.html#cb99-14" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(employees)</span></code></pre></div>
+<pre><code>## [1] 1470   36</code></pre>
+<p>Next, we will apply the <code>sqldf()</code> function to our data frame to extract specific rows and columns. In addition to the <code>SELECT</code>, <code>FROM</code>, and <code>WHERE</code> clauses, we will use the <code>LIMIT</code> clause to limit the number of rows that are displayed given the data frame’s size (<span class="math inline">\(n = 1,470\)</span>). In a practical setting, the <code>LIMIT</code> clause is only used for efficient data profiling and troubleshooting, as we would not want to arbitrarily truncate a data set used for analysis.</p>
+<p>A best practice in writing SQL is to capitalize the names of clauses and functions and to use separate lines and indentation to make the SQL statements more readable:</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="sql-intro.html#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load SQL library</span></span>
+<span id="cb101-2"><a href="sql-intro.html#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sqldf)</span>
+<span id="cb101-3"><a href="sql-intro.html#cb101-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-4"><a href="sql-intro.html#cb101-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string using the paste() function</span></span>
+<span id="cb101-5"><a href="sql-intro.html#cb101-5" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb101-6"><a href="sql-intro.html#cb101-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      employee_id</span></span>
+<span id="cb101-7"><a href="sql-intro.html#cb101-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb101-8"><a href="sql-intro.html#cb101-8" aria-hidden="true" tabindex="-1"></a><span class="st">                      employees</span></span>
+<span id="cb101-9"><a href="sql-intro.html#cb101-9" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb101-10"><a href="sql-intro.html#cb101-10" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb101-11"><a href="sql-intro.html#cb101-11" aria-hidden="true" tabindex="-1"></a><span class="st">                    LIMIT 10&quot;</span>)</span>
+<span id="cb101-12"><a href="sql-intro.html#cb101-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb101-13"><a href="sql-intro.html#cb101-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb101-14"><a href="sql-intro.html#cb101-14" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##    employee_id
+## 1         1002
+## 2         1003
+## 3         1004
+## 4         1005
+## 5         1006
+## 6         1007
+## 7         1008
+## 8         1009
+## 9         1010
+## 10        1011</code></pre>
+<p>This query returned a list of employee ids for employees in the Research &amp; Development department.</p>
+<p>To optimize query performance, it is important to order conditions in the <code>WHERE</code> clause beginning with the condition that will exclude the largest number of records. Conditions are executed sequentially, and each subsequent condition must evaluate all records that remain following any preceding filtering. Limiting the number of records that must be searched when evaluating each condition will reduce the time it takes the query to return results. For example, if two conditions are needed and one excludes 5,000 records while the other excludes 10, the condition that excludes 5,000 records should be listed first in the <code>WHERE</code> clause.</p>
+</div>
+<div id="aggregate-functions" class="section level2" number="3.2">
+<h2><span class="header-section-number">3.2</span> Aggregate Functions</h2>
+<p>Next, let’s take a look at average organization tenure by job for those in the Research &amp; Development department:</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="sql-intro.html#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb103-2"><a href="sql-intro.html#cb103-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb103-3"><a href="sql-intro.html#cb103-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb103-4"><a href="sql-intro.html#cb103-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      AVG(org_tenure)</span></span>
+<span id="cb103-5"><a href="sql-intro.html#cb103-5" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb103-6"><a href="sql-intro.html#cb103-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      employees</span></span>
+<span id="cb103-7"><a href="sql-intro.html#cb103-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb103-8"><a href="sql-intro.html#cb103-8" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb103-9"><a href="sql-intro.html#cb103-9" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb103-10"><a href="sql-intro.html#cb103-10" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb103-11"><a href="sql-intro.html#cb103-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb103-12"><a href="sql-intro.html#cb103-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb103-13"><a href="sql-intro.html#cb103-13" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title AVG(org_tenure)
+## 1 Healthcare Representative        8.618321
+## 2     Laboratory Technician        5.019305
+## 3                   Manager       13.673077
+## 4    Manufacturing Director        7.600000
+## 5         Research Director       10.937500
+## 6        Research Scientist        5.113014
+## 7            Vice President        9.500000</code></pre>
+<p>There are 7 distinct job titles among employees in the Research &amp; Development department, and the average organization tenure for these ranges from <code>5</code> to <code>13.7</code> years.</p>
+<p>Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the <code>COUNT(*)</code> function to count the number of rows for each group. In this case, <code>COUNT(*)</code> will return the number of employees in each job in the Research &amp; Development department. We will also apply column aliases via <code>AS</code> in the <code>SELECT</code> clause to assign different names to the output fields:</p>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="sql-intro.html#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb105-2"><a href="sql-intro.html#cb105-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb105-3"><a href="sql-intro.html#cb105-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb105-4"><a href="sql-intro.html#cb105-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb105-5"><a href="sql-intro.html#cb105-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      AVG(org_tenure) AS avg_org_tenure</span></span>
+<span id="cb105-6"><a href="sql-intro.html#cb105-6" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb105-7"><a href="sql-intro.html#cb105-7" aria-hidden="true" tabindex="-1"></a><span class="st">                      employees</span></span>
+<span id="cb105-8"><a href="sql-intro.html#cb105-8" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb105-9"><a href="sql-intro.html#cb105-9" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb105-10"><a href="sql-intro.html#cb105-10" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb105-11"><a href="sql-intro.html#cb105-11" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb105-12"><a href="sql-intro.html#cb105-12" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb105-13"><a href="sql-intro.html#cb105-13" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb105-14"><a href="sql-intro.html#cb105-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-15"><a href="sql-intro.html#cb105-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb105-16"><a href="sql-intro.html#cb105-16" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_org_tenure
+## 1 Healthcare Representative          131       8.618321
+## 2     Laboratory Technician          259       5.019305
+## 3                   Manager           52      13.673077
+## 4    Manufacturing Director          145       7.600000
+## 5         Research Director           80      10.937500
+## 6        Research Scientist          292       5.113014
+## 7            Vice President            2       9.500000</code></pre>
+<p>The output shows that there are only 2 Vice Presidents in the Research &amp; Development department, while other job titles are much more prevalent.</p>
+<p>Since relatively few employees are Vice Presidents, let’s use the <code>HAVING</code> clause to only show average organization tenure for Research &amp; Development department jobs with more than 10 employees. We can also use the <code>ROUND()</code> function to truncate average organization tenure to one significant digit:</p>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="sql-intro.html#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb107-2"><a href="sql-intro.html#cb107-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb107-3"><a href="sql-intro.html#cb107-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb107-4"><a href="sql-intro.html#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb107-5"><a href="sql-intro.html#cb107-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure</span></span>
+<span id="cb107-6"><a href="sql-intro.html#cb107-6" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb107-7"><a href="sql-intro.html#cb107-7" aria-hidden="true" tabindex="-1"></a><span class="st">                      employees</span></span>
+<span id="cb107-8"><a href="sql-intro.html#cb107-8" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb107-9"><a href="sql-intro.html#cb107-9" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb107-10"><a href="sql-intro.html#cb107-10" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb107-11"><a href="sql-intro.html#cb107-11" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb107-12"><a href="sql-intro.html#cb107-12" aria-hidden="true" tabindex="-1"></a><span class="st">                    HAVING</span></span>
+<span id="cb107-13"><a href="sql-intro.html#cb107-13" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) &gt; 10</span></span>
+<span id="cb107-14"><a href="sql-intro.html#cb107-14" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb107-15"><a href="sql-intro.html#cb107-15" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb107-16"><a href="sql-intro.html#cb107-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-17"><a href="sql-intro.html#cb107-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb107-18"><a href="sql-intro.html#cb107-18" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_org_tenure
+## 1 Healthcare Representative          131            8.6
+## 2     Laboratory Technician          259            5.0
+## 3                   Manager           52           13.7
+## 4    Manufacturing Director          145            7.6
+## 5         Research Director           80           10.9
+## 6        Research Scientist          292            5.1</code></pre>
+</div>
+<div id="joins" class="section level2" number="3.3">
+<h2><span class="header-section-number">3.3</span> Joins</h2>
+<p>In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure <a href="sql-intro.html#fig:sql-joins">3.1</a> illustrates SQL join types using Venn diagrams:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:sql-joins"></span>
+<img src="graphics/sql_joins.png" alt="Types of SQL Joins" width="100%" />
+<p class="caption">
+Figure 3.1: Types of SQL Joins
+</p>
+</div>
+<p>The structure of SQL queries containing each type of join is represented below:</p>
+<p><strong>LEFT INCLUSIVE</strong></p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="sql-intro.html#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb109-2"><a href="sql-intro.html#cb109-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb109-3"><a href="sql-intro.html#cb109-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  LEFT OUTER JOIN B</span></span>
+<span id="cb109-4"><a href="sql-intro.html#cb109-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span></code></pre></div>
+<p><strong>LEFT EXCLUSIVE</strong></p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="sql-intro.html#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb110-2"><a href="sql-intro.html#cb110-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb110-3"><a href="sql-intro.html#cb110-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  LEFT OUTER JOIN B</span></span>
+<span id="cb110-4"><a href="sql-intro.html#cb110-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span>
+<span id="cb110-5"><a href="sql-intro.html#cb110-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  WHERE B.Key IS NULL</span></span></code></pre></div>
+<p><strong>FULL OUTER INCLUSIVE</strong></p>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="sql-intro.html#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb111-2"><a href="sql-intro.html#cb111-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb111-3"><a href="sql-intro.html#cb111-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  FULL OUTER JOIN B</span></span>
+<span id="cb111-4"><a href="sql-intro.html#cb111-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span></code></pre></div>
+<p><strong>FULL OUTER EXCLUSIVE</strong></p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="sql-intro.html#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb112-2"><a href="sql-intro.html#cb112-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb112-3"><a href="sql-intro.html#cb112-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  FULL OUTER JOIN B</span></span>
+<span id="cb112-4"><a href="sql-intro.html#cb112-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span>
+<span id="cb112-5"><a href="sql-intro.html#cb112-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  WHERE A.Key IS NULL OR B.Key IS NULL  </span></span></code></pre></div>
+<p><strong>RIGHT INCLUSIVE</strong></p>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="sql-intro.html#cb113-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb113-2"><a href="sql-intro.html#cb113-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb113-3"><a href="sql-intro.html#cb113-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  RIGHT OUTER JOIN B</span></span>
+<span id="cb113-4"><a href="sql-intro.html#cb113-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span></code></pre></div>
+<p><strong>RIGHT EXCLUSIVE</strong></p>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="sql-intro.html#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb114-2"><a href="sql-intro.html#cb114-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb114-3"><a href="sql-intro.html#cb114-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  LEFT OUTER JOIN B</span></span>
+<span id="cb114-4"><a href="sql-intro.html#cb114-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span>
+<span id="cb114-5"><a href="sql-intro.html#cb114-5" aria-hidden="true" tabindex="-1"></a><span class="co">#  WHERE A.Key IS NULL</span></span></code></pre></div>
+<p><strong>INNER JOIN</strong></p>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="sql-intro.html#cb115-1" aria-hidden="true" tabindex="-1"></a><span class="co">#  SELECT [Output Field List]</span></span>
+<span id="cb115-2"><a href="sql-intro.html#cb115-2" aria-hidden="true" tabindex="-1"></a><span class="co">#  FROM A </span></span>
+<span id="cb115-3"><a href="sql-intro.html#cb115-3" aria-hidden="true" tabindex="-1"></a><span class="co">#  INNER JOIN B</span></span>
+<span id="cb115-4"><a href="sql-intro.html#cb115-4" aria-hidden="true" tabindex="-1"></a><span class="co">#  ON A.Key = B.Key</span></span></code></pre></div>
+<p>To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated <code>employees</code> data set we have been using: <code>job</code>, <code>tenure</code>, and <code>demographics</code>. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee – past, present, or future. Email or network id may also be a suitable PK. We will use the <code>employee_id</code> column in each of the three data frames to facilitate joins:</p>
+<p>Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research &amp; Development department, grouped by jobs with more than 10 employees. For this, we will leverage an <code>INNER JOIN</code>, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in <code>demographics</code> and <code>tenure</code> for a particular employee id, but there is no corresponding record in <code>job</code>, that employee id would not be included in the output.</p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="sql-intro.html#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb116-2"><a href="sql-intro.html#cb116-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb116-3"><a href="sql-intro.html#cb116-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb116-4"><a href="sql-intro.html#cb116-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb116-5"><a href="sql-intro.html#cb116-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></span>
+<span id="cb116-6"><a href="sql-intro.html#cb116-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></span>
+<span id="cb116-7"><a href="sql-intro.html#cb116-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb116-8"><a href="sql-intro.html#cb116-8" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics</span></span>
+<span id="cb116-9"><a href="sql-intro.html#cb116-9" aria-hidden="true" tabindex="-1"></a><span class="st">                      INNER JOIN</span></span>
+<span id="cb116-10"><a href="sql-intro.html#cb116-10" aria-hidden="true" tabindex="-1"></a><span class="st">                        tenure</span></span>
+<span id="cb116-11"><a href="sql-intro.html#cb116-11" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb116-12"><a href="sql-intro.html#cb116-12" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = tenure.employee_id</span></span>
+<span id="cb116-13"><a href="sql-intro.html#cb116-13" aria-hidden="true" tabindex="-1"></a><span class="st">                      INNER JOIN</span></span>
+<span id="cb116-14"><a href="sql-intro.html#cb116-14" aria-hidden="true" tabindex="-1"></a><span class="st">                        job</span></span>
+<span id="cb116-15"><a href="sql-intro.html#cb116-15" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb116-16"><a href="sql-intro.html#cb116-16" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = job.employee_id</span></span>
+<span id="cb116-17"><a href="sql-intro.html#cb116-17" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb116-18"><a href="sql-intro.html#cb116-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb116-19"><a href="sql-intro.html#cb116-19" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb116-20"><a href="sql-intro.html#cb116-20" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb116-21"><a href="sql-intro.html#cb116-21" aria-hidden="true" tabindex="-1"></a><span class="st">                    HAVING</span></span>
+<span id="cb116-22"><a href="sql-intro.html#cb116-22" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) &gt; 10</span></span>
+<span id="cb116-23"><a href="sql-intro.html#cb116-23" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb116-24"><a href="sql-intro.html#cb116-24" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb116-25"><a href="sql-intro.html#cb116-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-26"><a href="sql-intro.html#cb116-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb116-27"><a href="sql-intro.html#cb116-27" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_org_tenure avg_commute_dist
+## 1 Healthcare Representative          131            8.6              9.8
+## 2     Laboratory Technician          259            5.0              9.4
+## 3                   Manager           52           13.7              7.2
+## 4    Manufacturing Director          145            7.6              9.5
+## 5         Research Director           80           10.9              8.4
+## 6        Research Scientist          292            5.1              9.0</code></pre>
+<p>Note that the <code>INNER JOIN</code> in this SQL query was structured such that both <code>tenure</code> and <code>job</code> were joined to <code>demographics</code> via the <code>employee_id</code> column. We could have instead joined <code>job</code> to <code>tenure</code> since we joined <code>tenure</code> to <code>demographics</code>; this would have achieved the same result since all employee ids exist in each of the three data frames.</p>
+<p>If it were possible for all employee ids to exist in <code>demographics</code> but not in either <code>tenure</code> or <code>job</code>, we could leverage a <code>LEFT JOIN</code> to ensure all records from <code>demographics</code> are included in the output irrespective of whether they have matches in <code>tenure</code> or <code>job</code>:</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="sql-intro.html#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb118-2"><a href="sql-intro.html#cb118-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb118-3"><a href="sql-intro.html#cb118-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb118-4"><a href="sql-intro.html#cb118-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb118-5"><a href="sql-intro.html#cb118-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(org_tenure), 1) AS avg_org_tenure,</span></span>
+<span id="cb118-6"><a href="sql-intro.html#cb118-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></span>
+<span id="cb118-7"><a href="sql-intro.html#cb118-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb118-8"><a href="sql-intro.html#cb118-8" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics</span></span>
+<span id="cb118-9"><a href="sql-intro.html#cb118-9" aria-hidden="true" tabindex="-1"></a><span class="st">                      LEFT JOIN</span></span>
+<span id="cb118-10"><a href="sql-intro.html#cb118-10" aria-hidden="true" tabindex="-1"></a><span class="st">                        tenure</span></span>
+<span id="cb118-11"><a href="sql-intro.html#cb118-11" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb118-12"><a href="sql-intro.html#cb118-12" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = tenure.employee_id</span></span>
+<span id="cb118-13"><a href="sql-intro.html#cb118-13" aria-hidden="true" tabindex="-1"></a><span class="st">                      LEFT JOIN</span></span>
+<span id="cb118-14"><a href="sql-intro.html#cb118-14" aria-hidden="true" tabindex="-1"></a><span class="st">                        job</span></span>
+<span id="cb118-15"><a href="sql-intro.html#cb118-15" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb118-16"><a href="sql-intro.html#cb118-16" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = job.employee_id</span></span>
+<span id="cb118-17"><a href="sql-intro.html#cb118-17" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb118-18"><a href="sql-intro.html#cb118-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb118-19"><a href="sql-intro.html#cb118-19" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb118-20"><a href="sql-intro.html#cb118-20" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb118-21"><a href="sql-intro.html#cb118-21" aria-hidden="true" tabindex="-1"></a><span class="st">                    HAVING</span></span>
+<span id="cb118-22"><a href="sql-intro.html#cb118-22" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) &gt; 10</span></span>
+<span id="cb118-23"><a href="sql-intro.html#cb118-23" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb118-24"><a href="sql-intro.html#cb118-24" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb118-25"><a href="sql-intro.html#cb118-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-26"><a href="sql-intro.html#cb118-26" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb118-27"><a href="sql-intro.html#cb118-27" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_org_tenure avg_commute_dist
+## 1 Healthcare Representative          131            8.6              9.8
+## 2     Laboratory Technician          259            5.0              9.4
+## 3                   Manager           52           13.7              7.2
+## 4    Manufacturing Director          145            7.6              9.5
+## 5         Research Director           80           10.9              8.4
+## 6        Research Scientist          292            5.1              9.0</code></pre>
+<p>In this case, if demographics is the base data set which contains all employee ids (i.e., the ‘LEFT’ dataset), it is important for <code>tenure</code> and <code>job</code> to be joined to it. Joining <code>job</code> to <code>tenure</code> may result in information loss if an employee id exists in <code>demographics</code> and <code>job</code> but not in the intermediate <code>tenure</code> data set.</p>
+<p>When integrating data within R, the <code>tidyverse</code> provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the package-specific <code>%&gt;%</code> operator. The example below joins nine data sets into a single <code>employees</code> data frame using a left join on the <code>employee_id</code> column:</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="sql-intro.html#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load tidyverse</span></span>
+<span id="cb120-2"><a href="sql-intro.html#cb120-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb120-3"><a href="sql-intro.html#cb120-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb120-4"><a href="sql-intro.html#cb120-4" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">list</span>(demographics,</span>
+<span id="cb120-5"><a href="sql-intro.html#cb120-5" aria-hidden="true" tabindex="-1"></a>                  status,</span>
+<span id="cb120-6"><a href="sql-intro.html#cb120-6" aria-hidden="true" tabindex="-1"></a>                  benefits,</span>
+<span id="cb120-7"><a href="sql-intro.html#cb120-7" aria-hidden="true" tabindex="-1"></a>                  job,</span>
+<span id="cb120-8"><a href="sql-intro.html#cb120-8" aria-hidden="true" tabindex="-1"></a>                  payroll,</span>
+<span id="cb120-9"><a href="sql-intro.html#cb120-9" aria-hidden="true" tabindex="-1"></a>                  performance,</span>
+<span id="cb120-10"><a href="sql-intro.html#cb120-10" aria-hidden="true" tabindex="-1"></a>                  prior_employment,</span>
+<span id="cb120-11"><a href="sql-intro.html#cb120-11" aria-hidden="true" tabindex="-1"></a>                  sentiment,</span>
+<span id="cb120-12"><a href="sql-intro.html#cb120-12" aria-hidden="true" tabindex="-1"></a>                  tenure) <span class="sc">%&gt;%</span></span>
+<span id="cb120-13"><a href="sql-intro.html#cb120-13" aria-hidden="true" tabindex="-1"></a>                  purrr<span class="sc">::</span><span class="fu">reduce</span>(left_join, <span class="at">by =</span> <span class="st">&quot;employee_id&quot;</span>)</span></code></pre></div>
+</div>
+<div id="subqueries" class="section level2" number="3.4">
+<h2><span class="header-section-number">3.4</span> Subqueries</h2>
+<p><strong>Subqueries</strong> are queries nested within other queries. Subqueries are often referred to as <strong>inner queries</strong>, while the main queries are referred to as <strong>outer queries</strong>.</p>
+<p>For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include <code>tenure</code> in the join conditions of our main query:</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="sql-intro.html#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb121-2"><a href="sql-intro.html#cb121-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it</span></span>
+<span id="cb121-3"><a href="sql-intro.html#cb121-3" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb121-4"><a href="sql-intro.html#cb121-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb121-5"><a href="sql-intro.html#cb121-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb121-6"><a href="sql-intro.html#cb121-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></span>
+<span id="cb121-7"><a href="sql-intro.html#cb121-7" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb121-8"><a href="sql-intro.html#cb121-8" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics</span></span>
+<span id="cb121-9"><a href="sql-intro.html#cb121-9" aria-hidden="true" tabindex="-1"></a><span class="st">                      LEFT JOIN</span></span>
+<span id="cb121-10"><a href="sql-intro.html#cb121-10" aria-hidden="true" tabindex="-1"></a><span class="st">                        job</span></span>
+<span id="cb121-11"><a href="sql-intro.html#cb121-11" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb121-12"><a href="sql-intro.html#cb121-12" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = job.employee_id</span></span>
+<span id="cb121-13"><a href="sql-intro.html#cb121-13" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb121-14"><a href="sql-intro.html#cb121-14" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id IN (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1)</span></span>
+<span id="cb121-15"><a href="sql-intro.html#cb121-15" aria-hidden="true" tabindex="-1"></a><span class="st">                      AND </span></span>
+<span id="cb121-16"><a href="sql-intro.html#cb121-16" aria-hidden="true" tabindex="-1"></a><span class="st">                        dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb121-17"><a href="sql-intro.html#cb121-17" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb121-18"><a href="sql-intro.html#cb121-18" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb121-19"><a href="sql-intro.html#cb121-19" aria-hidden="true" tabindex="-1"></a><span class="st">                    HAVING</span></span>
+<span id="cb121-20"><a href="sql-intro.html#cb121-20" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) &gt; 10</span></span>
+<span id="cb121-21"><a href="sql-intro.html#cb121-21" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb121-22"><a href="sql-intro.html#cb121-22" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb121-23"><a href="sql-intro.html#cb121-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-24"><a href="sql-intro.html#cb121-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb121-25"><a href="sql-intro.html#cb121-25" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_commute_dist
+## 1 Healthcare Representative          118              9.7
+## 2     Laboratory Technician          198              9.6
+## 3                   Manager           49              6.9
+## 4    Manufacturing Director          133              9.7
+## 5         Research Director           74              8.3
+## 6        Research Scientist          238              9.2</code></pre>
+</div>
+<div id="virtual-tables" class="section level2" number="3.5">
+<h2><span class="header-section-number">3.5</span> Virtual Tables</h2>
+<p>An alternative to a subquery is creating a <strong>virtual table</strong> in the <code>FROM</code> clause. When using an <code>INNER JOIN</code> to connect <code>demographics</code> to the virtual table <code>ids</code>, which provides a list of employee ids for those with more than a year of organization tenure, any records in <code>demographics</code> or <code>job</code> that do not relate to employees with at least a year of organization tenure will be dropped. This is true even though a <code>LEFT JOIN</code> is used to join <code>job</code> to <code>demographics</code> since records in <code>demographics</code> will be filtered based on <code>employee_id</code> matches in the virtual table. With this approach, our <code>WHERE</code> clause is limited to the <code>department = 'Research &amp; Development'</code> condition:</p>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="sql-intro.html#cb123-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb123-2"><a href="sql-intro.html#cb123-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb123-3"><a href="sql-intro.html#cb123-3" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb123-4"><a href="sql-intro.html#cb123-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
+<span id="cb123-5"><a href="sql-intro.html#cb123-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      ROUND(AVG(commute_dist), 1) AS avg_commute_dist</span></span>
+<span id="cb123-6"><a href="sql-intro.html#cb123-6" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb123-7"><a href="sql-intro.html#cb123-7" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics</span></span>
+<span id="cb123-8"><a href="sql-intro.html#cb123-8" aria-hidden="true" tabindex="-1"></a><span class="st">                      LEFT JOIN</span></span>
+<span id="cb123-9"><a href="sql-intro.html#cb123-9" aria-hidden="true" tabindex="-1"></a><span class="st">                        job</span></span>
+<span id="cb123-10"><a href="sql-intro.html#cb123-10" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb123-11"><a href="sql-intro.html#cb123-11" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = job.employee_id</span></span>
+<span id="cb123-12"><a href="sql-intro.html#cb123-12" aria-hidden="true" tabindex="-1"></a><span class="st">                      INNER JOIN</span></span>
+<span id="cb123-13"><a href="sql-intro.html#cb123-13" aria-hidden="true" tabindex="-1"></a><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></span>
+<span id="cb123-14"><a href="sql-intro.html#cb123-14" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb123-15"><a href="sql-intro.html#cb123-15" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = ids.employee_id</span></span>
+<span id="cb123-16"><a href="sql-intro.html#cb123-16" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb123-17"><a href="sql-intro.html#cb123-17" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb123-18"><a href="sql-intro.html#cb123-18" aria-hidden="true" tabindex="-1"></a><span class="st">                    GROUP BY</span></span>
+<span id="cb123-19"><a href="sql-intro.html#cb123-19" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title</span></span>
+<span id="cb123-20"><a href="sql-intro.html#cb123-20" aria-hidden="true" tabindex="-1"></a><span class="st">                    HAVING</span></span>
+<span id="cb123-21"><a href="sql-intro.html#cb123-21" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) &gt; 10</span></span>
+<span id="cb123-22"><a href="sql-intro.html#cb123-22" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb123-23"><a href="sql-intro.html#cb123-23" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title&quot;</span>)</span>
+<span id="cb123-24"><a href="sql-intro.html#cb123-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb123-25"><a href="sql-intro.html#cb123-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb123-26"><a href="sql-intro.html#cb123-26" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_cnt avg_commute_dist
+## 1 Healthcare Representative          118              9.7
+## 2     Laboratory Technician          198              9.6
+## 3                   Manager           49              6.9
+## 4    Manufacturing Director          133              9.7
+## 5         Research Director           74              8.3
+## 6        Research Scientist          238              9.2</code></pre>
+<p>As you can see, the output of the query using a virtual table matches the results from the preceding approach that utilized a subquery.</p>
+</div>
+<div id="window-functions" class="section level2" number="3.6">
+<h2><span class="header-section-number">3.6</span> Window Functions</h2>
+<p><strong>Window functions</strong> are used for performing calculations over a set of rows without collapsing the records. Unlike the aggregate functions we’ve covered, window functions do not collapse rows into a single value; the calculated value is returned for each of the rows over which the calculation is performed.</p>
+<p>For example, we can assign an organization tenure rank by Research &amp; Development job using the <code>RANK()</code> and <code>OVER()</code> functions in the <code>SELECT</code> clause. The <code>PARTITION BY</code> argument functions like a <code>GROUP BY</code> clause but without collapsing rows, while the <code>ORDER BY</code> argument sorts the records in ascending (<code>ASC</code>) or descending (<code>DESC</code>) order for proper ranking:</p>
+<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="sql-intro.html#cb125-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb125-2"><a href="sql-intro.html#cb125-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Limit output to 10 records since query does not collapse records</span></span>
+<span id="cb125-3"><a href="sql-intro.html#cb125-3" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb125-4"><a href="sql-intro.html#cb125-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      demographics.employee_id,</span></span>
+<span id="cb125-5"><a href="sql-intro.html#cb125-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb125-6"><a href="sql-intro.html#cb125-6" aria-hidden="true" tabindex="-1"></a><span class="st">                      commute_dist,</span></span>
+<span id="cb125-7"><a href="sql-intro.html#cb125-7" aria-hidden="true" tabindex="-1"></a><span class="st">                      RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></span>
+<span id="cb125-8"><a href="sql-intro.html#cb125-8" aria-hidden="true" tabindex="-1"></a><span class="st">                    FROM</span></span>
+<span id="cb125-9"><a href="sql-intro.html#cb125-9" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics</span></span>
+<span id="cb125-10"><a href="sql-intro.html#cb125-10" aria-hidden="true" tabindex="-1"></a><span class="st">                      LEFT JOIN</span></span>
+<span id="cb125-11"><a href="sql-intro.html#cb125-11" aria-hidden="true" tabindex="-1"></a><span class="st">                        job</span></span>
+<span id="cb125-12"><a href="sql-intro.html#cb125-12" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb125-13"><a href="sql-intro.html#cb125-13" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = job.employee_id</span></span>
+<span id="cb125-14"><a href="sql-intro.html#cb125-14" aria-hidden="true" tabindex="-1"></a><span class="st">                      INNER JOIN</span></span>
+<span id="cb125-15"><a href="sql-intro.html#cb125-15" aria-hidden="true" tabindex="-1"></a><span class="st">                        (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></span>
+<span id="cb125-16"><a href="sql-intro.html#cb125-16" aria-hidden="true" tabindex="-1"></a><span class="st">                      ON</span></span>
+<span id="cb125-17"><a href="sql-intro.html#cb125-17" aria-hidden="true" tabindex="-1"></a><span class="st">                        demographics.employee_id = ids.employee_id</span></span>
+<span id="cb125-18"><a href="sql-intro.html#cb125-18" aria-hidden="true" tabindex="-1"></a><span class="st">                    WHERE</span></span>
+<span id="cb125-19"><a href="sql-intro.html#cb125-19" aria-hidden="true" tabindex="-1"></a><span class="st">                      dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb125-20"><a href="sql-intro.html#cb125-20" aria-hidden="true" tabindex="-1"></a><span class="st">                    ORDER BY</span></span>
+<span id="cb125-21"><a href="sql-intro.html#cb125-21" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
+<span id="cb125-22"><a href="sql-intro.html#cb125-22" aria-hidden="true" tabindex="-1"></a><span class="st">                      commute_dist_rank</span></span>
+<span id="cb125-23"><a href="sql-intro.html#cb125-23" aria-hidden="true" tabindex="-1"></a><span class="st">                    LIMIT 10&quot;</span>)</span>
+<span id="cb125-24"><a href="sql-intro.html#cb125-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-25"><a href="sql-intro.html#cb125-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb125-26"><a href="sql-intro.html#cb125-26" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##    employee_id                 job_title commute_dist commute_dist_rank
+## 1         2325 Healthcare Representative           29                 1
+## 2         1414 Healthcare Representative           28                 2
+## 3         1010 Healthcare Representative           27                 3
+## 4         1573 Healthcare Representative           27                 3
+## 5         2200 Healthcare Representative           26                 5
+## 6         1730 Healthcare Representative           25                 6
+## 7         1833 Healthcare Representative           25                 6
+## 8         1993 Healthcare Representative           25                 6
+## 9         2415 Healthcare Representative           25                 6
+## 10        1164 Healthcare Representative           24                10</code></pre>
+<p>Notice that in the case of commute distance ties, the <code>RANK()</code> function assigns the same rank and then adds the number of ties to that rank to determine the rank for the next highest value of commute distance.</p>
+<p>We can also treat this query as a virtual table, and then filter on the derived <code>commute_dist_rank</code> field to return the highest commute distance for each job. We can add a <code>DISTINCT()</code> function in the <code>SELECT</code> clause to collapse jobs for which there are more than one employee with the max commute distance, and display the number of ties for each using the <code>COUNT(*)</code> function:</p>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="sql-intro.html#cb127-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb127-2"><a href="sql-intro.html#cb127-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
+<span id="cb127-3"><a href="sql-intro.html#cb127-3" aria-hidden="true" tabindex="-1"></a><span class="st">                        DISTINCT(job_title) AS job_title,</span></span>
+<span id="cb127-4"><a href="sql-intro.html#cb127-4" aria-hidden="true" tabindex="-1"></a><span class="st">                        COUNT(*) AS employee_count,</span></span>
+<span id="cb127-5"><a href="sql-intro.html#cb127-5" aria-hidden="true" tabindex="-1"></a><span class="st">                        commute_dist</span></span>
+<span id="cb127-6"><a href="sql-intro.html#cb127-6" aria-hidden="true" tabindex="-1"></a><span class="st">                     FROM</span></span>
+<span id="cb127-7"><a href="sql-intro.html#cb127-7" aria-hidden="true" tabindex="-1"></a><span class="st">                        (SELECT</span></span>
+<span id="cb127-8"><a href="sql-intro.html#cb127-8" aria-hidden="true" tabindex="-1"></a><span class="st">                          demographics.employee_id,</span></span>
+<span id="cb127-9"><a href="sql-intro.html#cb127-9" aria-hidden="true" tabindex="-1"></a><span class="st">                          job_title,</span></span>
+<span id="cb127-10"><a href="sql-intro.html#cb127-10" aria-hidden="true" tabindex="-1"></a><span class="st">                          commute_dist,</span></span>
+<span id="cb127-11"><a href="sql-intro.html#cb127-11" aria-hidden="true" tabindex="-1"></a><span class="st">                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></span>
+<span id="cb127-12"><a href="sql-intro.html#cb127-12" aria-hidden="true" tabindex="-1"></a><span class="st">                        FROM</span></span>
+<span id="cb127-13"><a href="sql-intro.html#cb127-13" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics</span></span>
+<span id="cb127-14"><a href="sql-intro.html#cb127-14" aria-hidden="true" tabindex="-1"></a><span class="st">                          LEFT JOIN</span></span>
+<span id="cb127-15"><a href="sql-intro.html#cb127-15" aria-hidden="true" tabindex="-1"></a><span class="st">                            job</span></span>
+<span id="cb127-16"><a href="sql-intro.html#cb127-16" aria-hidden="true" tabindex="-1"></a><span class="st">                          ON</span></span>
+<span id="cb127-17"><a href="sql-intro.html#cb127-17" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics.employee_id = job.employee_id</span></span>
+<span id="cb127-18"><a href="sql-intro.html#cb127-18" aria-hidden="true" tabindex="-1"></a><span class="st">                          INNER JOIN</span></span>
+<span id="cb127-19"><a href="sql-intro.html#cb127-19" aria-hidden="true" tabindex="-1"></a><span class="st">                            (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></span>
+<span id="cb127-20"><a href="sql-intro.html#cb127-20" aria-hidden="true" tabindex="-1"></a><span class="st">                          ON</span></span>
+<span id="cb127-21"><a href="sql-intro.html#cb127-21" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics.employee_id = ids.employee_id</span></span>
+<span id="cb127-22"><a href="sql-intro.html#cb127-22" aria-hidden="true" tabindex="-1"></a><span class="st">                        WHERE</span></span>
+<span id="cb127-23"><a href="sql-intro.html#cb127-23" aria-hidden="true" tabindex="-1"></a><span class="st">                          dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb127-24"><a href="sql-intro.html#cb127-24" aria-hidden="true" tabindex="-1"></a><span class="st">                        ORDER BY</span></span>
+<span id="cb127-25"><a href="sql-intro.html#cb127-25" aria-hidden="true" tabindex="-1"></a><span class="st">                          job_title,</span></span>
+<span id="cb127-26"><a href="sql-intro.html#cb127-26" aria-hidden="true" tabindex="-1"></a><span class="st">                          commute_dist_rank) tbl</span></span>
+<span id="cb127-27"><a href="sql-intro.html#cb127-27" aria-hidden="true" tabindex="-1"></a><span class="st">                      WHERE</span></span>
+<span id="cb127-28"><a href="sql-intro.html#cb127-28" aria-hidden="true" tabindex="-1"></a><span class="st">                        tbl.commute_dist_rank = 1</span></span>
+<span id="cb127-29"><a href="sql-intro.html#cb127-29" aria-hidden="true" tabindex="-1"></a><span class="st">                      GROUP BY</span></span>
+<span id="cb127-30"><a href="sql-intro.html#cb127-30" aria-hidden="true" tabindex="-1"></a><span class="st">                        job_title&quot;</span>)</span>
+<span id="cb127-31"><a href="sql-intro.html#cb127-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb127-32"><a href="sql-intro.html#cb127-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb127-33"><a href="sql-intro.html#cb127-33" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_count commute_dist
+## 1 Healthcare Representative              1           29
+## 2     Laboratory Technician              6           29
+## 3                   Manager              2           29
+## 4    Manufacturing Director              4           29
+## 5         Research Director              3           28
+## 6        Research Scientist              4           29
+## 7            Vice President              1            8</code></pre>
+</div>
+<div id="common-table-expressions-ctes" class="section level2" number="3.7">
+<h2><span class="header-section-number">3.7</span> Common Table Expressions (CTEs)</h2>
+<p>An alternative approach is to use a <strong>common table expression (CTE)</strong>, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.</p>
+<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="sql-intro.html#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
+<span id="cb129-2"><a href="sql-intro.html#cb129-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;WITH max_commute_job</span></span>
+<span id="cb129-3"><a href="sql-intro.html#cb129-3" aria-hidden="true" tabindex="-1"></a><span class="st">                     AS</span></span>
+<span id="cb129-4"><a href="sql-intro.html#cb129-4" aria-hidden="true" tabindex="-1"></a><span class="st">                        (SELECT</span></span>
+<span id="cb129-5"><a href="sql-intro.html#cb129-5" aria-hidden="true" tabindex="-1"></a><span class="st">                          demographics.employee_id,</span></span>
+<span id="cb129-6"><a href="sql-intro.html#cb129-6" aria-hidden="true" tabindex="-1"></a><span class="st">                          job_title,</span></span>
+<span id="cb129-7"><a href="sql-intro.html#cb129-7" aria-hidden="true" tabindex="-1"></a><span class="st">                          commute_dist,</span></span>
+<span id="cb129-8"><a href="sql-intro.html#cb129-8" aria-hidden="true" tabindex="-1"></a><span class="st">                          RANK () OVER (PARTITION BY job_title ORDER BY commute_dist DESC) AS commute_dist_rank</span></span>
+<span id="cb129-9"><a href="sql-intro.html#cb129-9" aria-hidden="true" tabindex="-1"></a><span class="st">                        FROM</span></span>
+<span id="cb129-10"><a href="sql-intro.html#cb129-10" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics</span></span>
+<span id="cb129-11"><a href="sql-intro.html#cb129-11" aria-hidden="true" tabindex="-1"></a><span class="st">                          LEFT JOIN</span></span>
+<span id="cb129-12"><a href="sql-intro.html#cb129-12" aria-hidden="true" tabindex="-1"></a><span class="st">                            job</span></span>
+<span id="cb129-13"><a href="sql-intro.html#cb129-13" aria-hidden="true" tabindex="-1"></a><span class="st">                          ON</span></span>
+<span id="cb129-14"><a href="sql-intro.html#cb129-14" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics.employee_id = job.employee_id</span></span>
+<span id="cb129-15"><a href="sql-intro.html#cb129-15" aria-hidden="true" tabindex="-1"></a><span class="st">                          INNER JOIN</span></span>
+<span id="cb129-16"><a href="sql-intro.html#cb129-16" aria-hidden="true" tabindex="-1"></a><span class="st">                            (SELECT employee_id FROM tenure WHERE org_tenure &gt; 1) ids</span></span>
+<span id="cb129-17"><a href="sql-intro.html#cb129-17" aria-hidden="true" tabindex="-1"></a><span class="st">                          ON</span></span>
+<span id="cb129-18"><a href="sql-intro.html#cb129-18" aria-hidden="true" tabindex="-1"></a><span class="st">                            demographics.employee_id = ids.employee_id</span></span>
+<span id="cb129-19"><a href="sql-intro.html#cb129-19" aria-hidden="true" tabindex="-1"></a><span class="st">                        WHERE</span></span>
+<span id="cb129-20"><a href="sql-intro.html#cb129-20" aria-hidden="true" tabindex="-1"></a><span class="st">                          dept = &#39;Research &amp; Development&#39;</span></span>
+<span id="cb129-21"><a href="sql-intro.html#cb129-21" aria-hidden="true" tabindex="-1"></a><span class="st">                        ORDER BY</span></span>
+<span id="cb129-22"><a href="sql-intro.html#cb129-22" aria-hidden="true" tabindex="-1"></a><span class="st">                          job_title,</span></span>
+<span id="cb129-23"><a href="sql-intro.html#cb129-23" aria-hidden="true" tabindex="-1"></a><span class="st">                          commute_dist_rank)</span></span>
+<span id="cb129-24"><a href="sql-intro.html#cb129-24" aria-hidden="true" tabindex="-1"></a><span class="st">                      </span></span>
+<span id="cb129-25"><a href="sql-intro.html#cb129-25" aria-hidden="true" tabindex="-1"></a><span class="st">                      SELECT</span></span>
+<span id="cb129-26"><a href="sql-intro.html#cb129-26" aria-hidden="true" tabindex="-1"></a><span class="st">                        DISTINCT(job_title) AS job_title,</span></span>
+<span id="cb129-27"><a href="sql-intro.html#cb129-27" aria-hidden="true" tabindex="-1"></a><span class="st">                        COUNT(*) AS employee_count,</span></span>
+<span id="cb129-28"><a href="sql-intro.html#cb129-28" aria-hidden="true" tabindex="-1"></a><span class="st">                        commute_dist</span></span>
+<span id="cb129-29"><a href="sql-intro.html#cb129-29" aria-hidden="true" tabindex="-1"></a><span class="st">                     FROM</span></span>
+<span id="cb129-30"><a href="sql-intro.html#cb129-30" aria-hidden="true" tabindex="-1"></a><span class="st">                        max_commute_job</span></span>
+<span id="cb129-31"><a href="sql-intro.html#cb129-31" aria-hidden="true" tabindex="-1"></a><span class="st">                      WHERE</span></span>
+<span id="cb129-32"><a href="sql-intro.html#cb129-32" aria-hidden="true" tabindex="-1"></a><span class="st">                        commute_dist_rank = 1</span></span>
+<span id="cb129-33"><a href="sql-intro.html#cb129-33" aria-hidden="true" tabindex="-1"></a><span class="st">                      GROUP BY</span></span>
+<span id="cb129-34"><a href="sql-intro.html#cb129-34" aria-hidden="true" tabindex="-1"></a><span class="st">                        job_title&quot;</span>)</span>
+<span id="cb129-35"><a href="sql-intro.html#cb129-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb129-36"><a href="sql-intro.html#cb129-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Execute SQL query</span></span>
+<span id="cb129-37"><a href="sql-intro.html#cb129-37" aria-hidden="true" tabindex="-1"></a>sqldf<span class="sc">::</span><span class="fu">sqldf</span>(sql_string)</span></code></pre></div>
+<pre><code>##                   job_title employee_count commute_dist
+## 1 Healthcare Representative              1           29
+## 2     Laboratory Technician              6           29
+## 3                   Manager              2           29
+## 4    Manufacturing Director              4           29
+## 5         Research Director              3           28
+## 6        Research Scientist              4           29
+## 7            Vice President              1            8</code></pre>
+</div>
+<div id="review-questions-1" class="section level2" number="3.8">
+<h2><span class="header-section-number">3.8</span> Review Questions</h2>
+<ol style="list-style-type: decimal">
+<li><p>What two clauses must always be present in a SQL query?</p></li>
+<li><p>What SQL clause is executed first at run time?</p></li>
+<li><p>To optimize the performance of a SQL query, how should conditions in the WHERE clause be ordered?</p></li>
+<li><p>How do aggregate functions differ from window functions in SQL?</p></li>
+<li><p>What is a subquery?</p></li>
+<li><p>What is the difference between an INNER JOIN and LEFT JOIN?</p></li>
+<li><p>What is the purpose of a common table expression (CTE)?</p></li>
+<li><p>What does the PARTITION BY function do?</p></li>
+<li><p>Why is it important for queries to limit records on the database side before reading into R?</p></li>
+<li><p>In which clause are filter conditions applied to aggregate functions (e.g., <code>COUNT(*) &gt; 5</code>, <code>AVG(salary) &lt; 100000</code>)?</p></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="r-intro.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="measure-sampl.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["Intro_People_Analytics.pdf", "Intro_People_Analytics.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
