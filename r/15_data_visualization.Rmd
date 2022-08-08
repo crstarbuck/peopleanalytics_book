@@ -1,19 +1,271 @@
 # Data Visualization {#data-viz}
 
-## Design Guidelines
+  
+
+## Preattentive Attributes
+  
+  **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). Preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility. 
+  
+  Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in the sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
+  
+```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/preattentive_attributes.png")
+
+```
+  
+  Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes in a horizontal bar chart by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less prominent grey.
+  
+```{r pre-attr-2, out.width = "100%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs for the current year relative to prior years.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Create data
+year <- c('2022', '2021', '2020', '2019')
+labor_cost <- c(878800, 676000, 520000, 400000)
+lc_data <- data.frame(year, labor_cost)
+
+# Visualize data
+ggplot2::ggplot(lc_data, aes(x = year, y = labor_cost, fill = year)) + 
+ggplot2::labs(x = 'Year', y = 'Labor Cost (in thousands)') +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::scale_fill_manual(values = c("2022" = "#ED7D31", "2021" = "grey", "2020" = "grey", "2019" = "grey")) +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"),
+               legend.position = "none")
+
+```
+
+  Simply put, if something is **really important**, make sure it is different from other content on the page, slide, or section.
+
+## Beyond the Defaults
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load libraries
+library(dplyr)
+library(ggplot2)
+
+# Load data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
+
+```
+
+
+```{r, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE}
+
+# Create data cube
+data <- employees %>%
+        dplyr::count(ed_field)
+
+```
+
+### Step 1: Build Bar Chart with Defaults
+
+```{r barchart_1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") 
+
+```
+
+### Step 2: Remove Legend
+
+```{r barchart_2, out.width = "100%", fig.cap = 'Step 3: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 3: Assign Colors Strategically
+
+```{r barchart_3, out.width = "100%", fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 4: Add Mixed Case Axis Labels
+
+```{r barchart_4, out.width = "100%", fig.cap = 'Step 4: Add mixed case axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 5: Add Centered Title
+
+```{r barchart_5, out.width = "100%", fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               plot.title = element_text(hjust = 0.5))
+
+```
+
+### Step 6: Increase Axis Margins
+
+```{r barchart_6, out.width = "100%", fig.cap = 'Step 6: Increase axis margins.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 7: Remove Background
+
+```{r barchart_7, out.width = "100%", fig.cap = 'Step 7: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 8: Remove Axis Ticks
+
+```{r barchart_8, out.width = "100%", fig.cap = 'Step 8: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 9: Mute Axis Labels
+
+```{r barchart_9, out.width = "100%", fig.cap = 'Step 9: Mute axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 10: Swap Axes
+
+```{r barchart_10, out.width = "100%", fig.cap = 'Step 10: Swap axes.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Sort education values by avg annual comp
+data <- data %>%
+        dplyr::arrange(n)
+data$ed_field <- factor(data$ed_field, levels = data$ed_field)
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
 
 ## Visualization Types
 
 
-```{r, message = FALSE, warning = FALSE}
 
-# Load library
-library(dplyr)
-
-# Load employee data
-data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
-
-```
 
 ### Tables
 
@@ -30,10 +282,8 @@ data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_b
 
 ```{r single-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Single series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-library(ggplot2)
-
 # Subset data
-sl_data <- subset(data, year == 5 & job == 'People Scientist' & level == 4 & remote == 'Yes')
+sl_data <- subset(turnover, year == 5 & job == 'People Scientist' & level == 4 & remote == 'Yes')
 
 # Visualize data
 ggplot2::ggplot(sl_data, aes(x = month, y = turnover_rate * .01)) + 
@@ -56,7 +306,7 @@ ggplot2::theme(panel.background = element_blank(),
 ```{r double-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Two series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Subset data
-tl_data <- subset(data, year == 5 & job %in% c('People Scientist', 'Data Engineer') & level == 4 & remote == 'Yes')
+tl_data <- subset(turnover, year == 5 & job %in% c('People Scientist', 'Data Engineer') & level == 4 & remote == 'Yes')
 
 # Ordered factor for consistent legend value sorting
 tl_data$job <- factor(tl_data$job, levels = c("People Scientist", "Data Engineer"))
@@ -112,6 +362,23 @@ ggplot2::theme(panel.background = element_blank(),
   
   **Horizontal**
   
+```{r hbar_chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(employees, aes(x = reorder(job_title, commute_dist, mean), y = commute_dist, fill = commute_dist)) + 
+ggplot2::labs(x = 'Job Title', y = 'Average Commute Distance') +
+ggplot2::geom_bar(stat = "summary", fun = "mean") +
+ggplot2::coord_flip() +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"),
+               legend.position = "none")
+
+```
+
+
   **Stacked**
   
 ### Waterfall Charts
@@ -148,6 +415,3 @@ ggplot2::theme(panel.background = element_blank(),
 9. 
 
 10. 
-
-
-  
