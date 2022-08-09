@@ -1,12 +1,60 @@
 # Data Visualization {#data-viz}
 
+  Unlike preceding chapters, data visualization is more of an *art* than a *science*. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
   
+  This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike.
+  
+## Best Practices
 
-## Preattentive Attributes
+  While the type of visual depends on the nature of data being presented, there are general best practices for effectively communicating information that are applicable for all data types, audiences, and contexts.
+
+### Color Palette
+
+  There are several important considerations when choosing colors for data visualization. 
   
-  **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). Preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility. 
+  **Color has meaning.**
   
-  Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in the sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
+  The meaning of color is not consistent across the world. For example, in Western cultures red generally has unfavorable connotations (e.g., off track, danger) while green signals a favorable status (e.g., on track, cash flow positive). However, in Asian cultures red indicates success. 
+  
+  It is important to understand what color indicates in the contexts in which information is shared to ensure color choices are consistent with the messages that need to be conveyed.
+  
+  **Respect color blindness.**
+
+  Most estimates indicate that 1 in 12 men (8%) and 1 in 200 women (0.5%) are colorblind (~4.5% of the world population). Males are more likely to be colorblind because the X chromosome contains the genes responsible for the most common forms of color blindness. Trouble distinguishing between red and green is the most common manifestation of colorblindness (Gordon, 1998).
+  
+  This has important implications for data visualization, and it is generally best to avoid the use of red and green. One alternative is to leverage orange to indicate unfavorable data points and blue for favorable. This strategy will be implemented throughout this chapter.
+
+  **Adhere to brand colors.**
+  
+  In most organizations, the marketing team defines a color palette consistent with the branding used for consumer products and services. In this case, analysts may be constrained to the use of colors within the branding palette. 
+  
+  Be sure to consult with marketing colleagues and adhere to any color palette requirements.
+
+  **Use color consistently.**
+
+  To support a correct interpretation of information, it is important to use a consistent color scheme across the various visuals in dashboards, slides, and documents. For example, if blue is assigned to highlight how the Engineering department compares to other departments in a particular view, blue should be assigned to the Engineering department in every view in which department is a grouping dimension. 
+  
+  The consistent use of color requires the audience to wield less effort to understand information, which in turn reduces the risk of incorrect interpretation.
+
+### Chart Borders
+
+  The goal in data visualization is to enable the most important data to take center stage. Formatting should support -- not detract -- from this objective. Chart borders are a usual suspect and prime example of formatting that can divert focus away from the data.
+  
+  Figure \@ref(fig:chart-borders) illustrates the use of heavy and light borders for a tabular presentation of data. Formatting takes center stage in the first table due to heavy borders, while formatting is not the focus in the second table given the minimal light grey border.
+  
+```{r chart-borders, out.width = "75%", echo = FALSE, fig.cap = 'Comparison of data tables with heavy (left) and light (right) borders.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/light_heavy_borders.png")
+
+```
+
+### Preattentive Attributes
+  
+  **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). 
+  
+  It is important to remember that data do not always need to be visualized with a chart. Sometimes communicating with text is a sufficient and effective way to convey information. In the case of text, preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility.
+  
+  Grey is an important color in the implementation of preattentive attributes as it facilitates a move of less important data and design elements to the background to make room for more predominate colors to highlight the most important information. Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in a sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
   
 ```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center'}
 
@@ -14,7 +62,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
   
-  Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes in a horizontal bar chart by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less prominent grey.
+  Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less predominate grey.
   
 ```{r pre-attr-2, out.width = "100%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs for the current year relative to prior years.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -23,20 +71,20 @@ library(ggplot2)
 
 # Create data
 year <- c('2022', '2021', '2020', '2019')
-labor_cost <- c(878800, 676000, 520000, 400000)
+labor_cost <- c(219700000, 169000000, 130000000, 100000000)
 lc_data <- data.frame(year, labor_cost)
 
 # Visualize data
-ggplot2::ggplot(lc_data, aes(x = year, y = labor_cost, fill = year)) + 
-ggplot2::labs(x = 'Year', y = 'Labor Cost (in thousands)') +
+ggplot2::ggplot(lc_data, aes(x = year, y = labor_cost * .000001, fill = year)) + 
+ggplot2::labs(x = 'Year', y = 'Labor Cost (in millions of USD)') +
 ggplot2::geom_bar(stat = "identity") +
 ggplot2::coord_flip() +
 ggplot2::scale_fill_manual(values = c("2022" = "#ED7D31", "2021" = "grey", "2020" = "grey", "2019" = "grey")) +
 ggplot2::theme(panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)),
                legend.position = "none")
 
 ```
@@ -45,18 +93,20 @@ ggplot2::theme(panel.background = element_blank(),
 
 ## Beyond the Defaults
 
+  Software knows neither what we wish to highlight nor the audience to whom we intend to communicate the information. Therefore, regardless of the software, design defaults are rarely best. 
+  
+  This section will implement data visualization best practices step-by-step beginning with the design defaults for the `ggplot2` library.
+
 ```{r, message = FALSE, warning = FALSE}
 
-# Load libraries
+# Load library
 library(dplyr)
-library(ggplot2)
 
 # Load data
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
 turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
 
 ```
-
 
 ```{r, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE}
 
@@ -104,7 +154,7 @@ ggplot2::theme(legend.position = "none")
 
 ```
 
-### Step 4: Add Mixed Case Axis Labels
+### Step 4: Add Mixed Case Axis Labels in Grey
 
 ```{r barchart_4, out.width = "100%", fig.cap = 'Step 4: Add mixed case axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -122,7 +172,7 @@ ggplot2::theme(legend.position = "none")
 
 ```
 
-### Step 5: Add Centered Title
+### Step 5: Add Centered Title in Grey
 
 ```{r barchart_5, out.width = "100%", fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -232,9 +282,9 @@ ggplot2::theme(legend.position = "none",
 
 ```
 
-### Step 10: Swap Axes
+### Step 10: Sort Data along Flipped Axis
 
-```{r barchart_10, out.width = "100%", fig.cap = 'Step 10: Swap axes.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart_10, out.width = "100%", fig.cap = 'Step 10: Sort data along flipped axis.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Sort education values by avg annual comp
 data <- data %>%
@@ -259,6 +309,36 @@ ggplot2::theme(legend.position = "none",
                plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
                axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+
+
+```{r pre-post-declutter, out.width = "100%", fig.cap = "Top: Design defaults (pre). Bottom: Enhanced design (post).", fig.align = 'center', warning = FALSE, message = FALSE}
+
+viz_pre <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+           ggplot2::geom_bar(stat = "identity") 
+
+viz_post <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+            ggplot2::geom_bar(stat = "identity") +
+            ggplot2::coord_flip() +
+            ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+            ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                                  "Life Sciences" = "#0070C0", 
+                                                  "Marketing" = "#BFBFBF", 
+                                                  "Medical" = "#BFBFBF",
+                                                  "Other" = "#BFBFBF",
+                                                  "Technical Degree" = "#BFBFBF")) +
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_blank(),
+                           axis.ticks.x = element_blank(),
+                           axis.ticks.y = element_blank(),
+                           plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+                           axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                           axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+  
+# Display distribution visualizations
+ggpubr::ggarrange(viz_pre, viz_post, ncol = 1, nrow = 2)
 
 ```
 
