@@ -56,7 +56,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Grey is an important color in the implementation of preattentive attributes as it facilitates a move of less important data and design elements to the background to make room for more predominate colors to highlight the most important information. Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in a sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
   
-```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center'}
+```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/preattentive_attributes.png")
 
@@ -97,6 +97,10 @@ ggplot2::theme(panel.background = element_blank(),
   
   This section will implement data visualization best practices step-by-step beginning with the design defaults for the `ggplot2` library.
 
+### Step 1: Build Bar Chart with Defaults
+
+  We will begin by building a bar chart that shows the distribution of employees' educational backgrounds. To simplify the data structure for data visualization, let's ingest our `employees` data and create an aggregated cube with counts by `ed_field`:
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Load library
@@ -104,11 +108,6 @@ library(dplyr)
 
 # Load data
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
-turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
-
-```
-
-```{r, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE}
 
 # Create data cube
 data <- employees %>%
@@ -116,7 +115,7 @@ data <- employees %>%
 
 ```
 
-### Step 1: Build Bar Chart with Defaults
+  A bar chart can be created using the `geom_bar()` function, and we will start with the `ggplot2` library's design defaults:
 
 ```{r barchart_1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -128,7 +127,9 @@ ggplot2::geom_bar(stat = "identity")
 
 ### Step 2: Remove Legend
 
-```{r barchart_2, out.width = "100%", fig.cap = 'Step 3: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
+  Since the legend is not necessary for interpreting the education field to which each bar corresponds, we will remove it using `theme(legend.position = "none")`. Eliminating the legend also provides more real estate for the chart, which helps make the x-axis values more legible.
+
+```{r barchart_2, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -139,7 +140,13 @@ ggplot2::theme(legend.position = "none")
 
 ### Step 3: Assign Colors Strategically
 
-```{r barchart_3, out.width = "100%", fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
+  There is a lot competing for attention due to this vibrant color palette. Let's assume that the objective is to highlight the education field pursued by the largest number of employees. Preattentive attributes lends well to this, and we can assign specific hex color codes to the education categories. 
+  
+  Since Life Sciences was the field pursued by the most employees, let's highlight the corresponding bar in blue and move the remaining bars to the background through the assignment of light grey. One method of accomplishing this is via the following explicit category assignment:
+  
+`scale_fill_manual(values = c("Human Resources" = "#BFBFBF", "Life Sciences" = "#0070C0", "Marketing" = "#BFBFBF", "Medical" = "#BFBFBF", "Other" = "#BFBFBF", Technical Degree" = "#BFBFBF"))`
+
+```{r barchart_3, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -154,9 +161,11 @@ ggplot2::theme(legend.position = "none")
 
 ```
 
-### Step 4: Add Mixed Case Axis Labels in Grey
+### Step 4: Add Mixed Case Axis Labels
 
-```{r barchart_4, out.width = "100%", fig.cap = 'Step 4: Add mixed case axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+  Axis labels are the column names by default, which is usually not the most user-friendly option. We can assign new mixed case axis labels by chaining `labs(x = 'Education Field', y = 'Headcount')` to the visualization code.
+
+```{r barchart_4, out.width = "100%", echo = FALSE, fig.cap = 'Step 4: Add mixed case axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -172,9 +181,13 @@ ggplot2::theme(legend.position = "none")
 
 ```
 
-### Step 5: Add Centered Title in Grey
+### Step 5: Add Left-Justified Title
 
-```{r barchart_5, out.width = "100%", fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
+  We can add a chart title via `labs(title = 'Headcount by Education Field')`. This title can be centered via `theme(plot.title = element_text(hjust = 0.5)`. 
+  
+  It is best practice to left justify titles since readers consume information beginning with the left side of the page (like reading a book), and left justifying the title increases the probability that the audience will read the title before engaging with the visual. Left justification is the default for `ggplot2` titles, which can also be explicitly set with `theme(plot.title = element_text(hjust = 0)`.
+
+```{r barchart_5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -187,13 +200,15 @@ ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF",
                                       "Other" = "#BFBFBF",
                                       "Technical Degree" = "#BFBFBF")) +
 ggplot2::theme(legend.position = "none",
-               plot.title = element_text(hjust = 0.5))
+               plot.title = element_text(hjust = 0))
 
 ```
 
 ### Step 6: Increase Axis Margins
 
-```{r barchart_6, out.width = "100%", fig.cap = 'Step 6: Increase axis margins.', fig.align = 'center', message = FALSE, warning = FALSE}
+  
+
+```{r barchart_6, out.width = "100%", echo = FALSE, fig.cap = 'Step 6: Increase axis margins.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -206,7 +221,7 @@ ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF",
                                       "Other" = "#BFBFBF",
                                       "Technical Degree" = "#BFBFBF")) +
 ggplot2::theme(legend.position = "none",
-               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0)),
                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
 
@@ -214,7 +229,9 @@ ggplot2::theme(legend.position = "none",
 
 ### Step 7: Remove Background
 
-```{r barchart_7, out.width = "100%", fig.cap = 'Step 7: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
+  
+
+```{r barchart_7, out.width = "100%", echo = FALSE, fig.cap = 'Step 7: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -228,7 +245,7 @@ ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF",
                                       "Technical Degree" = "#BFBFBF")) +
 ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
-               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
 
@@ -236,7 +253,9 @@ ggplot2::theme(legend.position = "none",
 
 ### Step 8: Remove Axis Ticks
 
-```{r barchart_8, out.width = "100%", fig.cap = 'Step 8: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
+  
+
+```{r barchart_8, out.width = "100%", echo = FALSE, fig.cap = 'Step 8: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -252,15 +271,17 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0.5, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
 
 ```
 
-### Step 9: Mute Axis Labels
+### Step 9: Mute Title and Axis Labels
 
-```{r barchart_9, out.width = "100%", fig.cap = 'Step 9: Mute axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+  
+
+```{r barchart_9, out.width = "100%", echo = FALSE, fig.cap = 'Step 9: Mute axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -276,7 +297,7 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
                axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
 
@@ -284,7 +305,9 @@ ggplot2::theme(legend.position = "none",
 
 ### Step 10: Sort Data along Flipped Axis
 
-```{r barchart_10, out.width = "100%", fig.cap = 'Step 10: Sort data along flipped axis.', fig.align = 'center', message = FALSE, warning = FALSE}
+  
+
+```{r barchart_10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data along flipped axis.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Sort education values by avg annual comp
 data <- data %>%
@@ -306,7 +329,7 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
                axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
                axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
 
@@ -314,7 +337,7 @@ ggplot2::theme(legend.position = "none",
 
 
 
-```{r pre-post-declutter, out.width = "100%", fig.cap = "Top: Design defaults (pre). Bottom: Enhanced design (post).", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r pre-post-declutter, out.width = "100%", echo = FALSE, fig.cap = "Top: Design defaults. Bottom: Enhanced design.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 viz_pre <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
            ggplot2::geom_bar(stat = "identity") 
@@ -333,7 +356,7 @@ viz_post <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_f
                            panel.background = element_blank(),
                            axis.ticks.x = element_blank(),
                            axis.ticks.y = element_blank(),
-                           plot.title = element_text(hjust = 0.5, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+                           plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
                            axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
                            axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
   
@@ -357,6 +380,15 @@ ggpubr::ggarrange(viz_pre, viz_post, ncol = 1, nrow = 2)
 
 
 ### Line Graphs
+
+
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load data
+turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
+
+```
 
   **Single Series**
 

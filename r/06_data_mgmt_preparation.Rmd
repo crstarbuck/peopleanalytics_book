@@ -38,11 +38,20 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   A **Type 1 table** is created on a regular cadence (usually daily or monthly) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. Type 1 tables are often archived and appended to prior snapshots with an effective date, and this design has utility when a view of the workforce is required as of a past date or when an analysis calls for querying across multiple point-in-time snapshots (e.g., computing trailing 12-month attrition rates using average monthly headcount). 
   
-  A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  It is important to note that leveraging snapshots for trending analyses has significant deficiencies given the large number of retroactive transactions processed in HCM applications that are never reflected in prior snapshots. Below are some examples:
+  
+  * Org changes for which incorrect manager assignments are later identified and corrected
+  * Back-dated compensation changes
+  * Job profile attribute updates, resulting in incorrect values across snapshots prior to the update date
+  * Edits to hire, promotion, transfer, and termination events after completing the business process in the system (e.g., delayed start date)
+  
+  While a past date may be set as the effective date for these transactions, snapshots would incorrectly indicate that the change was effective on the date they were entered into the system (i.e., when the value first changed across snapshots), resulting in misalignment with the system of record. This can result in inaccurate metrics related to headcount, hires, career moves, and terminations in a given period. This type of data leakage can quickly become a larger issue as the size and complexity of the workforce grows. Even a few discrepancies relative to what managers see in the source system can create mistrust in data solutions and hamstring progress up the analytics value chain.
+  
+  A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a *start date* and *end date* (where applicable) for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time -- based on when they actually took effect.
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
-  Note that the combination of `end_date = '12/31/9999'` and `current_record = 'Y'` indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent the *last known attributes* along with `current_record = 'Y'`:
+  Note that rows where `end_date` is null indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent *last known attributes*:
   
 ```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD', fig.align = 'center'}
 
@@ -50,7 +59,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  While we could select rows where `current_record = 'Y'` to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
+  To construct a view of the last known attributes for each worker in this table, we could select rows where `end_date` is null for active workers and the most recent rows (max date) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
 
 ```{r type-1-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 1 SCD', fig.align = 'center'}
 

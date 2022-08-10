@@ -6,6 +6,7 @@ date: "`r Sys.Date()`"
 output:
   pdf_document:
     toc: true
+    toc_depth: 2
 latex_engine: xelatex
 header-includes:
   - \usepackage{xcolor}
@@ -47,7 +48,7 @@ knitr::write_bib(c(
 
 # Preface {-}
 
-Twenty years ago, I was an unlikely author for this book. My first statistics course in college was dreadful. On day one, my professor entered our lecture hall and shared some grim stats: "Based on historical data, half of you won't make it to the midterm and of those who do, half won't receive a passing grade in the end." This was both discouraging and motivating. Stats was a required course for my major so failure wasn't an option; I had to pass. I attended weekly study sessions with classmates and studied a lot independently to learn the material. I saw no applications for statistics to anything I planned to do with my degree, so the course was reduced to memorization of equations. The course was challenging. I passed the course with a B, and I was determined to never open another stats book.
+Twenty years ago, I was an unlikely author for this book. My first statistics course in college was dreadful. On day one, my professor entered our lecture hall and shared some grim stats: "Based on historical data, half of you won't make it to the midterm and of those who do, half won't receive a passing grade in the end." This was both discouraging and motivating. Stats was a required course for my major so failure wasn't an option; I had to pass. I attended weekly study sessions with classmates and studied a lot independently to learn the material. I saw no applications for statistics to anything I planned to do with my degree, so the course was reduced to memorization of equations. I passed the course with a B, and I was determined to never open another stats book.
 
 You may be wondering what changed to motivate authoring a book involving this insufferable subject. The short answer is that I discovered the very important applications to a discipline I truly love, people analytics. The practical applications were altogether absent from my undergraduate stats course. As I began to think about complex and nuanced challenges in social science contexts, it became clear that I would not only need to reengage with stats; I would need to develop an authentic appreciation for the discipline. Over the past decade, I have taken the journey of 'relearning' statistics and developing a deep understanding of how statistical methodologies can be applied to various organizational problem statements.
 
@@ -63,7 +64,7 @@ Thus, this book represents my earnest attempt to provide a concise -- yet adequa
   
   In addition, this book will cut through the fluff and teach you how to do stuff. Knowledge of concepts is futile without an understanding of how to apply them to people analytics use cases. Whether you are a people leader, individual contributor, or aspiring analytics practitioner, this book is for you. This book will serve as a guide through the analytics lifecycle, curating the key concepts and applications germane to common questions and hypotheses within people analytics and providing a repeatable framework for successful analytics projects.
   
-  The goal of this book is not to boil the ocean by compiling and implementing every analysis method, from every point of view, in every tool. This book is guided by a goal of optimizing for the *fewest* number of concepts and applications required to successfully design and execute the *majority* of projects in the people analytics domain. Though this is a technical book, there is an emphasis on concepts and practical applications to people analytics over the mathematics that underpin the various methods.
+  The goal of this book is not to boil the ocean by compiling and implementing every analysis method, from every point of view, in every tool. This book is guided by a goal of optimizing for the *fewest* number of concepts and applications required to successfully design and execute the *majority* of projects in the people analytics domain. Though this is a technical book, there is an emphasis on concepts and practical applications to people analytics over the mathematical underpinnings.
 
 ## Guiding Principles
 
@@ -924,7 +925,7 @@ ggplot2::geom_line()
 # Produce line chart
 ggplot2::ggplot(data, aes(x = x, y = y)) +
 ggplot2::geom_line(size = .4, colour = "blue") + # Reduce line thickness and change color to blue
-ggplot2::theme_bw() + # Remove the default grey background
+ggplot2::theme(panel.background = element_blank()) + # Remove the default grey background
 ggplot2::ggtitle("Plot Title \n Split between Two Lines") + # Assign a title
 ggplot2::xlab("Variable x Name") + # Label the x-axis
 ggplot2::ylab("Variable y Name") + # Label the y-axis
@@ -958,7 +959,7 @@ ggplot2::theme(plot.title = element_text(hjust = 0.5)) # Center plot title
 
 # Introduction to SQL {#sql-intro}
 
-  **Structured Query Language (SQL)** is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
+  \index{**Structured Query Language (SQL)**} is the most common language used to extract and wrangle data contained in a relational database. SQL is an essential skill for anyone working in analytics.
   
 ## Basics
   
@@ -2085,11 +2086,20 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   A **Type 1 table** is created on a regular cadence (usually daily or monthly) and contains no history -- only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. Type 1 tables are often archived and appended to prior snapshots with an effective date, and this design has utility when a view of the workforce is required as of a past date or when an analysis calls for querying across multiple point-in-time snapshots (e.g., computing trailing 12-month attrition rates using average monthly headcount). 
   
-  A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a *start date* and *end date* for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time.
+  It is important to note that leveraging snapshots for trending analyses has significant deficiencies given the large number of retroactive transactions processed in HCM applications that are never reflected in prior snapshots. Below are some examples:
+  
+  * Org changes for which incorrect manager assignments are later identified and corrected
+  * Back-dated compensation changes
+  * Job profile attribute updates, resulting in incorrect values across snapshots prior to the update date
+  * Edits to hire, promotion, transfer, and termination events after completing the business process in the system (e.g., delayed start date)
+  
+  While a past date may be set as the effective date for these transactions, snapshots would incorrectly indicate that the change was effective on the date they were entered into the system (i.e., when the value first changed across snapshots), resulting in misalignment with the system of record. This can result in inaccurate metrics related to headcount, hires, career moves, and terminations in a given period. This type of data leakage can quickly become a larger issue as the size and complexity of the workforce grows. Even a few discrepancies relative to what managers see in the source system can create mistrust in data solutions and hamstring progress up the analytics value chain.
+  
+  A **Type 2 table** is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a *start date* and *end date* (where applicable) for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time -- based on when they actually took effect.
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
-  Note that the combination of `end_date = '12/31/9999'` and `current_record = 'Y'` indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent the *last known attributes* along with `current_record = 'Y'`:
+  Note that rows where `end_date` is null indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent *last known attributes*:
   
 ```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD', fig.align = 'center'}
 
@@ -2097,7 +2107,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  While we could select rows where `current_record = 'Y'` to construct a view of the last known attributes for each worker in this table, the task would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
+  To construct a view of the last known attributes for each worker in this table, we could select rows where `end_date` is null for active workers and the most recent rows (max date) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
 
 ```{r type-1-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 1 SCD', fig.align = 'center'}
 
@@ -5202,7 +5212,7 @@ flextable::as_flextable(med.fit.four)
 
 <!--chapter:end:r/10_linear_regression.Rmd-->
 
-# Linear Model Variants {#lmv}
+# Linear Model Extensions {#lme}
 
   This chapter covers several techniques for expanding the linear regression framework covered in Chapter \@ref(lm) to test hypotheses with more nuance and complexity.
 
@@ -5644,7 +5654,7 @@ flextable::as_flextable(ps.cube.fit)
 
 10. Why might adding higher-order polynomial terms to a model be problematic, even though the additional terms increase the model's $R^2$?
 
-<!--chapter:end:r/11_linear_variants.Rmd-->
+<!--chapter:end:r/11_linear_extensions.Rmd-->
 
 # Logistic Regression {#log}
 
@@ -7011,20 +7021,375 @@ employees <- cbind(employees, hier_cluster = groups)
 
 # Data Visualization {#data-viz}
 
-## Design Guidelines
+  Unlike preceding chapters, data visualization is more of an *art* than a *science*. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
+  
+  This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike.
+  
+## Best Practices
 
-## Visualization Types
+  While the type of visual depends on the nature of data being presented, there are general best practices for effectively communicating information that are applicable for all data types, audiences, and contexts.
 
+### Color Palette
 
+  There are several important considerations when choosing colors for data visualization. 
+  
+  **Color has meaning.**
+  
+  The meaning of color is not consistent across the world. For example, in Western cultures red generally has unfavorable connotations (e.g., off track, danger) while green signals a favorable status (e.g., on track, cash flow positive). However, in Asian cultures red indicates success. 
+  
+  It is important to understand what color indicates in the contexts in which information is shared to ensure color choices are consistent with the messages that need to be conveyed.
+  
+  **Respect color blindness.**
+
+  Most estimates indicate that 1 in 12 men (8%) and 1 in 200 women (0.5%) are colorblind (~4.5% of the world population). Males are more likely to be colorblind because the X chromosome contains the genes responsible for the most common forms of color blindness. Trouble distinguishing between red and green is the most common manifestation of colorblindness (Gordon, 1998).
+  
+  This has important implications for data visualization, and it is generally best to avoid the use of red and green. One alternative is to leverage orange to indicate unfavorable data points and blue for favorable. This strategy will be implemented throughout this chapter.
+
+  **Adhere to brand colors.**
+  
+  In most organizations, the marketing team defines a color palette consistent with the branding used for consumer products and services. In this case, analysts may be constrained to the use of colors within the branding palette. 
+  
+  Be sure to consult with marketing colleagues and adhere to any color palette requirements.
+
+  **Use color consistently.**
+
+  To support a correct interpretation of information, it is important to use a consistent color scheme across the various visuals in dashboards, slides, and documents. For example, if blue is assigned to highlight how the Engineering department compares to other departments in a particular view, blue should be assigned to the Engineering department in every view in which department is a grouping dimension. 
+  
+  The consistent use of color requires the audience to wield less effort to understand information, which in turn reduces the risk of incorrect interpretation.
+
+### Chart Borders
+
+  The goal in data visualization is to enable the most important data to take center stage. Formatting should support -- not detract -- from this objective. Chart borders are a usual suspect and prime example of formatting that can divert focus away from the data.
+  
+  Figure \@ref(fig:chart-borders) illustrates the use of heavy and light borders for a tabular presentation of data. Formatting takes center stage in the first table due to heavy borders, while formatting is not the focus in the second table given the minimal light grey border.
+  
+```{r chart-borders, out.width = "75%", echo = FALSE, fig.cap = 'Comparison of data tables with heavy (left) and light (right) borders.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/light_heavy_borders.png")
+
+```
+
+### Preattentive Attributes
+  
+  **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). 
+  
+  It is important to remember that data do not always need to be visualized with a chart. Sometimes communicating with text is a sufficient and effective way to convey information. In the case of text, preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility.
+  
+  Grey is an important color in the implementation of preattentive attributes as it facilitates a move of less important data and design elements to the background to make room for more predominate colors to highlight the most important information. Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in a sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
+  
+```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/preattentive_attributes.png")
+
+```
+  
+  Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less predominate grey.
+  
+```{r pre-attr-2, out.width = "100%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs for the current year relative to prior years.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Create data
+year <- c('2022', '2021', '2020', '2019')
+labor_cost <- c(219700000, 169000000, 130000000, 100000000)
+lc_data <- data.frame(year, labor_cost)
+
+# Visualize data
+ggplot2::ggplot(lc_data, aes(x = year, y = labor_cost * .000001, fill = year)) + 
+ggplot2::labs(x = 'Year', y = 'Labor Cost (in millions of USD)') +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::scale_fill_manual(values = c("2022" = "#ED7D31", "2021" = "grey", "2020" = "grey", "2019" = "grey")) +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)),
+               legend.position = "none")
+
+```
+
+  Simply put, if something is **really important**, make sure it is different from other content on the page, slide, or section.
+
+## Beyond the Defaults
+
+  Software knows neither what we wish to highlight nor the audience to whom we intend to communicate the information. Therefore, regardless of the software, design defaults are rarely best. 
+  
+  This section will implement data visualization best practices step-by-step beginning with the design defaults for the `ggplot2` library.
+
+### Step 1: Build Bar Chart with Defaults
+
+  We will begin by building a bar chart that shows the distribution of employees' educational backgrounds. To simplify the data structure for data visualization, let's ingest our `employees` data and create an aggregated cube with counts by `ed_field`:
+  
 ```{r, message = FALSE, warning = FALSE}
 
 # Load library
 library(dplyr)
 
-# Load employee data
-data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
+# Load data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+
+# Create data cube
+data <- employees %>%
+        dplyr::count(ed_field)
 
 ```
+
+  A bar chart can be created using the `geom_bar()` function, and we will start with the `ggplot2` library's design defaults:
+
+```{r barchart_1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") 
+
+```
+
+### Step 2: Remove Legend
+
+  Since the legend is not necessary for interpreting the education field to which each bar corresponds, we will remove it using `theme(legend.position = "none")`. Eliminating the legend also provides more real estate for the chart, which helps make the x-axis values more legible.
+
+```{r barchart_2, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 3: Assign Colors Strategically
+
+  There is a lot competing for attention due to this vibrant color palette. Let's assume that the objective is to highlight the education field pursued by the largest number of employees. Preattentive attributes lends well to this, and we can assign specific hex color codes to the education categories. 
+  
+  Since Life Sciences was the field pursued by the most employees, let's highlight the corresponding bar in blue and move the remaining bars to the background through the assignment of light grey. One method of accomplishing this is via the following explicit category assignment:
+  
+`scale_fill_manual(values = c("Human Resources" = "#BFBFBF", "Life Sciences" = "#0070C0", "Marketing" = "#BFBFBF", "Medical" = "#BFBFBF", "Other" = "#BFBFBF", Technical Degree" = "#BFBFBF"))`
+
+```{r barchart_3, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 4: Add Mixed Case Axis Labels
+
+  Axis labels are the column names by default, which is usually not the most user-friendly option. We can assign new mixed case axis labels by chaining `labs(x = 'Education Field', y = 'Headcount')` to the visualization code.
+
+```{r barchart_4, out.width = "100%", echo = FALSE, fig.cap = 'Step 4: Add mixed case axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none")
+
+```
+
+### Step 5: Add Left-Justified Title
+
+  We can add a chart title via `labs(title = 'Headcount by Education Field')`. This title can be centered via `theme(plot.title = element_text(hjust = 0.5)`. 
+  
+  It is best practice to left justify titles since readers consume information beginning with the left side of the page (like reading a book), and left justifying the title increases the probability that the audience will read the title before engaging with the visual. Left justification is the default for `ggplot2` titles, which can also be explicitly set with `theme(plot.title = element_text(hjust = 0)`.
+
+```{r barchart_5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               plot.title = element_text(hjust = 0))
+
+```
+
+### Step 6: Increase Axis Margins
+
+  
+
+```{r barchart_6, out.width = "100%", echo = FALSE, fig.cap = 'Step 6: Increase axis margins.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 7: Remove Background
+
+  
+
+```{r barchart_7, out.width = "100%", echo = FALSE, fig.cap = 'Step 7: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 8: Remove Axis Ticks
+
+  
+
+```{r barchart_8, out.width = "100%", echo = FALSE, fig.cap = 'Step 8: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 9: Mute Title and Axis Labels
+
+  
+
+```{r barchart_9, out.width = "100%", echo = FALSE, fig.cap = 'Step 9: Mute axis labels.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+### Step 10: Sort Data along Flipped Axis
+
+  
+
+```{r barchart_10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data along flipped axis.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Sort education values by avg annual comp
+data <- data %>%
+        dplyr::arrange(n)
+data$ed_field <- factor(data$ed_field, levels = data$ed_field)
+
+# Visualize data
+ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+```
+
+
+
+```{r pre-post-declutter, out.width = "100%", echo = FALSE, fig.cap = "Top: Design defaults. Bottom: Enhanced design.", fig.align = 'center', warning = FALSE, message = FALSE}
+
+viz_pre <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+           ggplot2::geom_bar(stat = "identity") 
+
+viz_post <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+            ggplot2::geom_bar(stat = "identity") +
+            ggplot2::coord_flip() +
+            ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+            ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                                  "Life Sciences" = "#0070C0", 
+                                                  "Marketing" = "#BFBFBF", 
+                                                  "Medical" = "#BFBFBF",
+                                                  "Other" = "#BFBFBF",
+                                                  "Technical Degree" = "#BFBFBF")) +
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_blank(),
+                           axis.ticks.x = element_blank(),
+                           axis.ticks.y = element_blank(),
+                           plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
+                           axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
+                           axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+  
+# Display distribution visualizations
+ggpubr::ggarrange(viz_pre, viz_post, ncol = 1, nrow = 2)
+
+```
+
+## Visualization Types
+
+
+
 
 ### Tables
 
@@ -7037,14 +7402,21 @@ data <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_b
 
 ### Line Graphs
 
+
+
+```{r, message = FALSE, warning = FALSE}
+
+# Load data
+turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
+
+```
+
   **Single Series**
 
 ```{r single-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Single series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-library(ggplot2)
-
 # Subset data
-sl_data <- subset(data, year == 5 & job == 'People Scientist' & level == 4 & remote == 'Yes')
+sl_data <- subset(turnover, year == 5 & job == 'People Scientist' & level == 4 & remote == 'Yes')
 
 # Visualize data
 ggplot2::ggplot(sl_data, aes(x = month, y = turnover_rate * .01)) + 
@@ -7067,7 +7439,7 @@ ggplot2::theme(panel.background = element_blank(),
 ```{r double-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Two series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Subset data
-tl_data <- subset(data, year == 5 & job %in% c('People Scientist', 'Data Engineer') & level == 4 & remote == 'Yes')
+tl_data <- subset(turnover, year == 5 & job %in% c('People Scientist', 'Data Engineer') & level == 4 & remote == 'Yes')
 
 # Ordered factor for consistent legend value sorting
 tl_data$job <- factor(tl_data$job, levels = c("People Scientist", "Data Engineer"))
@@ -7123,6 +7495,23 @@ ggplot2::theme(panel.background = element_blank(),
   
   **Horizontal**
   
+```{r hbar_chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(employees, aes(x = reorder(job_title, commute_dist, mean), y = commute_dist, fill = commute_dist)) + 
+ggplot2::labs(x = 'Job Title', y = 'Average Commute Distance') +
+ggplot2::geom_bar(stat = "summary", fun = "mean") +
+ggplot2::coord_flip() +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"),
+               legend.position = "none")
+
+```
+
+
   **Stacked**
   
 ### Waterfall Charts
@@ -7160,14 +7549,11 @@ ggplot2::theme(panel.background = element_blank(),
 
 10. 
 
-
-  
-
 <!--chapter:end:r/15_data_visualization.Rmd-->
 
 # Data Storytelling {#storytelling}
 
-  This chapter leans more *art* than *science* and covers strategies to translate results of analyses into compelling stories that have a high probability of landing effectively with target audiences. One may build an impressive set of complex models and perform robust analyses but unless the results and recommendations are clear to stakeholders, this is an exercise in futility. We need stories to distill analytical output down to a non-technical and logical organization of unified ideas that arouse the energy and attention of the audience.
+  Like Chapter \@ref(data-viz), this chapter leans more *art* than *science* in the coverage of strategies to translate results of analyses into compelling stories that have a high probability of landing effectively with target audiences. One may build an impressive set of complex models and perform robust analyses but unless the results and recommendations are clear to stakeholders, this is an exercise in futility. We need stories to distill analytical output down to a non-technical and logical organization of unified ideas that arouse the energy and attention of the audience.
 
 ## Know Your Audience
 
@@ -7182,47 +7568,6 @@ ggplot2::theme(panel.background = element_blank(),
   3. Does the audience or decision maker have a known perspective on the topic?
   4. How should the content be messaged to proactively appeal to potential risks or biases the audience may possess that could create resistance to the findings and/or recommendations?
   5. What is the audience's preferred format for content sharing (e.g., document vs. deck)?
-
-## Preattentive Attributes
-  
-  **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). Preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility. 
-  
-  Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in the sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
-  
-```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases.', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/preattentive_attributes.png")
-
-```
-  
-  Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes in a horizontal bar chart by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less prominent grey.
-  
-```{r pre-attr-2, out.width = "100%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs for the current year relative to prior years.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Load library
-library(ggplot2)
-
-# Create data
-year <- c('2022', '2021', '2020', '2019')
-labor_cost <- c(878800, 676000, 520000, 400000)
-lc_data <- data.frame(year, labor_cost)
-
-# Visualize data
-ggplot2::ggplot(lc_data, aes(x = year, y = labor_cost, fill = year)) + 
-ggplot2::labs(x = 'Year', y = 'Labor Cost (in thousands)') +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::coord_flip() +
-ggplot2::scale_fill_manual(values = c("2022" = "#ED7D31", "2021" = "grey", "2020" = "grey", "2019" = "grey")) +
-ggplot2::theme(panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"),
-               legend.position = "none")
-
-```
-
-  Simply put, if something is **really important**, make sure it is different from other content on the page, slide, or section.
 
 ## Production Status
 
@@ -7379,6 +7724,8 @@ DeVellis, R. F. (2012). Scale development: Theory and applications. Thousand Oak
 Edmondson, A. (1999). Psychological safety and learning behavior in work teams. Administrative Science Quarterly, 44(2), 350-383.
 
 Gelman, A., & Hill, J. (2006). Analytical methods for social research: Data analysis using regression and multilevel/hierarchical models. Cambridge University Press.
+
+Gordon, N. (1998). Colour blindness. Public Health, 112(2), 81–84. doi:10.1038/sj.ph.1900446.
 
 Hair, J. F., Black, W. C., Babin, B. J., Anderson, R. E., & Tatham, R. L. (2006). Multivariate data analysis (6th ed.). Upper Saddle River, NJ: Pearson Prentice Hall.
 
