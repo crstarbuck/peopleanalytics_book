@@ -99,7 +99,7 @@ ggplot2::theme(panel.background = element_blank(),
 
 ### Step 1: Build Bar Chart with Defaults
 
-  We will begin by building a bar chart that shows the distribution of employees' educational backgrounds. To simplify the data structure for data visualization, let's ingest our `employees` data and create an aggregated cube with counts by `ed_field`:
+  We will begin by building a bar chart that shows the distribution of active employees' educational backgrounds. To simplify the data structure for data visualization, let's ingest our `employees` data and create an aggregated cube with counts by `ed_field` for active employees:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -109,8 +109,9 @@ library(dplyr)
 # Load data
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
 
-# Create data cube
+# Create data cube for active employees
 data <- employees %>%
+        dplyr::filter(active == 'Yes') %>%
         dplyr::count(ed_field)
 
 ```
@@ -183,16 +184,18 @@ ggplot2::theme(legend.position = "none")
 
 ### Step 5: Add Left-Justified Title
 
-  We can add a chart title via `labs(title = 'Headcount by Education Field')`. This title can be centered via `theme(plot.title = element_text(hjust = 0.5)`. 
+  We can add a chart title via `labs(title = 'This is a chart title.')`. This title can be centered via `theme(plot.title = element_text(hjust = 0.5)`, left justified via `theme(plot.title = element_text(hjust = 0)`, or right justified via `theme(plot.title = element_text(hjust = 1)`.
   
-  It is best practice to left justify titles since readers consume information beginning with the left side of the page (like reading a book), and left justifying the title increases the probability that the audience will read the title before engaging with the visual. Left justification is the default for `ggplot2` titles, which can also be explicitly set with `theme(plot.title = element_text(hjust = 0)`.
+  It is a best practice to left justify titles since readers consume information beginning with the left side of the page (like reading a book), and left justifying the title increases the probability that the audience will read the title and understand its purpose before engaging with the visual. Left justification is the default for `ggplot2` titles.
+  
+  It is also a best practice to assign a descriptive title to charts to highlight the key message(s) we want to convey to the audience through the visual. For longer titles, the new line character `\n` can be used to break titles into multiple lines.
 
 ```{r barchart_5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -213,7 +216,7 @@ ggplot2::theme(legend.position = "none",
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -236,7 +239,7 @@ ggplot2::theme(legend.position = "none",
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -260,7 +263,7 @@ ggplot2::theme(legend.position = "none",
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -286,7 +289,7 @@ ggplot2::theme(legend.position = "none",
 # Visualize data
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -318,7 +321,7 @@ data$ed_field <- factor(data$ed_field, levels = data$ed_field)
 ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") +
 ggplot2::coord_flip() +
-ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                       "Life Sciences" = "#0070C0", 
                                       "Marketing" = "#BFBFBF", 
@@ -345,7 +348,7 @@ viz_pre <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_fi
 viz_post <- ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
             ggplot2::geom_bar(stat = "identity") +
             ggplot2::coord_flip() +
-            ggplot2::labs(title = 'Headcount by Education Field', x = 'Education Field', y = 'Headcount') +
+            ggplot2::labs(title = 'Life Sciences is the most common \neducation field among our active employees.', x = 'Education Field', y = 'Headcount') +
             ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
                                                   "Life Sciences" = "#0070C0", 
                                                   "Marketing" = "#BFBFBF", 
