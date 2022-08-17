@@ -50,7 +50,61 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### Zero Baseline
 
+  The use of a non-zero baseline can exaggerate differences in metrics, resulting in misleading conclusions.  
   
+  Figure \@ref(fig:baseline-compare) illustrates how minor differences are exaggerated when a non-zero baseline is applied to the $y$-axis. Given that the average hires across these four years is `1,000`, there is actually little variation in hire volume YoY, and this is accurately reflected in the bar chart with a zero baseline.
+
+```{r baseline-compare, out.width = "100%", echo = FALSE, fig.cap = 'Hires by year with zero baseline (left) and non-zero baseline (right).', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Create data
+year <- c('2022', '2021', '2020', '2019')
+hires <- c(980, 990, 1010, 1020)
+lc_data <- data.frame(year, hires)
+
+# Visualize data
+viz_zero_baseline <- ggplot2::ggplot(lc_data, aes(x = year, y = hires, fill = year)) + 
+                     ggplot2::labs(title = 'Zero Baseline', x = 'Year', y = 'Hires') +
+                     ggplot2::geom_bar(stat = "identity", fill = "#595959") +
+                     ggplot2::theme(panel.background = element_blank(),
+                                    plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                                    axis.ticks.x = element_blank(),
+                                    axis.ticks.y = element_blank(),
+                                    axis.title.x = element_text(colour = "#404040"),
+                                    axis.title.y = element_text(colour = "#404040"),
+                                    legend.position = "none")
+
+
+viz_nonzero_baseline <- ggplot2::ggplot(lc_data, aes(x = year, y = hires, fill = year)) + 
+                        ggplot2::labs(title = 'Non-Zero Baseline', x = 'Year', y = '') +
+                        ggplot2::geom_bar(stat = "identity", fill = "#595959") +
+                        ggplot2::coord_cartesian(ylim = c(980, 1020)) +
+                        ggplot2::theme(panel.background = element_blank(),
+                                       plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                                       axis.ticks.x = element_blank(),
+                                       axis.ticks.y = element_blank(),
+                                       axis.title.x = element_text(colour = "#404040"),
+                                       axis.title.y = element_text(colour = "#404040"),
+                                       legend.position = "none")
+
+# Display distribution visualizations
+ggpubr::ggarrange(viz_zero_baseline, viz_nonzero_baseline, ncol = 2, nrow = 1)
+
+```
+
+### Intuitive Layout
+
+  When visualizing data, it is best not to deviate from the way in which the audience will naturally interpret the data. For example, numbers lower on a $y$-axis will naturally be interpreted to be smaller than numbers higher on the $y$-axis. If there are both positive and negative numbers along an $x$-axis, negative metrics are best placed on the left and positive on the right since people naturally consume content from left to right.
+  
+  Figure \@ref(fig:flipped-axis-viz) shows murders committed using firearms in Florida across time. This visual has an inverted $y$-axis, which is highly misleading since it suggests spikes in murders are dips. Irrespective of whether this was politically motivated or simply a failed attempt at creativity, this is a deceptive data visualization.
+
+```{r flipped-axis-viz, out.width = "75%", echo = FALSE, fig.cap = 'Misleading inverted y-axis.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-flipped_y_axis.png")
+
+```
 
 ### Preattentive Attributes
   
@@ -87,8 +141,8 @@ ggplot2::scale_fill_manual(values = c("2022" = "#ED7D31", "2021" = "grey", "2020
 ggplot2::theme(panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"),
                legend.position = "none")
 
 ```
@@ -110,7 +164,7 @@ ggplot2::theme(panel.background = element_blank(),
 # Load library
 library(dplyr)
 
-# Load data
+# Read employee data
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
 
 # Create data cube for active employees
@@ -122,10 +176,10 @@ smmry_ed_field <- employees %>%
 
   A bar chart can be created using the `geom_bar()` function, and we will start with the `ggplot2` library's design defaults:
 
-```{r barchart_1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
-ggplot2::ggplot(data, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
 ggplot2::geom_bar(stat = "identity") 
 
 ```
@@ -134,7 +188,7 @@ ggplot2::geom_bar(stat = "identity")
 
   Since the legend is not necessary for interpreting the education field to which each bar corresponds, we will remove it using `theme(legend.position = "none")`. Eliminating the legend also provides more real estate for the chart, which helps make the x-axis values more legible.
 
-```{r barchart_2, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-2, out.width = "100%", echo = FALSE, fig.cap = 'Step 2: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -151,7 +205,7 @@ ggplot2::theme(legend.position = "none")
   
 `scale_fill_manual(values = c("Human Resources" = "#BFBFBF", "Life Sciences" = "#0070C0", "Marketing" = "#BFBFBF", "Medical" = "#BFBFBF", "Other" = "#BFBFBF", Technical Degree" = "#BFBFBF"))`
 
-```{r barchart_3, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-3, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -170,7 +224,7 @@ ggplot2::theme(legend.position = "none")
 
   Axis titles are the column names by default, which is usually not the most user-friendly option. We can assign new mixed case axis titles by chaining `labs(x = 'Education Field', y = 'Headcount')` to the visualization code.
 
-```{r barchart_4, out.width = "100%", echo = FALSE, fig.cap = 'Step 4: Add mixed case axis titles.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-4, out.width = "100%", echo = FALSE, fig.cap = 'Step 4: Add mixed case axis titles.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -194,7 +248,7 @@ ggplot2::theme(legend.position = "none")
   
   It is also a best practice to assign a descriptive title to charts to highlight the key message(s) we want to convey to the audience through the visual. For longer titles, the new line character `\n` can be used to break titles into multiple lines.
 
-```{r barchart_5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -211,39 +265,11 @@ ggplot2::theme(legend.position = "none",
 
 ```
 
-### Step 6: Increase Axis Margins
-
-  Creating a degree of separation between axis titles and the variable's values helps in reducing clutter and enhancing legibility. We can leverage `axis.title.x = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0))` and `axis.title.y = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0))` to set the margins around x-axis and y-axis titles, respectively, where:
-  
-  * `t` = top
-  * `r` = right
-  * `b` = bottom
-  * `l` = left
-
-```{r barchart_6, out.width = "100%", echo = FALSE, fig.cap = 'Step 6: Increase axis margins.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(margin = margin(t = 10, r = 10, b = 0, l = 0)),
-               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
-
-```
-
-### Step 7: Remove Background
+### Step 6: Remove Background
 
   The default grey background is a distraction from the data we need to take center stage. We can remove this background using `panel.background = element_blank()` to achieve a cleaner aesthetic and allow the bars in this chart to become more pronounced. 
 
-```{r barchart_7, out.width = "100%", echo = FALSE, fig.cap = 'Step 7: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-6, out.width = "100%", echo = FALSE, fig.cap = 'Step 6: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -256,18 +282,15 @@ ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF",
                                       "Other" = "#BFBFBF",
                                       "Technical Degree" = "#BFBFBF")) +
 ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               panel.background = element_blank())
 
 ```
 
-### Step 8: Remove Axis Ticks
+### Step 7: Remove Axis Ticks
 
   Axis ticks add noise to this visual and are not necessary to ascertain to which values along the axes the data align. Axis ticks can be removed for each axis independently with `axis.ticks.x = element_blank()` for the x-axis and `axis.ticks.y = element_blank()` for the y-axis.
 
-```{r barchart_8, out.width = "100%", echo = FALSE, fig.cap = 'Step 8: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-7, out.width = "100%", echo = FALSE, fig.cap = 'Step 7: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -282,20 +305,17 @@ ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF",
 ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               axis.ticks.y = element_blank())
 
 ```
 
-### Step 9: Mute Titles
+### Step 8: Mute Titles
 
   While the chart and axis titles are important for clarifying what information is represented in the visual, these should not be the focus. Just as we pushed the less important education categories to the background using grey text, we can mute the chart and axis titles with grey text to help draw attention to the data.
   
   We can change the color of the chart title to light grey with `plot.title = element_text(colour = "#404040")`. The axis titles can be changed to the same color using `axis.title.x = element_text(colour = "#404040")` for the x-axis and `axis.title.y = element_text(colour = "#404040")` for the y-axis.
 
-```{r barchart_9, out.width = "100%", echo = FALSE, fig.cap = 'Step 9: Mute titles.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-8, out.width = "100%", echo = FALSE, fig.cap = 'Step 8: Mute titles.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -311,31 +331,19 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
 
-### Step 10: Sort Data along Flipped Axis
+### Step 9: Flip Axes
 
-  We can further simplify this visual for our audience by sorting the bars from highest to lowest, and flipping the coordinates of the bar chart. Flipping the coordinates allows the audience to more easily scan down the right side of the visual to quickly identify and understand the relative frequencies of education categories.
+  Flipping the coordinates of axes to convert the default vertical bar chart into a horizontal bar chart allows the audience to more easily scan down the right side of the visual to quickly identify and understand the relative frequencies of education categories.
   
-  We can use `dplyr` to sort the data and define the levels of `ed_field`.
+  Coordinates can be flipped using `coord_flip()`:
   
-```{r, message = FALSE, warning = FALSE}
-
-# Sort education values by avg annual comp
-smmry_ed_field <- smmry_ed_field %>%
-                  dplyr::arrange(n)
-
-smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
-
-```
-
-  We can now visualize the sorted data with flipped coordinates using `coord_flip()`:
-
-```{r barchart_10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data along flipped axis.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-9, out.width = "100%", echo = FALSE, fig.cap = 'Step 9: Flip axis.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
@@ -352,15 +360,54 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
+
+```
+
+### Step 10: Sort Data
+
+  This visual can be further simplified by sorting the bars from highest to lowest value. 
+  
+  We can use `dplyr` to sort the data and define the levels of `ed_field`.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Sort education values by count
+smmry_ed_field <- smmry_ed_field %>%
+                  dplyr::arrange(n)
+
+smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
+
+```
+
+```{r barchart-10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
 
   The final visual is a marked improvement over the design defaults in step 1.
 
-```{r pre-post-declutter, out.width = "100%", fig.cap = "Top: Enhanced design. Bottom: Design defaults.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r pre-post-declutter, out.width = "100%", fig.cap = "Enhanced design (top). Design defaults (bottom).", fig.align = 'center', warning = FALSE, message = FALSE}
 
 viz_pre <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
            ggplot2::geom_bar(stat = "identity") 
@@ -379,9 +426,9 @@ viz_post <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.f
                            panel.background = element_blank(),
                            axis.ticks.x = element_blank(),
                            axis.ticks.y = element_blank(),
-                           plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-                           axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-                           axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+                           plot.title = element_text(hjust = 0, colour = "#404040"),
+                           axis.title.x = element_text(colour = "#404040"),
+                           axis.title.y = element_text(colour = "#404040"))
   
 # Display distribution visualizations
 ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
@@ -407,10 +454,21 @@ ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
 ### Line Graphs
 
 
+  When visualizing trended data, it is important to avoid cumulative trends because they suggest an upward trajectory (positive slope) even when the corresponding non-cumulative metrics indicate a declining trend. 
+  
+  Figure \@ref(fig:cumulative-trend) shows a cumulative graph of iPhone sales. Since sales at each point in time are additive, the slope of the cumulative line is positive and steep. Superimposing a bar chart with non-cumulative quarterly sales atop a cumulative trend -- which occupies far more real estate and dominates the screen -- can lend to the audience drawing invalid conclusions from the data.
+
+```{r cumulative-trend, out.width = "75%", echo = FALSE, fig.cap = 'Deceiving cumulative sales trend.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-cumulative_trend.png")
+
+```
+
+  
 
 ```{r, message = FALSE, warning = FALSE}
 
-# Load data
+# Load turnover data
 turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
 
 ```
@@ -431,10 +489,9 @@ ggplot2::scale_y_continuous(labels = scales::percent) +
 ggplot2::theme(panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
-
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -458,10 +515,9 @@ ggplot2::scale_y_continuous(labels = scales::percent) +
 ggplot2::theme(panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
-
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -485,9 +541,9 @@ ggplot2::scale_y_continuous(labels = scales::percent) +
 ggplot2::theme(panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -499,7 +555,7 @@ ggplot2::theme(panel.background = element_blank(),
 
   **Vertical**
   
-```{r hbar_chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r vbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Sort education values by avg annual comp
 smmry_ed_field <- smmry_ed_field %>%
@@ -520,16 +576,16 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
   **Horizontal**
   
 
-```{r hbar_chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r hbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Sort education values by avg annual comp
 smmry_ed_field <- smmry_ed_field %>%
@@ -551,9 +607,9 @@ ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.ticks.x = element_blank(),
                axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040", margin = margin(t = 0, r = 0, b = 10, l = 0)),
-               axis.title.x = element_text(colour = "#404040", margin = margin(t = 10, r = 0, b = 0, l = 0)),
-               axis.title.y = element_text(colour = "#404040", margin = margin(t = 0, r = 10, b = 0, l = 0)))
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
 
 ```
 
@@ -571,7 +627,15 @@ ggplot2::theme(legend.position = "none",
 
 ### Pie Charts
 
-  Pie charts are rarely an effective way to visualize data, and this book does not generally endorse them. However, pie charts can be appropriate in cases where there are two or three mutually exclusive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate. 
+  Pie charts are rarely an effective way to visualize data, and this book does not generally endorse them. However, pie charts can be appropriate in cases where there are two or three mutually exclusive and collectively exhaustive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate. 
+  
+  Figure \@ref(fig:bad-donut-chart) shows a donut chart -- which is simply a pie chart with the center cut out -- that is intended to show Kane Williamson's outsized contribution to New Zealand's cricket runs. However, top scorers from other countries are also included in this visual, so the metrics do not sum to 100%. Pie and donut charts are not appropriate for these data.
+
+```{r bad-donut-chart, out.width = "75%", echo = FALSE, fig.cap = 'Improper use of a donut chart.', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-pie_chart.png")
+
+```
   
   There is no specific `geom()` function for building pie charts using `ggplot2`. Therefore, we need to create a bar chart and make it circular by adding a `coord_polar("y", start = 0)` transformation. The `coord_polar()` transformation complicates the positioning of labels, but we can add a `position = position_stack(vjust = 0.5))` argument within the `geom_text()` function to specify the alignment of gender representation metrics. We can also easily improve the aesthetics with the `theme_void()` function, which removes the default background, grid, and labels.
 
@@ -602,15 +666,11 @@ ggplot2::theme(legend.title = element_blank(),
 
 ```
 
-## Deceptive Visuals
-
-
-
 ### 3D Visuals
 
-  3D visualizations are never appropriate. 3D visuals are deceptive and misrepresent the data they are intended to visualize.
+  An element of uncertainty is inherent in estimation and prediction, which is why this book avoids the use of categorical terms such as *always* and *never*. However, an exception will be made for this section. 3D visualizations are *never* appropriate. 3D visuals misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
   
-  The 3D pie chart is at the top of the list of bad data visualizations. Figure \@ref(fig:3d-pie-chart) shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.
+  Figure \@ref(fig:3d-pie-chart) shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.
 
 ```{r 3d-pie-chart, out.width = "75%", echo = FALSE, fig.cap = 'Headcount by location misrepresented with a 3D pie chart.', fig.align = 'center'}
 
@@ -634,34 +694,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-
-
-```{r bad-viz-1, out.width = "75%", echo = FALSE, fig.cap = 'Deceiving cumulative sales trend.', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-cumulative_trend.png")
-
-```
-
-
-```{r bad-viz-2, out.width = "75%", echo = FALSE, fig.cap = 'Misleading inverted y-axis.', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-flipped_y_axis.png")
-
-```
-
-
-```{r bad-viz-3, out.width = "75%", echo = FALSE, fig.cap = 'Improper use of a donut chart.', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-pie_chart.png")
-
-```
-
-
-```{r bad-viz-4, out.width = "75%", echo = FALSE, fig.cap = 'Apples-to-oranges trend comparison.', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-diminishing_ed_returns.png")
-
-```
+## Elegant Data Visualization
 
 
 
