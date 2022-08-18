@@ -110,7 +110,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   **Preattentive attributes** signal where to look and help our audience focus on content we wish to emphasize (Knaflic, 2015). 
   
-  It is important to remember that data do not always need to be visualized with a chart. Sometimes communicating with text is a sufficient and effective way to convey information. In the case of text, preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromising legibility.
+  It is important to remember that data do not always need to be visualized with a chart. Sometimes communicating with text is a sufficient and effective way to convey information. In the case of text, preattentive attributes are often implemented using bold text and/or contrasting colors for keywords and phrases that need to take center stage. **Bolded** text is generally more effective than *italizing* or \underline{underlining}, as it highlights the chosen elements without unnecessary noise and compromised legibility.
   
   Grey is an important color in the implementation of preattentive attributes as it facilitates a move of less important data and design elements to the background to make room for more predominate colors to highlight the most important information. Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in a sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
   
@@ -123,9 +123,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \@ref(fig:pre-attr-2) illustrates the use of preattentive attributes by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less predominate grey.
   
 ```{r pre-attr-2, out.width = "100%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs for the current year relative to prior years.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Load library
-library(ggplot2)
 
 # Create data
 year <- c('2022', '2021', '2020', '2019')
@@ -368,7 +365,7 @@ ggplot2::theme(legend.position = "none",
 
 ### Step 10: Sort Data
 
-  This visual can be further simplified by sorting the bars from highest to lowest value. 
+  This visual can be further simplified by sorting the bars from highest to lowest value. With sorted bars, the audience can more easily ascertain the relative ranking of each education field.
   
   We can use `dplyr` to sort the data and define the levels of `ed_field`.
   
@@ -445,7 +442,49 @@ ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
 
 ### Heatmaps
 
+  **Heatmaps** use a shading scheme to highlight the relative magnitude of numbers in a tabular format.
+  
+  To demonstrate the implementation of heatmaps in R, let's construct a simple cube containing employee counts by department and tenure band:
 
+```{r, message = FALSE, warning = FALSE}
+
+# Append new tenure band column
+employees$tenure_band <- case_when(
+  employees$org_tenure < 1 ~ "Under 1 Year",
+  employees$org_tenure < 2.5 ~ "1-2 Years",
+  employees$org_tenure < 5.5 ~ "3-5 Years",
+  employees$org_tenure <= 10 ~ "6-10 Years",
+  TRUE ~ "Over 10 Years"
+)
+
+# Store aggregate measures to cube
+dept_tenure <- employees %>%
+               dplyr::filter(active == 'Yes') %>%
+               dplyr::group_by(dept, tenure_band) %>%
+               dplyr::summarise(cnt = n())
+
+# Specify ordered factor
+dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 Year", "1-2 Years", "3-5 Years", "6-10 Years", "Over 10 Years"))
+
+```
+
+  The `geom_tile()` function can be used to build a heatmap. The range of colors can be specified via the `scale_fill_continuous(low = 'minimum value color', high = 'maximum value color')` function since the fill variable defined by `aes(fill = cnt)` is measured on a continuous scale:
+
+```{r heatmap, out.width = "100%", fig.cap = "Heatmap showing the concentration of employees within departments and tenure bands.", fig.align = 'center', warning = FALSE, message = FALSE}
+
+ggplot2::ggplot(dept_tenure, aes(x = tenure_band, y = dept, fill = cnt)) +
+ggplot2::geom_tile() +
+ggplot2::labs(title = 'A large portion of our workforce has between 3 and 10 years\n of company tenure and works within R&D.', x = 'Tenure', y = 'Department') +
+ggplot2::guides(fill = guide_legend(title = "Employee Count")) +
+ggplot2::scale_fill_continuous(low = "#F2F2F2", high = "#0070C0") +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
+
+```
 
 ### Scatterplots
 
@@ -625,6 +664,10 @@ ggplot2::theme(legend.position = "none",
 
 
 
+### Sankey Diagrams
+
+
+
 ### Pie Charts
 
   Pie charts are rarely an effective way to visualize data, and this book does not generally endorse them. However, pie charts can be appropriate in cases where there are two or three mutually exclusive and collectively exhaustive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate. 
@@ -668,7 +711,7 @@ ggplot2::theme(legend.title = element_blank(),
 
 ### 3D Visuals
 
-  An element of uncertainty is inherent in estimation and prediction, which is why this book avoids the use of categorical terms such as *always* and *never*. However, an exception will be made for this section. 3D visualizations are *never* appropriate. 3D visuals misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
+  An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as *always* and *never*. However, an exception will be made for this section. 3D visualizations are *never* appropriate. 3D visuals misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
   
   Figure \@ref(fig:3d-pie-chart) shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.
 
