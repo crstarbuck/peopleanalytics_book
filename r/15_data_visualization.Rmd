@@ -434,7 +434,9 @@ ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
 
 ## Visualization Types
 
+  There are some highly advanced and interactive data visualizations that can be built using Javascript and D3 libraries. While these are beyond the scope of this book, `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement each of the data visualizations covered in this section.
 
+  All visuals will have a set of common parameters for design aesthetics. Therefore, each section will highlight the differences needed to achieve the respective data viz type. We could wrap common `ggplot2` elements in a function to simplify chart building. 
 
 ### Tables
 
@@ -488,6 +490,42 @@ ggplot2::theme(panel.background = element_blank(),
 
 ### Scatterplots
 
+  **Scatterplots** are useful for visualizing relationships between numeric variables.
+  
+  Let's first subset `employees` data to active salespeople and append a flag to indicate sales quota attainment ($150,000 USD$) for use in shading data points in the scatterplot.
+
+```{r, message = FALSE, warning = FALSE}
+
+# Subset df to active sales employees
+sales <- subset(employees, dept == 'Sales' & active == 'Yes')
+
+# Set quote attainment flag for data viz coloring
+sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
+
+```
+
+
+```{r scatterplot, out.width = "100%", fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople. Data point colors are relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
+
+require(scales)
+
+ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
+ggplot2::geom_point(aes(color = as.factor(quota_flg))) +
+ggplot2::geom_hline(yintercept = 150000, linetype = 2, color = "#0070C0") + 
+ggplot2::annotate(geom = "text", x = 2, y = 159000, label = "Sales Quota = $150k", color = "#0070C0", size = 3) +
+ggplot2::labs(title = 'Some employees with significant work experience have \nalready met the full year sales quota.', x = 'Work Experience', y = 'YTD Sales (USD)') +
+ggplot2::scale_color_manual(values = c("0" = "#BFBFBF",
+                                       "1" = "#0070C0")) +
+ggplot2::scale_y_continuous(labels = scales::comma) +
+ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
+
+```
   
 
 ### Line Graphs
