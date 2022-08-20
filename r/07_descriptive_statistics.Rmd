@@ -260,30 +260,7 @@ quantile(employees$annual_comp)
 
 ```
 
-  Based on this output, we know that 25% of people in our data earn annual compensation of 99,840 USD or less, 137,280 USD is the median annual compensation, and 75% of people earn annual compensation of 174,200 USD or less.
-  
-  **Boxplots** are a common way to visualize the distribution of data by categorical and ordinal factors. Boxplots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. In R, the `ggplot2` library has robust and flexible data visualization capabilities which we will leverage throughout this book. Let's visualize the spread of annual compensation by education level and gender using the `ggplot()` function:
-  
-```{r, message = FALSE}
-
-# Load library
-library(ggplot2)
-
-# Produce boxplots to visualize compensation distribution by education level and gender
-ggplot2::ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
-ggplot2::labs(x = "Education Level", y = "Annual Compensation") + 
-ggplot2::guides(col = guide_legend("Gender")) +
-ggplot2::theme_bw() +
-ggplot2::geom_boxplot()
-
-```  
-  
-  Boxplots can be interpreted as follows:
-  * Horizontal lines represent median compensation values.
-  * The box in the middle of each distribution represents the IQR.
-  * The end of the line above the IQR represents the threshold for outliers in the upper range: $Q3 + 1.5 * IQR$.
-  * The end of the line below the IQR represents the threshold for outliers in the lower range: $Q1 - 1.5 * IQR$.
-  * Data points represent outliers: $x > Q3 + 1.5 * IQR$ or $x < Q1 - 1.5 * IQR$.
+  Based on this output, we know that 25% of people in our data earn annual compensation of $99,840$ USD or less, $137,280$ USD is the median annual compensation, and 75% of people earn annual compensation of $174,200$ USD or less.
   
   We can also return a specific percentile value using the `probs` argument in the `quantile()` function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:
 
@@ -300,6 +277,123 @@ quantile(employees$annual_comp, probs = .8)
 
 # Return common descriptives
 summary(employees$annual_comp)
+
+```
+
+  **Box plots** are a common way to visualize the distribution of data. Box plots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase. 
+  
+  Let's visualize the spread of annual compensation by education level and gender using the `geom_boxplot()` function from the `ggplot2` library:
+  
+```{r, message = FALSE}
+
+# Load library
+library(ggplot2)
+
+# Produce box plots to visualize compensation distribution by education level and gender
+ggplot2::ggplot(employees, aes(x = as.factor(ed_lvl), y = annual_comp, color = gender)) +
+ggplot2::geom_boxplot() +
+ggplot2::labs(x = "Education Level", y = "Annual Compensation") + 
+ggplot2::guides(col = guide_legend("Gender")) +
+ggplot2::theme_bw()
+
+```  
+  
+  Box plots can be interpreted as follows:
+  * Horizontal lines represent median compensation values.
+  * The box in the middle of each distribution represents the IQR.
+  * The end of the line above the IQR represents the threshold for outliers in the upper range: $Q3 + 1.5 * IQR$.
+  * The end of the line below the IQR represents the threshold for outliers in the lower range: $Q1 - 1.5 * IQR$.
+  * Data points represent outliers: $x > Q3 + 1.5 * IQR$ or $x < Q1 - 1.5 * IQR$.
+  
+  While box plots are pervasive in statistically-oriented disciplines, they can be misleading. Figure \@ref(fig:boxplot-barchart-compare) illustrates how information about the shape of a distribution can be lost on a box plot. The range with the highest frequency (0-9) is not as obvious in the box plot relative to the bar chart.
+
+```{r boxplot-barchart-compare, out.width = "100%", echo = FALSE, fig.cap = 'The number range with the highest frequency (0-9) is not as apparent with a box plot (left) relative to the bar chart (right).', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+
+# Generate desired distribution
+dat_0_9 <- runif(25, min = 0, max = 9)
+dat_20_29 <- runif(8, min = 20, max = 29)
+dat_30_39 <- runif(7, min = 30, max = 39)
+dat_40_49 <- runif(5, min = 40, max = 49)
+dat_50_59 <- runif(18, min = 50, max = 59)
+dat_60_69 <- runif(13, min = 60, max = 69)
+dat_70_79 <- runif(11, min = 70, max = 79)
+dat_80_89 <- runif(5, min = 80, max = 89)
+dat_90_99 <- runif(7, min = 90, max = 99)
+dat_0_99 <- c(dat_0_9, dat_20_29, dat_30_39, dat_40_49, dat_50_59, dat_60_69, dat_70_79, dat_80_89, dat_90_99)
+
+# Create df
+dat <- data.frame(num = dat_0_99, bin = rep('0-99', length(dat_0_99)))
+
+# Bin numbers by 10s
+dat$bin <- dplyr::case_when(
+  dat$num < 10 ~ "0-9",
+  dat$num < 20 ~ "10-19",
+  dat$num < 30 ~ "20-29",
+  dat$num < 40 ~ "30-39",
+  dat$num < 50 ~ "40-49",
+  dat$num < 60 ~ "50-59",
+  dat$num < 70 ~ "60-69",
+  dat$num < 80 ~ "70-79",
+  dat$num < 90 ~ "80-89",
+  TRUE ~ "90-99"
+)
+
+# Construct box plot
+viz_boxplot <- ggplot2::ggplot(dat, aes(x = factor(0), y = num)) +
+               ggplot2::geom_boxplot() +
+               ggplot2::labs(title = 'Box Plot') +
+               ggplot2::scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+               ggplot2::theme(legend.position = "none",
+                              panel.background = element_blank(),
+                              axis.text.x = element_blank(),
+                              axis.ticks.x = element_blank(),
+                              axis.ticks.y = element_blank(),
+                              plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                              axis.title.x = element_blank(),
+                              axis.title.y = element_blank())
+
+# Construct bar chart
+viz_barchart <- ggplot2::ggplot(dat, aes(x = bin)) +
+                ggplot2::geom_bar(stat = "count", fill = "#0070C0") +
+                ggplot2::labs(title = 'Bar Chart') +
+                ggplot2::coord_flip() +
+                ggplot2::theme(legend.position = "none",
+                               panel.background = element_blank(),
+                               axis.ticks.x = element_blank(),
+                               axis.ticks.y = element_blank(),
+                               plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                               axis.title.x = element_blank(),
+                               axis.title.y = element_blank())
+
+# Display visualizations side-by-side
+ggpubr::ggarrange(viz_boxplot, viz_barchart, ncol = 2, nrow = 1)
+
+```
+
+  Box plot alternatives, such as violin, raincloud, and jittered strip plots, are often more helpful in understanding data distributions. Figure \@ref(fig:boxplot-alt) shows the juxtaposition of a raincloud plot against a box plot. While it may seem like an oxymoronic, in this case the spread of data is clearer in the rain.
+  
+```{r boxplot-alt, out.width = "100%", echo = FALSE, fig.cap = 'Raincloud plot superimposed on a box plot to illustrate the data distribution.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggdist)
+
+# Construct bar chart
+ggplot2::ggplot(dat, aes(x = factor(0), y = num)) + 
+ggdist::stat_halfeye(adjust = .5, width = .3, .width = 0, justification = -.3, point_colour = NA) +
+ggplot2::geom_boxplot(width = .1, outlier.shape = NA) +
+ggplot2::geom_jitter(width = .05, alpha = .3) +
+ggplot2::scale_y_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.text.x = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_blank(),
+               axis.title.x = element_blank(),
+               axis.title.y = element_blank())
 
 ```
 
@@ -631,7 +725,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 4. Do large covariance coefficients always indicate strong bivariate associations? Why or why not?
    
-5. What information is represented in boxplots?
+5. What information is represented in box plots?
    
 6. Do do quartiles relate to percentiles?
    
