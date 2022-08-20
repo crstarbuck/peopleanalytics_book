@@ -434,24 +434,20 @@ ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
 
 ## Visualization Types
 
-  There are some highly advanced and interactive data visualizations that can be built using Javascript and D3 libraries. While these are beyond the scope of this book, `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement each of the data visualizations covered in this section.
+  There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) and D3 libraries. While these are beyond the scope of this book, `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement each of the data visualizations covered in this section.
 
-  All visuals will have a set of common parameters for design aesthetics. Therefore, each section will highlight the differences needed to achieve the respective data viz type. We could wrap common `ggplot2` elements in a function to simplify chart building. 
+  All visuals will have a set of common parameters for design aesthetics, consistent with the themes used to produce the enhanced chart design shown in Figure \@ref(fig:pre-post-declutter). Therefore, each section will highlight the differences needed to achieve the respective data visualization. For production applications with many visualizations, it may be helpful to wrap common `ggplot2` design elements in a function to simplify chart building. 
 
 ### Tables
 
-
-
-### Heatmaps
-
-  **Heatmaps** use a shading scheme to highlight the relative magnitude of numbers in a tabular format.
+  **Tables** are the most basic way to organize data. Since tables generally contain many metrics, they are usually better situated as reference material in the Appendix of a doc/deck or within a metric drill-through in dashboards rather than occupying prime real estate that should be leveraged strategically to focus the audience's attention on key messages.
   
-  To demonstrate the implementation of heatmaps in R, let's construct a simple cube containing employee counts by department and tenure band:
+  A simple cube containing employee counts by department and tenure band will be constructed for demonstrating how to display tabular output.
 
 ```{r, message = FALSE, warning = FALSE}
 
 # Append new tenure band column
-employees$tenure_band <- case_when(
+employees$tenure_band <- dplyr::case_when(
   employees$org_tenure < 1 ~ "Under 1 Year",
   employees$org_tenure < 2.5 ~ "1-2 Years",
   employees$org_tenure < 5.5 ~ "3-5 Years",
@@ -470,7 +466,32 @@ dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 
 
 ```
 
-  The `geom_tile()` function can be used to build a heatmap. The range of colors can be specified via the `scale_fill_continuous(low = 'minimum value color', high = 'maximum value color')` function since the fill variable defined by `aes(fill = cnt)` is measured on a continuous scale:
+  The default display of a tibble (data frame produced by `dplyr`) is very basic:
+
+```{r, warning = FALSE, message = FALSE}
+
+# Display output using default settings
+dept_tenure
+
+```  
+
+  While these data could easily be copied and pasted into presentation software for formatting, additional libraries exist in R for formatting tables. For example, R Markdown scripts can leverage the `DT` package to provide filtering, pagination, sorting, search, and other interactive features for HTML output:
+
+```{r table, out.width = "100%", fig.cap = ".", fig.align = 'center', warning = FALSE, message = FALSE}
+
+# Load library
+library(DT)
+
+# Format output with datatable
+DT::datatable(dept_tenure, rownames = FALSE)
+
+```  
+
+### Heatmaps
+
+  **Heatmaps** use a shading scheme to highlight the relative magnitude of numbers in a tabular format.
+  
+  The `geom_tile()` function can be used to build a heatmap with `ggplot2`. The range of colors can be specified via the `scale_fill_continuous(low = 'minimum value color', high = 'maximum value color')` function since the fill variable defined by `aes(fill = cnt)` is measured on a continuous scale:
 
 ```{r heatmap, out.width = "100%", fig.cap = "Heatmap showing the concentration of employees within departments and tenure bands.", fig.align = 'center', warning = FALSE, message = FALSE}
 
@@ -488,11 +509,13 @@ ggplot2::theme(panel.background = element_blank(),
 
 ```
 
+  This heatmap is excellent for focusing attention on the department + tenure segments with highest and lowest employee counts. However, if the specific employee counts are required, complimenting this heatmap with a basic table of metrics is a good option to avoid cluttering the heatmap with $3*5 = 15$ additional numbers.
+
 ### Scatterplots
 
   **Scatterplots** are useful for visualizing relationships between numeric variables.
   
-  Let's first subset `employees` data to active salespeople and append a flag to indicate sales quota attainment ($150,000 USD$) for use in shading data points in the scatterplot.
+  A scatterplot will be used to visualize the relationship between `work_exp` and `ytd_sales`, with a goal of focusing the audience's attention on salespeople whose `ytd_sales` meet or exceed the full year sales quota of $150,000$ USD. Let's first subset `employees` data to active salespeople and append a flag to indicate sales quota attainment for use in shading data points in the scatterplot.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -504,16 +527,39 @@ sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
 
 ```
 
+  The `geom_point()` function is used to create a scatterplot. The `scale_y_continuous()` function can be used in conjunction with the `scales` library to override the default scale for the `y`-axis (scientific notation) with more intuitive values.
 
-```{r scatterplot, out.width = "100%", fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople. Data point colors are relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r scatterplot-1, out.width = "100%", fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople.", fig.align = 'center', warning = FALSE, message = FALSE}
+
+require(scales)
+
+ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
+ggplot2::geom_point() +
+ggplot2::labs(title = 'The relationship between work experience and YTD sales is positive.', x = 'Work Experience', y = 'YTD Sales (USD)') +
+ggplot2::scale_y_continuous(labels = scales::comma) +
+ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(colour = "#404040"),
+               axis.title.y = element_text(colour = "#404040"))
+
+```
+  
+  While the basic scatterplot in Figure \@ref(fig:scatterplot-1) is effective in visualizing the relationship between `work_exp` and `ytd_sales`, additional design elements are needed to highlight the data points that meet or exceed the full year sales quota of $150,000$ USD.
+  
+  The `color` argument for the `geom_point()` function is used to apply preattentive attributes to this visual by specifying the field used for conditional data point shading. We can define the color for each of the field's values using the `scale_color_manual()` function. Additionally, the `geom_hline()` function is used to add a dotted horizontal line at a specified position on the $y$-axis (at $150,000$ USD), and annotation is added at a specified pair of $x$ and $y$ coordinates using the `annotate()` function.
+  
+```{r scatterplot-2, out.width = "100%", fig.cap = "Scatterplot with data points colored relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 require(scales)
 
 ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
 ggplot2::geom_point(aes(color = as.factor(quota_flg))) +
-ggplot2::geom_hline(yintercept = 150000, linetype = 2, color = "#0070C0") + 
+ggplot2::geom_hline(yintercept = 150000, linetype = 'dotted', color = "#0070C0") + 
 ggplot2::annotate(geom = "text", x = 2, y = 159000, label = "Sales Quota = $150k", color = "#0070C0", size = 3) +
-ggplot2::labs(title = 'Some employees with significant work experience have \nalready met the full year sales quota.', x = 'Work Experience', y = 'YTD Sales (USD)') +
+ggplot2::labs(title = 'Some employees with more work experience have \nalready met the full year sales quota.', x = 'Work Experience', y = 'YTD Sales (USD)') +
 ggplot2::scale_color_manual(values = c("0" = "#BFBFBF",
                                        "1" = "#0070C0")) +
 ggplot2::scale_y_continuous(labels = scales::comma) +
@@ -526,7 +572,6 @@ ggplot2::theme(panel.background = element_blank(),
                axis.title.y = element_text(colour = "#404040"))
 
 ```
-  
 
 ### Line Graphs
 
@@ -777,9 +822,19 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Elegant Data Visualization
 
+  This chapter has covered the fundamentals of effective data visualization. Applying these best practices will elevate impact when presenting results of analyses to stakeholders. 
+  
+  Figure \@ref(fig:good-viz) is an example of an excellent data visualization that brings together many of the design elements promoted in this chapter. This visual shows seasonally adjusted jobless claims over a period of two decades to highlight the significance of the Coronavirus's impact on the labor market using the following design elements:
+  
+  * Larger and darker text for the headline
+  * Smaller and lighter text for the commentary
+  * Grey axis labels and chart annotations to avoid competing with *current* statistics
+  * Low-profile dotted horizontal lines to help connect bars across the long $x$-axis to their corresponding $y$-axis values
+  * Orange coloring to represent jobless claims (an **unfavorable** event)
+  * Creative use of a bar chart resembling an area chart to represent the weekly interval for jobless claims over the 20-year period
+  * Two helpful reference points to provide perspective: (1) 20-year weekly average; and (2) cumulative jobless claims during the last significant U.S. recession in 2008
 
-
-```{r good-viz, out.width = "75%", echo = FALSE, fig.cap = 'Masterfully constructed bar chart.', fig.align = 'center'}
+```{r good-viz, out.width = "75%", echo = FALSE, fig.cap = 'An archetype of elegance in data visualization.', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/good_viz-job_loss.png")
 

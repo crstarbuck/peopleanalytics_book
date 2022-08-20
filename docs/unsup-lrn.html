@@ -4,11 +4,11 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>14 Unsupervised Learning | A Practitioner’s Guide to People Analytics with R</title>
+  <title>14 Unsupervised Learning | The Fundamentals of People Analytics: With Applications in R</title>
   <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
   <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="14 Unsupervised Learning | A Practitioner’s Guide to People Analytics with R" />
+  <meta property="og:title" content="14 Unsupervised Learning | The Fundamentals of People Analytics: With Applications in R" />
   <meta property="og:type" content="book" />
   
   
@@ -16,7 +16,7 @@
   <meta name="github-repo" content="crstarbuck/peopleanalytics-book" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="14 Unsupervised Learning | A Practitioner’s Guide to People Analytics with R" />
+  <meta name="twitter:title" content="14 Unsupervised Learning | The Fundamentals of People Analytics: With Applications in R" />
   
   <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
   
@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-08-17" />
+<meta name="date" content="2022-08-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -59,6 +59,13 @@
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
 <script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.13/datatables.js"></script>
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.20/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
+<link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
 
 
 <style type="text/css">
@@ -140,7 +147,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <nav role="navigation">
 
 <ul class="summary">
-<li><a href="./">A Practitioner’s Guide to People Analytics with R</a></li>
+<li><a href="./">The Fundamentals of People Analytics: With Applications in R</a></li>
 
 <li class="divider"></li>
 <li><a href="dedication.html#dedication" id="toc-dedication">Dedication</a></li>
@@ -352,8 +359,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">15.3.6</span> Bar Charts</a></li>
 <li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">15.3.7</span> Waterfall Charts</a></li>
 <li><a href="data-viz.html#area-charts" id="toc-area-charts"><span class="toc-section-number">15.3.8</span> Area Charts</a></li>
-<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.9</span> Pie Charts</a></li>
-<li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.10</span> 3D Visuals</a></li>
+<li><a href="data-viz.html#sankey-diagrams" id="toc-sankey-diagrams"><span class="toc-section-number">15.3.9</span> Sankey Diagrams</a></li>
+<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.10</span> Pie Charts</a></li>
+<li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.11</span> 3D Visuals</a></li>
 </ul></li>
 <li><a href="data-viz.html#elegant-data-visualization" id="toc-elegant-data-visualization"><span class="toc-section-number">15.4</span> Elegant Data Visualization</a></li>
 <li><a href="data-viz.html#review-questions-13" id="toc-review-questions-13"><span class="toc-section-number">15.5</span> Review Questions</a></li>
@@ -388,7 +396,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
       <div class="body-inner">
         <div class="book-header" role="navigation">
           <h1>
-            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">A Practitioner’s Guide to People Analytics with R</a>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The Fundamentals of People Analytics</a>
           </h1>
         </div>
 
@@ -462,7 +470,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode" id="cb417"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb417-1"><a href="unsup-lrn.html#cb417-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce scree plot</span></span>
 <span id="cb417-2"><a href="unsup-lrn.html#cb417-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">scree</span>(survey_dat, <span class="at">pc =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:scree-plot"></span>
-<img src="People_Analytics_Guide_files/figure-html/scree-plot-1.png" alt="Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line)." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/scree-plot-1.png" alt="Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line)." width="100%" />
 <p class="caption">
 Figure 14.1: Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line).
 </p>
@@ -488,7 +496,7 @@ Figure 14.1: Scree plot showing eigenvalues by factor relative to the extraction
 <span id="cb418-15"><a href="unsup-lrn.html#cb418-15" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ylab</span>(<span class="st">&quot;Variance Explained (%)&quot;</span>) <span class="sc">+</span></span>
 <span id="cb418-16"><a href="unsup-lrn.html#cb418-16" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pca-var-plot"></span>
-<img src="People_Analytics_Guide_files/figure-html/pca-var-plot-1.png" alt="Plot showing the percent of total variance explained by 12 principal components." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/pca-var-plot-1.png" alt="Plot showing the percent of total variance explained by 12 principal components." width="100%" />
 <p class="caption">
 Figure 14.2: Plot showing the percent of total variance explained by 12 principal components.
 </p>
@@ -532,7 +540,7 @@ Figure 14.2: Plot showing the percent of total variance explained by 12 principa
 <p>We can visualize this information using the <code>fa.diagram()</code> function from the <code>psych</code> library:</p>
 <div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="unsup-lrn.html#cb421-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">fa.diagram</span>(efa.fit)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:fct-ld-diagram"></span>
-<img src="People_Analytics_Guide_files/figure-html/fct-ld-diagram-1.png" alt="Diagram showing factor loadings (correlations) for each item with the respective factor." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/fct-ld-diagram-1.png" alt="Diagram showing factor loadings (correlations) for each item with the respective factor." width="100%" />
 <p class="caption">
 Figure 14.3: Diagram showing factor loadings (correlations) for each item with the respective factor.
 </p>
@@ -544,7 +552,7 @@ Figure 14.3: Diagram showing factor loadings (correlations) for each item with t
 <p>We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent – yet likely correlated – constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one’s decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to <em>always</em> be associated with a commensurate change in retention.</p>
 <p>We can illustrate using our <code>survey_responses</code> data, which contains three items for both engagement and retention. Let’s first evaluate pairwise relationships between the items:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-eng-ret"></span>
-<img src="People_Analytics_Guide_files/figure-html/ggpairs-eng-ret-1.png" alt="Bivariate correlations and data distributions for engagement and retention survey items." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-eng-ret-1.png" alt="Bivariate correlations and data distributions for engagement and retention survey items." width="100%" />
 <p class="caption">
 Figure 14.4: Bivariate correlations and data distributions for engagement and retention survey items.
 </p>
@@ -716,7 +724,7 @@ Figure 14.5: Path diagram showing survey items as indicators of latent engagemen
 <span id="cb428-4"><a href="unsup-lrn.html#cb428-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine optimal number of clusters</span></span>
 <span id="cb428-5"><a href="unsup-lrn.html#cb428-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_nbclust</span>(employees_trans, kmeans, <span class="at">method =</span> <span class="st">&quot;wss&quot;</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:kmeans-elbow-plot"></span>
-<img src="People_Analytics_Guide_files/figure-html/kmeans-elbow-plot-1.png" alt="Total within sum of squares (WSS) across cluster count." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/kmeans-elbow-plot-1.png" alt="Total within sum of squares (WSS) across cluster count." width="100%" />
 <p class="caption">
 Figure 14.6: Total within sum of squares (WSS) across cluster count.
 </p>
@@ -792,7 +800,7 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count.
 <p>To produce a dendogram, the <code>pltree()</code> function from the <code>cluster</code> library can be used in conjunction with the <code>hclust</code> object holding the clustering results:</p>
 <div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="unsup-lrn.html#cb438-1" aria-hidden="true" tabindex="-1"></a>cluster<span class="sc">::</span><span class="fu">pltree</span>(hclust, <span class="at">main =</span> <span class="st">&quot;Dendogram&quot;</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-dendogram"></span>
-<img src="People_Analytics_Guide_files/figure-html/hclust-dendogram-1.png" alt="Dendogram for hierarchical clustering of employees using Ward linkage method." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-dendogram-1.png" alt="Dendogram for hierarchical clustering of employees using Ward linkage method." width="100%" />
 <p class="caption">
 Figure 14.7: Dendogram for hierarchical clustering of employees using Ward linkage method.
 </p>
@@ -805,7 +813,7 @@ Figure 14.7: Dendogram for hierarchical clustering of employees using Ward linka
 <span id="cb439-4"><a href="unsup-lrn.html#cb439-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate plot of gap statistic against cluster count</span></span>
 <span id="cb439-5"><a href="unsup-lrn.html#cb439-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_gap_stat</span>(gap_stat)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-gap-stat"></span>
-<img src="People_Analytics_Guide_files/figure-html/hclust-gap-stat-1.png" alt="Plot of gap statistic against cluster count for hierarchical clustering." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-gap-stat-1.png" alt="Plot of gap statistic against cluster count for hierarchical clustering." width="100%" />
 <p class="caption">
 Figure 14.8: Plot of gap statistic against cluster count for hierarchical clustering.
 </p>
@@ -890,7 +898,7 @@ gitbook.start({
 "link": null,
 "text": null
 },
-"download": ["People_Analytics_Guide.pdf", "People_Analytics_Guide.epub"],
+"download": ["The_Fundamentals_of_People_Analytics.pdf", "The_Fundamentals_of_People_Analytics.epub"],
 "search": {
 "engine": "fuse",
 "options": null
