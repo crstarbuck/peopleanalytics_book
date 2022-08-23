@@ -743,9 +743,32 @@ ggplot2::theme(legend.position = "none",
 
 
 
-### Area Charts
+### Waffle Charts
 
+  **Waffle charts**, also known as **square area charts**, are well-suited for illustrating parts of a whole.
+  
+  A common application in people analytics is illustrating candidate movement through the recruiting funnel. It is often helpful to visualize a normalized applicant pool (e.g., per 100 or 1k applicants) to identify how the health of funnel stages compares across business areas. The waffle chart in Figure \@ref(fig:waffle-chart) illustrates how candidates for a set of filled requisitions move from application through the phone screen, onsite interview, offer extend, and offer acceptance stages of the recruiting lifecycle.
 
+```{r waffle-chart, out.width = "100%", fig.cap = 'Waffle chart showing pass-through rates per 1k job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Create df with TA funnel metrics
+ta_dat <- data.frame(stage = c("apply", "phone screen", "onsite", "offer extend", "offer accept"),
+                     cnt = c(100, 20, 10, 5, 4))
+
+# Produce waffle chart
+ggplot2::ggplot(ta_dat, aes(x = stage, y = cnt, fill = stage)) +
+ggplot2::geom_tile(color = "white", size = .25) +
+#ggplot2::scale_fill_manual(name = stage,
+#                    values = c("#BA182A", "#FF8288", "#FFDBDD", "#FFDBDD", "#FFDBDD")) +
+ggplot2::coord_equal() +
+ggplot2::theme_void() +
+ggplot2::theme(legend.title = element_blank(),
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(colour = "#404040"))
+
+```
 
 ### Sankey Diagrams
 
