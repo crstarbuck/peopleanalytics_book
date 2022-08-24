@@ -747,36 +747,59 @@ ggplot2::theme(legend.position = "none",
 
   **Waffle charts**, also known as **square area charts**, are well-suited for illustrating parts of a whole.
   
-  A common application in people analytics is illustrating candidate movement through the recruiting funnel. It is often helpful to visualize a normalized applicant pool (e.g., per 100 or 1k applicants) to identify how the health of funnel stages compares across business areas. The waffle chart in Figure \@ref(fig:waffle-chart) illustrates how candidates for a set of filled requisitions move from application through the phone screen, onsite interview, offer extend, and offer acceptance stages of the recruiting lifecycle.
-
-```{r waffle-chart, out.width = "100%", fig.cap = 'Waffle chart showing pass-through rates per 1k job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
+  A common application in people analytics is illustrating candidate movement through the recruiting funnel. It is often helpful to visualize a normalized applicant pool (e.g., per 100 applicants) to identify where bottlenecks exist across funnel stages and how pass-through rates compare across business areas.
+  
+  Waffle charts require some data prep to visualize:
+  
+```{r, message = FALSE, warning = FALSE}
 
 # Create df with TA funnel metrics
-ta_dat <- data.frame(stage = c("apply", "phone screen", "onsite", "offer extend", "offer accept"),
-                     cnt = c(100, 20, 10, 5, 4))
+ta_dat <- data.frame(stage = c("Apply", "Phone Screen", "Interview", "Offer Extend", "Offer Accept"),
+                     cnt = c(60, 20, 10, 6, 4))
 
-# Produce waffle chart
-ggplot2::ggplot(ta_dat, aes(x = stage, y = cnt, fill = stage)) +
-ggplot2::geom_tile(color = "white", size = .25) +
-#ggplot2::scale_fill_manual(name = stage,
-#                    values = c("#BA182A", "#FF8288", "#FFDBDD", "#FFDBDD", "#FFDBDD")) +
-ggplot2::coord_equal() +
+# Set depth of waffle chart (# of y-axis rows)
+depth <- 10
+
+# Each observation needs an x and y coordinate, and y needs to be specified first for a waffle chart with horizontal accumulation
+waffle_dat <- expand.grid(y = 1:depth,
+                          x = seq_len(ceiling(sum(ta_dat$cnt) / depth)))
+
+# Expand the applicant counts into a vector of stage labels
+stages <- rep(ta_dat$stage, ta_dat$cnt)
+
+```
+
+  With this data structure, a waffle chart can be produced using the `geom_tile()` function from `ggplot2`. 
+  
+  The waffle chart in Figure \@ref(fig:waffle-chart) illustrates how candidates for a set of filled requisitions move from application through the phone screen, interview, offer extend, and offer acceptance stages of the recruiting lifecycle. Based on this chart, 60% of applicants are rejected without a conversation, 40% receive a phone screen, 20% land an interview, 10% receive an offer, and 4% accept an offer.
+
+```{r waffle-chart, out.width = "100%", fig.cap = 'Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+ggplot2::ggplot(waffle_dat, aes(x = x, y = y, fill = stage)) + 
+ggplot2::geom_tile(color = "white") +
+ggplot2::scale_fill_manual(values = c("Apply" = "#D9D9D9", 
+                                      "Phone Screen" = "#BFBFBF", 
+                                      "Interview" = "#A6A6A6", 
+                                      "Offer Extend" = "#808080",
+                                      "Offer Accept" = "#0070C0")) +
+ggplot2::scale_y_reverse() +
 ggplot2::theme_void() +
-ggplot2::theme(legend.title = element_blank(),
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(colour = "#404040"))
+ggplot2::theme(legend.title = element_blank())
 
 ```
 
 ### Sankey Diagrams
 
-
+  **Sankey diagrams**, or alternatives such as **chord diagrams** and **alluvial plots**, are flow diagrams that are particularly effective in depicting a many-to-many relationship between two domains. In a sankey, connection points are links and the items being connected are nodes.
+  
+  Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., proportion of employees moving from one department to another) or recruiting sources by which employees in various departments have been hired. 
+  
+  
 
 ### Pie Charts
 
-  Pie charts are rarely an effective way to visualize data, and this book does not generally endorse them. However, pie charts can be appropriate in cases where there are two or three mutually exclusive and collectively exhaustive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate. 
+  Pie charts are rarely an effective way to visualize data, and this book does not generally endorse them. Pie charts can be appropriate in cases where there are two or three mutually exclusive and collectively exhaustive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate. 
   
   Figure \@ref(fig:bad-donut-chart) shows a donut chart -- which is simply a pie chart with the center cut out -- that is intended to show Kane Williamson's outsized contribution to New Zealand's cricket runs. However, top scorers from other countries are also included in this visual, so the metrics do not sum to 100%. Pie and donut charts are not appropriate for these data.
 
