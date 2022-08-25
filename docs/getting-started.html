@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-08-20" />
+<meta name="date" content="2022-08-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -66,6 +66,9 @@
 <script src="libs/dt-core-1.10.20/js/jquery.dataTables.min.js"></script>
 <link href="libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
 <script src="libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<script src="libs/d3-4.5.0/d3.min.js"></script>
+<script src="libs/sankey-1/sankey.js"></script>
+<script src="libs/sankeyNetwork-binding-0.4/sankeyNetwork.js"></script>
 
 
 <style type="text/css">
@@ -358,7 +361,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="data-viz.html#slopegraphs" id="toc-slopegraphs"><span class="toc-section-number">15.3.5</span> Slopegraphs</a></li>
 <li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">15.3.6</span> Bar Charts</a></li>
 <li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">15.3.7</span> Waterfall Charts</a></li>
-<li><a href="data-viz.html#area-charts" id="toc-area-charts"><span class="toc-section-number">15.3.8</span> Area Charts</a></li>
+<li><a href="data-viz.html#waffle-charts" id="toc-waffle-charts"><span class="toc-section-number">15.3.8</span> Waffle Charts</a></li>
 <li><a href="data-viz.html#sankey-diagrams" id="toc-sankey-diagrams"><span class="toc-section-number">15.3.9</span> Sankey Diagrams</a></li>
 <li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.10</span> Pie Charts</a></li>
 <li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.11</span> 3D Visuals</a></li>
@@ -406,27 +409,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="getting-started" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Getting Started</h1>
-<p>Nothing in this book will increase the value of an analysis no one needs. Analyses should always have a strong value proposition – a clear expectation of how an analysis will support a General Manager, People Partner, Salesperson, or other member of the organization. Curiosity is not a business reason, and this chapter will cover a set of guiding principles as well as a project management framework that will help ensure analytics are anchored in well-defined problem statements to increase the likelihood of meaningful ROI.</p>
-<p>In addition, this book will cut through the fluff and teach you how to do stuff. Knowledge of concepts is futile without an understanding of how to apply them to people analytics use cases. Whether you are a people leader, individual contributor, or aspiring analytics practitioner, this book is for you. This book will serve as a guide through the analytics lifecycle, curating the key concepts and applications germane to common questions and hypotheses within people analytics and providing a repeatable framework for successful analytics projects.</p>
-<p>The goal of this book is not to boil the ocean by compiling and implementing every analysis method, from every point of view, in every tool. This book is guided by a goal of optimizing for the <em>fewest</em> number of concepts and applications required to successfully design and execute the <em>majority</em> of projects in the people analytics domain. Though this is a technical book, there is an emphasis on concepts and practical applications to people analytics over the mathematical underpinnings.</p>
+<p><strong>People analytics</strong> is the evidence-based practice of surfacing actionable insights from data to help people and organizations thrive. Relative to other functions such as Finance and Marketing, data-informed decisions in the talent domain is a recent concept. People analytics has significant potential to transform organizations by surfacing subtle barriers to success and optimizing for both the employee experience and shareholder value.</p>
+<p>The increased focus on the future of work, employee well-being, candidate and employee experience, worker productivity and collaboration, diversity, equity, inclusion, and belonging (DEIB), and retention of critical talent has resulted in companies making growing investments in people analytics capabilities. The nature of workforce challenges is increasingly too complex and nuanced for legacy HR skills, as critical decisions related to new operating models (e.g., remote/hybrid work) and strategies to address unprecedented phenomena (e.g., The Great Resignation) require robust analytics and insights.</p>
+<p>Many organizations struggle to progress beyond basic operational reporting and dashboards, but reports and dashboards are not people analytics; they merely help inform what questions to ask based on unanticipated observations (e.g., surprising changes and trajectories) which are often the impetus for people analytics projects. The ability to think critically and reason through the available data to properly frame problems and theoretical explanations are perhaps the most essential skills for success in people analytics.</p>
+<p>Nothing in this book will increase the value of an analysis no one needs. Analyses should always have a strong value proposition – a clear expectation of how an analysis will support a General Manager, People Partner, Salesperson, or other member of the organization. While curiosity is important, it is not a justification for an analysis. There should be a clear business need and commitment to action before implementing an analysis. This chapter will cover a set of guiding principles as well as a project management framework that will help ensure analytics are anchored in well-defined problem statements to increase the likelihood of meaningful ROI.</p>
+<p>In addition, this book will cut through the fluff and teach you how to do stuff. Knowledge of concepts is futile without an understanding of how to apply them to people analytics use cases. The goal of this book is not to boil the ocean by implementing an exhaustive set of analysis methods in every tool. This book is guided by a goal of optimizing for the <em>fewest</em> number of concepts and applications required to successfully design and execute the <em>majority</em> of projects in the people analytics domain. While this is a technical book, it indexes more heavily on concepts and practical applications to people analytics than on mathematical underpinnings.</p>
+<p>Whether you are a people leader, individual contributor, or aspiring analytics practitioner, this book is for you. This book will serve as a guide through the analytics lifecycle, curating the key concepts and applications germane to common questions and hypotheses within people analytics and providing a repeatable framework for successful analytics projects.</p>
 <div id="guiding-principles" class="section level2" number="1.1">
 <h2><span class="header-section-number">1.1</span> Guiding Principles</h2>
 <p>Among the many principles guiding how analytics teams operate, there are three that I have found to be universally applicable and critical to the success of an analytics capability.</p>
 <div id="pro-employee-thinking" class="section level3" number="1.1.1">
 <h3><span class="header-section-number">1.1.1</span> Pro-Employee Thinking</h3>
-<p>“With Great Power Comes Great Responsibility.”</p>
+<p>With great power comes great responsibility.</p>
 <p>‘Pro-employee’ thinking is addressed first and for good reason. People analytics has the power to improve the lives of people in meaningful ways. Whether we are shedding light on an area of the business struggling with work-life balance or identifying developmental areas of which a group of leaders may be unaware, people analytics ideally improves employee well-being and effectively, the success of the business. It is important to embrace a pro-employee philosophy, as newfound knowledge could also have damaging repercussions if shared with the wrong people or if findings are disseminated without proper instruction on how to interpret and act.</p>
 <p>One way to error on the side of caution when considering whether to disseminate insights is to ask the following: “With this knowledge, could the recipient act in a manner that is inconsistent with our pro-employee philosophy?” If the answer to this question is not a clear “no”, discuss with your HR, legal, and privacy partners and together, determine how best to proceed. The decision may be to not share the findings with the intended audience at all or to develop a proper communication and training plan to ensure there is consistency in how recipients interpret the insights and act in response. Employment Law and Data Privacy Counsel are our friends, and it is important to build strong relationships with these critical partners.</p>
 </div>
 <div id="quality" class="section level3" number="1.1.2">
 <h3><span class="header-section-number">1.1.2</span> Quality</h3>
-<p>“Garbage In, Garbage Out.”</p>
+<p>Garbage in, garbage out.</p>
 <p>Never compromise quality for greater velocity. If quality falls to the bottom of the priority list, all other efforts are pointless. It is unlikely that requestors of data and analytics will ever ask us to take longer to prepare the information. The onus is on us as analytics professionals to level set on a reasonable timeline for analyses based on many factors that can materially impact the quality of analyses and insights. A single instance of compromised quality can have lasting damage on the reputation of the analytics function and cause consumers of insights to view all findings as suspect. Be sure quality is consistently a top value and guard your team’s reputation at all costs. If stakeholders lose trust, there will likely be additional data requests for validation; this is wasteful to both you and your user community and detracts from the bigger story that needs to be conveyed.</p>
 <p>To be clear, by ‘quality’ I am referring to results, which is dependent on data integrity in the source systems, proper data preparation steps, and many other factors. Most of the analyst’s time is spent on data preparation (data collection, cleaning and organizing, building training sets, mining for patterns, refining algorithms, etc.). If tight controls do not exist within the source application to support data integrity, data preparation efforts can only go so far in delivering reliable and valid findings. It is often the analysts who identify data integrity issues due to the nature of their work; therefore, close relationships should be formed with source application owners to put into place validation rules to proactively prevent the entry of erroneous data or at the very least, exception/audit reports to identify and address the issues soon after the fact.</p>
 </div>
 <div id="prioritization" class="section level3" number="1.1.3">
 <h3><span class="header-section-number">1.1.3</span> Prioritization</h3>
-<p>“If everything is a priority, nothing is a priority.”</p>
+<p>If everything is a priority, nothing is a priority.</p>
 <p>If there is not a supply-demand gap on the analytics team, the team likely isn’t asking enough questions. A backlog of projects can lend support for business cases requesting incremental funding to accelerate and expand the impact of people analytics. It is crucial to be relentless about prioritizing strategically important projects with ‘measurable’ impact over merely interesting questions that few care to answer. According to the Pareto Principle, 80% of outcomes (or outputs) result from 20% of causes (or inputs). In analytics, it is important to be laser focused on identifying the 20% of inputs that will result in disproportionate value creation for stakeholders. There are some general customer-oriented questions I have found to be helpful for the intake process to optimize the allocation of time and resources:</p>
 <ol style="list-style-type: decimal">
 <li>Does this support a company or departmental objective? If not, why should this be prioritized over something else?</li>

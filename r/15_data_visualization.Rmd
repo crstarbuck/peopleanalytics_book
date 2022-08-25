@@ -96,7 +96,11 @@ ggpubr::ggarrange(viz_zero_baseline, viz_nonzero_baseline, ncol = 2, nrow = 1)
 
 ### Intuitive Layout
 
-  When visualizing data, it is best not to deviate from the way in which the audience will naturally interpret the data. For example, numbers lower on a $y$-axis will naturally be interpreted to be smaller than numbers higher on the $y$-axis. If there are both positive and negative numbers along an $x$-axis, negative metrics are best placed on the left and positive on the right since people naturally consume content from left to right.
+  When visualizing data, it is best not to deviate from the way in which the audience will naturally interpret the data. Outlined below are a few important considerations:
+  
+  * Numbers lower on a $y$-axis will naturally be interpreted to be smaller than numbers higher on the $y$-axis. 
+  * When there are both positive and negative numbers along an $x$-axis, negative metrics are best placed on the left and positive on the right since people naturally consume content from left to right.
+  * Rotated axis labels require more time to read and interpret. If labels must be rotated to fit along an axis, a 45-degree angle is generally preferred over a more extreme 90-degree rotation.
   
   Figure \@ref(fig:flipped-axis-viz) shows murders committed using firearms in Florida across time. This visual has an inverted $y$-axis, which is highly misleading since it suggests spikes in murders are dips. Irrespective of whether this was politically motivated or simply a failed attempt at creativity, this is a deceptive data visualization.
 
@@ -475,15 +479,21 @@ dept_tenure
 
 ```  
 
-  While these data could easily be copied and pasted into presentation software for formatting, additional libraries exist in R for formatting tables. For example, R Markdown scripts can leverage the `DT` package to provide filtering, pagination, sorting, search, and other interactive features for HTML output:
+  While these data could easily be copied and pasted into presentation software for formatting, additional libraries exist in R for formatting tables. For example, R Markdown scripts can leverage the `DT` package to provide filtering, pagination, sorting, search, and other interactive features for HTML output. Field names can also be changed to proper case via the `dplyr::rename()` function.
 
 ```{r table, out.width = "100%", fig.cap = ".", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Load library
 library(DT)
 
+# Assign proper case field names
+dept_tenure_proper <- dept_tenure %>%
+                      rename('Department' = dept,
+                             'Tenure' = tenure_band,
+                             'Count' = cnt)
+
 # Format output with datatable
-DT::datatable(dept_tenure, rownames = FALSE)
+DT::datatable(dept_tenure_proper, rownames = FALSE)
 
 ```  
 
@@ -686,6 +696,7 @@ smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_fie
 
 # Visualize data
 ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::labs(title = "The trailing 12-month (TTM) turnover trend for level 4 People Scientists \ndiverged from Data Engineers and Insights Consultants over the past year.", x = 'Month', y = 'Turnover Rate') + 
 ggplot2::geom_bar(stat = "identity") +
 ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
 ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
@@ -767,6 +778,9 @@ waffle_dat <- expand.grid(y = 1:depth,
 # Expand the applicant counts into a vector of stage labels
 stages <- rep(ta_dat$stage, ta_dat$cnt)
 
+# Integrate stages and fill any extra tiles with NA
+waffle_dat$stage <- c(stages, rep(NA, nrow(waffle_dat) - length(stages)))
+
 ```
 
   With this data structure, a waffle chart can be produced using the `geom_tile()` function from `ggplot2`. 
@@ -777,6 +791,7 @@ stages <- rep(ta_dat$stage, ta_dat$cnt)
 
 # Visualize data
 ggplot2::ggplot(waffle_dat, aes(x = x, y = y, fill = stage)) + 
+ggplot2::labs(title = "We select 10 in every 100 applicants. \nOur offer acceptance rate (OAR) is 40%.") + 
 ggplot2::geom_tile(color = "white") +
 ggplot2::scale_fill_manual(values = c("Apply" = "#D9D9D9", 
                                       "Phone Screen" = "#BFBFBF", 
@@ -791,11 +806,105 @@ ggplot2::theme(legend.title = element_blank())
 
 ### Sankey Diagrams
 
-  **Sankey diagrams**, or alternatives such as **chord diagrams** and **alluvial plots**, are flow diagrams that are particularly effective in depicting a many-to-many relationship between two domains. In a sankey, connection points are links and the items being connected are nodes.
+  **Sankey diagrams**, or alternatives such as **chord diagrams** and **alluvial plots**, are flow diagrams that are particularly effective in depicting a many-to-many relationship between two domains.
   
   Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., proportion of employees moving from one department to another) or recruiting sources by which employees in various departments have been hired. 
   
+  To demonstrate how to implement a sankey diagram, let's use the `sankeyNetwork()` function from the `networkD3` library to visualize employee transfers between departments. While D3 is an advanced JavaScript framework for creating interactive visualizations, the `networkD3` library provides an easy interface for constructing sankey diagrams with interactive components. Building a sankey diagram using `networkD3` requires data to be structured within two data frames:
   
+  * **nodes**: Defines the source and destination node names (i.e., the departments employees transfer into and out of)
+  * **links**: Connections between pairs of source and destination nodes using an index beginning at 0 to represent the corresponding node from the nodes data frame
+
+```{r, message = FALSE, warning = FALSE}
+
+# Create nodes df
+nodes <- data.frame(name = c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales', # source
+                             'Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales')) # destination
+
+# Create links df
+links <- expand.grid(source = 0:6, target = 7:13)
+
+# Append employee transfer counts per department pair to links df
+links$value <- ifelse(links$source == links$target-7, round(rnorm(1000, 150, 25), 0), round(rnorm(1000, 30, 5), 0))
+
+```
+
+  With data properly structured within the `nodes` and `links` data frames, these data can be passed into the `sankeyNetwork()` function to construct the sankey diagram:
+
+```{r sankey-1, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with default colors.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(networkD3)
+
+# Create sankey diagram
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30)
+
+```
+
+  Though it can quickly become noisy as the number of nodes increases, coloring connections based on the source departments from which they flow may be helpful in tracing the employee flow to the various destination departments. This can be accomplished by adding a grouping variable to the `links` df and passing the variable name to the `LinkGroup` argument in the call to the `sankeyNetwork()` function.
+  
+  The following code block derives two different grouping variables for use in shading the sankey diagram -- one to indicate the source department (transfers out) and another to indicate intradepartmental (within) vs. interdepartmental (outside) moves.
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Append source department variable for colored connections
+links$dept <- dplyr::case_when(
+  links$source == 0 ~ "Engineering",
+  links$source == 1 ~ "Finance",
+  links$source == 2 ~ "Legal",
+  links$source == 3 ~ "Marketing",
+  links$source == 4 ~ "People",
+  links$source == 5 ~ "Product",
+  links$source == 6 ~ "Sales",
+  TRUE ~ "NA"
+)
+
+# Append within/outside department transfer variable for colored connections
+links$wiout_dept <- dplyr::case_when(
+  (links$source == 0 & links$target == 7) | (links$source == 1 & links$target == 8) | (links$source == 2 & links$target == 9) | (links$source == 3 & links$target == 10) | (links$source == 4 & links$target == 11) | (links$source == 5 & links$target == 12) | (links$source == 6 & links$target == 13) ~ "Within",
+  TRUE ~ "Outside"
+)
+
+```
+
+```{r sankey-2, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Create sankey diagram
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30, 
+                         LinkGroup = "dept")
+
+```
+
+```{r sankey-3, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Create sankey diagram
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30, 
+                         LinkGroup = "wiout_dept")
+
+```
+
+  If the focus is on a single department's transfers, preattentive attributes can be applied to help focus the audience's attention and move the less important information to the background to reduce clutter.
 
 ### Pie Charts
 
@@ -880,7 +989,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * Creative use of a bar chart resembling an area chart to represent the weekly interval for jobless claims over the 20-year period
   * Two helpful reference points to provide perspective: (1) 20-year weekly average; and (2) cumulative jobless claims during the last significant U.S. recession in 2008
 
-```{r good-viz, out.width = "75%", echo = FALSE, fig.cap = 'An archetype of elegance in data visualization.', fig.align = 'center'}
+```{r good-viz, out.width = "100%", echo = FALSE, fig.cap = 'An archetype of elegance in data visualization.', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/good_viz-job_loss.png")
 
@@ -888,22 +997,22 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Review Questions
 
-1. 
+1. What is the function of preattentive attributes in data visualization?
 
-2. 
+2. Why is the use of red and green in data visualization potentially problematic?
 
-3. 
+3. Why are horizontal bar charts easier to interpret than pie charts?
 
-4. 
+4. What types of data are visualized in scatterplots?
 
-5. 
+5. What advantages do heatmaps provide over tables?
 
-6. 
+6. What are some people analytics use cases for slopegraphs?
 
-7. 
+7. What are some people analytics use cases for sankey diagrams?
 
-8. 
+8. Why is it important to use a zero baseline for y-axes?
 
-9. 
+9. Why is it a best practice to avoid rotating axis labels?
 
-10. 
+10. What is the primary purpose of applying a consistent color palette across visuals?
