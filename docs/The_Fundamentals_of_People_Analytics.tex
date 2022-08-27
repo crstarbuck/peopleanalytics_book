@@ -712,7 +712,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpbGJPCO/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpIwpGGG/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -11091,7 +11091,7 @@ We can now cut the dendogram into 7 clusters using the \texttt{cutree()} functio
 
 Unlike content in the preceding chapters, data visualization is more of an \emph{art} than a \emph{science}. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
 
-This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike. Since there is a significant amount of code required to construct the many visuals in this chapter, the code for each example is provided in Chapter \ref{appendix}.
+This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike. Since there is a considerable amount of code required to construct the plethora of graphics in this chapter, only the data prep code will be included. You can reference Chapter \ref{appendix} for a curated set of fully reproducible code for each data visualization provided in this chapter.
 
 \hypertarget{best-practices}{%
 \section{Best Practices}\label{best-practices}}
@@ -11292,8 +11292,8 @@ Since Life Sciences was the field pursued by the most employees, let's highlight
 \caption{Step 3: Assign colors strategically.}\label{fig:barchart-3}
 \end{figure}
 
-\hypertarget{step-4-add-mixed-case-axis-titles}{%
-\subsection{Step 4: Add Mixed Case Axis Titles}\label{step-4-add-mixed-case-axis-titles}}
+\hypertarget{step-4-add-axis-titles-and-margins}{%
+\subsection{Step 4: Add Axis Titles and Margins}\label{step-4-add-axis-titles-and-margins}}
 
 Axis titles are the column names by default, which is usually not the most user-friendly option. We can assign new mixed case axis titles by chaining \texttt{labs(x\ =\ \textquotesingle{}Education\ Field\textquotesingle{},\ y\ =\ \textquotesingle{}Headcount\textquotesingle{})} to the visualization code.
 
@@ -11515,21 +11515,28 @@ While these data could easily be copied and pasted into presentation software fo
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library}
-\FunctionTok{library}\NormalTok{(DT)}
-
 \CommentTok{\# Assign proper case field names}
 \NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{\%\textgreater{}\%}
                       \FunctionTok{rename}\NormalTok{(}\StringTok{\textquotesingle{}Department\textquotesingle{}} \OtherTok{=}\NormalTok{ dept,}
                              \StringTok{\textquotesingle{}Tenure\textquotesingle{}} \OtherTok{=}\NormalTok{ tenure\_band,}
                              \StringTok{\textquotesingle{}Count\textquotesingle{}} \OtherTok{=}\NormalTok{ cnt)}
-
-\CommentTok{\# Format output with datatable}
-\NormalTok{DT}\SpecialCharTok{::}\FunctionTok{datatable}\NormalTok{(dept\_tenure\_proper, }\AttributeTok{rownames =} \ConstantTok{FALSE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
-\label{fig:table}.
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/data\_table.png"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/data_table} 
+
+}
+
+\caption{Data table.}\label{fig:table}
+\end{figure}
 
 \hypertarget{heatmaps}{%
 \subsection{Heatmaps}\label{heatmaps}}
@@ -11540,23 +11547,13 @@ The \texttt{geom\_tile()} function can be used to build a heatmap with \texttt{g
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(dept\_tenure, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ tenure\_band, }\AttributeTok{y =}\NormalTok{ dept, }\AttributeTok{fill =}\NormalTok{ cnt)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_tile}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}A large portion of our workforce has between 3 and 10 years}\SpecialCharTok{\textbackslash{}n}\StringTok{ of company tenure and works within R\&D.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Tenure\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{guides}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{title =} \StringTok{"Employee Count"}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_continuous}\NormalTok{(}\AttributeTok{low =} \StringTok{"\#F2F2F2"}\NormalTok{, }\AttributeTok{high =} \StringTok{"\#0070C0"}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/heatmap.png"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/heatmap-1} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/heatmap} 
 
 }
 
@@ -11586,25 +11583,13 @@ The \texttt{geom\_point()} function is used to create a scatterplot. The \texttt
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{require}\NormalTok{(scales)}
-
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(sales, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ work\_exp, }\AttributeTok{y =}\NormalTok{ ytd\_sales, }\AttributeTok{group =}\NormalTok{ quota\_flg)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The relationship between work experience and YTD sales is positive.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Work Experience\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}YTD Sales (USD)\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{comma) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
-               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/scatterplot\_1.png"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/scatterplot-1-1} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_1} 
 
 }
 
@@ -11617,29 +11602,13 @@ The \texttt{color} argument for the \texttt{geom\_point()} function is used to a
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{require}\NormalTok{(scales)}
-
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(sales, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ work\_exp, }\AttributeTok{y =}\NormalTok{ ytd\_sales, }\AttributeTok{group =}\NormalTok{ quota\_flg)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =} \FunctionTok{as.factor}\NormalTok{(quota\_flg))) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{150000}\NormalTok{, }\AttributeTok{linetype =} \StringTok{\textquotesingle{}dotted\textquotesingle{}}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{) }\SpecialCharTok{+} 
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{annotate}\NormalTok{(}\AttributeTok{geom =} \StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \DecValTok{2}\NormalTok{, }\AttributeTok{y =} \DecValTok{159000}\NormalTok{, }\AttributeTok{label =} \StringTok{"Sales Quota = $150k"}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Some employees with more work experience have }\SpecialCharTok{\textbackslash{}n}\StringTok{already met the full year sales quota.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Work Experience\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}YTD Sales (USD)\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{,}
-                                       \StringTok{"1"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{comma) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
-               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/scatterplot\_2.png"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/scatterplot-2-1} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_2} 
 
 }
 
@@ -11735,6 +11704,42 @@ Figure \ref{fig:cumulative-trend} shows a cumulative graph of iPhone sales. Sinc
 \hypertarget{waterfall-charts}{%
 \subsection{Waterfall Charts}\label{waterfall-charts}}
 
+\textbf{Waterfall charts} are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics.
+
+Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Generate headcount data with id field to define bar order}
+\NormalTok{hc\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{,}
+                     \AttributeTok{event =} \FunctionTok{c}\NormalTok{(}\StringTok{"Starting HC"}\NormalTok{, }\StringTok{"Hires"}\NormalTok{, }\StringTok{"Transfers In"}\NormalTok{, }\StringTok{"Transfers Out"}\NormalTok{, }\StringTok{"Exits"}\NormalTok{, }\StringTok{"Ending HC"}\NormalTok{),}
+                     \AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\StringTok{"Headcount"}\NormalTok{, }\StringTok{"Growth"}\NormalTok{, }\StringTok{"Growth"}\NormalTok{, }\StringTok{"Loss"}\NormalTok{, }\StringTok{"Loss"}\NormalTok{, }\StringTok{"Headcount"}\NormalTok{),}
+                     \AttributeTok{count =} \FunctionTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{10}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{20}\NormalTok{, }\DecValTok{130}\NormalTok{),}
+                     \AttributeTok{start =} \ConstantTok{NA}\NormalTok{,}
+                     \AttributeTok{end =} \ConstantTok{NA}\NormalTok{)}
+
+\CommentTok{\# Define start and end values to support waterfall chart}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}} \FunctionTok{cumsum}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{count)}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{head}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{end, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\DecValTok{0}\NormalTok{)}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{start }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{head}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{end, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{))}
+
+\CommentTok{\# Swap start/end values for last record (Ending HC)}
+\NormalTok{hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"end"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"start"}\NormalTok{]}
+\NormalTok{hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"start"}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
+
+With data properly structured, we can use the \texttt{geom\_rect()} function to build the waterfall chart. Strategies such as labeling only the Beginning HC and Ending HC reduces clutter and lends to a cleaner design aesthetic.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/waterfall_chart} 
+
+}
+
+\caption{Waterfall chart.}\label{fig:waterfl-chart}
+\end{figure}
+
 \hypertarget{waffle-charts}{%
 \subsection{Waffle Charts}\label{waffle-charts}}
 
@@ -11771,24 +11776,13 @@ The waffle chart in Figure \ref{fig:waffle-chart} illustrates how candidates for
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Visualize data}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(waffle\_dat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y, }\AttributeTok{fill =}\NormalTok{ stage)) }\SpecialCharTok{+} 
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"We select 10 in every 100 applicants. }\SpecialCharTok{\textbackslash{}n}\StringTok{Our offer acceptance rate (OAR) is 40\%."}\NormalTok{) }\SpecialCharTok{+} 
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_tile}\NormalTok{(}\AttributeTok{color =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Apply"} \OtherTok{=} \StringTok{"\#D9D9D9"}\NormalTok{, }
-                                      \StringTok{"Phone Screen"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{, }
-                                      \StringTok{"Interview"} \OtherTok{=} \StringTok{"\#A6A6A6"}\NormalTok{, }
-                                      \StringTok{"Offer Extend"} \OtherTok{=} \StringTok{"\#808080"}\NormalTok{,}
-                                      \StringTok{"Offer Accept"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_reverse}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_void}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{())}
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/waffle\_chart.png"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/waffle-chart-1} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/waffle_chart} 
 
 }
 
@@ -11800,7 +11794,7 @@ The waffle chart in Figure \ref{fig:waffle-chart} illustrates how candidates for
 
 \textbf{Sankey diagrams}, or alternatives such as \textbf{chord diagrams} and \textbf{alluvial plots}, are flow diagrams that are particularly effective in depicting a many-to-many relationship between two domains.
 
-Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., proportion of employees moving from one department to another) or recruiting sources by which employees in various departments have been hired.
+Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., inflows and outflows among departments) or recruiting sources by which employees in various departments have been hired.
 To demonstrate how to implement a sankey diagram, let's use the \texttt{sankeyNetwork()} function from the \texttt{networkD3} library to visualize employee transfers between departments. D3 is an advanced JavaScript framework for creating interactive visualizations, and the \texttt{networkD3} library provides an easy interface for constructing sankey diagrams with interactive components. Building a sankey diagram using \texttt{networkD3} requires data to be structured within two data frames:
 
 \begin{itemize}
@@ -11952,6 +11946,8 @@ Figure \ref{fig:bad-donut-chart} shows a donut chart -- which is simply a pie ch
 
 There is no specific \texttt{geom()} function for building pie charts using \texttt{ggplot2}. Therefore, we need to create a bar chart and make it circular by adding a \texttt{coord\_polar("y",\ start\ =\ 0)} transformation. The \texttt{coord\_polar()} transformation complicates the positioning of labels, but we can add a \texttt{position\ =\ position\_stack(vjust\ =\ 0.5))} argument within the \texttt{geom\_text()} function to specify the alignment of gender representation metrics. We can also easily improve the aesthetics with the \texttt{theme\_void()} function, which removes the default background, grid, and labels.
 
+The data need to be structured consistent with the requirements for a bar chart. A basic data cube with descriptive statistics by gender category will simplify the construction of the pie chart in \texttt{ggplot2}:
+
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Create data cube for gender representation among active employees}
@@ -11961,27 +11957,18 @@ There is no specific \texttt{geom()} function for building pie charts using \tex
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =} \FunctionTok{n}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(cnt }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(cnt) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))}
+\end{Highlighting}
+\end{Shaded}
 
-\CommentTok{\# Visualize data}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_gender, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \StringTok{""}\NormalTok{, }\AttributeTok{y =}\NormalTok{ pct, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(gender))) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{coord\_polar}\NormalTok{(}\StringTok{"y"}\NormalTok{, }\AttributeTok{start =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{paste0}\NormalTok{(pct, }\StringTok{"\%"}\NormalTok{)), }\AttributeTok{color =} \FunctionTok{ifelse}\NormalTok{(smmry\_gender}\SpecialCharTok{$}\NormalTok{gender }\SpecialCharTok{==} \StringTok{\textquotesingle{}Male\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}white\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{), }\AttributeTok{position =} \FunctionTok{position\_stack}\NormalTok{(}\AttributeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Nearly 60 percent of active employees identify as male.\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Female"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{, }
-                                      \StringTok{"Male"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_void}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
-               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{include\_graphics}\NormalTok{(}\StringTok{"/Users/craig.starbuck/Library/Mobile Documents/com\textasciitilde{}apple\textasciitilde{}CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics\_book/graphics/pie\_chart.png"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}
 
-{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/pie-chart-1} 
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/pie_chart} 
 
 }
 
@@ -12397,16 +12384,16 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(ed\_field)}
 
-\CommentTok{\# Step 1}
+\CommentTok{\# Step 1: Build Bar Chart with Defaults}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }
 
-\CommentTok{\# Step 2}
+\CommentTok{\# Step 2: Remove Legend}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
 
-\CommentTok{\# Step 3}
+\CommentTok{\# Step 3: Assign Colors Strategically}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Human Resources"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{, }
@@ -12417,7 +12404,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                                       \StringTok{"Technical Degree"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{)) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
 
-\CommentTok{\# Step 4}
+\CommentTok{\# Step 4: Add Axis Titles and Margins}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{\textquotesingle{}Education Field\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -12431,7 +12418,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)),}
                \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)))}
 
-\CommentTok{\# Step 5}
+\CommentTok{\# Step 5: Add Left{-}Justified Title}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Life Sciences is the most common education field }\SpecialCharTok{\textbackslash{}n}\StringTok{pursued by active employees.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Education Field\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -12446,7 +12433,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)),}
                \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)))}
 
-\CommentTok{\# Step 6}
+\CommentTok{\# Step 6: Remove Background}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Life Sciences is the most common education field }\SpecialCharTok{\textbackslash{}n}\StringTok{pursued by active employees.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Education Field\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -12461,7 +12448,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)),}
                \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{)))}
 
-\CommentTok{\# Step 7}
+\CommentTok{\# Step 7: Remove Axis Ticks}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Life Sciences is the most common education field }\SpecialCharTok{\textbackslash{}n}\StringTok{pursued by active employees.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Education Field\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -12478,7 +12465,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
 
-\CommentTok{\# Step 8}
+\CommentTok{\# Step 8: Mute Titles}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Life Sciences is the most common education field }\SpecialCharTok{\textbackslash{}n}\StringTok{pursued by active employees.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Education Field\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -12496,7 +12483,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
 
-\CommentTok{\# Step 9}
+\CommentTok{\# Step 9: Flip Axes}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{coord\_flip}\NormalTok{() }\SpecialCharTok{+}
@@ -12515,7 +12502,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
 
-\CommentTok{\# Step 10}
+\CommentTok{\# Step 10: Sort Data}
 \CommentTok{\# Sort education values by count}
 \NormalTok{smmry\_ed\_field }\OtherTok{\textless{}{-}}\NormalTok{ smmry\_ed\_field }\SpecialCharTok{\%\textgreater{}\%}
 \NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(n)}
@@ -12539,7 +12526,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
 
-\CommentTok{\# Pre/post comparison}
+\CommentTok{\# Pre/post viz comparison}
 \NormalTok{viz\_pre }\OtherTok{\textless{}{-}}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_ed\_field, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ ed\_field, }\AttributeTok{y =}\NormalTok{ n, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(ed\_field))) }\SpecialCharTok{+}
 \NormalTok{           ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }
 
@@ -12566,12 +12553,263 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \end{Highlighting}
 \end{Shaded}
 
+\hypertarget{tables-1}{%
+\section{Tables}\label{tables-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Append new tenure band column}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{tenure\_band }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \DecValTok{1} \SpecialCharTok{\textasciitilde{}} \StringTok{"Under 1 Year"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \FloatTok{2.5} \SpecialCharTok{\textasciitilde{}} \StringTok{"1{-}2 Years"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \FloatTok{5.5} \SpecialCharTok{\textasciitilde{}} \StringTok{"3{-}5 Years"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}=} \DecValTok{10} \SpecialCharTok{\textasciitilde{}} \StringTok{"6{-}10 Years"}\NormalTok{,}
+  \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \StringTok{"Over 10 Years"}
+\NormalTok{)}
+
+\CommentTok{\# Store aggregate measures to cube}
+\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =} \FunctionTok{n}\NormalTok{())}
+
+\CommentTok{\# Specify ordered factor}
+\NormalTok{dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band }\OtherTok{\textless{}{-}} \FunctionTok{ordered}\NormalTok{(dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Under 1 Year"}\NormalTok{, }\StringTok{"1{-}2 Years"}\NormalTok{, }\StringTok{"3{-}5 Years"}\NormalTok{, }\StringTok{"6{-}10 Years"}\NormalTok{, }\StringTok{"Over 10 Years"}\NormalTok{))}
+
+\CommentTok{\# Assign proper case field names}
+\NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{\%\textgreater{}\%}
+                      \FunctionTok{rename}\NormalTok{(}\StringTok{\textquotesingle{}Department\textquotesingle{}} \OtherTok{=}\NormalTok{ dept,}
+                             \StringTok{\textquotesingle{}Tenure\textquotesingle{}} \OtherTok{=}\NormalTok{ tenure\_band,}
+                             \StringTok{\textquotesingle{}Count\textquotesingle{}} \OtherTok{=}\NormalTok{ cnt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Table }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(DT)}
+
+\CommentTok{\# Format output with datatable}
+\NormalTok{DT}\SpecialCharTok{::}\FunctionTok{datatable}\NormalTok{(dept\_tenure\_proper, }\AttributeTok{rownames =} \ConstantTok{FALSE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{heatmaps-1}{%
+\section{Heatmaps}\label{heatmaps-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Append new tenure band column}
+\NormalTok{employees}\SpecialCharTok{$}\NormalTok{tenure\_band }\OtherTok{\textless{}{-}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{case\_when}\NormalTok{(}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \DecValTok{1} \SpecialCharTok{\textasciitilde{}} \StringTok{"Under 1 Year"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \FloatTok{2.5} \SpecialCharTok{\textasciitilde{}} \StringTok{"1{-}2 Years"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}} \FloatTok{5.5} \SpecialCharTok{\textasciitilde{}} \StringTok{"3{-}5 Years"}\NormalTok{,}
+\NormalTok{  employees}\SpecialCharTok{$}\NormalTok{org\_tenure }\SpecialCharTok{\textless{}=} \DecValTok{10} \SpecialCharTok{\textasciitilde{}} \StringTok{"6{-}10 Years"}\NormalTok{,}
+  \ConstantTok{TRUE} \SpecialCharTok{\textasciitilde{}} \StringTok{"Over 10 Years"}
+\NormalTok{)}
+
+\CommentTok{\# Store aggregate measures to cube}
+\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =} \FunctionTok{n}\NormalTok{())}
+
+\CommentTok{\# Specify ordered factor}
+\NormalTok{dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band }\OtherTok{\textless{}{-}} \FunctionTok{ordered}\NormalTok{(dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Under 1 Year"}\NormalTok{, }\StringTok{"1{-}2 Years"}\NormalTok{, }\StringTok{"3{-}5 Years"}\NormalTok{, }\StringTok{"6{-}10 Years"}\NormalTok{, }\StringTok{"Over 10 Years"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Heatmap }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(dept\_tenure, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ tenure\_band, }\AttributeTok{y =}\NormalTok{ dept, }\AttributeTok{fill =}\NormalTok{ cnt)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_tile}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}A large portion of our workforce has between 3 and 10 years}\SpecialCharTok{\textbackslash{}n}\StringTok{ of company tenure and works within R\&D.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Tenure\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{guides}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{title =} \StringTok{"Employee Count"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_continuous}\NormalTok{(}\AttributeTok{low =} \StringTok{"\#F2F2F2"}\NormalTok{, }\AttributeTok{high =} \StringTok{"\#0070C0"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{scatterplots-1}{%
+\section{Scatterplots}\label{scatterplots-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Subset df to active sales employees}
+\NormalTok{sales }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, dept }\SpecialCharTok{==} \StringTok{\textquotesingle{}Sales\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{)}
+
+\CommentTok{\# Set quote attainment flag for data viz coloring}
+\NormalTok{sales}\SpecialCharTok{$}\NormalTok{quota\_flg }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(sales}\SpecialCharTok{$}\NormalTok{ytd\_sales }\SpecialCharTok{\textgreater{}=} \DecValTok{150000}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Scatterplots }\AlertTok{\#\#\#}
+
+\FunctionTok{require}\NormalTok{(scales)}
+
+\CommentTok{\# Basic scatterplot}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(sales, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ work\_exp, }\AttributeTok{y =}\NormalTok{ ytd\_sales, }\AttributeTok{group =}\NormalTok{ quota\_flg)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_point}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The relationship between work experience and YTD sales is positive.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Work Experience\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}YTD Sales (USD)\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{comma) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+
+\CommentTok{\# Scatterplot with preattentive attributes}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(sales, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ work\_exp, }\AttributeTok{y =}\NormalTok{ ytd\_sales, }\AttributeTok{group =}\NormalTok{ quota\_flg)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_point}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{color =} \FunctionTok{as.factor}\NormalTok{(quota\_flg))) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{150000}\NormalTok{, }\AttributeTok{linetype =} \StringTok{\textquotesingle{}dotted\textquotesingle{}}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{annotate}\NormalTok{(}\AttributeTok{geom =} \StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \DecValTok{2}\NormalTok{, }\AttributeTok{y =} \DecValTok{159000}\NormalTok{, }\AttributeTok{label =} \StringTok{"Sales Quota = $150k"}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{, }\AttributeTok{size =} \DecValTok{3}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Some employees with more work experience have }\SpecialCharTok{\textbackslash{}n}\StringTok{already met the full year sales quota.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Work Experience\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}YTD Sales (USD)\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{,}
+                                       \StringTok{"1"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{comma) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{line-charts}{%
+\section{Line Charts}\label{line-charts}}
+
+\hypertarget{slopegraphs-1}{%
+\section{Slopegraphs}\label{slopegraphs-1}}
+
+\hypertarget{bar-charts-1}{%
+\section{Bar Charts}\label{bar-charts-1}}
+
+\hypertarget{waterfall-charts-1}{%
+\section{Waterfall Charts}\label{waterfall-charts-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Generate headcount data with id field to define bar order}
+\NormalTok{hc\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{id =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{6}\NormalTok{,}
+                     \AttributeTok{event =} \FunctionTok{c}\NormalTok{(}\StringTok{"Starting HC"}\NormalTok{, }\StringTok{"Hires"}\NormalTok{, }\StringTok{"Transfers In"}\NormalTok{, }\StringTok{"Transfers Out"}\NormalTok{, }\StringTok{"Exits"}\NormalTok{, }\StringTok{"Ending HC"}\NormalTok{),}
+                     \AttributeTok{type =} \FunctionTok{c}\NormalTok{(}\StringTok{"Headcount"}\NormalTok{, }\StringTok{"Growth"}\NormalTok{, }\StringTok{"Growth"}\NormalTok{, }\StringTok{"Loss"}\NormalTok{, }\StringTok{"Loss"}\NormalTok{, }\StringTok{"Headcount"}\NormalTok{),}
+                     \AttributeTok{count =} \FunctionTok{c}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{50}\NormalTok{, }\DecValTok{10}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{10}\NormalTok{, }\SpecialCharTok{{-}}\DecValTok{20}\NormalTok{, }\DecValTok{130}\NormalTok{),}
+                     \AttributeTok{start =} \ConstantTok{NA}\NormalTok{,}
+                     \AttributeTok{end =} \ConstantTok{NA}\NormalTok{)}
+
+\CommentTok{\# Define start and end values to support waterfall chart}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}} \FunctionTok{cumsum}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{count)}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{head}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{end, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{), }\DecValTok{0}\NormalTok{)}
+\NormalTok{hc\_dat}\SpecialCharTok{$}\NormalTok{start }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\FunctionTok{head}\NormalTok{(hc\_dat}\SpecialCharTok{$}\NormalTok{end, }\SpecialCharTok{{-}}\DecValTok{1}\NormalTok{))}
+
+\CommentTok{\# Swap start/end values for last record (Ending HC)}
+\NormalTok{hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"end"}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"start"}\NormalTok{]}
+\NormalTok{hc\_dat[}\FunctionTok{nrow}\NormalTok{(hc\_dat), }\StringTok{"start"}\NormalTok{] }\OtherTok{\textless{}{-}} \DecValTok{0}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Waterfall Chart }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(hc\_dat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ event, }\AttributeTok{fill =}\NormalTok{ type)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_rect}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(event, id),}
+                       \AttributeTok{xmin =}\NormalTok{ id }\SpecialCharTok{{-}} \FloatTok{0.45}\NormalTok{,}
+                       \AttributeTok{xmax =}\NormalTok{ id }\SpecialCharTok{+} \FloatTok{0.50}\NormalTok{,}
+                       \AttributeTok{ymin =}\NormalTok{ end,}
+                       \AttributeTok{ymax =}\NormalTok{ start)) }\SpecialCharTok{+}
+\FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(id, end, }\AttributeTok{label =} \FunctionTok{ifelse}\NormalTok{(id }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{6}\NormalTok{), end, }\StringTok{\textquotesingle{}\textquotesingle{}}\NormalTok{)), }\CommentTok{\# Only label start and end HC}
+              \AttributeTok{vjust =} \FloatTok{1.5}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Hires and inbound transfers have outpaced outbound transfers and exits }\SpecialCharTok{\textbackslash{}n}\StringTok{in Engineering, leading to a net YTD increase in headcount.\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{x =} \StringTok{\textquotesingle{}Event\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{y =} \StringTok{\textquotesingle{}Headcount\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Headcount"} \OtherTok{=} \StringTok{"\#D9D9D9"}\NormalTok{,}
+                                      \StringTok{"Growth"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{,}
+                                      \StringTok{"Loss"} \OtherTok{=} \StringTok{"\#ED7D31"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+               \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{waffle-charts-1}{%
+\section{Waffle Charts}\label{waffle-charts-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Create df with TA funnel metrics}
+\NormalTok{ta\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{stage =} \FunctionTok{c}\NormalTok{(}\StringTok{"Apply"}\NormalTok{, }\StringTok{"Phone Screen"}\NormalTok{, }\StringTok{"Interview"}\NormalTok{, }\StringTok{"Offer Extend"}\NormalTok{, }\StringTok{"Offer Accept"}\NormalTok{),}
+                     \AttributeTok{cnt =} \FunctionTok{c}\NormalTok{(}\DecValTok{60}\NormalTok{, }\DecValTok{20}\NormalTok{, }\DecValTok{10}\NormalTok{, }\DecValTok{6}\NormalTok{, }\DecValTok{4}\NormalTok{))}
+
+\CommentTok{\# Set depth of waffle chart (\# of y{-}axis rows)}
+\NormalTok{depth }\OtherTok{\textless{}{-}} \DecValTok{10}
+
+\CommentTok{\# Each observation needs an x and y coordinate, and y needs to be specified first for a waffle chart with horizontal accumulation}
+\NormalTok{waffle\_dat }\OtherTok{\textless{}{-}} \FunctionTok{expand.grid}\NormalTok{(}\AttributeTok{y =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{depth,}
+                          \AttributeTok{x =} \FunctionTok{seq\_len}\NormalTok{(}\FunctionTok{ceiling}\NormalTok{(}\FunctionTok{sum}\NormalTok{(ta\_dat}\SpecialCharTok{$}\NormalTok{cnt) }\SpecialCharTok{/}\NormalTok{ depth)))}
+
+\CommentTok{\# Expand the applicant counts into a vector of stage labels}
+\NormalTok{stages }\OtherTok{\textless{}{-}} \FunctionTok{rep}\NormalTok{(ta\_dat}\SpecialCharTok{$}\NormalTok{stage, ta\_dat}\SpecialCharTok{$}\NormalTok{cnt)}
+
+\CommentTok{\# Integrate stages and fill any extra tiles with NA}
+\NormalTok{waffle\_dat}\SpecialCharTok{$}\NormalTok{stage }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(stages, }\FunctionTok{rep}\NormalTok{(}\ConstantTok{NA}\NormalTok{, }\FunctionTok{nrow}\NormalTok{(waffle\_dat) }\SpecialCharTok{{-}} \FunctionTok{length}\NormalTok{(stages)))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Waffle Chart }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(waffle\_dat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x, }\AttributeTok{y =}\NormalTok{ y, }\AttributeTok{fill =}\NormalTok{ stage)) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"We select 10 in every 100 applicants. }\SpecialCharTok{\textbackslash{}n}\StringTok{Our offer acceptance rate (OAR) is 40\%."}\NormalTok{) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_tile}\NormalTok{(}\AttributeTok{color =} \StringTok{"white"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Apply"} \OtherTok{=} \StringTok{"\#D9D9D9"}\NormalTok{, }
+                                      \StringTok{"Phone Screen"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{, }
+                                      \StringTok{"Interview"} \OtherTok{=} \StringTok{"\#A6A6A6"}\NormalTok{, }
+                                      \StringTok{"Offer Extend"} \OtherTok{=} \StringTok{"\#808080"}\NormalTok{,}
+                                      \StringTok{"Offer Accept"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_reverse}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_void}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
 \hypertarget{sankey-diagrams-1}{%
 \section{Sankey Diagrams}\label{sankey-diagrams-1}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\DocumentationTok{\#\#\# Sankey Data Prep }\AlertTok{\#\#\#}
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
 
 \CommentTok{\# Set seed for reproducibility}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
@@ -12664,6 +12902,43 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                          \AttributeTok{NodeGroup =} \StringTok{"prod"}\NormalTok{,}
                          \AttributeTok{LinkGroup =} \StringTok{"prod"}\NormalTok{,}
                          \AttributeTok{colourScale =}\NormalTok{ colorJS)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{pie-charts-1}{%
+\section{Pie Charts}\label{pie-charts-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Create data cube for gender representation among active employees}
+\NormalTok{smmry\_gender }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(gender) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =} \FunctionTok{n}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(cnt }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(cnt) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Pie Chart }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(smmry\_gender, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \StringTok{""}\NormalTok{, }\AttributeTok{y =}\NormalTok{ pct, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(gender))) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{coord\_polar}\NormalTok{(}\StringTok{"y"}\NormalTok{, }\AttributeTok{start =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_text}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{label =} \FunctionTok{paste0}\NormalTok{(pct, }\StringTok{"\%"}\NormalTok{)), }\AttributeTok{color =} \FunctionTok{ifelse}\NormalTok{(smmry\_gender}\SpecialCharTok{$}\NormalTok{gender }\SpecialCharTok{==} \StringTok{\textquotesingle{}Male\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}white\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}black\textquotesingle{}}\NormalTok{), }\AttributeTok{position =} \FunctionTok{position\_stack}\NormalTok{(}\AttributeTok{vjust =} \FloatTok{0.5}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Nearly 60 percent of active employees identify as male.\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Female"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{, }
+                                      \StringTok{"Male"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_void}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.title =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
