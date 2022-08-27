@@ -1,0 +1,569 @@
+# Appendix {#appendix}
+
+  This appendix provides the code needed to reproduce visuals in Chapter \@ref(data-viz).
+
+## Beyond the Defaults
+
+```{r, eval = FALSE}
+
+# Load library
+library(dplyr)
+library(ggplot2)
+
+# Read employee data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+
+# Create data cube for active employees
+smmry_ed_field <- employees %>%
+                  dplyr::filter(active == 'Yes') %>%
+                  dplyr::count(ed_field)
+
+# Step 1: Build Bar Chart with Defaults
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") 
+
+# Step 2: Remove Legend
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::theme(legend.position = "none")
+
+# Step 3: Assign Colors Strategically
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none")
+
+# Step 4: Add Axis Titles and Margins
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+# Step 5: Add Left-Justified Title
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               plot.title = element_text(hjust = 0),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+# Step 6: Remove Background
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)))
+
+# Step 7: Remove Axis Ticks
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0)),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank())
+
+# Step 8: Mute Titles
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank())
+
+# Step 9: Flip Axes
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank())
+
+# Step 10: Sort Data
+# Sort education values by count
+smmry_ed_field <- smmry_ed_field %>%
+                  dplyr::arrange(n)
+smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
+
+ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                      "Life Sciences" = "#0070C0", 
+                                      "Marketing" = "#BFBFBF", 
+                                      "Medical" = "#BFBFBF",
+                                      "Other" = "#BFBFBF",
+                                      "Technical Degree" = "#BFBFBF")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank())
+
+# Pre/post viz comparison
+viz_pre <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+           ggplot2::geom_bar(stat = "identity") 
+
+viz_post <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
+            ggplot2::geom_bar(stat = "identity") +
+            ggplot2::coord_flip() +
+            ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
+            ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
+                                                  "Life Sciences" = "#0070C0", 
+                                                  "Marketing" = "#BFBFBF", 
+                                                  "Medical" = "#BFBFBF",
+                                                  "Other" = "#BFBFBF",
+                                                  "Technical Degree" = "#BFBFBF")) +
+            ggplot2::theme(legend.position = "none",
+                           panel.background = element_blank(),
+                           axis.ticks.x = element_blank(),
+                           axis.ticks.y = element_blank(),
+                           plot.title = element_text(hjust = 0, colour = "#404040"),
+                           axis.title.x = element_text(colour = "#404040"),
+                           axis.title.y = element_text(colour = "#404040"))
+  
+# Display pre/post visualizations side-by-side
+ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
+
+```
+
+## Tables
+
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Append new tenure band column
+employees$tenure_band <- dplyr::case_when(
+  employees$org_tenure < 1 ~ "Under 1 Year",
+  employees$org_tenure < 2.5 ~ "1-2 Years",
+  employees$org_tenure < 5.5 ~ "3-5 Years",
+  employees$org_tenure <= 10 ~ "6-10 Years",
+  TRUE ~ "Over 10 Years"
+)
+
+# Store aggregate measures to cube
+dept_tenure <- employees %>%
+               dplyr::filter(active == 'Yes') %>%
+               dplyr::group_by(dept, tenure_band) %>%
+               dplyr::summarise(cnt = n())
+
+# Specify ordered factor
+dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 Year", "1-2 Years", "3-5 Years", "6-10 Years", "Over 10 Years"))
+
+# Assign proper case field names
+dept_tenure_proper <- dept_tenure %>%
+                      rename('Department' = dept,
+                             'Tenure' = tenure_band,
+                             'Count' = cnt)
+
+```
+
+```{r, eval = FALSE}
+
+### Data Table ###
+
+# Load library
+library(DT)
+
+# Format output with datatable
+DT::datatable(dept_tenure_proper, rownames = FALSE)
+
+```  
+
+## Heatmaps
+
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Append new tenure band column
+employees$tenure_band <- dplyr::case_when(
+  employees$org_tenure < 1 ~ "Under 1 Year",
+  employees$org_tenure < 2.5 ~ "1-2 Years",
+  employees$org_tenure < 5.5 ~ "3-5 Years",
+  employees$org_tenure <= 10 ~ "6-10 Years",
+  TRUE ~ "Over 10 Years"
+)
+
+# Store aggregate measures to cube
+dept_tenure <- employees %>%
+               dplyr::filter(active == 'Yes') %>%
+               dplyr::group_by(dept, tenure_band) %>%
+               dplyr::summarise(cnt = n())
+
+# Specify ordered factor
+dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 Year", "1-2 Years", "3-5 Years", "6-10 Years", "Over 10 Years"))
+
+```
+
+```{r, eval = FALSE}
+
+### Heatmap ###
+
+ggplot2::ggplot(dept_tenure, aes(x = tenure_band, y = dept, fill = cnt)) +
+ggplot2::geom_tile() +
+ggplot2::labs(title = 'A large portion of our workforce has between 3 and 10 years\n of company tenure and works within R&D.', x = 'Tenure', y = 'Department') +
+ggplot2::guides(fill = guide_legend(title = "Employee Count")) +
+ggplot2::scale_fill_continuous(low = "#F2F2F2", high = "#0070C0") +
+ggplot2::theme(panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"))
+
+```
+
+## Scatterplots
+
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Subset df to active sales employees
+sales <- subset(employees, dept == 'Sales' & active == 'Yes')
+
+# Set quote attainment flag for data viz coloring
+sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
+
+```
+
+```{r, eval = FALSE}
+
+### Scatterplots ###
+
+require(scales)
+
+# Basic scatterplot
+ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
+ggplot2::geom_point() +
+ggplot2::labs(title = 'The relationship between work experience and YTD sales is positive.', x = 'Work Experience', y = 'YTD Sales (USD)') +
+ggplot2::scale_y_continuous(labels = scales::comma) +
+ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"))
+
+# Scatterplot with preattentive attributes
+ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
+ggplot2::geom_point(aes(color = as.factor(quota_flg))) +
+ggplot2::geom_hline(yintercept = 150000, linetype = 'dotted', color = "#0070C0") + 
+ggplot2::annotate(geom = "text", x = 2, y = 159000, label = "Sales Quota = $150k", color = "#0070C0", size = 3) +
+ggplot2::labs(title = 'Some employees with more work experience have \nalready met the full year sales quota.', x = 'Work Experience', y = 'YTD Sales (USD)') +
+ggplot2::scale_color_manual(values = c("0" = "#BFBFBF",
+                                       "1" = "#0070C0")) +
+ggplot2::scale_y_continuous(labels = scales::comma) +
+ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"))
+
+```
+
+
+## Line Charts
+
+## Slopegraphs
+
+## Bar Charts
+
+## Waterfall Charts
+
+```{r, message = FALSE, warning = FALSE}
+
+### Data Prep ###
+
+# Generate headcount data with id field to define bar order
+hc_dat <- data.frame(id = 1:6,
+                     event = c("Starting HC", "Hires", "Transfers In", "Transfers Out", "Exits", "Ending HC"),
+                     type = c("Headcount", "Growth", "Growth", "Loss", "Loss", "Headcount"),
+                     count = c(100, 50, 10, -10, -20, 130),
+                     start = NA,
+                     end = NA)
+
+# Define start and end values to support waterfall chart
+hc_dat$end <- cumsum(hc_dat$count)
+hc_dat$end <- c(head(hc_dat$end, -1), 0)
+hc_dat$start <- c(0, head(hc_dat$end, -1))
+
+# Swap start/end values for last record (Ending HC)
+hc_dat[nrow(hc_dat), "end"] <- hc_dat[nrow(hc_dat), "start"]
+hc_dat[nrow(hc_dat), "start"] <- 0
+
+```
+
+```{r, eval = FALSE}
+
+### Waterfall Chart ###
+
+ggplot2::ggplot(hc_dat, aes(x = event, fill = type)) +
+ggplot2::geom_rect(aes(x = reorder(event, id),
+                       xmin = id - 0.45,
+                       xmax = id + 0.50,
+                       ymin = end,
+                       ymax = start)) +
+geom_text(aes(id, end, label = ifelse(id %in% c(1,6), end, '')), # Only label start and end HC
+              vjust = 1.5) +
+ggplot2::labs(title = 'Hires and inbound transfers have outpaced outbound transfers and exits \nin Engineering, leading to a net YTD increase in headcount.',
+              x = 'Event',
+              y = 'Headcount') +
+ggplot2::scale_fill_manual(values = c("Headcount" = "#D9D9D9",
+                                      "Growth" = "#0070C0",
+                                      "Loss" = "#ED7D31")) +
+ggplot2::theme(legend.position = "none",
+               panel.background = element_blank(),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = element_text(hjust = 0, colour = "#404040"),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank())
+
+```
+
+## Waffle Charts
+
+```{r, message = FALSE, warning = FALSE}
+
+### Data Prep ###
+
+# Create df with TA funnel metrics
+ta_dat <- data.frame(stage = c("Apply", "Phone Screen", "Interview", "Offer Extend", "Offer Accept"),
+                     cnt = c(60, 20, 10, 6, 4))
+
+# Set depth of waffle chart (# of y-axis rows)
+depth <- 10
+
+# Each observation needs an x and y coordinate, and y needs to be specified first for a waffle chart with horizontal accumulation
+waffle_dat <- expand.grid(y = 1:depth,
+                          x = seq_len(ceiling(sum(ta_dat$cnt) / depth)))
+
+# Expand the applicant counts into a vector of stage labels
+stages <- rep(ta_dat$stage, ta_dat$cnt)
+
+# Integrate stages and fill any extra tiles with NA
+waffle_dat$stage <- c(stages, rep(NA, nrow(waffle_dat) - length(stages)))
+
+```
+
+```{r, eval = FALSE}
+
+### Waffle Chart ###
+
+ggplot2::ggplot(waffle_dat, aes(x = x, y = y, fill = stage)) + 
+ggplot2::labs(title = "We select 10 in every 100 applicants. \nOur offer acceptance rate (OAR) is 40%.") + 
+ggplot2::geom_tile(color = "white") +
+ggplot2::scale_fill_manual(values = c("Apply" = "#D9D9D9", 
+                                      "Phone Screen" = "#BFBFBF", 
+                                      "Interview" = "#A6A6A6", 
+                                      "Offer Extend" = "#808080",
+                                      "Offer Accept" = "#0070C0")) +
+ggplot2::scale_y_reverse() +
+ggplot2::theme_void() +
+ggplot2::theme(legend.title = element_blank(),
+               plot.title = element_text(hjust = 0, colour = "#404040"))
+
+```
+
+## Sankey Diagrams
+
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Create nodes df
+nodes <- data.frame(name = c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales', # source
+                             'Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales')) # destination
+
+# Create links df
+links <- expand.grid(source = 0:6, target = 7:13)
+
+# Append employee transfer counts per department pair to links df
+links$value <- ifelse(links$source == links$target-7, round(rnorm(1000, 150, 50), 0), round(rnorm(1000, 30, 5), 0))
+
+# Append source department variable for colored connections
+links$dept <- dplyr::case_when(
+  links$source == 0 ~ "Engineering",
+  links$source == 1 ~ "Finance",
+  links$source == 2 ~ "Legal",
+  links$source == 3 ~ "Marketing",
+  links$source == 4 ~ "People",
+  links$source == 5 ~ "Product",
+  links$source == 6 ~ "Sales",
+  TRUE ~ "NA"
+)
+
+# Append within/outside department transfer variable for colored connections
+links$wiout_dept <- dplyr::case_when(
+  (links$source == 0 & links$target == 7) | (links$source == 1 & links$target == 8) | (links$source == 2 & links$target == 9) | (links$source == 3 & links$target == 10) | (links$source == 4 & links$target == 11) | (links$source == 5 & links$target == 12) | (links$source == 6 & links$target == 13) ~ "Within",
+  TRUE ~ "Outside"
+)
+
+# Append dichotomous product/other indicator to links and nodes data frames
+links$prod <- ifelse(links$dept == 'Product', 'Product', 'Other')
+nodes$prod <- ifelse(nodes$name == 'Product', 'Product', 'Other')
+
+```
+
+```{r, eval = FALSE}
+
+### Sankey Diagrams ###
+
+# Load library
+library(networkD3)
+
+# Sankey diagram 1
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30)
+
+# Sankey diagram 2
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30, 
+                         LinkGroup = "dept")
+
+# Sankey diagram 3
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30, 
+                         LinkGroup = "wiout_dept")
+
+# Sankey diagram 4
+# Define color palette
+colorJS <- paste('d3.scaleOrdinal(["#BFBFBF", "#0070C0"])')
+
+networkD3::sankeyNetwork(Links = links,
+                         Nodes = nodes,
+                         Source = "source", 
+                         Target = "target",
+                         Value = "value", 
+                         NodeID = "name",
+                         fontSize = 12, 
+                         nodeWidth = 30, 
+                         NodeGroup = "prod",
+                         LinkGroup = "prod",
+                         colourScale = colorJS)
+
+```
+
+## Pie Charts
+
+```{r, EVAL = FALSE}
+
+### Data Prep ###
+
+# Create data cube for gender representation among active employees
+smmry_gender <- employees %>%
+                dplyr::filter(active == 'Yes') %>%
+                dplyr::group_by(gender) %>%
+                dplyr::summarise(cnt = n()) %>%
+                dplyr::mutate(pct = round(cnt / sum(cnt) * 100, 1)) %>%
+                dplyr::arrange(desc(pct))
+
+```
+
+```{r, eval = FALSE}
+
+### Pie Chart ###
+
+ggplot2::ggplot(smmry_gender, aes(x = "", y = pct, fill = as.factor(gender))) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_polar("y", start = 0) +
+ggplot2::geom_text(aes(label = paste0(pct, "%")), color = ifelse(smmry_gender$gender == 'Male', 'white', 'black'), position = position_stack(vjust = 0.5)) +
+ggplot2::labs(title = 'Nearly 60 percent of active employees identify as male.') +
+ggplot2::scale_fill_manual(values = c("Female" = "#BFBFBF", 
+                                      "Male" = "#0070C0")) +
+ggplot2::theme_void() +
+ggplot2::theme(legend.title = element_blank(),
+               panel.background = element_blank(),
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               plot.title = element_text(colour = "#404040"))
+
+```
+

@@ -2,7 +2,7 @@
 
   Unlike content in the preceding chapters, data visualization is more of an *art* than a *science*. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
   
-  This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike.
+  This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike. Since there is a considerable amount of code required to construct the plethora of graphics in this chapter, only the data prep code will be included. You can reference Chapter \@ref(appendix) for a curated set of fully reproducible code for each data visualization provided in this chapter.
   
 ## Best Practices
 
@@ -179,9 +179,7 @@ smmry_ed_field <- employees %>%
 
 ```{r barchart-1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") 
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_1.png")
 
 ```
 
@@ -191,10 +189,7 @@ ggplot2::geom_bar(stat = "identity")
 
 ```{r barchart-2, out.width = "100%", echo = FALSE, fig.cap = 'Step 2: Remove legend.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::theme(legend.position = "none")
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_2.png")
 
 ```
 
@@ -208,36 +203,29 @@ ggplot2::theme(legend.position = "none")
 
 ```{r barchart-3, out.width = "100%", echo = FALSE, fig.cap = 'Step 3: Assign colors strategically.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none")
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_3.png")
 
 ```
 
-### Step 4: Add Mixed Case Axis Titles
+### Step 4: Add Axis Titles and Margins
 
   Axis titles are the column names by default, which is usually not the most user-friendly option. We can assign new mixed case axis titles by chaining `labs(x = 'Education Field', y = 'Headcount')` to the visualization code.
+  
+  Spacing can also be added between the axis titles and labels to improve upon the default formatting and reduce text congestion. The `element_text(margin = margin(t = 0, r = 0, b = 0, l = 0))` parameter can be defined for the $x$ and $y$ axes via `axis.title.x` and `axis.title.y`, respectively, where:
+  
+  * **t** = space on the top of axis title
+  * **r** = space on the right of axis title
+  * **b** = space on the bottom of axis title
+  * **l** = space on the left of axis title
+  
+  Let's create a margin of white space above the $x$-axis title and to the right of the $y$-axis title by defining the following parameters:
+  
+  * `axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))`
+  * `axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))`
 
 ```{r barchart-4, out.width = "100%", echo = FALSE, fig.cap = 'Step 4: Add mixed case axis titles.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none")
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_4.png")
 
 ```
 
@@ -251,18 +239,7 @@ ggplot2::theme(legend.position = "none")
 
 ```{r barchart-5, out.width = "100%", echo = FALSE, fig.cap = 'Step 5: Add title.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               plot.title = element_text(hjust = 0))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_5.png")
 
 ```
 
@@ -272,18 +249,7 @@ ggplot2::theme(legend.position = "none",
 
 ```{r barchart-6, out.width = "100%", echo = FALSE, fig.cap = 'Step 6: Remove background.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank())
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_6.png")
 
 ```
 
@@ -293,20 +259,7 @@ ggplot2::theme(legend.position = "none",
 
 ```{r barchart-7, out.width = "100%", echo = FALSE, fig.cap = 'Step 7: Remove axis ticks.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank())
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_7.png")
 
 ```
 
@@ -318,23 +271,7 @@ ggplot2::theme(legend.position = "none",
 
 ```{r barchart-8, out.width = "100%", echo = FALSE, fig.cap = 'Step 8: Mute titles.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_8.png")
 
 ```
 
@@ -346,24 +283,7 @@ ggplot2::theme(legend.position = "none",
   
 ```{r barchart-9, out.width = "100%", echo = FALSE, fig.cap = 'Step 9: Flip axis.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::coord_flip() +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_9.png")
 
 ```
 
@@ -385,60 +305,21 @@ smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_fie
 
 ```{r barchart-10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::coord_flip() +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_10.png")
 
 ```
 
   The final visual is a marked improvement over the design defaults in step 1.
 
-```{r pre-post-declutter, out.width = "100%", fig.cap = "Enhanced design (top). Design defaults (bottom).", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r pre-post-declutter, echo = FALSE, out.width = "100%", fig.cap = "Enhanced design (top). Design defaults (bottom).", fig.align = 'center', warning = FALSE, message = FALSE}
 
-viz_pre <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-           ggplot2::geom_bar(stat = "identity") 
-
-viz_post <- ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-            ggplot2::geom_bar(stat = "identity") +
-            ggplot2::coord_flip() +
-            ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-            ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                                  "Life Sciences" = "#0070C0", 
-                                                  "Marketing" = "#BFBFBF", 
-                                                  "Medical" = "#BFBFBF",
-                                                  "Other" = "#BFBFBF",
-                                                  "Technical Degree" = "#BFBFBF")) +
-            ggplot2::theme(legend.position = "none",
-                           panel.background = element_blank(),
-                           axis.ticks.x = element_blank(),
-                           axis.ticks.y = element_blank(),
-                           plot.title = element_text(hjust = 0, colour = "#404040"),
-                           axis.title.x = element_text(colour = "#404040"),
-                           axis.title.y = element_text(colour = "#404040"))
-  
-# Display distribution visualizations
-ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_pre_post.png")
 
 ```
 
 ## Visualization Types
 
-  There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) and D3 libraries. While these are beyond the scope of this book, `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement each of the data visualizations covered in this section.
+  There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) and D3 libraries. While interactive concepts are introduced in this chapter, JS and D3 are generally out of scope for this book. `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement most of the data visualizations.
 
   All visuals will have a set of common parameters for design aesthetics, consistent with the themes used to produce the enhanced chart design shown in Figure \@ref(fig:pre-post-declutter). Therefore, each section will highlight the differences needed to achieve the respective data visualization. For production applications with many visualizations, it may be helpful to wrap common `ggplot2` design elements in a function to simplify chart building. 
 
@@ -480,11 +361,8 @@ dept_tenure
 ```  
 
   While these data could easily be copied and pasted into presentation software for formatting, additional libraries exist in R for formatting tables. For example, R Markdown scripts can leverage the `DT` package to provide filtering, pagination, sorting, search, and other interactive features for HTML output. Field names can also be changed to proper case via the `dplyr::rename()` function.
-
-```{r table, out.width = "100%", fig.cap = ".", fig.align = 'center', warning = FALSE, message = FALSE}
-
-# Load library
-library(DT)
+  
+```{r, warning = FALSE, message = FALSE}
 
 # Assign proper case field names
 dept_tenure_proper <- dept_tenure %>%
@@ -492,8 +370,11 @@ dept_tenure_proper <- dept_tenure %>%
                              'Tenure' = tenure_band,
                              'Count' = cnt)
 
-# Format output with datatable
-DT::datatable(dept_tenure_proper, rownames = FALSE)
+```  
+
+```{r table, out.width = "100%", fig.cap = "Data table.", fig.align = 'center', warning = FALSE, message = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/data_table.png")
 
 ```  
 
@@ -505,17 +386,7 @@ DT::datatable(dept_tenure_proper, rownames = FALSE)
 
 ```{r heatmap, out.width = "100%", fig.cap = "Heatmap showing the concentration of employees within departments and tenure bands.", fig.align = 'center', warning = FALSE, message = FALSE}
 
-ggplot2::ggplot(dept_tenure, aes(x = tenure_band, y = dept, fill = cnt)) +
-ggplot2::geom_tile() +
-ggplot2::labs(title = 'A large portion of our workforce has between 3 and 10 years\n of company tenure and works within R&D.', x = 'Tenure', y = 'Department') +
-ggplot2::guides(fill = guide_legend(title = "Employee Count")) +
-ggplot2::scale_fill_continuous(low = "#F2F2F2", high = "#0070C0") +
-ggplot2::theme(panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/heatmap.png")
 
 ```
 
@@ -541,19 +412,7 @@ sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
 
 ```{r scatterplot-1, out.width = "100%", fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople.", fig.align = 'center', warning = FALSE, message = FALSE}
 
-require(scales)
-
-ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
-ggplot2::geom_point() +
-ggplot2::labs(title = 'The relationship between work experience and YTD sales is positive.', x = 'Work Experience', y = 'YTD Sales (USD)') +
-ggplot2::scale_y_continuous(labels = scales::comma) +
-ggplot2::theme(panel.background = element_blank(),
-               legend.position = "none",
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_1.png")
 
 ```
   
@@ -563,23 +422,7 @@ ggplot2::theme(panel.background = element_blank(),
   
 ```{r scatterplot-2, out.width = "100%", fig.cap = "Scatterplot with data points colored relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
 
-require(scales)
-
-ggplot2::ggplot(sales, aes(x = work_exp, y = ytd_sales, group = quota_flg)) +
-ggplot2::geom_point(aes(color = as.factor(quota_flg))) +
-ggplot2::geom_hline(yintercept = 150000, linetype = 'dotted', color = "#0070C0") + 
-ggplot2::annotate(geom = "text", x = 2, y = 159000, label = "Sales Quota = $150k", color = "#0070C0", size = 3) +
-ggplot2::labs(title = 'Some employees with more work experience have \nalready met the full year sales quota.', x = 'Work Experience', y = 'YTD Sales (USD)') +
-ggplot2::scale_color_manual(values = c("0" = "#BFBFBF",
-                                       "1" = "#0070C0")) +
-ggplot2::scale_y_continuous(labels = scales::comma) +
-ggplot2::theme(panel.background = element_blank(),
-               legend.position = "none",
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_2.png")
 
 ```
 
@@ -752,7 +595,38 @@ ggplot2::theme(legend.position = "none",
   
 ### Waterfall Charts
 
+  **Waterfall charts** are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics. 
+  
+  Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart.
 
+```{r, message = FALSE, warning = FALSE}
+
+# Generate headcount data with id field to define bar order
+hc_dat <- data.frame(id = 1:6,
+                     event = c("Starting HC", "Hires", "Transfers In", "Transfers Out", "Exits", "Ending HC"),
+                     type = c("Headcount", "Growth", "Growth", "Loss", "Loss", "Headcount"),
+                     count = c(100, 50, 10, -10, -20, 130),
+                     start = NA,
+                     end = NA)
+
+# Define start and end values to support waterfall chart
+hc_dat$end <- cumsum(hc_dat$count)
+hc_dat$end <- c(head(hc_dat$end, -1), 0)
+hc_dat$start <- c(0, head(hc_dat$end, -1))
+
+# Swap start/end values for last record (Ending HC)
+hc_dat[nrow(hc_dat), "end"] <- hc_dat[nrow(hc_dat), "start"]
+hc_dat[nrow(hc_dat), "start"] <- 0
+
+```
+
+  With data properly structured, we can use the `geom_rect()` function to build the waterfall chart. Strategies such as labeling only the Beginning HC and Ending HC reduces clutter and lends to a cleaner design aesthetic.
+
+```{r waterfl-chart, out.width = "100%", echo = FALSE, fig.cap = 'Waterfall chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/waterfall_chart.png")
+
+```
 
 ### Waffle Charts
 
@@ -761,7 +635,7 @@ ggplot2::theme(legend.position = "none",
   A common application in people analytics is illustrating candidate movement through the recruiting funnel. It is often helpful to visualize a normalized applicant pool (e.g., per 100 applicants) to identify where bottlenecks exist across funnel stages and how pass-through rates compare across business areas.
   
   Waffle charts require some data prep to visualize:
-  
+
 ```{r, message = FALSE, warning = FALSE}
 
 # Create df with TA funnel metrics
@@ -789,18 +663,7 @@ waffle_dat$stage <- c(stages, rep(NA, nrow(waffle_dat) - length(stages)))
 
 ```{r waffle-chart, out.width = "100%", fig.cap = 'Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Visualize data
-ggplot2::ggplot(waffle_dat, aes(x = x, y = y, fill = stage)) + 
-ggplot2::labs(title = "We select 10 in every 100 applicants. \nOur offer acceptance rate (OAR) is 40%.") + 
-ggplot2::geom_tile(color = "white") +
-ggplot2::scale_fill_manual(values = c("Apply" = "#D9D9D9", 
-                                      "Phone Screen" = "#BFBFBF", 
-                                      "Interview" = "#A6A6A6", 
-                                      "Offer Extend" = "#808080",
-                                      "Offer Accept" = "#0070C0")) +
-ggplot2::scale_y_reverse() +
-ggplot2::theme_void() +
-ggplot2::theme(legend.title = element_blank())
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/waffle_chart.png")
 
 ```
 
@@ -808,14 +671,16 @@ ggplot2::theme(legend.title = element_blank())
 
   **Sankey diagrams**, or alternatives such as **chord diagrams** and **alluvial plots**, are flow diagrams that are particularly effective in depicting a many-to-many relationship between two domains.
   
-  Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., proportion of employees moving from one department to another) or recruiting sources by which employees in various departments have been hired. 
-  
-  To demonstrate how to implement a sankey diagram, let's use the `sankeyNetwork()` function from the `networkD3` library to visualize employee transfers between departments. While D3 is an advanced JavaScript framework for creating interactive visualizations, the `networkD3` library provides an easy interface for constructing sankey diagrams with interactive components. Building a sankey diagram using `networkD3` requires data to be structured within two data frames:
+  Sankey diagrams have many applications in people analytics. For example, sankeys may be used to understand internal transfers over a period of time (i.e., inflows and outflows among departments) or recruiting sources by which employees in various departments have been hired. 
+  To demonstrate how to implement a sankey diagram, let's use the `sankeyNetwork()` function from the `networkD3` library to visualize employee transfers between departments. D3 is an advanced JavaScript framework for creating interactive visualizations, and the `networkD3` library provides an easy interface for constructing sankey diagrams with interactive components. Building a sankey diagram using `networkD3` requires data to be structured within two data frames:
   
   * **nodes**: Defines the source and destination node names (i.e., the departments employees transfer into and out of)
   * **links**: Connections between pairs of source and destination nodes using an index beginning at 0 to represent the corresponding node from the nodes data frame
 
 ```{r, message = FALSE, warning = FALSE}
+
+# Set seed for reproducibility
+set.seed(1234)
 
 # Create nodes df
 nodes <- data.frame(name = c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales', # source
@@ -825,32 +690,21 @@ nodes <- data.frame(name = c('Engineering', 'Finance', 'Legal', 'Marketing', 'Pe
 links <- expand.grid(source = 0:6, target = 7:13)
 
 # Append employee transfer counts per department pair to links df
-links$value <- ifelse(links$source == links$target-7, round(rnorm(1000, 150, 25), 0), round(rnorm(1000, 30, 5), 0))
+links$value <- ifelse(links$source == links$target-7, round(rnorm(1000, 150, 50), 0), round(rnorm(1000, 30, 5), 0))
 
 ```
 
-  With data properly structured within the `nodes` and `links` data frames, these data can be passed into the `sankeyNetwork()` function to construct the sankey diagram:
+  With data properly structured within the `nodes` and `links` data frames, these data can be passed into the `sankeyNetwork()` function to construct the sankey diagram. As illustrated in Figure \@ref(fig:sankey-1), hovering over a connection displays the count of employee transfers between the corresponding departments ($n$ = 222 moves within Product).
 
 ```{r sankey-1, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with default colors.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Load library
-library(networkD3)
-
-# Create sankey diagram
-networkD3::sankeyNetwork(Links = links,
-                         Nodes = nodes,
-                         Source = "source", 
-                         Target = "target",
-                         Value = "value", 
-                         NodeID = "name",
-                         fontSize = 12, 
-                         nodeWidth = 30)
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_1.png")
 
 ```
 
-  Though it can quickly become noisy as the number of nodes increases, coloring connections based on the source departments from which they flow may be helpful in tracing the employee flow to the various destination departments. This can be accomplished by adding a grouping variable to the `links` df and passing the variable name to the `LinkGroup` argument in the call to the `sankeyNetwork()` function.
+  Though it can quickly become noisy as the number of nodes increases, coloring connections based on the source departments from which each group flows can be helpful in tracing the employee flow to the various destination departments. 
   
-  The following code block derives two different grouping variables for use in shading the sankey diagram -- one to indicate the source department (transfers out) and another to indicate intradepartmental (within) vs. interdepartmental (outside) moves.
+  A department variable needs to be defined and added to the `links` data frame in order to color connections based on the source department (transfers out). The `NodeGroup` and `LinkGroup` parameters in the call to the `sankeyNetwork()` function define the column in the `nodes` and `links` data frames, respectively, that specify the group values by which the nodes and links should be colored.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -866,6 +720,18 @@ links$dept <- dplyr::case_when(
   TRUE ~ "NA"
 )
 
+```
+
+```{r sankey-2, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_2.png")
+
+```
+
+  We can add another grouping variable to support coloring intradepartmental (within) moves differently from interdepartmental (outside) moves.
+  
+```{r, message = FALSE, warning = FALSE}
+
 # Append within/outside department transfer variable for colored connections
 links$wiout_dept <- dplyr::case_when(
   (links$source == 0 & links$target == 7) | (links$source == 1 & links$target == 8) | (links$source == 2 & links$target == 9) | (links$source == 3 & links$target == 10) | (links$source == 4 & links$target == 11) | (links$source == 5 & links$target == 12) | (links$source == 6 & links$target == 13) ~ "Within",
@@ -874,37 +740,29 @@ links$wiout_dept <- dplyr::case_when(
 
 ```
 
-```{r sankey-2, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
-
-# Create sankey diagram
-networkD3::sankeyNetwork(Links = links,
-                         Nodes = nodes,
-                         Source = "source", 
-                         Target = "target",
-                         Value = "value", 
-                         NodeID = "name",
-                         fontSize = 12, 
-                         nodeWidth = 30, 
-                         LinkGroup = "dept")
-
-```
-
 ```{r sankey-3, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Create sankey diagram
-networkD3::sankeyNetwork(Links = links,
-                         Nodes = nodes,
-                         Source = "source", 
-                         Target = "target",
-                         Value = "value", 
-                         NodeID = "name",
-                         fontSize = 12, 
-                         nodeWidth = 30, 
-                         LinkGroup = "wiout_dept")
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_3.png")
 
 ```
 
   If the focus is on a single department's transfers, preattentive attributes can be applied to help focus the audience's attention and move the less important information to the background to reduce clutter.
+  
+  To facilitate this, a grouping variable can be defined to differentiate a single department, such as Product, from remaining departments. The color of each group can then be specified using valid D3 code: `d3.scaleOrdinal(["group_1_color", "group_2_color"])`:
+  
+```{r, message = FALSE, warning = FALSE}
+
+# Append dichotomous product/other indicator to links and nodes data frames
+links$prod <- ifelse(links$dept == 'Product', 'Product', 'Other')
+nodes$prod <- ifelse(nodes$name == 'Product', 'Product', 'Other')
+
+```
+  
+```{r sankey-4, out.width = "100%", fig.cap = 'Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_4.png")
+
+```
 
 ### Pie Charts
 
@@ -919,8 +777,10 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```
   
   There is no specific `geom()` function for building pie charts using `ggplot2`. Therefore, we need to create a bar chart and make it circular by adding a `coord_polar("y", start = 0)` transformation. The `coord_polar()` transformation complicates the positioning of labels, but we can add a `position = position_stack(vjust = 0.5))` argument within the `geom_text()` function to specify the alignment of gender representation metrics. We can also easily improve the aesthetics with the `theme_void()` function, which removes the default background, grid, and labels.
+  
+  The data need to be structured consistent with the requirements for a bar chart. A basic data cube with descriptive statistics by gender category will simplify the construction of the pie chart in `ggplot2`:
 
-```{r pie-chart, out.width = "100%", fig.cap = 'Pie chart showing gender representation for active employees.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r, message = FALSE, warning = FALSE}
 
 # Create data cube for gender representation among active employees
 smmry_gender <- employees %>%
@@ -930,20 +790,11 @@ smmry_gender <- employees %>%
                 dplyr::mutate(pct = round(cnt / sum(cnt) * 100, 1)) %>%
                 dplyr::arrange(desc(pct))
 
-# Visualize data
-ggplot2::ggplot(smmry_gender, aes(x = "", y = pct, fill = as.factor(gender))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::coord_polar("y", start = 0) +
-ggplot2::geom_text(aes(label = paste0(pct, "%")), color = ifelse(smmry_gender$gender == 'Male', 'white', 'black'), position = position_stack(vjust = 0.5)) +
-ggplot2::labs(title = 'Nearly 60 percent of active employees identify as male.') +
-ggplot2::scale_fill_manual(values = c("Female" = "#BFBFBF", 
-                                      "Male" = "#0070C0")) +
-ggplot2::theme_void() +
-ggplot2::theme(legend.title = element_blank(),
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(colour = "#404040"))
+```
+
+```{r pie-chart, out.width = "100%", fig.cap = 'Pie chart showing gender representation for active employees.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/pie_chart.png")
 
 ```
 
