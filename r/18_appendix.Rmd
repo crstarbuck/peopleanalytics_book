@@ -193,6 +193,12 @@ ggpubr::ggarrange(viz_post, viz_pre, ncol = 1, nrow = 2)
 
 ### Data Prep ###
 
+# Load library
+library(dplyr)
+
+# Read employee data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+
 # Append new tenure band column
 employees$tenure_band <- dplyr::case_when(
   employees$org_tenure < 1 ~ "Under 1 Year",
@@ -237,6 +243,9 @@ DT::datatable(dept_tenure_proper, rownames = FALSE)
 
 ### Data Prep ###
 
+# Load library
+library(dplyr)
+
 # Append new tenure band column
 employees$tenure_band <- dplyr::case_when(
   employees$org_tenure < 1 ~ "Under 1 Year",
@@ -260,6 +269,9 @@ dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 
 ```{r, eval = FALSE}
 
 ### Heatmap ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(dept_tenure, aes(x = tenure_band, y = dept, fill = cnt)) +
 ggplot2::geom_tile() +
@@ -293,6 +305,8 @@ sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
 
 ### Scatterplots ###
 
+# Load libraries
+library(ggplot2)
 require(scales)
 
 # Basic scatterplot
@@ -327,12 +341,56 @@ ggplot2::theme(panel.background = element_blank(),
 
 ```
 
-
 ## Line Charts
+
+
 
 ## Slopegraphs
 
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Build data frame with YoY headcount metrics by department
+prepost_scores <- data.frame(date = c(rep('Time 1', 2), rep('Time 2', 2)),
+                             group = rep(c('Treatment', 'Control'), 2),
+                             score = c(50, 53, 75, 56))
+
+```  
+
+```{r, eval = FALSE}
+
+### Slopegraphs ###
+
+# Load library
+library(ggplot2)
+
+# Calculate treatment and control group changes for inclusion in annotation
+treatment_chg <- subset(prepost_scores, group == 'Treatment' & date == 'Time 2', select = score) - subset(prepost_scores, group == 'Treatment' & date == 'Time 1', select = score)
+control_chg <- subset(prepost_scores, group == 'Control' & date == 'Time 2', select = score) - subset(prepost_scores, group == 'Control' & date == 'Time 1', select = score)
+
+ggplot2::ggplot(prepost_scores, aes(x = date, y = score, group = group)) +
+ggplot2::geom_line(aes(color = group), size = 2) +
+ggplot2::geom_point(aes(color = group), size = 4) +
+ggplot2::annotate(geom = "text", x = 2.1, y = 74, label = paste0("Treatment Group \n(", ifelse(treatment_chg >= 0, '+', ''), treatment_chg,")"), color = "#0070C0", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = 2.1, y = 55, label = paste0("Control Group \n(", ifelse(control_chg >= 0, '+', ''), control_chg,")"), color = "#808080", size = 4, hjust = 0) +
+ggplot2::labs(title = '          A more favorable change in engagement was observed \n          for the treatment group relative to \n          the control group.', x = 'Observation Period') +
+ggplot2::scale_color_manual(values = c("Control" = "#BFBFBF",
+                                       "Treatment" = "#0070C0")) +
+ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
+               axis.ticks.x = element_blank(),
+               axis.ticks.y = element_blank(),
+               axis.text.y = element_blank(),
+               plot.title = element_text(colour = "#404040"),
+               axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = element_blank())
+
+```
+
 ## Bar Charts
+
+
 
 ## Waterfall Charts
 
@@ -362,6 +420,9 @@ hc_dat[nrow(hc_dat), "start"] <- 0
 ```{r, eval = FALSE}
 
 ### Waterfall Chart ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(hc_dat, aes(x = event, fill = type)) +
 ggplot2::geom_rect(aes(x = reorder(event, id),
@@ -416,6 +477,9 @@ waffle_dat$stage <- c(stages, rep(NA, nrow(waffle_dat) - length(stages)))
 
 ### Waffle Chart ###
 
+# Load library
+library(ggplot2)
+
 ggplot2::ggplot(waffle_dat, aes(x = x, y = y, fill = stage)) + 
 ggplot2::labs(title = "We select 10 in every 100 applicants. \nOur offer acceptance rate (OAR) is 40%.") + 
 ggplot2::geom_tile(color = "white") +
@@ -436,6 +500,9 @@ ggplot2::theme(legend.title = element_blank(),
 ```{r, eval = FALSE}
 
 ### Data Prep ###
+
+# Load library
+library(dplyr)
 
 # Set seed for reproducibility
 set.seed(1234)
@@ -537,6 +604,9 @@ networkD3::sankeyNetwork(Links = links,
 
 ### Data Prep ###
 
+# Load library
+library(dplyr)
+
 # Create data cube for gender representation among active employees
 smmry_gender <- employees %>%
                 dplyr::filter(active == 'Yes') %>%
@@ -550,6 +620,9 @@ smmry_gender <- employees %>%
 ```{r, eval = FALSE}
 
 ### Pie Chart ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(smmry_gender, aes(x = "", y = pct, fill = as.factor(gender))) +
 ggplot2::geom_bar(stat = "identity") +

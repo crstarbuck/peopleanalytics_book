@@ -524,7 +524,28 @@ ggplot2::theme(panel.background = element_blank(),
   
 ### Slopegraphs
 
+  **Slopegraphs** are helpful in illustrating relative changes between two points in time. 
+  
+  Common applications for slopegraphs in people analytics include survey variable score changes between two time periods, pre/post changes to outcome variables in an experimental context, and various metrics (e.g., headcount, TTM attrition) for which changes need to be evaluated MoM, QoQ, or YoY when data points between the start and end points are unimportant.  
+  
+  The data structure needed to support a slopegraph is consistent with a line graph. To illustrate how to construct a slopegraph in R, a data frame will be constructed that holds engagement scores for two points in time for both a treatment and control group.
 
+```{r, warning = FALSE, message = FALSE}
+
+# Build data frame with YoY headcount metrics by department
+prepost_scores <- data.frame(date = c(rep('Time 1', 2), rep('Time 2', 2)),
+                             group = rep(c('Treatment', 'Control'), 2),
+                             score = c(50, 53, 75, 56))
+
+```  
+
+  In `ggplot2`, a slopegraph is simply a line graph with only two values on the $x$-axis and some additional formatting. Figure \@ref(fig:slopegraph) is a slopegraph comparing the engagement score changes for treatment and control groups over the observation period, with preattentive attributes applied to focus attention on the treatment group.
+
+```{r slopegraph, out.width = "100%", echo = FALSE, fig.cap = 'Slopegraph.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/slopegraph.png")
+
+```
 
 ### Bar Charts
 
@@ -597,7 +618,7 @@ ggplot2::theme(legend.position = "none",
 
   **Waterfall charts** are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics. 
   
-  Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart.
+  Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.
 
 ```{r, message = FALSE, warning = FALSE}
 
