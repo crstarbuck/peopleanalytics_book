@@ -177,7 +177,7 @@ smmry_ed_field <- employees %>%
 
   A bar chart can be created using the `geom_bar()` function, and we will start with the `ggplot2` library's design defaults:
 
-```{r barchart-1, out.width = "100%", fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r barchart-1, out.width = "100%", echo = FALSE, fig.cap = 'Step 1: Bar chart with defaults.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_step_1.png")
 
@@ -311,7 +311,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   The final visual is a marked improvement over the design defaults in step 1.
 
-```{r pre-post-declutter, echo = FALSE, out.width = "100%", fig.cap = "Enhanced design (top). Design defaults (bottom).", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r pre-post-declutter, out.width = "100%", echo = FALSE, fig.cap = "Enhanced design (top). Design defaults (bottom).", fig.align = 'center', warning = FALSE, message = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/viz_pre_post.png")
 
@@ -372,7 +372,7 @@ dept_tenure_proper <- dept_tenure %>%
 
 ```  
 
-```{r table, out.width = "100%", fig.cap = "Data table.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r table, out.width = "100%", echo = FALSE, fig.cap = "Data table.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/data_table.png")
 
@@ -384,7 +384,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   The `geom_tile()` function can be used to build a heatmap with `ggplot2`. The range of colors can be specified via the `scale_fill_continuous(low = 'minimum value color', high = 'maximum value color')` function since the fill variable defined by `aes(fill = cnt)` is measured on a continuous scale:
 
-```{r heatmap, out.width = "100%", fig.cap = "Heatmap showing the concentration of employees within departments and tenure bands.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r heatmap, out.width = "100%", echo = FALSE, fig.cap = "Heatmap showing the concentration of employees within departments and tenure bands.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/heatmap.png")
 
@@ -410,7 +410,7 @@ sales$quota_flg <- ifelse(sales$ytd_sales >= 150000, 1, 0)
 
   The `geom_point()` function is used to create a scatterplot. The `scale_y_continuous()` function can be used in conjunction with the `scales` library to override the default scale for the `y`-axis (scientific notation) with more intuitive values.
 
-```{r scatterplot-1, out.width = "100%", fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r scatterplot-1, out.width = "100%", echo = FALSE, fig.cap = "Scatterplot showing the relationship between work experience and YTD sales for active salespeople.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_1.png")
 
@@ -420,7 +420,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   The `color` argument for the `geom_point()` function is used to apply preattentive attributes to this visual by specifying the field used for conditional data point shading. We can define the color for each of the field's values using the `scale_color_manual()` function. Additionally, the `geom_hline()` function is used to add a dotted horizontal line at a specified position on the $y$-axis (at $150,000$ USD), and annotation is added at a specified pair of $x$ and $y$ coordinates using the `annotate()` function.
   
-```{r scatterplot-2, out.width = "100%", fig.cap = "Scatterplot with data points colored relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r scatterplot-2, out.width = "100%", echo = FALSE, fig.cap = "Scatterplot with data points colored relative to the full year sales quota of USD 150k.", fig.align = 'center', warning = FALSE, message = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/scatterplot_2.png")
 
@@ -441,32 +441,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   
 
-```{r, message = FALSE, warning = FALSE}
-
-# Load turnover data
-turnover <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv")
-
-```
-
   **Single Series**
 
 ```{r single-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Single series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Subset data
-sl_data <- subset(turnover, year == 5 & job == 'People Scientist' & level == 4 & remote == 'Yes')
 
-# Visualize data
-ggplot2::ggplot(sl_data, aes(x = month, y = turnover_rate * .01)) + 
-ggplot2::labs(title = "The trailing 12-month (TTM) turnover for level 4 People Scientists \nhas trended up over the past year.", x = 'Month', y = 'Turnover Rate') + 
-ggplot2::geom_line(col = "#0080FF", size = 1.5) +
-ggplot2::scale_x_continuous(breaks = 1:12) +
-ggplot2::scale_y_continuous(labels = scales::percent) +
-ggplot2::theme(panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -474,25 +453,7 @@ ggplot2::theme(panel.background = element_blank(),
   
 ```{r double-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Two series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Subset data
-tl_data <- subset(turnover, year == 5 & job %in% c('People Scientist', 'Data Engineer') & level == 4 & remote == 'Yes')
 
-# Ordered factor for consistent legend value sorting
-tl_data$job <- factor(tl_data$job, levels = c("People Scientist", "Data Engineer"))
-
-# Visualize data
-ggplot2::ggplot(tl_data, aes(x = month, y = turnover_rate * .01, colour = job)) + 
-ggplot2::labs(title = "The trailing 12-month (TTM) turnover trends for level 4 People Scientists \nand Data Engineers diverged over the past year.", x = 'Month', y = 'Turnover Rate', col = 'Job') + 
-ggplot2::geom_line(size = 1.5) +
-ggplot2::scale_color_manual(values = c("#0080FF", "#B8BDBF")) +
-ggplot2::scale_x_continuous(breaks = 1:12) +
-ggplot2::scale_y_continuous(labels = scales::percent) +
-ggplot2::theme(panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -500,25 +461,7 @@ ggplot2::theme(panel.background = element_blank(),
   
 ```{r multi-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Multiple series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Subset data
-ml_data <- subset(turnover, year == 5 & job %in% c('People Scientist', 'Data Engineer', 'Insights Consultant') & level == 4 & remote == 'Yes')
 
-# Ordered factor for consistent legend value sorting
-ml_data$job <- factor(ml_data$job, levels = c("People Scientist", "Data Engineer", "Insights Consultant"))
-
-# Visualize data
-ggplot2::ggplot(ml_data, aes(x = month, y = turnover_rate * .01, colour = job)) + 
-ggplot2::labs(title = "The trailing 12-month (TTM) turnover trend for level 4 People Scientists \ndiverged from Data Engineers and Insights Consultants over the past year.", x = 'Month', y = 'Turnover Rate') + 
-ggplot2::geom_line(size = 1.5) +
-ggplot2::scale_color_manual(values=c("#0080FF", "#B8BDBF", "#E2E5E5")) +
-ggplot2::scale_x_continuous(breaks = 1:12) +
-ggplot2::scale_y_continuous(labels = scales::percent) +
-ggplot2::theme(panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
 
 ```
   
@@ -539,7 +482,7 @@ prepost_scores <- data.frame(date = c(rep('Time 1', 2), rep('Time 2', 2)),
 
 ```  
 
-  In `ggplot2`, a slopegraph is simply a line graph with only two values on the $x$-axis and some additional formatting. Figure \@ref(fig:slopegraph) is a slopegraph comparing the engagement score changes for treatment and control groups over the observation period, with preattentive attributes applied to focus attention on the treatment group.
+  In `ggplot2`, a slopegraph is simply a line graph with only two values on the $x$-axis and some additional formatting including annotations and $y$-axis removal. Figure \@ref(fig:slopegraph) is a slopegraph comparing the engagement score changes for treatment and control groups over the observation period, with preattentive attributes applied to focus attention on the treatment group.
 
 ```{r slopegraph, out.width = "100%", echo = FALSE, fig.cap = 'Slopegraph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -682,7 +625,7 @@ waffle_dat$stage <- c(stages, rep(NA, nrow(waffle_dat) - length(stages)))
   
   The waffle chart in Figure \@ref(fig:waffle-chart) illustrates how candidates for a set of filled requisitions move from application through the phone screen, interview, offer extend, and offer acceptance stages of the recruiting lifecycle. Based on this chart, 60% of applicants are rejected without a conversation, 40% receive a phone screen, 20% land an interview, 10% receive an offer, and 4% accept an offer.
 
-```{r waffle-chart, out.width = "100%", fig.cap = 'Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r waffle-chart, out.width = "100%", echo = FALSE, fig.cap = 'Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/waffle_chart.png")
 
@@ -717,7 +660,7 @@ links$value <- ifelse(links$source == links$target-7, round(rnorm(1000, 150, 50)
 
   With data properly structured within the `nodes` and `links` data frames, these data can be passed into the `sankeyNetwork()` function to construct the sankey diagram. As illustrated in Figure \@ref(fig:sankey-1), hovering over a connection displays the count of employee transfers between the corresponding departments ($n$ = 222 moves within Product).
 
-```{r sankey-1, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with default colors.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r sankey-1, out.width = "100%", echo = FALSE, fig.cap = 'Sankey diagram showing employee transfers between departments with default colors.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_1.png")
 
@@ -743,7 +686,7 @@ links$dept <- dplyr::case_when(
 
 ```
 
-```{r sankey-2, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r sankey-2, out.width = "100%", echo = FALSE, fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_2.png")
 
@@ -761,7 +704,7 @@ links$wiout_dept <- dplyr::case_when(
 
 ```
 
-```{r sankey-3, out.width = "100%", fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r sankey-3, out.width = "100%", echo = FALSE, fig.cap = 'Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_3.png")
 
@@ -779,7 +722,7 @@ nodes$prod <- ifelse(nodes$name == 'Product', 'Product', 'Other')
 
 ```
   
-```{r sankey-4, out.width = "100%", fig.cap = 'Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r sankey-4, out.width = "100%", echo = FALSE, fig.cap = 'Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/sankey_4.png")
 
@@ -813,7 +756,7 @@ smmry_gender <- employees %>%
 
 ```
 
-```{r pie-chart, out.width = "100%", fig.cap = 'Pie chart showing gender representation for active employees.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r pie-chart, out.width = "100%", echo = FALSE, fig.cap = 'Pie chart showing gender representation for active employees.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/pie_chart.png")
 
