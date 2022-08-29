@@ -136,7 +136,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-08-28}
+\date{2022-08-29}
 
 \begin{document}
 \maketitle
@@ -712,7 +712,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//Rtmp2RMCFn/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpLtvfVP/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -8854,7 +8854,7 @@ You may be wondering why linear regression cannot be implemented when the catego
 This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our \texttt{employees} dataset to model the probability of \texttt{active} given a value for \texttt{interview\_rating}, which would be written as \(Pr\)(\texttt{active} = Yes \textbar{} \texttt{interview\_rating}) or simply, \(p\)(\texttt{inteview\_rating}). A probability of \texttt{active} = Yes will be estimated for a given value of \texttt{interview\_rating}, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
 \hypertarget{binomial-logistic-regression}{%
-\subsection{Binomial Logistic Regression}\label{binomial-logistic-regression}}
+\section{Binomial Logistic Regression}\label{binomial-logistic-regression}}
 
 Since estimating a binary outcome using linear regression can result in \(p(X)\) \textless{} 0 for some values of \(X\) and \(p\)(\(X\)) \textgreater{} 1 for others, we need a function that constrains the output to a {[}0,1{]} interval. For logistic regression, the \emph{logistic} function is used. This function converts the linear model, \(p(X) = \beta_0 + \beta_1 X\), to the following form:
 
@@ -9131,7 +9131,7 @@ A juxtaposition of \texttt{glm()} and \texttt{glmer()} fits for logistic regress
 \end{verbatim}
 
 \hypertarget{multinomial-logistic-regression}{%
-\subsection{Multinomial Logistic Regression}\label{multinomial-logistic-regression}}
+\section{Multinomial Logistic Regression}\label{multinomial-logistic-regression}}
 
 \textbf{Multinomial logistic regression} is used to estimate the probability of an unordered categorical response with \(K>2\) classes. With an understanding of binomial logistic regression, extending the binomial model to a multinomial logistic regression model should be relatively intuitive.
 
@@ -9304,7 +9304,7 @@ For example, the odds ratio associated with a Medical educational field is \(exp
 \) greater odds of being in the Sales department relative to the Human Resources department. We can ignore the odds ratios associated with \texttt{overtime} since this variable does not provide significant information.
 
 \hypertarget{ordinal-logistic-regression}{%
-\subsection{Ordinal Logistic Regression}\label{ordinal-logistic-regression}}
+\section{Ordinal Logistic Regression}\label{ordinal-logistic-regression}}
 
 Many projects in people analytics involve understanding how variables influence ordinal outcomes, such as performance ratings or survey items measured on a Likert scale. Stepwise changes in the levels of ordinal outcomes may or may not be consistent. For example, it may be easy for one to be promoted from job level 1 to 2 but relatively difficult to progress from 5 to 6. Linear regression should not be used in these settings, as linear assumptions are designed for data measured on a continuous scale and will not hold for ordinal data. This section will cover \textbf{ordinal logistic regression}, which is a modeling technique designed for understanding how variables influence stepwise changes in a multi-class ordinal outcome.
 
@@ -11442,7 +11442,7 @@ The final visual is a marked improvement over the design defaults in step 1.
 \hypertarget{visualization-types}{%
 \section{Visualization Types}\label{visualization-types}}
 
-There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) and D3 libraries. While interactive concepts are introduced in this chapter, JS and D3 are generally out of scope for this book. \texttt{ggplot2} is capable of building some very elegant data visualizations, and this will be the tool used to implement most of the data visualizations.
+There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) libraries such as D3. With some exceptions, JS libraries are generally out of scope for this book. \texttt{ggplot2} is capable of building very elegant data visualizations, and this will be the tool used to implement most of the data visualizations in this chapter.
 
 All visuals will have a set of common parameters for design aesthetics, consistent with the themes used to produce the enhanced chart design shown in Figure \ref{fig:pre-post-declutter}. Therefore, each section will highlight the differences needed to achieve the respective data visualization. For production applications with many visualizations, it may be helpful to wrap common \texttt{ggplot2} design elements in a function to simplify chart building.
 
@@ -11588,9 +11588,39 @@ The \texttt{color} argument for the \texttt{geom\_point()} function is used to a
 \hypertarget{line-graphs}{%
 \subsection{Line Graphs}\label{line-graphs}}
 
+\textbf{Line graphs} are used for visualizing continuous data across time.
+
 When visualizing trended data, it is important to avoid cumulative trends because they suggest an upward trajectory (positive slope) even when the corresponding non-cumulative metrics indicate a declining trend.
 
-Figure \ref{fig:cumulative-trend} shows a cumulative graph of iPhone sales. Since sales at each point in time are additive, the slope of the cumulative line is positive and steep. Superimposing a bar chart with non-cumulative quarterly sales atop a cumulative trend -- which occupies far more real estate and dominates the screen -- can lend to the audience drawing invalid conclusions from the data.
+Consider the following data frame with decreasing hire counts by year:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Print hires df}
+\FunctionTok{print}\NormalTok{(hires\_dat[}\FunctionTok{order}\NormalTok{(hires\_dat}\SpecialCharTok{$}\NormalTok{year, }\AttributeTok{decreasing =} \ConstantTok{FALSE}\NormalTok{), ])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   year hires cum_hires
+## 4 2019  1020       980
+## 3 2020  1010      1970
+## 2 2021   990      2980
+## 1 2022   980      4000
+\end{verbatim}
+
+Figure \ref{fig:cum-hires-trend} juxtaposes a trended line chart with hires by year (left) against a cumulative version of the same (right). Since hires at each year are additive in the cumulative line chart, the slope is positive and misleading.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{The_Fundamentals_of_People_Analytics_files/figure-latex/cum-hires-trend-1} 
+
+}
+
+\caption{Hires by year (left) and cumulative hires by year (right).}\label{fig:cum-hires-trend}
+\end{figure}
+
+Figure \ref{fig:cum-iphone-sales} shows a deceptive cumulative graph of iPhone sales. Superimposing a bar chart with non-cumulative quarterly sales atop an overall cumulative trend that occupies far more real estate and dominates the screen can lend to the audience drawing invalid conclusions from the data.
 
 \begin{figure}
 
@@ -11598,14 +11628,78 @@ Figure \ref{fig:cumulative-trend} shows a cumulative graph of iPhone sales. Sinc
 
 }
 
-\caption{Deceiving cumulative sales trend.}\label{fig:cumulative-trend}
+\caption{Deceiving cumulative sales trend.}\label{fig:cum-iphone-sales}
 \end{figure}
 
 \textbf{Single Series}
 
+The most basic type of line graph is a \textbf{single series line graph}, which reflects a trend for a single group.
+
+Let's generate some attrition data for illustrating various types of line graphs:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set seed for reproducibility}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{\# Create data}
+\NormalTok{months }\OtherTok{=} \DecValTok{1}\SpecialCharTok{:}\DecValTok{24}
+\NormalTok{eng\_rt }\OtherTok{=} \DecValTok{5} \SpecialCharTok{{-}} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{2.7}\NormalTok{, }\FloatTok{2.9}\NormalTok{) }\SpecialCharTok{+} \FloatTok{2.41}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{41}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ .}\DecValTok{02}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{3}
+\NormalTok{fin\_rt }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{15}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{53}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{ppl\_rt }\OtherTok{=} \DecValTok{3} \SpecialCharTok{{-}} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{12}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{4}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{prd\_rt }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{13}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{53}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+
+\CommentTok{\# Combine dimensions and metrics within df}
+\NormalTok{attrition\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{month =} \FunctionTok{rep}\NormalTok{(months, }\DecValTok{4}\NormalTok{),}
+                            \AttributeTok{dept =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)), }
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Finance\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)),}
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}People\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)),}
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months))),}
+                            \AttributeTok{rate =} \FunctionTok{c}\NormalTok{(eng\_rt,}
+\NormalTok{                                     fin\_rt,}
+\NormalTok{                                     ppl\_rt,}
+\NormalTok{                                     prd\_rt))}
+\end{Highlighting}
+\end{Shaded}
+
+Line graphs can be constructed using the \texttt{geom\_line()} function in \texttt{ggplot2}. Figure \ref{fig:single-line-graph} shows a single series line graph built in \texttt{ggplot2}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_single} 
+
+}
+
+\caption{Single series line graph.}\label{fig:single-line-graph}
+\end{figure}
+
 \textbf{Two Series}
 
+A \textbf{two series line graph} reflects trends for two groups, as shown in Figure \ref{fig:dbl-line-graph}.
+
+The \texttt{aes(color\ =\ group)} parameter defines the group by which lines are stratified.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_double} 
+
+}
+
+\caption{Two series line graph.}\label{fig:dbl-line-graph}
+\end{figure}
+
 \textbf{Multiple Series}
+
+A \textbf{multiple series line graph} reflects trends for three or more groups, as shown in Figure \ref{fig:multi-line-graph}.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_multi} 
+
+}
+
+\caption{Multiple series line graph.}\label{fig:multi-line-graph}
+\end{figure}
 
 \hypertarget{slopegraphs}{%
 \subsection{Slopegraphs}\label{slopegraphs}}
@@ -12298,7 +12392,7 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library}
+\CommentTok{\# Load libraries}
 \FunctionTok{library}\NormalTok{(dplyr)}
 \FunctionTok{library}\NormalTok{(ggplot2)}
 
@@ -12466,13 +12560,13 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                                                   \StringTok{"Medical"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{,}
                                                   \StringTok{"Other"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{,}
                                                   \StringTok{"Technical Degree"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{)) }\SpecialCharTok{+}
-\NormalTok{            ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
-                           \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
-                           \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
-                           \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{(),}
-                           \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-                           \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
-                           \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{))}
+\NormalTok{              ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+                             \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+                             \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+                             \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+                             \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+                             \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+                             \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
   
 \CommentTok{\# Display pre/post visualizations side{-}by{-}side}
 \NormalTok{ggpubr}\SpecialCharTok{::}\FunctionTok{ggarrange}\NormalTok{(viz\_post, viz\_pre, }\AttributeTok{ncol =} \DecValTok{1}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{2}\NormalTok{)}
@@ -12638,6 +12732,93 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 
 \hypertarget{line-charts}{%
 \section{Line Charts}\label{line-charts}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Set seed for reproducibility}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{\# Create data}
+\NormalTok{months }\OtherTok{=} \DecValTok{1}\SpecialCharTok{:}\DecValTok{24}
+\NormalTok{eng\_rt }\OtherTok{=} \DecValTok{5} \SpecialCharTok{{-}} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{2.7}\NormalTok{, }\FloatTok{2.9}\NormalTok{) }\SpecialCharTok{+} \FloatTok{2.41}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{41}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{+}\NormalTok{ .}\DecValTok{02}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{3}
+\NormalTok{fin\_rt }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{15}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{53}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{ppl\_rt }\OtherTok{=} \DecValTok{3} \SpecialCharTok{{-}} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{12}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{4}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+\NormalTok{prd\_rt }\OtherTok{=} \FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{8}\NormalTok{) }\SpecialCharTok{{-}} \FloatTok{6.97} \SpecialCharTok{+} \DecValTok{13}\SpecialCharTok{*}\NormalTok{months }\SpecialCharTok{{-}}\NormalTok{ .}\DecValTok{53}\SpecialCharTok{*}\NormalTok{months}\SpecialCharTok{\^{}}\DecValTok{2}
+
+\CommentTok{\# Combine dimensions and metrics within df}
+\NormalTok{attrition\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{month =} \FunctionTok{rep}\NormalTok{(months, }\DecValTok{4}\NormalTok{),}
+                            \AttributeTok{dept =} \FunctionTok{c}\NormalTok{(}\FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)), }
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Finance\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)),}
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}People\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months)),}
+                                     \FunctionTok{rep}\NormalTok{(}\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{, }\FunctionTok{length}\NormalTok{(months))),}
+                            \AttributeTok{rate =} \FunctionTok{c}\NormalTok{(eng\_rt,}
+\NormalTok{                                     fin\_rt,}
+\NormalTok{                                     ppl\_rt,}
+\NormalTok{                                     prd\_rt))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Single Series Line Graphs }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(attrition\_dat, dept }\SpecialCharTok{==} \StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{group =}\NormalTok{ dept)) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Engineering attrition has increased over the last 24 months, }\SpecialCharTok{\textbackslash{}n}\StringTok{largely due to an exponential spike in the last year.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Month\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Attrition Rate\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}\#0070C0\textquotesingle{}}\NormalTok{, }\AttributeTok{size =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+               \AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Two Series Line Graphs }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(attrition\_dat, dept }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{color =}\NormalTok{ dept)) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The attrition trends for Engineering and Product }\SpecialCharTok{\textbackslash{}n}\StringTok{are negatively correlated over the last year.\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{x =} \StringTok{\textquotesingle{}Month\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{y =} \StringTok{\textquotesingle{}Attrition Rate\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{col =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{size =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"\#0070C0"}\NormalTok{, }\StringTok{"\#BFBFBF"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Multiple Series Line Graphs }\AlertTok{\#\#\#}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(attrition\_dat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{color =}\NormalTok{ dept)) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The attrition trend for Engineering is quite different }\SpecialCharTok{\textbackslash{}n}\StringTok{relative to attrition patterns for other departments.\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{x =} \StringTok{\textquotesingle{}Month\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{y =} \StringTok{\textquotesingle{}Attrition Rate\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{col =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{size =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Engineering"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{,}
+                                       \StringTok{"Finance"} \OtherTok{=} \StringTok{"\#808080"}\NormalTok{,}
+                                       \StringTok{"Product"} \OtherTok{=} \StringTok{"\#BFBFBF"}\NormalTok{,}
+                                       \StringTok{"People"} \OtherTok{=} \StringTok{"\#D9D9D9"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.title.x =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =} \FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{margin =} \FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{20}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =} \FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =} \FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
 
 \hypertarget{slopegraphs-1}{%
 \section{Slopegraphs}\label{slopegraphs-1}}
