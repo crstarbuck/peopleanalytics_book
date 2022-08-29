@@ -62,12 +62,16 @@ library(ggplot2)
 # Create data
 year <- c('2022', '2021', '2020', '2019')
 hires <- c(980, 990, 1010, 1020)
-lc_data <- data.frame(year, hires)
+hires_dat <- data.frame(year, hires)
+
+# Add column with cumulative hires
+hires_dat$cum_hires <- c(4000, 2980, 1970, 980)
 
 # Visualize data
-viz_zero_baseline <- ggplot2::ggplot(lc_data, aes(x = year, y = hires, fill = year)) + 
+viz_zero_baseline <- ggplot2::ggplot(hires_dat, aes(x = year, y = hires, fill = year)) + 
                      ggplot2::labs(title = 'Zero Baseline', x = 'Year', y = 'Hires') +
                      ggplot2::geom_bar(stat = "identity", fill = "#595959") +
+                     ggplot2::expand_limits(y = 0) +
                      ggplot2::theme(panel.background = element_blank(),
                                     plot.title = element_text(hjust = 0.5, colour = "#404040"),
                                     axis.ticks.x = element_blank(),
@@ -76,8 +80,7 @@ viz_zero_baseline <- ggplot2::ggplot(lc_data, aes(x = year, y = hires, fill = ye
                                     axis.title.y = element_text(colour = "#404040"),
                                     legend.position = "none")
 
-
-viz_nonzero_baseline <- ggplot2::ggplot(lc_data, aes(x = year, y = hires, fill = year)) + 
+viz_nonzero_baseline <- ggplot2::ggplot(hires_dat, aes(x = year, y = hires, fill = year)) + 
                         ggplot2::labs(title = 'Non-Zero Baseline', x = 'Year', y = '') +
                         ggplot2::geom_bar(stat = "identity", fill = "#595959") +
                         ggplot2::coord_cartesian(ylim = c(980, 1020)) +
@@ -319,7 +322,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Visualization Types
 
-  There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) and D3 libraries. While interactive concepts are introduced in this chapter, JS and D3 are generally out of scope for this book. `ggplot2` is capable of building some very elegant data visualizations, and this will be the tool used to implement most of the data visualizations.
+  There are some highly advanced and interactive data visualizations that can be built using JavaScript (JS) libraries such as D3. With some exceptions, JS libraries are generally out of scope for this book. `ggplot2` is capable of building very elegant data visualizations, and this will be the tool used to implement most of the data visualizations in this chapter.
 
   All visuals will have a set of common parameters for design aesthetics, consistent with the themes used to produce the enhanced chart design shown in Figure \@ref(fig:pre-post-declutter). Therefore, each section will highlight the differences needed to achieve the respective data visualization. For production applications with many visualizations, it may be helpful to wrap common `ggplot2` design elements in a function to simplify chart building. 
 
@@ -428,40 +431,117 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### Line Graphs
 
+  **Line graphs** are used for visualizing continuous data across time.
 
-  When visualizing trended data, it is important to avoid cumulative trends because they suggest an upward trajectory (positive slope) even when the corresponding non-cumulative metrics indicate a declining trend. 
+  When visualizing trended data, it is important to avoid cumulative trends because they suggest an upward trajectory (positive slope) even when the corresponding non-cumulative metrics indicate a declining trend.
   
-  Figure \@ref(fig:cumulative-trend) shows a cumulative graph of iPhone sales. Since sales at each point in time are additive, the slope of the cumulative line is positive and steep. Superimposing a bar chart with non-cumulative quarterly sales atop a cumulative trend -- which occupies far more real estate and dominates the screen -- can lend to the audience drawing invalid conclusions from the data.
+  Consider the following data frame with decreasing hire counts by year:
 
-```{r cumulative-trend, out.width = "75%", echo = FALSE, fig.cap = 'Deceiving cumulative sales trend.', fig.align = 'center'}
+```{r, message = FALSE, warning = FALSE}
+
+# Print hires df
+print(hires_dat[order(hires_dat$year, decreasing = FALSE), ])
+
+```
+
+  Figure \@ref(fig:cum-hires-trend) juxtaposes a trended line chart with hires by year (left) against a cumulative version of the same (right). Since hires at each year are additive in the cumulative line chart, the slope is positive and misleading.
+
+```{r cum-hires-trend, out.width = "100%", echo = FALSE, fig.cap = 'Hires by year (left) and cumulative hires by year (right).', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Visualize data
+viz_hire_trend <- ggplot2::ggplot(hires_dat, aes(x = year, y = hires, group = 1)) + 
+                  ggplot2::labs(title = 'Trended Hires', x = 'Year', y = 'Hires') +
+                  ggplot2::geom_line(color = '#0070C0', size = 1) +
+                  ggplot2::coord_cartesian(ylim = c(0, 1100)) +
+                  ggplot2::theme(plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                                 axis.ticks.x = element_blank(),
+                                 axis.ticks.y = element_blank(),
+                                 axis.title.x = element_text(colour = "#404040"),
+                                 axis.title.y = element_text(colour = "#404040"),
+                                 legend.position = "none")
+
+viz_cum_hire_trend <- ggplot2::ggplot(hires_dat, aes(x = year, y = cum_hires, group = 1)) + 
+                      ggplot2::labs(title = 'Cumulative Trended Hires', x = 'Year') +
+                      ggplot2::geom_line(color = '#0070C0', size = 1) +
+                      ggplot2::coord_cartesian(ylim = c(0, 4200)) +
+                      ggplot2::theme(plot.title = element_text(hjust = 0.5, colour = "#404040"),
+                                     axis.ticks.x = element_blank(),
+                                     axis.ticks.y = element_blank(),
+                                     axis.title.x = element_text(colour = "#404040"),
+                                     axis.title.y = element_blank(),
+                                     legend.position = "none")
+
+# Display distribution visualizations
+ggpubr::ggarrange(viz_hire_trend, viz_cum_hire_trend, ncol = 2, nrow = 1)
+
+```
+  
+  Figure \@ref(fig:cum-iphone-sales) shows a deceptive cumulative graph of iPhone sales. Superimposing a bar chart with non-cumulative quarterly sales atop an overall cumulative trend that occupies far more real estate and dominates the screen can lend to the audience drawing invalid conclusions from the data.
+
+```{r cum-iphone-sales, out.width = "75%", echo = FALSE, fig.cap = 'Deceiving cumulative sales trend.', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-cumulative_trend.png")
 
 ```
 
-  
-
   **Single Series**
+  
+  The most basic type of line graph is a **single series line graph**, which reflects a trend for a single group.
+  
+  Let's generate some attrition data for illustrating various types of line graphs:
+  
+```{r, message = FALSE, warning = FALSE}
 
+# Set seed for reproducibility
+set.seed(1234)
+
+# Create data
+months = 1:24
+eng_rt = 5 - runif(1, 2.7, 2.9) + 2.41*months - .41*months^2 + .02*months^3
+fin_rt = runif(1, 5, 8) - 6.97 + 15*months - .53*months^2
+ppl_rt = 3 - runif(1, 5, 8) - 6.97 + 12*months - .4*months^2
+prd_rt = runif(1, 5, 8) - 6.97 + 13*months - .53*months^2
+
+# Combine dimensions and metrics within df
+attrition_dat <- data.frame(month = rep(months, 4),
+                            dept = c(rep('Engineering', length(months)), 
+                                     rep('Finance', length(months)),
+                                     rep('People', length(months)),
+                                     rep('Product', length(months))),
+                            rate = c(eng_rt,
+                                     fin_rt,
+                                     ppl_rt,
+                                     prd_rt))
+                                     
+```
+
+  Line graphs can be constructed using the `geom_line()` function in `ggplot2`. Figure \@ref(fig:single-line-graph) shows a single series line graph built in `ggplot2`.
+  
 ```{r single-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Single series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_single.png")
 
 ```
   
   **Two Series**
   
-```{r double-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Two series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
+  A **two series line graph** reflects trends for two groups, as shown in Figure \@ref(fig:dbl-line-graph).
+  
+  The `aes(color = group)` parameter defines the group by which lines are stratified.
+  
+```{r dbl-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Two series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_double.png")
 
 ```
   
   **Multiple Series**
   
+  A **multiple series line graph** reflects trends for three or more groups, as shown in Figure \@ref(fig:multi-line-graph).
+  
 ```{r multi-line-graph, out.width = "100%", echo = FALSE, fig.cap = 'Multiple series line graph.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/line_graph_multi.png")
 
 ```
   
