@@ -367,7 +367,10 @@ attrition_dat <- data.frame(month = rep(months, 4),
                                      fin_rt,
                                      ppl_rt,
                                      prd_rt))
-                                     
+
+# Ordered factor for subsequent layering of lines in graph (last value takes the top position)
+attrition_dat$dept <- factor(attrition_dat$dept, c("Product", "Finance", "People", "Engineering"))
+
 ```
 
 ```{r, eval = FALSE}
@@ -377,6 +380,7 @@ attrition_dat <- data.frame(month = rep(months, 4),
 ggplot2::ggplot(subset(attrition_dat, dept == 'Engineering'), aes(x = month, y = rate, group = dept)) + 
 ggplot2::labs(title = 'Engineering attrition has increased over the last 24 months, \nlargely due to an exponential spike in the last year.', x = 'Month', y = 'Attrition Rate') +
 ggplot2::geom_line(color = '#0070C0', size = 1) +
+ggplot2::scale_x_continuous(limits = c(0, 25), breaks = seq(0, 24, by = 3)) +
 ggplot2::theme(legend.position = "none",
                panel.background = element_blank(),
                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
@@ -397,8 +401,13 @@ ggplot2::labs(title = 'The attrition trends for Engineering and Product \nare ne
               y = 'Attrition Rate',
               col = 'Department') +
 ggplot2::geom_line(size = 1) +
-ggplot2::scale_color_manual(values = c("#0070C0", "#BFBFBF")) +
+ggplot2::scale_x_continuous(limits = c(0, 27), breaks = seq(0, 24, by = 3)) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'Engineering' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'Engineering', color = "#0070C0", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'Product' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'Product', color = "#808080", size = 4, hjust = 0) +
+ggplot2::scale_color_manual(values = c("Engineering" = "#0070C0",
+                                       "Product" = "#BFBFBF")) +
 ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
                plot.title = element_text(hjust = 0, colour = "#404040"),
@@ -417,11 +426,17 @@ ggplot2::labs(title = 'The attrition trend for Engineering is quite different \n
               y = 'Attrition Rate',
               col = 'Department') +
 ggplot2::geom_line(size = 1) +
+ggplot2::scale_x_continuous(limits = c(0, 27), breaks = seq(0, 24, by = 3)) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'Engineering' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'Engineering', color = "#0070C0", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'Product' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'Product', color = "#808080", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'Finance' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'Finance', color = "#808080", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(attrition_dat$month) + .5, y = attrition_dat[attrition_dat$dept == 'People' & attrition_dat$month == max(attrition_dat$month), 'rate'], label = 'People', color = "#808080", size = 4, hjust = 0) +
 ggplot2::scale_color_manual(values = c("Engineering" = "#0070C0",
-                                       "Finance" = "#808080",
                                        "Product" = "#BFBFBF",
-                                       "People" = "#D9D9D9")) +
+                                       "Finance" = "#BFBFBF",
+                                       "People" = "#BFBFBF")) +
 ggplot2::theme(panel.background = element_blank(),
+               legend.position = "none",
                axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
                axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
                plot.title = element_text(hjust = 0, margin = margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
