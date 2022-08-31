@@ -294,17 +294,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   This visual can be further simplified by sorting the bars from highest to lowest value. With sorted bars, the audience can more easily ascertain the relative ranking of each education field.
   
-  We can use `dplyr` to sort the data and define the levels of `ed_field`.
-  
-```{r, message = FALSE, warning = FALSE}
-
-# Sort education values by count
-smmry_ed_field <- smmry_ed_field %>%
-                  dplyr::arrange(n)
-
-smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
-
-```
+  We can pass `reorder(ed_field, n)` into the `aes()` function to sort the education field bars from highest to lowest $n$-count. If we needed to sort in the opposite direction, `reorder(ed_field, -n)` will reverse the sort direction.
 
 ```{r barchart-10, out.width = "100%", echo = FALSE, fig.cap = 'Step 10: Sort data.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -576,31 +566,45 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Vertical**
   
-```{r vbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r, warning = FALSE, message = FALSE}
 
-# Sort education values by avg annual comp
-smmry_ed_field <- smmry_ed_field %>%
-                  dplyr::arrange(desc(n))
-smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
+### Data Prep ###
 
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::labs(title = "The trailing 12-month (TTM) turnover trend for level 4 People Scientists \ndiverged from Data Engineers and Insights Consultants over the past year.", x = 'Month', y = 'Turnover Rate') + 
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+# Set seed for reproducibility
+set.seed(1234)
+
+# Generate favorability distributions
+fav_pct <- round(runif(7, 20, 45), 0)
+neu_pct <- round(runif(7, 20, 45), 0)
+unfav_pct <- 100 - fav_pct - neu_pct
+scores <- c(fav_pct, neu_pct, unfav_pct)
+
+# Average top box (favorable) score
+topbox_avg <- round(mean(fav_pct), 0)
+
+# Build data frame with YoY headcount metrics by department
+engagement_scores <- data.frame(dept = rep(c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales'), 3),
+                                favorability = c(rep('Favorable', 7), rep('Neutral', 7), rep('Unfavorable', 7)),
+                                pct = scores)
+
+# Rank departments by top box score to support sorting
+dept_rank <- engagement_scores %>%
+             dplyr::filter(favorability == 'Favorable') %>% 
+             dplyr::arrange(desc(pct)) %>% 
+             dplyr::mutate(rank = dense_rank(desc(pct))) %>%
+             dplyr::select(dept, rank)
+
+# Flag top department records in df to support conditional coloring
+engagement_scores$top_score = ifelse(engagement_scores$dept == dept_rank[1, 'dept'], 1, 0)
+
+# Add department rank based on top box scores
+engagement_scores <- left_join(engagement_scores, dept_rank, by = "dept")
+
+```  
+  
+```{r vbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Vertical bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/vertical_bar_chart.png")
 
 ```
   
@@ -609,35 +613,17 @@ ggplot2::theme(legend.position = "none",
 
 ```{r hbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Horizontal bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Sort education values by avg annual comp
-smmry_ed_field <- smmry_ed_field %>%
-                  dplyr::arrange(n)
-smmry_ed_field$ed_field <- factor(smmry_ed_field$ed_field, levels = smmry_ed_field$ed_field)
-
-# Visualize data
-ggplot2::ggplot(smmry_ed_field, aes(x = ed_field, y = n, fill = as.factor(ed_field))) +
-ggplot2::geom_bar(stat = "identity") +
-ggplot2::coord_flip() +
-ggplot2::labs(title = 'Life Sciences is the most common education field \npursued by active employees.', x = 'Education Field', y = 'Headcount') +
-ggplot2::scale_fill_manual(values = c("Human Resources" = "#BFBFBF", 
-                                      "Life Sciences" = "#0070C0", 
-                                      "Marketing" = "#BFBFBF", 
-                                      "Medical" = "#BFBFBF",
-                                      "Other" = "#BFBFBF",
-                                      "Technical Degree" = "#BFBFBF")) +
-ggplot2::theme(legend.position = "none",
-               panel.background = element_blank(),
-               axis.ticks.x = element_blank(),
-               axis.ticks.y = element_blank(),
-               plot.title = element_text(hjust = 0, colour = "#404040"),
-               axis.title.x = element_text(colour = "#404040"),
-               axis.title.y = element_text(colour = "#404040"))
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/horizontal_bar_chart.png")
 
 ```
 
   **Stacked**
   
-  
+```{r sbar-chart, out.width = "100%", echo = FALSE, fig.cap = '100% stacked bar chart.', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/stacked_bar_chart.png")
+
+```
   
 ### Waterfall Charts
 
@@ -868,7 +854,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```{r 3d-bar-chart-conv, out.width = "75%", echo = FALSE, fig.cap = 'Headcount by location properly visualized with a horizontal bar chart.', fig.align = 'center'}
 
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/horizontal_bar_chart.png")
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/horizontal_bar_chart_2.png")
 
 ```
 
