@@ -49,7 +49,7 @@ dim(survey_dat)
   
   **Step 1: Factorability Assessment**
   
-  With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
+  With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a **Kaiser-Meyer-Olkin (KMO)** statistic of at least $.60$ (Kaiser, 1974) and **Bartlett’s Test of Sphericity** reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett's test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.
   
   The `KMO()` and `cortest.bartlett()` functions from the `psych` library can be used for the KMO statistic and Bartlett's test, respectively:
   
@@ -349,7 +349,7 @@ employees <- cbind(employees, km_cluster = km$cluster)
 
 ### Hierarchical Clustering
 
-  Like $K$-means clustering, **hierarchical clustering** seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike $K$-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a **dendogram**, which is a tree diagram visualizing the hierarchical relationships in data.
+  Like $K$-means clustering, **hierarchical clustering** seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike $K$-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a **dendrogram**, which is a tree diagram visualizing the hierarchical relationships in data.
   
   One key difference between $K$-means and hierarchical clustering is that hierarchical clustering involves linkage methods to measure cluster similarity. There is not a one-size-fits-all option for linkage, as the performance of a given linkage technique can vary based on the structure of the data. Outlined below are the five most common types of linkage in hierarchical clustering:
   
@@ -393,15 +393,15 @@ hclust <- cluster::agnes(employees_trans, method = "ward")
 
 ``` 
 
-  To produce a dendogram, the `pltree()` function from the `cluster` library can be used in conjunction with the `hclust` object holding the clustering results:
+  To produce a dendrogram, the `pltree()` function from the `cluster` library can be used in conjunction with the `hclust` object holding the clustering results:
 
-```{r hclust-dendogram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Dendogram for hierarchical clustering of employees using Ward linkage method.', fig.align = 'center'}
+```{r hclust-dendrogram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Dendrogram for hierarchical clustering of employees using Ward linkage method.', fig.align = 'center'}
 
-cluster::pltree(hclust, main = "Dendogram")
+cluster::pltree(hclust, main = "Dendrogram")
 
 ```
 
-  At the bottom of the denogram shown in Figure \@ref(fig:hclust-dendogram), each leaf of the tree represents an individual observation. Since $n = 1,470$, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward's linkage method.
+  At the bottom of the denogram shown in Figure \@ref(fig:hclust-dendrogram), each leaf of the tree represents an individual observation. Since $n = 1,470$, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward's linkage method.
   
   To aid in determining the optimal number of clusters, a **gap statistic** can be calculated, which compares the within-cluster variation for different $K$ values to reference values for a random uniform distribution with no clustering. We will use the `clusGap()` function from the `cluster` library to calculate the gap statistic, and then visualize using the `fviz_gap_stat()` function from the `factoextra` library:
   
@@ -414,9 +414,10 @@ gap_stat <- cluster::clusGap(employees_trans, FUN = hcut, nstart = 25, K.max = 1
 factoextra::fviz_gap_stat(gap_stat)
 
 ```
+  
   We ideally want to select the value of $K$ that maximizes the gap statistic. In practice, however, balancing cluster parsimony with maximization of the gap statistic is not always straightforward. Figure \@ref(fig:hclust-gap-stat) indicates that the gap statistic increase is fairly constant across the range of $K = 1$ to $K = 10$ clusters. In this case, we may look to select a value of $K$ based on an inflection point at which the trajectory of increase in the gap statistic begins to slow. Based on this approach, we may select $K = 7$.
   
-  We can now cut the dendogram into 7 clusters using the `cutree()` function, and then append the cluster to each observation in our original `employees` data:
+  We can now cut the dendrogram into 7 clusters using the `cutree()` function, and then append the cluster to each observation in our original `employees` data:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -426,7 +427,7 @@ d_matrix <- dist(employees_trans, method = "euclidean")
 # Perform hierarchical clustering using Ward's method
 hclust_final <- hclust(d_matrix, method = "ward.D2" )
 
-# Cut the dendogram into 7 clusters
+# Cut the dendrogram into 7 clusters
 groups <- cutree(hclust_final, k = 7)
 
 # Append cluster labels to original data
@@ -452,6 +453,6 @@ employees <- cbind(employees, hier_cluster = groups)
 
 8. What is Euclidean distance, and what is its function in clustering?
 
-9. How is a dendogram interpreted in the context of hierarchical clustering?
+9. How is a dendrogram interpreted in the context of hierarchical clustering?
 
 10. When optimizing for both cluster parsimony and gap statistic maximization is not feasible, how can the optimal value of $K$ be determined in hierarchical clustering?
