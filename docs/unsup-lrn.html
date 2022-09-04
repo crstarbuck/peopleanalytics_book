@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-01" />
+<meta name="date" content="2022-09-04" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -445,7 +445,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>Rotate and interpret the factors.</li>
 </ol>
 <p><strong>Step 1: Factorability Assessment</strong></p>
-<p>With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique like PCA to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a <strong>Kaiser-Meyer-Olkin (KMO)</strong> statistic of at least <span class="math inline">\(.60\)</span> (Kaiser, 1974) and <strong>Bartlett’s Test of Sphericity</strong> reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett’s test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.</p>
+<p>With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a <strong>Kaiser-Meyer-Olkin (KMO)</strong> statistic of at least <span class="math inline">\(.60\)</span> (Kaiser, 1974) and <strong>Bartlett’s Test of Sphericity</strong> reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett’s test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.</p>
 <p>The <code>KMO()</code> and <code>cortest.bartlett()</code> functions from the <code>psych</code> library can be used for the KMO statistic and Bartlett’s test, respectively:</p>
 <div class="sourceCode" id="cb413"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb413-1"><a href="unsup-lrn.html#cb413-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
 <span id="cb413-2"><a href="unsup-lrn.html#cb413-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
@@ -772,7 +772,7 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count.
 </div>
 <div id="hierarchical-clustering" class="section level3" number="14.2.2">
 <h3><span class="header-section-number">14.2.2</span> Hierarchical Clustering</h3>
-<p>Like <span class="math inline">\(K\)</span>-means clustering, <strong>hierarchical clustering</strong> seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike <span class="math inline">\(K\)</span>-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a <strong>dendogram</strong>, which is a tree diagram visualizing the hierarchical relationships in data.</p>
+<p>Like <span class="math inline">\(K\)</span>-means clustering, <strong>hierarchical clustering</strong> seeks to group observations into clusters which have similar characteristics but different characteristics relative to the observations in other clusters. However, unlike <span class="math inline">\(K\)</span>-means, the number of clusters is not specified prior to implementing the algorithm with hierarchical clustering. The optimal number of clusters is determined using a <strong>dendrogram</strong>, which is a tree diagram visualizing the hierarchical relationships in data.</p>
 <p>One key difference between <span class="math inline">\(K\)</span>-means and hierarchical clustering is that hierarchical clustering involves linkage methods to measure cluster similarity. There is not a one-size-fits-all option for linkage, as the performance of a given linkage technique can vary based on the structure of the data. Outlined below are the five most common types of linkage in hierarchical clustering:</p>
 <ol style="list-style-type: decimal">
 <li>Complete Linkage: distance between two clusters is defined as the maximum distance between any individual data point in cluster <span class="math inline">\(A\)</span> and any individual data point in cluster <span class="math inline">\(B\)</span></li>
@@ -804,15 +804,15 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count.
 <p>Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward’s distance measure performs best on these data, so we will implement hierarchical clustering using this linkage option.</p>
 <div class="sourceCode" id="cb437"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb437-1"><a href="unsup-lrn.html#cb437-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s linkage method</span></span>
 <span id="cb437-2"><a href="unsup-lrn.html#cb437-2" aria-hidden="true" tabindex="-1"></a>hclust <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">agnes</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;ward&quot;</span>)</span></code></pre></div>
-<p>To produce a dendogram, the <code>pltree()</code> function from the <code>cluster</code> library can be used in conjunction with the <code>hclust</code> object holding the clustering results:</p>
-<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="unsup-lrn.html#cb438-1" aria-hidden="true" tabindex="-1"></a>cluster<span class="sc">::</span><span class="fu">pltree</span>(hclust, <span class="at">main =</span> <span class="st">&quot;Dendogram&quot;</span>)</span></code></pre></div>
-<div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-dendogram"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-dendogram-1.png" alt="Dendogram for hierarchical clustering of employees using Ward linkage method." width="100%" />
+<p>To produce a dendrogram, the <code>pltree()</code> function from the <code>cluster</code> library can be used in conjunction with the <code>hclust</code> object holding the clustering results:</p>
+<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="unsup-lrn.html#cb438-1" aria-hidden="true" tabindex="-1"></a>cluster<span class="sc">::</span><span class="fu">pltree</span>(hclust, <span class="at">main =</span> <span class="st">&quot;Dendrogram&quot;</span>)</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-dendrogram"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-dendrogram-1.png" alt="Dendrogram for hierarchical clustering of employees using Ward linkage method." width="100%" />
 <p class="caption">
-Figure 14.7: Dendogram for hierarchical clustering of employees using Ward linkage method.
+Figure 14.7: Dendrogram for hierarchical clustering of employees using Ward linkage method.
 </p>
 </div>
-<p>At the bottom of the denogram shown in Figure <a href="unsup-lrn.html#fig:hclust-dendogram">14.7</a>, each leaf of the tree represents an individual observation. Since <span class="math inline">\(n = 1,470\)</span>, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward’s linkage method.</p>
+<p>At the bottom of the denogram shown in Figure <a href="unsup-lrn.html#fig:hclust-dendrogram">14.7</a>, each leaf of the tree represents an individual observation. Since <span class="math inline">\(n = 1,470\)</span>, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward’s linkage method.</p>
 <p>To aid in determining the optimal number of clusters, a <strong>gap statistic</strong> can be calculated, which compares the within-cluster variation for different <span class="math inline">\(K\)</span> values to reference values for a random uniform distribution with no clustering. We will use the <code>clusGap()</code> function from the <code>cluster</code> library to calculate the gap statistic, and then visualize using the <code>fviz_gap_stat()</code> function from the <code>factoextra</code> library:</p>
 <div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb439-1"><a href="unsup-lrn.html#cb439-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate gap statistic across 1-10 clusters</span></span>
 <span id="cb439-2"><a href="unsup-lrn.html#cb439-2" aria-hidden="true" tabindex="-1"></a>gap_stat <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">clusGap</span>(employees_trans, <span class="at">FUN =</span> hcut, <span class="at">nstart =</span> <span class="dv">25</span>, <span class="at">K.max =</span> <span class="dv">10</span>, <span class="at">B =</span> <span class="dv">50</span>)</span>
@@ -826,14 +826,14 @@ Figure 14.8: Plot of gap statistic against cluster count for hierarchical cluste
 </p>
 </div>
 <p>We ideally want to select the value of <span class="math inline">\(K\)</span> that maximizes the gap statistic. In practice, however, balancing cluster parsimony with maximization of the gap statistic is not always straightforward. Figure <a href="unsup-lrn.html#fig:hclust-gap-stat">14.8</a> indicates that the gap statistic increase is fairly constant across the range of <span class="math inline">\(K = 1\)</span> to <span class="math inline">\(K = 10\)</span> clusters. In this case, we may look to select a value of <span class="math inline">\(K\)</span> based on an inflection point at which the trajectory of increase in the gap statistic begins to slow. Based on this approach, we may select <span class="math inline">\(K = 7\)</span>.</p>
-<p>We can now cut the dendogram into 7 clusters using the <code>cutree()</code> function, and then append the cluster to each observation in our original <code>employees</code> data:</p>
+<p>We can now cut the dendrogram into 7 clusters using the <code>cutree()</code> function, and then append the cluster to each observation in our original <code>employees</code> data:</p>
 <div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb440-1"><a href="unsup-lrn.html#cb440-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute distance matrix</span></span>
 <span id="cb440-2"><a href="unsup-lrn.html#cb440-2" aria-hidden="true" tabindex="-1"></a>d_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;euclidean&quot;</span>)</span>
 <span id="cb440-3"><a href="unsup-lrn.html#cb440-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb440-4"><a href="unsup-lrn.html#cb440-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s method</span></span>
 <span id="cb440-5"><a href="unsup-lrn.html#cb440-5" aria-hidden="true" tabindex="-1"></a>hclust_final <span class="ot">&lt;-</span> <span class="fu">hclust</span>(d_matrix, <span class="at">method =</span> <span class="st">&quot;ward.D2&quot;</span> )</span>
 <span id="cb440-6"><a href="unsup-lrn.html#cb440-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb440-7"><a href="unsup-lrn.html#cb440-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Cut the dendogram into 7 clusters</span></span>
+<span id="cb440-7"><a href="unsup-lrn.html#cb440-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Cut the dendrogram into 7 clusters</span></span>
 <span id="cb440-8"><a href="unsup-lrn.html#cb440-8" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cutree</span>(hclust_final, <span class="at">k =</span> <span class="dv">7</span>)</span>
 <span id="cb440-9"><a href="unsup-lrn.html#cb440-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb440-10"><a href="unsup-lrn.html#cb440-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Append cluster labels to original data</span></span>
@@ -851,7 +851,7 @@ Figure 14.8: Plot of gap statistic against cluster count for hierarchical cluste
 <li><p>How are factor loadings interpreted to ascertain which variables are members of each factor?</p></li>
 <li><p>What is a data-informed approach to selecting the optimal value of <span class="math inline">\(K\)</span> in <span class="math inline">\(K\)</span>-means clustering?</p></li>
 <li><p>What is Euclidean distance, and what is its function in clustering?</p></li>
-<li><p>How is a dendogram interpreted in the context of hierarchical clustering?</p></li>
+<li><p>How is a dendrogram interpreted in the context of hierarchical clustering?</p></li>
 <li><p>When optimizing for both cluster parsimony and gap statistic maximization is not feasible, how can the optimal value of <span class="math inline">\(K\)</span> be determined in hierarchical clustering?</p></li>
 </ol>
 
