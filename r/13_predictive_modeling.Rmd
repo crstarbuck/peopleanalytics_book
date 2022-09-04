@@ -385,10 +385,10 @@ library(rpart)
 library(rpart.plot)
 
 # Construct decision tree on balanced training data
-tree <- rpart(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat_os, method = "class")
+tree <- rpart::rpart(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat_os, method = "class")
 
 # Visualize decision tree
-rpart.plot(tree)
+rpart.plot::rpart.plot(tree)
 
 ```  
   
@@ -525,8 +525,8 @@ p_yr4 <- ggplot2::ggplot(subset(train_dat, year == 4 & remote == 'Yes'), aes(x =
          ggplot2::labs(title = "Year 4 Turnover Trend", x = "Month", y = "Turnover Rate") +
          ggplot2::geom_function(fun = function(x) {train.cube.fit$coefficients[[2]]*4 + train.cube.fit$coefficients[[3]]*x + train.cube.fit$coefficients[[4]]*x^2 + train.cube.fit$coefficients[[5]]*x^3 + train.cube.fit$coefficients[[6]] + train.cube.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
          ggplot2::theme_bw() +
-         ggplot2::theme(legend.position = "none") +
-         ggplot2::theme(plot.title = element_text(hjust = 0.5))
+         ggplot2::theme(legend.position = "none",
+                        plot.title = element_text(hjust = 0.5))
 
 # Juxtapose year 5 turnover trend (test data) against fitted model
 p_yr5 <- ggplot2::ggplot(forecast.metrics, aes(x = month, y = actual)) +
@@ -536,8 +536,8 @@ p_yr5 <- ggplot2::ggplot(forecast.metrics, aes(x = month, y = actual)) +
          ggplot2::geom_function(fun = function(x) {train.cube.fit$coefficients[[2]]*5 + train.cube.fit$coefficients[[3]]*x + train.cube.fit$coefficients[[4]]*x^2 + train.cube.fit$coefficients[[5]]*x^3 + train.cube.fit$coefficients[[6]] + train.cube.fit$coefficients[[1]]}, colour = "red", linetype = "dashed") +
          ggplot2::geom_ribbon(data = forecast.metrics, aes(month, ymin = lwr_bound, ymax = upr_bound, fill = "red"), alpha = 0.4) +
          ggplot2::theme_bw() +
-         ggplot2::theme(legend.position = "none") +
-         ggplot2::theme(plot.title = element_text(hjust = 0.5))
+         ggplot2::theme(legend.position = "none",
+                        plot.title = element_text(hjust = 0.5))
 
 # Display visuals side-by-side
 ggpubr::ggarrange(p_yr4, p_yr5, ncol = 2, nrow = 1)
