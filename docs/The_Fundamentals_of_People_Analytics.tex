@@ -136,7 +136,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-09-04}
+\date{2022-09-05}
 
 \begin{document}
 \maketitle
@@ -712,7 +712,7 @@ Libraries from several R packages will be utilized in this book. The line of cod
 ## 
 ## 
 ## The downloaded binary packages are in
-##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpgASLd0/downloaded_packages
+##  /var/folders/b1/0nnhbsx55hvfb1b3n83x0qrw0000gn/T//RtmpRnzh2w/downloaded_packages
 \end{verbatim}
 
 \textbf{Case Sensitivity}
@@ -3009,7 +3009,7 @@ A \textbf{Type 2 table} is a table in which a new record is inserted when a chan
 
 Figure \ref{fig:type-2-tbl} illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr.~Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
 
-Note that rows where \texttt{end\_date} is null indicate \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} is set to the worker's termination date for rows that represent \emph{last known attributes}:
+Note that rows where \texttt{end\_date\ =\ \textquotesingle{}12/31/9999\textquotesingle{}} indicate \emph{current attributes} for active workers. For inactive workers, \texttt{end\_date} is set to the worker's termination date for rows that represent \emph{last known attributes}:
 
 \begin{figure}
 
@@ -3020,7 +3020,7 @@ Note that rows where \texttt{end\_date} is null indicate \emph{current attribute
 \caption{Type 2 SCD}\label{fig:type-2-tbl}
 \end{figure}
 
-To construct a view of the last known attributes for each worker in this table, we could select rows where \texttt{end\_date} is null for active workers and the most recent rows (max date) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
+To construct a view of the last known attributes for each worker in this table, we could select rows where the current date is on or after \texttt{start\_date} and on or prior to \texttt{end\_date} for active workers and then select the most recent rows (with max \texttt{end\_date}) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \ref{fig:type-1-tbl} shows how the current record for worker 123 would look in a Type 1 SCD:
 
 \begin{figure}
 
@@ -11812,6 +11812,24 @@ The only adjustment needed to build a stacked area chart is to specify the varia
 \caption{100 percent stacked bar chart}\label{fig:sbar-chart}
 \end{figure}
 
+\hypertarget{combination-charts}{%
+\subsection{Combination Charts}\label{combination-charts}}
+
+\textbf{Combination charts} involve a combination of multiple types of visualizations.
+
+In a people analytics context, we may wish to highlight differences between voluntary and involuntary turnover trends relative to overall monthly turnover rates. It is usually more difficult to interpret how the magnitude of voluntary and involuntary rates compare across time using a stacked bar chart, and a combo chart is often a more intuitive method of presenting this information.
+
+As illustrated in Figure \ref{fig:combo-chart}, we can leverage a two-series line chart for monthly voluntary and involuntary rates relative to the overall monthly turnover rate visualized with a light grey vertical bar chart in the background.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/combo_chart} 
+
+}
+
+\caption{Combination chart}\label{fig:combo-chart}
+\end{figure}
+
 \hypertarget{waterfall-charts}{%
 \subsection{Waterfall Charts}\label{waterfall-charts}}
 
@@ -12819,6 +12837,9 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Single Series Line Graphs }\AlertTok{\#\#\#}
 
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(attrition\_dat, dept }\SpecialCharTok{==} \StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{group =}\NormalTok{ dept)) }\SpecialCharTok{+} 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Engineering attrition has increased over the last 24 months, }\SpecialCharTok{\textbackslash{}n}\StringTok{largely due to an exponential spike in the last year.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Month\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Attrition Rate\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{\textquotesingle{}\#0070C0\textquotesingle{}}\NormalTok{, }\AttributeTok{size =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
@@ -12836,6 +12857,9 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \begin{Shaded}
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Two Series Line Graphs }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(attrition\_dat, dept }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{)), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{color =}\NormalTok{ dept)) }\SpecialCharTok{+} 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The attrition trends for Engineering and Product }\SpecialCharTok{\textbackslash{}n}\StringTok{are negatively correlated over the last year.\textquotesingle{}}\NormalTok{,}
@@ -12861,6 +12885,9 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \begin{Shaded}
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Multiple Series Line Graphs }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(attrition\_dat, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ rate, }\AttributeTok{color =}\NormalTok{ dept)) }\SpecialCharTok{+} 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The attrition trend for Engineering is quite different }\SpecialCharTok{\textbackslash{}n}\StringTok{relative to attrition patterns for other departments.\textquotesingle{}}\NormalTok{,}
@@ -13031,6 +13058,55 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
                \AttributeTok{axis.title.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
                \AttributeTok{axis.title.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
                \AttributeTok{plot.title =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{20}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{combination-charts-1}{%
+\section{Combination Charts}\label{combination-charts-1}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Set seed for reproducibility}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{12345}\NormalTok{)}
+
+\CommentTok{\# Turnover rates}
+\NormalTok{vol\_rt }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{runif}\NormalTok{(}\DecValTok{24}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{15}\NormalTok{), }\DecValTok{1}\NormalTok{)}
+\NormalTok{inv\_rt }\OtherTok{\textless{}{-}} \FunctionTok{round}\NormalTok{(}\FunctionTok{runif}\NormalTok{(}\DecValTok{24}\NormalTok{, }\DecValTok{1}\NormalTok{, }\DecValTok{5}\NormalTok{), }\DecValTok{1}\NormalTok{)}
+\NormalTok{tot\_rt }\OtherTok{\textless{}{-}}\NormalTok{ vol\_rt }\SpecialCharTok{+}\NormalTok{ inv\_rt}
+\NormalTok{turnover\_dat }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{month =} \DecValTok{1}\SpecialCharTok{:}\DecValTok{24}\NormalTok{,}
+                           \AttributeTok{inv\_rt =}\NormalTok{ inv\_rt,}
+                           \AttributeTok{vol\_rt =}\NormalTok{ vol\_rt,}
+                           \AttributeTok{tot\_rt =}\NormalTok{ tot\_rt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Combination Charts }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(turnover\_dat) }\SpecialCharTok{+} 
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The largest share of overall monthly attrition over the 24{-}month period }\SpecialCharTok{\textbackslash{}n}\StringTok{has consistently been voluntary terminations.\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{x =} \StringTok{\textquotesingle{}Month\textquotesingle{}}\NormalTok{,}
+              \AttributeTok{y =} \StringTok{\textquotesingle{}Attrition Rate\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ tot\_rt), }\AttributeTok{fill =} \StringTok{\textquotesingle{}\#D9D9D9\textquotesingle{}}\NormalTok{, }\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ vol\_rt), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{, }\AttributeTok{group =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_line}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ month, }\AttributeTok{y =}\NormalTok{ inv\_rt), }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#808080"}\NormalTok{, }\AttributeTok{group =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_x\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{27}\NormalTok{), }\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{24}\NormalTok{, }\AttributeTok{by =} \DecValTok{3}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{20}\NormalTok{), }\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{20}\NormalTok{, }\AttributeTok{by =} \DecValTok{5}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{annotate}\NormalTok{(}\AttributeTok{geom =} \StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \FunctionTok{max}\NormalTok{(turnover\_dat}\SpecialCharTok{$}\NormalTok{month) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{7}\NormalTok{, }\AttributeTok{y =}\NormalTok{ turnover\_dat[turnover\_dat}\SpecialCharTok{$}\NormalTok{month }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(turnover\_dat}\SpecialCharTok{$}\NormalTok{month), }\StringTok{\textquotesingle{}vol\_rt\textquotesingle{}}\NormalTok{], }\AttributeTok{label =} \StringTok{\textquotesingle{}Voluntary\textquotesingle{}}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#0070C0"}\NormalTok{, }\AttributeTok{size =} \DecValTok{4}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{annotate}\NormalTok{(}\AttributeTok{geom =} \StringTok{"text"}\NormalTok{, }\AttributeTok{x =} \FunctionTok{max}\NormalTok{(turnover\_dat}\SpecialCharTok{$}\NormalTok{month) }\SpecialCharTok{+}\NormalTok{ .}\DecValTok{7}\NormalTok{, }\AttributeTok{y =}\NormalTok{ turnover\_dat[turnover\_dat}\SpecialCharTok{$}\NormalTok{month }\SpecialCharTok{==} \FunctionTok{max}\NormalTok{(turnover\_dat}\SpecialCharTok{$}\NormalTok{month), }\StringTok{\textquotesingle{}inv\_rt\textquotesingle{}}\NormalTok{], }\AttributeTok{label =} \StringTok{\textquotesingle{}Involuntary\textquotesingle{}}\NormalTok{, }\AttributeTok{color =} \StringTok{"\#808080"}\NormalTok{, }\AttributeTok{size =} \DecValTok{4}\NormalTok{, }\AttributeTok{hjust =} \DecValTok{0}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{legend.position =} \StringTok{"none"}\NormalTok{,}
+               \AttributeTok{axis.title.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{hjust =} \DecValTok{0}\NormalTok{, }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
                \AttributeTok{axis.ticks.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.ticks.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{())}
 \end{Highlighting}
@@ -13252,16 +13328,10 @@ This appendix provides the code needed to reproduce visuals in Chapter \ref{data
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
 
-\CommentTok{\# Load library}
-\FunctionTok{library}\NormalTok{(dplyr)}
-
 \CommentTok{\# Create data cube for gender representation among active employees}
-\NormalTok{smmry\_gender }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(gender) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(cnt }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(cnt) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))}
+\NormalTok{smmry\_gender }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{gender =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Male\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Female\textquotesingle{}}\NormalTok{),}
+                           \AttributeTok{cnt =} \FunctionTok{c}\NormalTok{(}\DecValTok{732}\NormalTok{, }\DecValTok{501}\NormalTok{),}
+                           \AttributeTok{pct =} \FunctionTok{c}\NormalTok{(}\FloatTok{59.4}\NormalTok{, }\FloatTok{40.6}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
