@@ -606,13 +606,13 @@ ggplot2::theme(panel.background = ggplot2::element_blank(),
 set.seed(12345)
 
 # Turnover rates
-vol_rt <- round(runif(24, 5, 15), 1)
-inv_rt <- round(runif(24, 1, 5), 1)
-tot_rt <- vol_rt + inv_rt
+reg_rt <- round(runif(24, 5, 15), 1)
+nonreg_rt <- round(runif(24, 1, 5), 1)
+vol_rt <- reg_rt + nonreg_rt
 turnover_dat <- data.frame(month = 1:24,
-                           inv_rt = inv_rt,
-                           vol_rt = vol_rt,
-                           tot_rt = tot_rt)
+                           reg_rt = reg_rt,
+                           nonreg_rt = nonreg_rt,
+                           vol_rt = vol_rt)
 
 ```
 
@@ -624,16 +624,16 @@ turnover_dat <- data.frame(month = 1:24,
 library(ggplot2)
 
 ggplot2::ggplot(turnover_dat) + 
-ggplot2::labs(title = 'The largest share of overall monthly attrition over the 24-month period \nhas consistently been voluntary terminations.',
+ggplot2::labs(title = 'The largest share of monthly voluntary attrition over the 24-month period \nhas consistently been regrettable terminations.',
               x = 'Month',
               y = 'Attrition Rate') +
-ggplot2::geom_bar(aes(x = month, y = tot_rt), fill = '#D9D9D9', stat = "identity") +
-ggplot2::geom_line(aes(x = month, y = vol_rt), size = 1, color = "#0070C0", group = 1) +
-ggplot2::geom_line(aes(x = month, y = inv_rt), size = 1, color = "#808080", group = 1) +
+ggplot2::geom_bar(aes(x = month, y = vol_rt), fill = '#D9D9D9', stat = "identity") +
+ggplot2::geom_line(aes(x = month, y = reg_rt), size = 1, color = "#ED7D31", group = 1) +
+ggplot2::geom_line(aes(x = month, y = nonreg_rt), size = 1, color = "#9BC2E6", group = 1) +
 ggplot2::scale_x_continuous(limits = c(0, 27), breaks = seq(0, 24, by = 3)) +
 ggplot2::scale_y_continuous(limits = c(0, 20), breaks = seq(0, 20, by = 5)) +
-ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'vol_rt'], label = 'Voluntary', color = "#0070C0", size = 4, hjust = 0) +
-ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'inv_rt'], label = 'Involuntary', color = "#808080", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'reg_rt'], label = 'Regrettable', color = "#ED7D31", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'nonreg_rt'], label = 'Not\nRegrettable', color = "#5B9BD5", size = 4, hjust = 0) +
 ggplot2::theme(panel.background = ggplot2::element_blank(),
                legend.position = "none",
                axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
