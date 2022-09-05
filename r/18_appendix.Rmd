@@ -372,6 +372,9 @@ attrition_dat$dept <- factor(attrition_dat$dept, c("Product", "Finance", "People
 
 ### Single Series Line Graphs ###
 
+# Load library
+library(ggplot2)
+
 ggplot2::ggplot(subset(attrition_dat, dept == 'Engineering'), aes(x = month, y = rate, group = dept)) + 
 ggplot2::labs(title = 'Engineering attrition has increased over the last 24 months, \nlargely due to an exponential spike in the last year.', x = 'Month', y = 'Attrition Rate') +
 ggplot2::geom_line(color = '#0070C0', size = 1) +
@@ -389,6 +392,9 @@ ggplot2::theme(legend.position = "none",
 ```{r, eval = FALSE}
 
 ### Two Series Line Graphs ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(subset(attrition_dat, dept %in% c('Engineering', 'Product')), aes(x = month, y = rate, color = dept)) + 
 ggplot2::labs(title = 'The attrition trends for Engineering and Product \nare negatively correlated over the last year.',
@@ -414,6 +420,9 @@ ggplot2::theme(panel.background = ggplot2::element_blank(),
 ```{r, eval = FALSE}
 
 ### Multiple Series Line Graphs ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(attrition_dat, aes(x = month, y = rate, color = dept)) + 
 ggplot2::labs(title = 'The attrition trend for Engineering is quite different \nrelative to attrition patterns for other departments.',
@@ -582,6 +591,54 @@ ggplot2::theme(panel.background = ggplot2::element_blank(),
                axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
                axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
                plot.title = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
+               axis.ticks.x = ggplot2::element_blank(),
+               axis.ticks.y = ggplot2::element_blank())
+
+```
+
+## Combination Charts
+
+```{r, eval = FALSE}
+
+### Data Prep ###
+
+# Set seed for reproducibility
+set.seed(12345)
+
+# Turnover rates
+vol_rt <- round(runif(24, 5, 15), 1)
+inv_rt <- round(runif(24, 1, 5), 1)
+tot_rt <- vol_rt + inv_rt
+turnover_dat <- data.frame(month = 1:24,
+                           inv_rt = inv_rt,
+                           vol_rt = vol_rt,
+                           tot_rt = tot_rt)
+
+```
+
+```{r, eval = FALSE}
+
+### Combination Charts ###
+
+# Load library
+library(ggplot2)
+
+ggplot2::ggplot(turnover_dat) + 
+ggplot2::labs(title = 'The largest share of overall monthly attrition over the 24-month period \nhas consistently been voluntary terminations.',
+              x = 'Month',
+              y = 'Attrition Rate') +
+ggplot2::geom_bar(aes(x = month, y = tot_rt), fill = '#D9D9D9', stat = "identity") +
+ggplot2::geom_line(aes(x = month, y = vol_rt), size = 1, color = "#0070C0", group = 1) +
+ggplot2::geom_line(aes(x = month, y = inv_rt), size = 1, color = "#808080", group = 1) +
+ggplot2::scale_x_continuous(limits = c(0, 27), breaks = seq(0, 24, by = 3)) +
+ggplot2::scale_y_continuous(limits = c(0, 20), breaks = seq(0, 20, by = 5)) +
+ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'vol_rt'], label = 'Voluntary', color = "#0070C0", size = 4, hjust = 0) +
+ggplot2::annotate(geom = "text", x = max(turnover_dat$month) + .7, y = turnover_dat[turnover_dat$month == max(turnover_dat$month), 'inv_rt'], label = 'Involuntary', color = "#808080", size = 4, hjust = 0) +
+ggplot2::theme(panel.background = ggplot2::element_blank(),
+               legend.position = "none",
+               axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = ggplot2::element_text(hjust = 0, colour = "#404040"),
                axis.ticks.x = ggplot2::element_blank(),
                axis.ticks.y = ggplot2::element_blank())
 
@@ -799,16 +856,10 @@ networkD3::sankeyNetwork(Links = links,
 
 ### Data Prep ###
 
-# Load library
-library(dplyr)
-
 # Create data cube for gender representation among active employees
-smmry_gender <- employees %>%
-                dplyr::filter(active == 'Yes') %>%
-                dplyr::group_by(gender) %>%
-                dplyr::summarise(cnt = dplyr::n()) %>%
-                dplyr::mutate(pct = round(cnt / sum(cnt) * 100, 1)) %>%
-                dplyr::arrange(desc(pct))
+smmry_gender <- data.frame(gender = c('Male', 'Female'),
+                           cnt = c(732, 501),
+                           pct = c(59.4, 40.6))
 
 ```
 

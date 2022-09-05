@@ -51,7 +51,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Figure \@ref(fig:type-2-tbl) illustrates the design of a Type 2 SCD for an active worker's job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.
   
-  Note that rows where `end_date` is null indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent *last known attributes*:
+  Note that rows where `end_date = '12/31/9999'` indicate *current attributes* for active workers. For inactive workers, `end_date` is set to the worker's termination date for rows that represent *last known attributes*:
   
 ```{r type-2-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 2 SCD', fig.align = 'center'}
 
@@ -59,7 +59,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  To construct a view of the last known attributes for each worker in this table, we could select rows where `end_date` is null for active workers and the most recent rows (max date) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
+  To construct a view of the last known attributes for each worker in this table, we could select rows where the current date is on or after `start_date` and on or prior to `end_date` for active workers and then select the most recent rows (with max `end_date`) for inactive workers, but this approach would be unnecessarily complex. Using a Type 1 table simplifies the task and output since each dimension value is stored in a separate column and there is only one row per employee. Figure \@ref(fig:type-1-tbl) shows how the current record for worker 123 would look in a Type 1 SCD:
 
 ```{r type-1-tbl, out.width = "100%", echo = FALSE, fig.cap = 'Type 1 SCD', fig.align = 'center'}
 
