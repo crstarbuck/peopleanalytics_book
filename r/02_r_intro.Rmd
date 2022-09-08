@@ -4,37 +4,37 @@
 
 ## Getting Started
 
-  Run and test your code frequently. Writing a significant number of lines before testing will make debugging your code far more difficult and time-intensive than it needs to be. 
+  This section will cover some fundamental concepts and best practices for working in R.
 
-  **Installing R**
+### Installing R
 
   R can be compiled and ran on a variety of platforms including UNIX, Windows, and MacOS. R can be downloaded here: https://www.r-project.org/
   
   When installing R, you will need to select a CRAN mirror. The **Comprehensive R Archive Network (CRAN)** is a network of servers around the world that store identical, current versions of code and documentation for R. You should select the CRAN mirror nearest you to minimize network load.
 
-  **Installing R IDE**
+### Installing R Studio
 
-  **R Studio**, recently rebranded **Posit** to reflect the scientific research it endeavors to support (i.e., testing *posited* hypotheses), is an **Integrated Development Environment (IDE)** for R. This IDE provides a console with syntax editing that is helpful for debugging code as well as tools for plotting, history, and workspace management. Both open source and commercial editions are available, but the open-source option is sufficient for replicating everything in this book.
+  **R Studio**, which is being rebranded **Posit** to reflect the scientific research it endeavors to support (i.e., testing *posited* hypotheses), is an **Integrated Development Environment (IDE)** for R. This IDE provides a console with syntax editing that is helpful for debugging code as well as tools for plotting, history, and workspace management. Both open source and commercial editions are available, but the open-source option is sufficient for replicating everything in this book.
   
   R Studio can be downloaded here: https://www.rstudio.com/products/rstudio/download/#download
 
-  **Installing Packages**
+### Installing Packages
 
-  Libraries from several R packages will be utilized in this book. The line of code below can be executed within either the R console or IDE to install all at once:
+  This book will utilize libraries from many R packages. The line of code below can be executed within either the R console or IDE to install all at once:
   
-```{r, warning = FALSE, message = FALSE}
+```{r, echo = FALSE, warning = FALSE, message = FALSE}
 
 install.packages(c("tidyverse", "corrplot", "psych", "moments", "ggpubr", "ggdist", "GGally", "networkD3", "sqldf", "caret", "car", "reshape2", "flextable", "lmtest", "equatiomatic", "pwr", "nnet", "MASS", "brant", "lme4", "lmerTest", "rpart", "rpart.plot", "lavaan", "lavaanPlot", "factoextra", "cluster"), dependencies = TRUE, repos = "http://cran.us.r-project.org")
 
 ```
 
-  **Case Sensitivity**
+### Case Sensitivity
 
   It's important to note that everything in R is case-sensitive. When working with functions, be sure to match the case when typing the function name. For example, `Mean()` is not the same as `mean()`; since `mean()` is the correct case for the function, capitalized characters will result in an error when executing the function.
   
-  **Help**
+### Help
   
-  Documentation for functions is available via the `?` command. This can be inserted prior to any function to access the function's documentation. For example, `?mean` will display the documentation, including its required and optional arguments, for the `mean()` function.
+  Documentation for functions is available via the `?` command. This can be inserted prior to any function to access the function's documentation. For example, `?mean` will display the documentation, including its required and optional arguments, for the `mean()` function as shown in Figure \@ref(fig:r-help).
   
 ```{r r-help, out.width = "100%", echo = FALSE, fig.cap = 'Documentation for Arithmetic Mean Function', fig.align = 'center'}
 
@@ -42,9 +42,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
   
-  **Objects**
+### Objects
   
-  Objects underpin just about everything we do in R. An object is a container for various types of data. Objects can take many forms, ranging from simple objects holding a single number or character to complex structures that support advanced visualizations. The assignment character `<-` is used to assign values to an object.
+  Objects underpin just about everything we do in R. An object is a container for various types of data. Objects can take many forms, ranging from simple objects holding a single number or character to complex structures that support advanced visualizations. The assignment operator `<-` is used to assign values to an object, though `=` serves the same function.
   
   Let's use the assignment operator to assign a number and character to separate objects. Note that non-numeric values must be enveloped in either single ticks `''` or double quotes `""`:
 
@@ -62,7 +62,7 @@ obj_2
 
 ```  
   
-  Several functions are available for returning the type of data in an object:
+  Several functions are available for returning the type of data in an object, such as `typeof()` and `class()`:
   
 ```{r, warning = FALSE, message = FALSE}
 
@@ -76,14 +76,15 @@ class(obj_2)
 
 ```    
 
-  **Comments**
+### Comments
   
-  The `#` symbol is used for commenting/annotating code. This is a best practice to aid in quickly and easily deciphering the role of each line or block of code. Without comments, troubleshooting large scripts can be a more challenging task than necessary.
+  The `#` symbol is used for commenting/annotating code. Everything on a line that follows `#` is treated as commentary rather than code to execute. This is a best practice to aid in quickly and easily deciphering the role of each line or block of code. Without comments, troubleshooting large scripts can be a more challenging task.
   
 ```{r, warning = FALSE, message = FALSE}
 
 # Assign a new number to the object named obj_1
 obj_1 <- 2
+
 # Display value in obj_1
 obj_1
 
@@ -93,6 +94,7 @@ obj_1
 
 # Assign a new character to the object named obj_2
 obj_2 <- 'b'
+
 # Display value in obj_2
 obj_2
 
@@ -104,6 +106,7 @@ obj_2
 
 # Assign a new number to the object named obj_1
 obj_1 <- 3
+
 obj_1 # Display value in obj_1
 
 ```
@@ -112,9 +115,14 @@ obj_1 # Display value in obj_1
 
 # Assign a new character to the object named obj_2
 obj_2 <- 'c' 
+
 obj_2 # Display value in obj_2
 
 ``` 
+
+### Testing Early and Often
+
+  A best practice in coding is to run and test your code frequently. Writing many lines of code before testing will make debugging issues far more difficult and time-intensive than it needs to be.
 
 ## Vectors
 
@@ -126,6 +134,7 @@ obj_2 # Display value in obj_2
 
 # Create and fill a numeric vector named vect_num
 vect_num <- c(2,4,6,8,10)
+
 vect_num
 
 ```
@@ -134,6 +143,7 @@ vect_num
 
 # Create and fill a character vector named vect_char
 vect_char <- c('a','b','c')
+
 vect_char
 
 ```  
@@ -144,6 +154,7 @@ vect_char
 
 # Create and fill a date vector named vect_dt
 vect_dt <- c(as.Date("2021-01-01"), as.Date("2022-01-01"))
+
 vect_dt
 
 ``` 
@@ -154,6 +165,7 @@ vect_dt
 
 # Create and fill a date vector named vect_dt
 vect_dt <- seq(as.Date("2021-01-01"), as.Date("2022-01-01"), by = 'months')
+
 vect_dt
 
 ``` 
@@ -164,6 +176,7 @@ vect_dt
 
 # Create and fill a numeric vector with values between 1 and 10
 vect_num <- 1:10
+
 vect_num
 
 ``` 
@@ -201,6 +214,7 @@ x <- 1:10
 
 # Add 2 to each element of x
 x_plus2 <- x+2
+
 x_plus2
 
 ```
@@ -209,6 +223,7 @@ x_plus2
 
 # Multiply each element of x by 2
 x_times2 <- x*2
+
 x_times2
 
 ```
@@ -217,6 +232,7 @@ x_times2
 
 # Square each element of x
 x_sq <- x^2
+
 x_sq
 
 ```  
@@ -258,7 +274,7 @@ exp(x)
 
 ```  
 
-  We can also perform various operations on multiple vectors. Vectorization will result in an implied ordering about the elements, in that the specified operation will be applied to the first elements of the vectors and then the second, then third, etc.
+  We can also perform various operations on multiple vectors. Vectorization will result in an implied ordering of elements, in that the specified operation will be applied to the first elements of the vectors and then the second, then third, etc.
 
 ```{r, warning = FALSE, message = FALSE}
 
@@ -268,6 +284,7 @@ x2 <- 11:20
 
 # Store sum of vectors to new x3 vector
 x3 <- x1 + x2
+
 x3
 
 ```  
@@ -278,6 +295,7 @@ x3
 
 # Evaluate whether each element of x is less than 6, and store results to a logical vector
 logical_rslts <- x<6
+
 logical_rslts
 
 ``` 
@@ -292,16 +310,18 @@ logical_rslts
 
 # Create and fill matrix with numbers
 mtrx_num <- matrix(data = 1:10, nrow = 5, ncol = 2)
+
 mtrx_num
 
 ``` 
 
-  We can leverage shorthand for function calls. As long as the argument values are in the correct order by the documentation, the argument names are not required. Per `?matrix`, the first argument is `data`, followed by `nrow` and then `ncol`. Therefore, we can achieve the same result using the following:
+  We can leverage shorthand for function calls. As long as the argument values are in the correct order per the documentation, the argument names are not required. Per `?matrix`, the first argument is `data`, followed by `nrow` and then `ncol`. Therefore, we can achieve the same result using the following:
   
 ```{r, warning = FALSE, message = FALSE}
 
 # Create and fill matrix with numbers
 mtrx_num <- matrix(1:10, 5, 2)
+
 mtrx_num
 
 ``` 
@@ -333,14 +353,14 @@ dim(mtrx_num)
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Return the first five rows of the matrix
+# Return the first five rows of a matrix containing 1,000 rows and 10 columns
 head(matrix(1:10000, 1000, 10), 5)
 
 ``` 
 
 ```{r, warning = FALSE, message = FALSE}
 
-# Return the last five rows of the matrix
+# Return the last five rows of a matrix containing 1,000 rows and 10 columns
 tail(matrix(1:10000, 1000, 10), 5)
 
 ``` 
@@ -371,6 +391,7 @@ matrix(1:9, 3, 3) * 2
 
 # Create and fill factor with unordered categories
 education <- factor(c("undergraduate", "post-graduate", "graduate"))
+
 education
 
 ```   
@@ -381,6 +402,7 @@ education
 
 # Create and fill factor with unordered categories
 education <- factor(education, ordered = TRUE, levels = c("undergraduate", "graduate", "post-graduate"))
+
 education
 
 ``` 
@@ -402,6 +424,7 @@ z <- seq(as.Date("2021-01-01"), as.Date("2021-10-01"), by = 'months')
 
 # Create a data frame with 3 columns (vectors x, y, and z) and 10 rows
 df <- data.frame(x, y, z)
+
 df
 
 ``` 
@@ -415,7 +438,7 @@ str(df)
 
 ``` 
 
-  Specific columns in the data frame can be referenced using the `$` symbol between the data frame and column names:
+  Specific columns in the data frame can be referenced using the infix operator `$` between the data frame and column names:
   
 ```{r, warning = FALSE, message = FALSE}
 
@@ -424,7 +447,7 @@ df$x
 
 ```   
 
-  Another method that allows for efficient subsetting of rows and/or columns is the `subset()` function. The example below illustrates how to subset `df` using conditions on `x` and `y` while only displaying `z` in the output:
+  Another method that allows for efficient subsetting of rows and/or columns is the `subset()` function. The example below illustrates how to subset `df` using conditions on `x` and `y` while only displaying `z` in the output. The logical operator `|` is used for `OR` conditions, while `&` is the logical operator for `AND` conditions:
   
 ```{r, warning = FALSE, message = FALSE}
 
@@ -443,6 +466,7 @@ subset(df, x >= 7 | y == c('a','b','c'), select = z)
 
 # Store vectors x, y, and z as well as df to a list
 lst <- list(x, y, z, df)
+
 str(lst)
 
 ```  
@@ -493,7 +517,7 @@ for (i in 1:5) {
 
 ## User-Defined Functions (UDFs)
 
-  Though many built-in functions are available, R provides the flexibility to create our own. In fact, many functions used in this book are actually functions of functions.
+  Though many built-in functions are available, R provides the flexibility to create our own.
   
   Functions can be an effective alternative to loops. For example, here is a basic function that achieves the same goal as our `while` and `for` loop examples (i.e., squaring integers 1 through 5):
  
@@ -510,7 +534,7 @@ square.val(1:5)
 
 ``` 
 
-  While many projects warrant UDFs and/or loops, we do not actually need either to square a set of integers. As you gain experience writing R code, you will naturally discover ways to write more performant and terse code:
+  While many projects warrant UDFs and/or loops, we do not actually need either to square a set of integers thanks to vectorization. As you gain experience writing R code, you will naturally discover ways to write more performant and terse code:
   
 ```{r, warning = FALSE, message = FALSE}
 
@@ -521,7 +545,9 @@ square.val(1:5)
 
 ## Graphics
 
-  While base R has native plotting capabilities, we will use the more flexible and sophisticated visualization capabilities within the `ggplot2` library in this book. We can load the `ggplot2` library using the `library()` function:
+  While base R has native plotting capabilities, we will use more flexible and sophisticated visualization libraries such as `ggplot2` in this book. `ggplot2` is one of the most versatile and popular data visualization libraries in R.
+  
+  We can load the `ggplot2` library using the `library()` function:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -536,7 +562,7 @@ library(ggplot2)
 
 ```{r, message = FALSE}
 
-# Create data frame containing two related vectors
+# Create data frame containing two related columns, combining columns via the cbind() function
 x <- 1:10
 y <- (1:10)^2
 data <- as.data.frame(cbind(x, y))
