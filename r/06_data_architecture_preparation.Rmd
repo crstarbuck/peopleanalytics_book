@@ -1,4 +1,4 @@
-# Data Management & Preparation {#data-mgmt-prep}
+# Data Management & Preparation {#data-arch-prep}
 
   To begin a data analysis, we must first access and organize the relevant data. These tasks -- together with data preparation steps outlined in this chapter -- account for a large part of the work analytics professionals do.
   
@@ -8,31 +8,12 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-## Data Management
+## Data Architecture
   
   Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a *data lake*, *data warehouse*, or *data mart*. To properly and efficiently extract data -- often through the use of SQL as covered in Chapter \@ref(sql-intro) -- it is important to first understand some of the most common ways in which data are stored and structured. 
-  
   A **data lake** stores myriad types of data -- both structured and unstructured -- in its native format until needed. **Structured data** refers to data that fits a predefined data model, such as hire dates formatted as `MM/DD/YYYY` or zip codes stored as a five-digit string. **Unstructured data** has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables. 
   
-  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. As shown in Figure \@ref(fig:dw-schema), data in a DW are structured and organized into schemas of related tables to enhance the performance of queries spanning sets of large and diverse data.
-  
-  Figure \@ref(fig:dw-schema) illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
-  
-```{r dw-schema, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/dw_schema.png")
-
-```
-
-  Tables in a DW are related using a set of keys. Each table needs a **Primary Key (PK)**, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is often referred to as a *composite key*. It is generally best to leverage non-recyclable system-generated ids for PKs, as descriptors like names tend to be unreliable. A **Foreign Key (FK)** is a column whose values correspond to the values of a PK in another table. **Referential integrity** is the logical dependency of a FK on a PK, and these constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
-  
-  Figure \@ref(fig:dw-erd) shows an **Entity Relationship Diagram (ERD)** that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK of each related table shown in Figure \@ref(fig:dw-schema) is listed as a FK.
-  
-```{r dw-erd, out.width = "75%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
-
-knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/dw_erd.png")
-
-```
+  The main difference between a data lake and data warehouse is the type of data they are designed to store. A **data warehouse (DW)** is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables *based on business requirements and use cases*.
 
   A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as *Type 1* and *Type 2* tables. These tables are sometimes referred to as **slowly changing dimensions (SCD)**. 
   
@@ -68,6 +49,14 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```
 
   A **data mart** is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Employment Law counsel based on justified business needs.
+  
+  **Database Normalization**
+  
+  **Normalization** is the process of partitioning data into multiple tables to reduce data redundancy and promote data integrity. Conversely, **denormalization** combines data into a single table to facilitate easier and faster data retrieval. 
+  
+  The tables tables used to illustrate SQL joins in Chapter \@ref(sql-intro) are examples of normalized data. Normalized tables introduce more complexity for analysts since data organized across tables need to be joined together to create a flat data structure that is easier to work with for analytics. However, normalized tables have a key advantage in accounting for past-dated changes since the latest data are retrieved from the various tables when needed rather than leveraging immutable snapshots that only reflect data as of the date and time they were created. For example, if a worker snapshot was created yesterday, and today a change is processed in the system to rename location id MA123 from `Cambridge Office` to `Boston HQ` with an effective date of yesterday, a static worker snapshot created yesterday that contains location attributes will not reflect this updated name while querying normalized tables would.
+  
+  One way to address the shortcomings of snapshots without the more complex engineering task of deriving them from a Type 2 table is to perform destructive loads. **Destructive loads**, sometimes referred to as a **truncate and reload** approach, involves destroying prior snapshots and rebuilding them for each effective date. For example, if there is a policy that retroactive changes cannot be processed prior to the past six months, a destructive load could be performed for a rolling six months of snapshots to ensure they reflect any past-dated worker events and non-worker attribute changes (e.g., department, location, job, position).
   
   **Modern Data Architecture**
   

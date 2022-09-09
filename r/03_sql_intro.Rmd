@@ -20,7 +20,7 @@
   
   When implementing aggregate functions in a `SELECT` clause, such as counting, summing, or averaging a numeric field, all other non-aggregated fields must be included in the `GROUP BY` clause.
   
-  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Engineering department, we should ideally filter to this subset on the database side rather than loading into R data on the entire workforce before paring down to the relevant records. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
+  When working with large datasets, it is best to filter records on the database side to avoid reading superfluous records into an analytics tool such as R only to then filter data to the relevant subset. For example, if we are performing an analysis on employees in the Research & Development department, we should ideally filter to this subset on the database side rather than loading data on the entire workforce and then paring down to the relevant records within R. Fewer records can help enhance the performance of R scripts -- especially when R is running on a local machine, such as a laptop, rather than on a more powerful server. 
     
   Though it is important to execute SQL queries directly on the database to minimize the amount of data read into R, we will use the `sqldf` library within R to demonstrate the mechanics of a SQL query for easily replicable examples. The `sqldf` library allows us to write SQL to query data frames via an embedded database engine (SQLite by default). In a practical setting, we would pass a string containing the SQL query, execute it directly against the database, and then store the query's results to an object within R. While the syntax of SQL may vary by database, the core structure of queries is universal.
   
@@ -96,7 +96,7 @@ sqldf::sqldf(sql_string)
 
   There are 7 distinct job titles among employees in the Research & Development department, and the average organization tenure for these ranges from `5` to `13.7` years.
   
-  Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We will also apply column aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
+  Since there could be a small number of employees in certain jobs, in which case average organization tenure may not be as meaningful, we can use the `COUNT(*)` function to count the number of rows for each group. In this case, `COUNT(*)` will return the number of employees in each job in the Research & Development department. We can also assign column aliases via `AS` in the `SELECT` clause to assign different names to the output fields:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -148,7 +148,27 @@ sqldf::sqldf(sql_string)
 
 ## Joins
   
-  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
+  In a practical setting, the required data are rarely contained within a single table. Therefore, we must query multiple tables and join them together. 
+  
+  Figure \@ref(fig:data-schemas) illustrates how worker, position, and recruiting schemas may be related. For example, a candidate submits a job application to a posted requisition, which is connected to an open position Finance approved as part of the company's workforce plan; when the selected candidate is hired, they become a worker with one or many events (hire, promotion, transfer, termination) and activities (learning, performance appraisals, surveys) during their tenure with the company. 
+  
+```{r data-schemas, out.width = "100%", echo = FALSE, fig.cap = 'Related Tables Organized within Schemas', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/dw_schema.png")
+
+```
+
+  Tables are related using a set of keys. Each table needs a **Primary Key (PK)**, which is a unique identifier for each row in the table. A PK may be a single column or multiple columns; a multi-column PK is known as a *composite key*. It is generally best to leverage non-recyclable system-generated ids for PKs. A **Foreign Key (FK)** is a column whose values correspond to the values of a PK in another table. **Referential integrity** is the logical dependency of a FK on a PK, and this is an important concept in the context of relational data structures. Referential integrity constraints protect against orphaned FK values in child tables by deleting PK values from an associated parent table.
+  
+  Figure \@ref(fig:erd) shows an **Entity Relationship Diagram (ERD)** that depicts PK/FK relationships among the Position, Worker, and Requisition tables. Notice that the PK for each table shown in Figure \@ref(fig:data-schemas) is listed as a FK in related tables.
+  
+```{r erd, out.width = "75%", echo = FALSE, fig.cap = 'Entity Relationship Diagram (ERD)', fig.align = 'center'}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/dw_erd.png")
+
+```
+  
+  With knowledge of the keys required to connect records across tables, there are several methods of joining the tables. Figure \@ref(fig:sql-joins) illustrates SQL join types using Venn diagrams:
 
 ```{r sql-joins, out.width = "100%", echo = FALSE, fig.cap = 'Types of SQL Joins', fig.align = 'center'}
 
@@ -156,7 +176,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  The structure of SQL queries containing each type of join is represented below:
+  Both the join type and keys for related tables need to be specified in the SQL statement. The structure of SQL queries for each method of joining `Table A` and `Table B` is represented in the following code blocks:
 
   **LEFT INCLUSIVE**
   
@@ -238,9 +258,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set we have been using: `job`, `tenure`, and `demographics`. For many people analytics projects, employee id is the PK since this identifier for one employee should not be assigned to another employee -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins:
+  To illustrate how SQL joins work, we will leverage three of the data sets used to produce the consolidated `employees` data set that will be leveraged throughout this book: `job`, `tenure`, and `demographics`. In a people analytics context, employee id is often the PK since this identifier should not be shared by two or more employees -- past, present, or future. Email or network id may also be a suitable PK. We will use the `employee_id` column in each of the three data frames to facilitate joins.
   
-  Next, we will query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. For this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
+  Let's query these data frames to return the average organization tenure and average commute distance for employees in the Research & Development department, grouped by jobs with more than 10 employees. To accomplish this, we will leverage an `INNER JOIN`, which will return records only for employee ids which are present in all three data frames. For example, if a record exists in `demographics` and `tenure` for a particular employee id, but there is no corresponding record in `job`, that employee id would not be included in the output.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -310,7 +330,7 @@ sqldf::sqldf(sql_string)
 
 ```
 
-  In this case, if demographics is the base data set which contains all employee ids (i.e., the 'LEFT' dataset), it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
+  In this case, if demographics is the base data set which contains all employee ids (i.e., the 'LEFT' data set), it is important for `tenure` and `job` to be joined to it. Joining `job` to `tenure` may result in information loss if an employee id exists in `demographics` and `job` but not in the intermediate `tenure` data set.
 
   When integrating data within R, the `tidyverse` provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the package-specific `%>%` operator. The example below joins nine data sets into a single `employees` data frame using a left join on the `employee_id` column:
 
