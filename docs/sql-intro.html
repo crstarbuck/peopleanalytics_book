@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-10" />
+<meta name="date" content="2022-09-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,6 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
-<link href="libs/tabwid-1.0.0/scrool.css" rel="stylesheet" />
 <script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
@@ -213,11 +211,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">4.2.1</span> Discrete Variables</a></li>
 <li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">4.2.2</span> Continuous Variables</a></li>
 </ul></li>
-<li><a href="measure-sampl.html#sampling" id="toc-sampling"><span class="toc-section-number">4.3</span> Sampling</a>
+<li><a href="measure-sampl.html#sampling-methods" id="toc-sampling-methods"><span class="toc-section-number">4.3</span> Sampling Methods</a>
 <ul>
-<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.3.1</span> Sampling &amp; Nonsampling Error</a></li>
+<li><a href="measure-sampl.html#probability-sampling" id="toc-probability-sampling"><span class="toc-section-number">4.3.1</span> Probability Sampling</a></li>
+<li><a href="measure-sampl.html#non-probability-sampling" id="toc-non-probability-sampling"><span class="toc-section-number">4.3.2</span> Non-Probability Sampling</a></li>
 </ul></li>
-<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.4</span> Review Questions</a></li>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.4</span> Sampling &amp; Nonsampling Error</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-error" id="toc-sampling-error"><span class="toc-section-number">4.4.1</span> Sampling Error</a></li>
+<li><a href="measure-sampl.html#nonsampling-error" id="toc-nonsampling-error"><span class="toc-section-number">4.4.2</span> Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#reliability-and-validity" id="toc-reliability-and-validity"><span class="toc-section-number">4.5</span> Reliability and Validity</a>
+<ul>
+<li><a href="measure-sampl.html#reliability" id="toc-reliability"><span class="toc-section-number">4.5.1</span> Reliability</a></li>
+<li><a href="measure-sampl.html#validity" id="toc-validity"><span class="toc-section-number">4.5.2</span> Validity</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.6</span> Review Questions</a></li>
 </ul></li>
 <li><a href="research.html#research" id="toc-research"><span class="toc-section-number">5</span> Research Fundamentals</a>
 <ul>
@@ -741,7 +750,7 @@ Figure 3.3: Types of SQL Joins
 <p><strong>Subqueries</strong> are queries nested within other queries. Subqueries are often referred to as <strong>inner queries</strong>, while the main queries are referred to as <strong>outer queries</strong>.</p>
 <p>For example, if we are interested in performing an analysis on employees with more than a year of organization tenure, we can use a subquery to pass a list of employee ids that meet this criterion into the outer query for filtering. In this case, we would not need to include <code>tenure</code> in the join conditions of our main query:</p>
 <div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="sql-intro.html#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
-<span id="cb122-2"><a href="sql-intro.html#cb122-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: Since employee_id exists in multiple data sets, we must name a specific data set when referencing it</span></span>
+<span id="cb122-2"><a href="sql-intro.html#cb122-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: Since employee_id exists in multiple data sets, we would need to specify the data set to include this field in the outer query</span></span>
 <span id="cb122-3"><a href="sql-intro.html#cb122-3" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;SELECT</span></span>
 <span id="cb122-4"><a href="sql-intro.html#cb122-4" aria-hidden="true" tabindex="-1"></a><span class="st">                      job_title,</span></span>
 <span id="cb122-5"><a href="sql-intro.html#cb122-5" aria-hidden="true" tabindex="-1"></a><span class="st">                      COUNT(*) AS employee_cnt,</span></span>
@@ -898,7 +907,7 @@ Figure 3.3: Types of SQL Joins
 </div>
 <div id="common-table-expressions-ctes" class="section level2" number="3.7">
 <h2><span class="header-section-number">3.7</span> Common Table Expressions (CTEs)</h2>
-<p>An alternative approach is to use a <strong>common table expression (CTE)</strong>, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.</p>
+<p>An alternative to the virtual table approach is to use a <strong>common table expression (CTE)</strong>, which is the result set of a query that exists temporarily and only for use in a larger query. Like the virtual table example, CTEs do not persist data in objects or tables; the data exist only for the duration of the query.</p>
 <div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="sql-intro.html#cb130-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store SQL query as a character string</span></span>
 <span id="cb130-2"><a href="sql-intro.html#cb130-2" aria-hidden="true" tabindex="-1"></a>sql_string <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&quot;WITH max_commute_job</span></span>
 <span id="cb130-3"><a href="sql-intro.html#cb130-3" aria-hidden="true" tabindex="-1"></a><span class="st">                     AS</span></span>

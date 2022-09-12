@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-10" />
+<meta name="date" content="2022-09-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,8 +53,6 @@
 
 <link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
 <script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
-<link href="libs/tabwid-1.0.0/tabwid.css" rel="stylesheet" />
-<link href="libs/tabwid-1.0.0/scrool.css" rel="stylesheet" />
 <script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
 <script src="libs/viz-1.8.2/viz.js"></script>
 <link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
@@ -213,11 +211,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">4.2.1</span> Discrete Variables</a></li>
 <li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">4.2.2</span> Continuous Variables</a></li>
 </ul></li>
-<li><a href="measure-sampl.html#sampling" id="toc-sampling"><span class="toc-section-number">4.3</span> Sampling</a>
+<li><a href="measure-sampl.html#sampling-methods" id="toc-sampling-methods"><span class="toc-section-number">4.3</span> Sampling Methods</a>
 <ul>
-<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.3.1</span> Sampling &amp; Nonsampling Error</a></li>
+<li><a href="measure-sampl.html#probability-sampling" id="toc-probability-sampling"><span class="toc-section-number">4.3.1</span> Probability Sampling</a></li>
+<li><a href="measure-sampl.html#non-probability-sampling" id="toc-non-probability-sampling"><span class="toc-section-number">4.3.2</span> Non-Probability Sampling</a></li>
 </ul></li>
-<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.4</span> Review Questions</a></li>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.4</span> Sampling &amp; Nonsampling Error</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-error" id="toc-sampling-error"><span class="toc-section-number">4.4.1</span> Sampling Error</a></li>
+<li><a href="measure-sampl.html#nonsampling-error" id="toc-nonsampling-error"><span class="toc-section-number">4.4.2</span> Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#reliability-and-validity" id="toc-reliability-and-validity"><span class="toc-section-number">4.5</span> Reliability and Validity</a>
+<ul>
+<li><a href="measure-sampl.html#reliability" id="toc-reliability"><span class="toc-section-number">4.5.1</span> Reliability</a></li>
+<li><a href="measure-sampl.html#validity" id="toc-validity"><span class="toc-section-number">4.5.2</span> Validity</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.6</span> Review Questions</a></li>
 </ul></li>
 <li><a href="research.html#research" id="toc-research"><span class="toc-section-number">5</span> Research Fundamentals</a>
 <ul>
@@ -452,61 +461,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Taking the ratio of <span class="math inline">\(\frac {p(X)}{1 - p(X)}\)</span> will give the odds of the outcome, which ranges between 0 (very low) and <span class="math inline">\(\infty\)</span> (very high). The logarithm of this ratio, <span class="math inline">\(\log(\frac {p(X)}{1 - p(X)})\)</span>, is known as the <em>log odds</em> or <em>logit</em>, and is fundamental to logistic regression. Log odds is a <em>monotonic transformation</em>, meaning the greater the odds, the greater the log of odds (and vice versa).</p>
 <p>Recall that in linear regression, the coefficient <span class="math inline">\(\beta\)</span> on a predictor is interpreted as the average change in <span class="math inline">\(Y\)</span> for a one-unit increase in the respective predictor’s value. In logistic regression, the interpretation is similar but rather than <span class="math inline">\(\beta\)</span> representing the average change in <span class="math inline">\(Y\)</span>, it represents the average unit change in the <em>log of the odds</em> for a one-unit increase in the predictor’s value.</p>
 <p>In R, the <code>glm()</code> function is used in conjunction with the <code>family = binomial</code> argument to fit a logistic regression model. Recall from Chapter <a href="inf-stats.html#inf-stats">8</a> that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes – such as our <code>active</code> variable featuring only <em>yes</em> and <em>no</em> values. Therefore, we need to pass the <code>family = binomial</code> argument into the <code>glm()</code> function. The formula passed into the function is structured consistent with the <code>lm()</code> function used for linear regression: <code>glm(y ~ x, data)</code>.</p>
-<template id="36ad5aa7-6897-479b-9345-14d131d493cc"><style>
-.tabwid table{
-  border-spacing:0px !important;
-  border-collapse:collapse;
-  line-height:1;
-  margin-left:auto;
-  margin-right:auto;
-  border-width: 0;
-  display: table;
-  margin-top: 1.275em;
-  margin-bottom: 1.275em;
-  border-color: transparent;
-}
-.tabwid_left table{
-  margin-left:0;
-}
-.tabwid_right table{
-  margin-right:0;
-}
-.tabwid td {
-    padding: 0;
-}
-.tabwid a {
-  text-decoration: none;
-}
-.tabwid thead {
-    background-color: transparent;
-}
-.tabwid tfoot {
-    background-color: transparent;
-}
-.tabwid table tr {
-background-color: transparent;
-}
-.katex-display {
-    margin: 0 0 !important;
-}
-</style><div class="tabwid"><style>.cl-4157c3d4{}.cl-4151bf2a{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-4151bf3e{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:italic;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-4151cc0e{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-4151cc22{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-4151fb84{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fb98{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fba2{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fba3{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbac{width:97.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbb6{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbc0{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbc1{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbd4{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbd5{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbde{width:97.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbe8{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbf2{width:97.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fbfc{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc06{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc07{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc10{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc1a{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc24{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc25{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc2e{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc2f{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc38{width:97.6pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc42{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc43{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc4c{width:97.6pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc56{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc60{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc61{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-4151fc6a{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-4157c3d4'>
-<thead><tr style="overflow-wrap:break-word;"><td class="cl-4151fc4c"><p class="cl-4151cc0e"><span class="cl-4151bf2a"></span></p></td><td class="cl-4151fc43"><p class="cl-4151cc22"><span class="cl-4151bf2a">Estimate</span></p></td><td class="cl-4151fc61"><p class="cl-4151cc22"><span class="cl-4151bf2a">Standard Error</span></p></td><td class="cl-4151fc56"><p class="cl-4151cc22"><span class="cl-4151bf2a">z value</span></p></td><td class="cl-4151fc6a"><p class="cl-4151cc22"><span class="cl-4151bf2a">Pr(&gt;|z|)</span></p></td><td class="cl-4151fc60"><p class="cl-4151cc0e"><span class="cl-4151bf2a"></span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-4151fbac"><p class="cl-4151cc0e"><span class="cl-4151bf2a">(Intercept)</span></p></td><td class="cl-4151fba3"><p class="cl-4151cc22"><span class="cl-4151bf2a">-74.486</span></p></td><td class="cl-4151fb84"><p class="cl-4151cc22"><span class="cl-4151bf2a">10.333</span></p></td><td class="cl-4151fba2"><p class="cl-4151cc22"><span class="cl-4151bf2a">-7.208</span></p></td><td class="cl-4151fbb6"><p class="cl-4151cc22"><span class="cl-4151bf2a">0.0000</span></p></td><td class="cl-4151fb98"><p class="cl-4151cc0e"><span class="cl-4151bf2a">***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-4151fbde"><p class="cl-4151cc0e"><span class="cl-4151bf2a">interview_rating</span></p></td><td class="cl-4151fbe8"><p class="cl-4151cc22"><span class="cl-4151bf2a">21.963</span></p></td><td class="cl-4151fbc0"><p class="cl-4151cc22"><span class="cl-4151bf2a">2.997</span></p></td><td class="cl-4151fbd5"><p class="cl-4151cc22"><span class="cl-4151bf2a">7.329</span></p></td><td class="cl-4151fbc1"><p class="cl-4151cc22"><span class="cl-4151bf2a">0.0000</span></p></td><td class="cl-4151fbd4"><p class="cl-4151cc0e"><span class="cl-4151bf2a">***</span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-4151fbf2"><p class="cl-4151cc22"><span class="cl-4151bf3e">Signif. codes: 0 &lt;= '***' &lt; 0.001 &lt; '**' &lt; 0.01 &lt; '*' &lt; 0.05</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-4151fc38"><p class="cl-4151cc0e"><span class="cl-4151bf2a"> </span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-4151fc38"><p class="cl-4151cc0e"><span class="cl-4151bf2a">(Dispersion parameter for binomial family taken to be 1)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-4151fc38"><p class="cl-4151cc0e"><span class="cl-4151bf2a">Null deviance: 1299 on 1469 degrees of freedom</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-4151fc38"><p class="cl-4151cc0e"><span class="cl-4151bf2a">Residual deviance: 103.3 on 1468 degrees of freedom</span></p></td></tr></tfoot></table></div></template>
-<div class="flextable-shadow-host" id="4468fd41-5a66-49f8-83ac-52a678059363"></div>
-<script>
-var dest = document.getElementById("4468fd41-5a66-49f8-83ac-52a678059363");
-var template = document.getElementById("36ad5aa7-6897-479b-9345-14d131d493cc");
-var caption = template.content.querySelector("caption");
-if(caption) {
-  caption.style.cssText = "display:block;text-align:center;";
-  var newcapt = document.createElement("p");
-  newcapt.appendChild(caption)
-  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
-}
-var fantome = dest.attachShadow({mode: 'open'});
-var templateContent = template.content;
-fantome.appendChild(templateContent);
-</script>
-
+<pre><code>## 
+## Call:
+## glm(formula = active ~ interview_rating, family = &quot;binomial&quot;, 
+##     data = employees)
+## 
+## Deviance Residuals: 
+##      Min        1Q    Median        3Q       Max  
+## -3.03045   0.00000   0.00002   0.00531   2.06562  
+## 
+## Coefficients:
+##                  Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)       -74.486     10.333  -7.208 5.67e-13 ***
+## interview_rating   21.963      2.997   7.329 2.32e-13 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1298.58  on 1469  degrees of freedom
+## Residual deviance:  103.27  on 1468  degrees of freedom
+## AIC: 107.27
+## 
+## Number of Fisher Scoring iterations: 11</code></pre>
 <p>The output shown in Figure <a href="#fig:glm-rating"><strong>??</strong></a> has some differences relative to the output of a linear regression model.</p>
 <ul>
 <li><code>Estimate</code>: Average change in the log of odds for each one-unit increase in the value of the predictor</li>
@@ -525,82 +502,51 @@ Figure 12.1: Linear (left) and logistic (right) functions applied to models regr
 <p>Figure <a href="log.html#fig:lm-glm-compare">12.1</a> illustrates that for high values of <code>interview_rating</code>, a linear model would estimate probabilities for <code>active</code> that are greater than 1. Since probabilities range from 0 (impossible) to 1 (certain), anything outside the [0,1] interval does not make sense. On the other hand, the logistic function produces the <em>S-shaped</em> curve described previously. Using the logistic function, the probabilities are constrained to the [0,1] interval, and the visual reflects the fact that <code>active</code> can be perfectly predicted for low and high values of <code>interview_rating</code> but it is a mixed bag for values in the middle of the range (3.3 - 3.6).</p>
 <p>It is often helpful to explain the relationship between a predictor and binary outcome in terms of a percentage increase or decrease. When <span class="math inline">\(\beta = 1\)</span>, this indicates that the likelihood of the outcome is identical between the two groups of the predictor. If we exponentiate the coefficients, we can convert the log odds into odds ratios to facilitate a more intuitive interpretation. Therefore, <span class="math inline">\((exp(\beta) - 1) * 100\)</span> will provide the percentage increase or decrease in the odds of the <em>included</em> group relative to the <em>omitted</em> group.</p>
 <p>For example, Figure <a href="#fig:glm-ot-lvl"><strong>??</strong></a> provides the log odds for <code>active</code> regressed onto two binary predictors: <code>overtime</code> and <code>job_lvl2plus</code>.</p>
-<div class="sourceCode" id="cb369"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb369-1"><a href="log.html#cb369-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dummy-coded variable for job level 2+</span></span>
-<span id="cb369-2"><a href="log.html#cb369-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>job_lvl2plus <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>job_lvl <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb369-3"><a href="log.html#cb369-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb369-4"><a href="log.html#cb369-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a logistic regression model</span></span>
-<span id="cb369-5"><a href="log.html#cb369-5" aria-hidden="true" tabindex="-1"></a>glm.fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus, <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span>
-<span id="cb369-6"><a href="log.html#cb369-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb369-7"><a href="log.html#cb369-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce tabular summary for model results using flextable</span></span>
-<span id="cb369-8"><a href="log.html#cb369-8" aria-hidden="true" tabindex="-1"></a>flextable<span class="sc">::</span><span class="fu">as_flextable</span>(glm.fit)</span></code></pre></div>
-<template id="d96f0d5a-f536-4610-9032-06b22425b8b1"><style>
-.tabwid table{
-  border-spacing:0px !important;
-  border-collapse:collapse;
-  line-height:1;
-  margin-left:auto;
-  margin-right:auto;
-  border-width: 0;
-  display: table;
-  margin-top: 1.275em;
-  margin-bottom: 1.275em;
-  border-color: transparent;
-}
-.tabwid_left table{
-  margin-left:0;
-}
-.tabwid_right table{
-  margin-right:0;
-}
-.tabwid td {
-    padding: 0;
-}
-.tabwid a {
-  text-decoration: none;
-}
-.tabwid thead {
-    background-color: transparent;
-}
-.tabwid tfoot {
-    background-color: transparent;
-}
-.tabwid table tr {
-background-color: transparent;
-}
-.katex-display {
-    margin: 0 0 !important;
-}
-</style><div class="tabwid"><style>.cl-41fb5d00{}.cl-41f5a658{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:normal;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-41f5a676{font-family:'Helvetica';font-size:11pt;font-weight:normal;font-style:italic;text-decoration:none;color:rgba(0, 0, 0, 1.00);background-color:transparent;}.cl-41f5b76a{margin:0;text-align:left;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-41f5b788{margin:0;text-align:right;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);padding-bottom:5pt;padding-top:5pt;padding-left:5pt;padding-right:5pt;line-height: 1;background-color:transparent;}.cl-41f5f068{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f07c{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f086{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f090{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f09a{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0a4{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0b8{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0c2{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0c3{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0cc{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0d6{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0e0{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(0, 0, 0, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0ea{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0f4{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f0fe{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f108{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f112{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f11c{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 0 solid rgba(0, 0, 0, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f11d{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f126{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f130{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f131{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f13a{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f13b{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f144{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f14e{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f158{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f162{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f16c{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f16d{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 0 solid rgba(255, 255, 255, 0.00);border-top: 0 solid rgba(255, 255, 255, 0.00);border-left: 0 solid rgba(255, 255, 255, 0.00);border-right: 0 solid rgba(255, 255, 255, 0.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f176{width:63.3pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f180{width:55.4pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f18a{width:92.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f18b{width:28.8pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f194{width:81.7pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}.cl-41f5f19e{width:56.5pt;background-color:transparent;vertical-align: middle;border-bottom: 2pt solid rgba(102, 102, 102, 1.00);border-top: 2pt solid rgba(102, 102, 102, 1.00);border-left: 0 solid rgba(0, 0, 0, 1.00);border-right: 0 solid rgba(0, 0, 0, 1.00);margin-bottom:0;margin-top:0;margin-left:0;margin-right:0;}</style><table class='cl-41fb5d00'>
-<thead><tr style="overflow-wrap:break-word;"><td class="cl-41f5f194"><p class="cl-41f5b76a"><span class="cl-41f5a658"></span></p></td><td class="cl-41f5f176"><p class="cl-41f5b788"><span class="cl-41f5a658">Estimate</span></p></td><td class="cl-41f5f18a"><p class="cl-41f5b788"><span class="cl-41f5a658">Standard Error</span></p></td><td class="cl-41f5f180"><p class="cl-41f5b788"><span class="cl-41f5a658">z value</span></p></td><td class="cl-41f5f19e"><p class="cl-41f5b788"><span class="cl-41f5a658">Pr(&gt;|z|)</span></p></td><td class="cl-41f5f18b"><p class="cl-41f5b76a"><span class="cl-41f5a658"></span></p></td></tr></thead><tbody><tr style="overflow-wrap:break-word;"><td class="cl-41f5f068"><p class="cl-41f5b76a"><span class="cl-41f5a658">(Intercept)</span></p></td><td class="cl-41f5f09a"><p class="cl-41f5b788"><span class="cl-41f5a658">1.516</span></p></td><td class="cl-41f5f0a4"><p class="cl-41f5b788"><span class="cl-41f5a658">0.119</span></p></td><td class="cl-41f5f090"><p class="cl-41f5b788"><span class="cl-41f5a658">12.718</span></p></td><td class="cl-41f5f086"><p class="cl-41f5b788"><span class="cl-41f5a658">0.0000</span></p></td><td class="cl-41f5f07c"><p class="cl-41f5b76a"><span class="cl-41f5a658">***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-41f5f0e0"><p class="cl-41f5b76a"><span class="cl-41f5a658">overtimeYes</span></p></td><td class="cl-41f5f0c2"><p class="cl-41f5b788"><span class="cl-41f5a658">-1.396</span></p></td><td class="cl-41f5f0d6"><p class="cl-41f5b788"><span class="cl-41f5a658">0.152</span></p></td><td class="cl-41f5f0c3"><p class="cl-41f5b788"><span class="cl-41f5a658">-9.176</span></p></td><td class="cl-41f5f0b8"><p class="cl-41f5b788"><span class="cl-41f5a658">0.0000</span></p></td><td class="cl-41f5f0cc"><p class="cl-41f5b76a"><span class="cl-41f5a658">***</span></p></td></tr><tr style="overflow-wrap:break-word;"><td class="cl-41f5f11c"><p class="cl-41f5b76a"><span class="cl-41f5a658">job_lvl2plus</span></p></td><td class="cl-41f5f112"><p class="cl-41f5b788"><span class="cl-41f5a658">1.227</span></p></td><td class="cl-41f5f0ea"><p class="cl-41f5b788"><span class="cl-41f5a658">0.152</span></p></td><td class="cl-41f5f0fe"><p class="cl-41f5b788"><span class="cl-41f5a658">8.055</span></p></td><td class="cl-41f5f108"><p class="cl-41f5b788"><span class="cl-41f5a658">0.0000</span></p></td><td class="cl-41f5f0f4"><p class="cl-41f5b76a"><span class="cl-41f5a658">***</span></p></td></tr></tbody><tfoot><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-41f5f13a"><p class="cl-41f5b788"><span class="cl-41f5a676">Signif. codes: 0 &lt;= '***' &lt; 0.001 &lt; '**' &lt; 0.01 &lt; '*' &lt; 0.05</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-41f5f16d"><p class="cl-41f5b76a"><span class="cl-41f5a658"> </span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-41f5f16d"><p class="cl-41f5b76a"><span class="cl-41f5a658">(Dispersion parameter for binomial family taken to be 1)</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-41f5f16d"><p class="cl-41f5b76a"><span class="cl-41f5a658">Null deviance: 1299 on 1469 degrees of freedom</span></p></td></tr><tr style="overflow-wrap:break-word;"><td  colspan="6"class="cl-41f5f16d"><p class="cl-41f5b76a"><span class="cl-41f5a658">Residual deviance: 1150 on 1467 degrees of freedom</span></p></td></tr></tfoot></table></div></template>
-<div class="flextable-shadow-host" id="99202980-c695-4962-ab64-9696b18d3ec1"></div>
-<script>
-var dest = document.getElementById("99202980-c695-4962-ab64-9696b18d3ec1");
-var template = document.getElementById("d96f0d5a-f536-4610-9032-06b22425b8b1");
-var caption = template.content.querySelector("caption");
-if(caption) {
-  caption.style.cssText = "display:block;text-align:center;";
-  var newcapt = document.createElement("p");
-  newcapt.appendChild(caption)
-  dest.parentNode.insertBefore(newcapt, dest.previousSibling);
-}
-var fantome = dest.attachShadow({mode: 'open'});
-var templateContent = template.content;
-fantome.appendChild(templateContent);
-</script>
-
+<div class="sourceCode" id="cb389"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb389-1"><a href="log.html#cb389-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dummy-coded variable for job level 2+</span></span>
+<span id="cb389-2"><a href="log.html#cb389-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>job_lvl2plus <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>job_lvl <span class="sc">&gt;</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb389-3"><a href="log.html#cb389-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb389-4"><a href="log.html#cb389-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a logistic regression model</span></span>
+<span id="cb389-5"><a href="log.html#cb389-5" aria-hidden="true" tabindex="-1"></a>glm.fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus, <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span>
+<span id="cb389-6"><a href="log.html#cb389-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb389-7"><a href="log.html#cb389-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb389-8"><a href="log.html#cb389-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(glm.fit)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## glm(formula = active ~ overtime + job_lvl2plus, family = &quot;binomial&quot;, 
+##     data = employees)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -2.3688   0.3532   0.3532   0.6300   1.1270  
+## 
+## Coefficients:
+##              Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)    1.5163     0.1192  12.718  &lt; 2e-16 ***
+## overtimeYes   -1.3965     0.1522  -9.176  &lt; 2e-16 ***
+## job_lvl2plus   1.2270     0.1523   8.055 7.93e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 1298.6  on 1469  degrees of freedom
+## Residual deviance: 1149.8  on 1467  degrees of freedom
+## AIC: 1155.8
+## 
+## Number of Fisher Scoring iterations: 5</code></pre>
 <p>We can convert these coefficients into odds ratios by exponentiating the coefficients:</p>
-<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="log.html#cb370-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return exponentiated coefficients</span></span>
-<span id="cb370-2"><a href="log.html#cb370-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(glm.fit))</span></code></pre></div>
+<div class="sourceCode" id="cb391"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb391-1"><a href="log.html#cb391-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return exponentiated coefficients</span></span>
+<span id="cb391-2"><a href="log.html#cb391-2" aria-hidden="true" tabindex="-1"></a><span class="fu">exp</span>(<span class="fu">coef</span>(glm.fit))</span></code></pre></div>
 <pre><code>##  (Intercept)  overtimeYes job_lvl2plus 
 ##    4.5551147    0.2474668    3.4108303</code></pre>
 <p>The exponentiated coefficient on <code>overtime</code> is <span class="math inline">\(exp(\beta) = .25\)</span>, so there is a <span class="math inline">\((1 - .25) * 100 = 75%\)</span> percent <em>decrease</em> in the odds of being active for employees who work overtime (since <code>overtime = Yes</code> is the included group) relative to those who do not work overtime. The exponentiated coefficient on <code>job_lvl2plus</code> is <span class="math inline">\(exp(\beta) = 3.41\)</span>, so there is a <span class="math inline">\((3.41 - 1) * 100 = 241%\)</span> percent <em>increase</em> in the odds of being active for those with a job level of 2 or greater relative to those with a job level of 1 (i.e., attrition is a larger concern for level 1 employees).</p>
 <p>Generalized linear mixed models can be fitted using the <code>glmer()</code> function from the <code>lme4</code> library. The syntax is identical to the illustration of <code>lmer()</code> for multilevel linear models in Chapter <a href="lm.html#lm">10</a> with the exception of needing to define <code>family</code> as an additional argument.</p>
 <p>A juxtaposition of <code>glm()</code> and <code>glmer()</code> fits for logistic regression is shown in the following block of code. The mixed model example features an additional random (group-level) effect on <code>business_travel</code> via <code>1 | business_travel</code>, and fixed (observation-level) effects on remaining predictors which are consistent with the standard logistic regression model:</p>
-<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="log.html#cb372-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb372-2"><a href="log.html#cb372-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
-<span id="cb372-3"><a href="log.html#cb372-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-4"><a href="log.html#cb372-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic model</span></span>
-<span id="cb372-5"><a href="log.html#cb372-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus, <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb393"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb393-1"><a href="log.html#cb393-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb393-2"><a href="log.html#cb393-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lme4)</span>
+<span id="cb393-3"><a href="log.html#cb393-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb393-4"><a href="log.html#cb393-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic model</span></span>
+<span id="cb393-5"><a href="log.html#cb393-5" aria-hidden="true" tabindex="-1"></a><span class="fu">glm</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus, <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
 <pre><code>## 
 ## Call:  glm(formula = active ~ overtime + job_lvl2plus, family = &quot;binomial&quot;, 
 ##     data = employees)
@@ -612,8 +558,8 @@ fantome.appendChild(templateContent);
 ## Degrees of Freedom: 1469 Total (i.e. Null);  1467 Residual
 ## Null Deviance:       1299 
 ## Residual Deviance: 1150  AIC: 1156</code></pre>
-<div class="sourceCode" id="cb374"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb374-1"><a href="log.html#cb374-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic mixed model</span></span>
-<span id="cb374-2"><a href="log.html#cb374-2" aria-hidden="true" tabindex="-1"></a>lme4<span class="sc">::</span><span class="fu">glmer</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> business_travel), <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb395"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb395-1"><a href="log.html#cb395-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Logistic mixed model</span></span>
+<span id="cb395-2"><a href="log.html#cb395-2" aria-hidden="true" tabindex="-1"></a>lme4<span class="sc">::</span><span class="fu">glmer</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl2plus <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> business_travel), <span class="at">data =</span> employees, <span class="at">family =</span> <span class="st">&#39;binomial&#39;</span>)</span></code></pre></div>
 <pre><code>## Generalized linear mixed model fit by maximum likelihood (Laplace
 ##   Approximation) [glmerMod]
 ##  Family: binomial  ( logit )
@@ -640,18 +586,18 @@ fantome.appendChild(templateContent);
 <p><span class="math display">\[ log(\frac{Pr(Y = k | X = x)} {Pr(Y = K | X = x)}) = \beta_{k0} + \beta_{k1}x_1 + ... + \beta_{xp}x_p \]</span></p>
 <p>Depending on the research objective, it may be appropriate to compute the odds of one category relative to all other categories. This can actually be accomplished using binomial regression if the category of interest is coded as 1 and all other categories are coded as 0. In this case, the reference for the binomial model is a <em>collection</em> of <span class="math inline">\(K-1\)</span> categories. If understanding the odds of <em>each category</em> relative to a reference category is more appropriate based on the research objective, multinomial logistic regression is the proper model.</p>
 <p>Let’s illustrate how to implement multinomial logistic regression by determining how variables in the <code>employees</code> dataset help in classifying employees into departments. To build this model in R, we will use the <code>multinom</code> function from the <code>nnet</code> package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of <code>dept</code> from its native character type to a factor. We also need to identify the reference department against which the probability of each of the other departments will be evaluated; we will define this using the <code>ref</code> argument within the <code>relevel()</code> function:</p>
-<div class="sourceCode" id="cb376"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb376-1"><a href="log.html#cb376-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb376-2"><a href="log.html#cb376-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
-<span id="cb376-3"><a href="log.html#cb376-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb376-4"><a href="log.html#cb376-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert dept to factor</span></span>
-<span id="cb376-5"><a href="log.html#cb376-5" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>dept <span class="ot">&lt;-</span> <span class="fu">factor</span>(employees<span class="sc">$</span>dept)</span>
-<span id="cb376-6"><a href="log.html#cb376-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb376-7"><a href="log.html#cb376-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify reference level</span></span>
-<span id="cb376-8"><a href="log.html#cb376-8" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>dept <span class="ot">&lt;-</span> <span class="fu">relevel</span>(employees<span class="sc">$</span>dept, <span class="at">ref =</span> <span class="st">&quot;Human Resources&quot;</span>)</span>
-<span id="cb376-9"><a href="log.html#cb376-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb376-10"><a href="log.html#cb376-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit multinomial logistic regression model</span></span>
-<span id="cb376-11"><a href="log.html#cb376-11" aria-hidden="true" tabindex="-1"></a><span class="co"># An omitted group for categorical variables is defined by default</span></span>
-<span id="cb376-12"><a href="log.html#cb376-12" aria-hidden="true" tabindex="-1"></a>multinom.fit <span class="ot">&lt;-</span> <span class="fu">multinom</span>(dept <span class="sc">~</span> overtime <span class="sc">+</span> ed_field, <span class="at">data =</span> employees)</span></code></pre></div>
+<div class="sourceCode" id="cb397"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb397-1"><a href="log.html#cb397-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb397-2"><a href="log.html#cb397-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(nnet)</span>
+<span id="cb397-3"><a href="log.html#cb397-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb397-4"><a href="log.html#cb397-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert dept to factor</span></span>
+<span id="cb397-5"><a href="log.html#cb397-5" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>dept <span class="ot">&lt;-</span> <span class="fu">factor</span>(employees<span class="sc">$</span>dept)</span>
+<span id="cb397-6"><a href="log.html#cb397-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb397-7"><a href="log.html#cb397-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify reference level</span></span>
+<span id="cb397-8"><a href="log.html#cb397-8" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>dept <span class="ot">&lt;-</span> <span class="fu">relevel</span>(employees<span class="sc">$</span>dept, <span class="at">ref =</span> <span class="st">&quot;Human Resources&quot;</span>)</span>
+<span id="cb397-9"><a href="log.html#cb397-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb397-10"><a href="log.html#cb397-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit multinomial logistic regression model</span></span>
+<span id="cb397-11"><a href="log.html#cb397-11" aria-hidden="true" tabindex="-1"></a><span class="co"># An omitted group for categorical variables is defined by default</span></span>
+<span id="cb397-12"><a href="log.html#cb397-12" aria-hidden="true" tabindex="-1"></a>multinom.fit <span class="ot">&lt;-</span> <span class="fu">multinom</span>(dept <span class="sc">~</span> overtime <span class="sc">+</span> ed_field, <span class="at">data =</span> employees)</span></code></pre></div>
 <pre><code>## # weights:  24 (14 variable)
 ## initial  value 1614.960064 
 ## iter  10 value 887.448722
@@ -659,8 +605,8 @@ fantome.appendChild(templateContent);
 ## iter  30 value 833.513790
 ## final  value 833.513639 
 ## converged</code></pre>
-<div class="sourceCode" id="cb378"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb378-1"><a href="log.html#cb378-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize results from model object</span></span>
-<span id="cb378-2"><a href="log.html#cb378-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(multinom.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb399"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb399-1"><a href="log.html#cb399-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize results from model object</span></span>
+<span id="cb399-2"><a href="log.html#cb399-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(multinom.fit)</span></code></pre></div>
 <pre><code>## Call:
 ## multinom(formula = dept ~ overtime + ed_field, data = employees)
 ## 
@@ -694,16 +640,15 @@ fantome.appendChild(templateContent);
 where <span class="math inline">\(n\)</span> is the number of observations, <span class="math inline">\(k\)</span> is the number of parameters (predictors + intercept), and <span class="math inline">\(\ell\)</span> is the log likelihood function where:</p>
 <p><span class="math display">\[ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  \]</span></p>
 <p>Just as we compared <span class="math inline">\(R^2\)</span> across linear regression models in Chapter <a href="lm.html#lm">10</a>, AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted <span class="math inline">\(R^2\)</span> statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score.</p>
-<p>At the time of this writing, the <code>as_flextable()</code> function used to format the output of <code>glm()</code> and <code>lm()</code> is not compatible with objects in which <code>multinom()</code> results are stored. Therefore, we will construct a basic data frame that improves readability.</p>
 <p>To determine whether the coefficients are statistically significant, we need to perform an additional step to compute <span class="math inline">\(p\)</span>-values using <span class="math inline">\(z\)</span> scores:</p>
-<div class="sourceCode" id="cb380"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb380-1"><a href="log.html#cb380-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate z-scores</span></span>
-<span id="cb380-2"><a href="log.html#cb380-2" aria-hidden="true" tabindex="-1"></a>z_scores <span class="ot">&lt;-</span> <span class="fu">summary</span>(multinom.fit)<span class="sc">$</span>coefficients <span class="sc">/</span> <span class="fu">summary</span>(multinom.fit)<span class="sc">$</span>standard.errors</span>
-<span id="cb380-3"><a href="log.html#cb380-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb380-4"><a href="log.html#cb380-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce p-values</span></span>
-<span id="cb380-5"><a href="log.html#cb380-5" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(z_scores))) <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb380-6"><a href="log.html#cb380-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb380-7"><a href="log.html#cb380-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose and display rounded p-values </span></span>
-<span id="cb380-8"><a href="log.html#cb380-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">t</span>(<span class="fu">round</span>(p_values, <span class="dv">3</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb401"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb401-1"><a href="log.html#cb401-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate z-scores</span></span>
+<span id="cb401-2"><a href="log.html#cb401-2" aria-hidden="true" tabindex="-1"></a>z_scores <span class="ot">&lt;-</span> <span class="fu">summary</span>(multinom.fit)<span class="sc">$</span>coefficients <span class="sc">/</span> <span class="fu">summary</span>(multinom.fit)<span class="sc">$</span>standard.errors</span>
+<span id="cb401-3"><a href="log.html#cb401-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb401-4"><a href="log.html#cb401-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce p-values</span></span>
+<span id="cb401-5"><a href="log.html#cb401-5" aria-hidden="true" tabindex="-1"></a>p_values <span class="ot">&lt;-</span> (<span class="dv">1</span> <span class="sc">-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(z_scores))) <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb401-6"><a href="log.html#cb401-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb401-7"><a href="log.html#cb401-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose and display rounded p-values </span></span>
+<span id="cb401-8"><a href="log.html#cb401-8" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">t</span>(<span class="fu">round</span>(p_values, <span class="dv">3</span>)))</span></code></pre></div>
 <pre><code>##                          Research...Development Sales
 ## (Intercept)                               0.000 0.000
 ## overtimeYes                               0.669 0.694
@@ -727,9 +672,9 @@ Figure 12.3: Department distribution by educational field.
 </p>
 </div>
 <p>As we did for binomial logistic regression, we can compute the exponential of model coefficients for the multinomial logistic regression model to convert the log-odds to more intuitive odds ratios:</p>
-<div class="sourceCode" id="cb382"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb382-1"><a href="log.html#cb382-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return exponentiated coefficients from model object</span></span>
-<span id="cb382-2"><a href="log.html#cb382-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose rows to columns for improved readability</span></span>
-<span id="cb382-3"><a href="log.html#cb382-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">t</span>(<span class="fu">exp</span>(<span class="fu">coef</span>(multinom.fit))))</span></code></pre></div>
+<div class="sourceCode" id="cb403"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb403-1"><a href="log.html#cb403-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return exponentiated coefficients from model object</span></span>
+<span id="cb403-2"><a href="log.html#cb403-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Transpose rows to columns for improved readability</span></span>
+<span id="cb403-3"><a href="log.html#cb403-3" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="fu">t</span>(<span class="fu">exp</span>(<span class="fu">coef</span>(multinom.fit))))</span></code></pre></div>
 <pre><code>##                          Research...Development        Sales
 ## (Intercept)                        6.017654e-09 3.720234e-09
 ## overtimeYes                        1.182323e+00 1.173776e+00
@@ -748,23 +693,23 @@ Figure 12.3: Department distribution by educational field.
 <p>Though other approaches exist for modeling ordinal outcomes, the proportional-odds model based on cumulative distribution probabilities is the most common. Its intercepts are dependent on the <span class="math inline">\(j\)</span> levels but slopes are equal as defined by:</p>
 <p><span class="math display">\[ log(\frac{Pr(Y \le j)} {Pr(Y &gt; j)}) = \beta_{j0} - \displaystyle\sum_{i=1}^{n} \beta_{1i} x_{1i} + ... + \beta_{pi} x_{pi} \]</span></p>
 <p>The implementation of ordinal logistic regression will be demonstrated by evaluating the statistical drivers of engagement. First, we need to define <code>engagement</code> as an ordered factor:</p>
-<div class="sourceCode" id="cb384"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb384-1"><a href="log.html#cb384-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define ordered factor</span></span>
-<span id="cb384-2"><a href="log.html#cb384-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>engagement <span class="ot">&lt;-</span> <span class="fu">ordered</span>(employees<span class="sc">$</span>engagement, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>))</span>
-<span id="cb384-3"><a href="log.html#cb384-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb384-4"><a href="log.html#cb384-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify structure of engagement variable</span></span>
-<span id="cb384-5"><a href="log.html#cb384-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(employees<span class="sc">$</span>engagement)</span></code></pre></div>
+<div class="sourceCode" id="cb405"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb405-1"><a href="log.html#cb405-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Define ordered factor</span></span>
+<span id="cb405-2"><a href="log.html#cb405-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>engagement <span class="ot">&lt;-</span> <span class="fu">ordered</span>(employees<span class="sc">$</span>engagement, <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>))</span>
+<span id="cb405-3"><a href="log.html#cb405-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb405-4"><a href="log.html#cb405-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Verify structure of engagement variable</span></span>
+<span id="cb405-5"><a href="log.html#cb405-5" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(employees<span class="sc">$</span>engagement)</span></code></pre></div>
 <pre><code>##  Ord.factor w/ 5 levels &quot;1&quot;&lt;&quot;2&quot;&lt;&quot;3&quot;&lt;&quot;4&quot;&lt;..: 3 2 2 3 3 3 4 3 2 3 ...</code></pre>
 <p>Next, the proportional odds assumption will be checked using the <strong>Brant test</strong>. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether <span class="math inline">\(\beta_{j1}\)</span> through <span class="math inline">\(\beta_{jp}\)</span> are consistent across each of the <span class="math inline">\(j\)</span> levels. This is done via a <span class="math inline">\(\chi^2\)</span> test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the <span class="math inline">\(j\)</span> levels; therefore, <span class="math inline">\(p &lt; .05\)</span> indicates that significant differences in effects are present across the <span class="math inline">\(j\)</span> levels and, thus, the proportional odds assumption is violated.</p>
 <p>We can leverage the <code>brant</code> package in R for this, which is compatible with the <code>polr()</code> function from the <code>MASS</code> package that will be used to perform ordinal logistic regression. Since we will be evaluating model statistics, rather than merely using the model for prediction (the subject of Chapter <a href="pred-mod.html#pred-mod">13</a>), we need to specify the <code>Hess = TRUE</code> argument in the <code>polr()</code> function to include the <em>Hessian matrix</em> (observed information matrix) in the output.</p>
-<div class="sourceCode" id="cb386"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb386-1"><a href="log.html#cb386-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb386-2"><a href="log.html#cb386-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb386-3"><a href="log.html#cb386-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brant)</span>
-<span id="cb386-4"><a href="log.html#cb386-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb386-5"><a href="log.html#cb386-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a ordinal logistic regression model</span></span>
-<span id="cb386-6"><a href="log.html#cb386-6" aria-hidden="true" tabindex="-1"></a>ord.fit <span class="ot">&lt;-</span> <span class="fu">polr</span>(engagement <span class="sc">~</span> org_tenure, <span class="at">data =</span> employees, <span class="at">Hess =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb386-7"><a href="log.html#cb386-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb386-8"><a href="log.html#cb386-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Test proportional odds assumption using the Brant test</span></span>
-<span id="cb386-9"><a href="log.html#cb386-9" aria-hidden="true" tabindex="-1"></a>brant<span class="sc">::</span><span class="fu">brant</span>(ord.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb407"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb407-1"><a href="log.html#cb407-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb407-2"><a href="log.html#cb407-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
+<span id="cb407-3"><a href="log.html#cb407-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(brant)</span>
+<span id="cb407-4"><a href="log.html#cb407-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb407-5"><a href="log.html#cb407-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a ordinal logistic regression model</span></span>
+<span id="cb407-6"><a href="log.html#cb407-6" aria-hidden="true" tabindex="-1"></a>ord.fit <span class="ot">&lt;-</span> <span class="fu">polr</span>(engagement <span class="sc">~</span> org_tenure, <span class="at">data =</span> employees, <span class="at">Hess =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb407-7"><a href="log.html#cb407-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb407-8"><a href="log.html#cb407-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Test proportional odds assumption using the Brant test</span></span>
+<span id="cb407-9"><a href="log.html#cb407-9" aria-hidden="true" tabindex="-1"></a>brant<span class="sc">::</span><span class="fu">brant</span>(ord.fit)</span></code></pre></div>
 <pre><code>## -------------------------------------------- 
 ## Test for X2  df  probability 
 ## -------------------------------------------- 
@@ -778,8 +723,8 @@ Figure 12.3: Department distribution by educational field.
 <span class="math inline">\(H_A\)</span>: The odds are non-proportional for at least one predictor.</p>
 <p>The results of Brant’s test indicate that we fail to reject <span class="math inline">\(H_0\)</span> since <span class="math inline">\(p = .82\)</span> for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors – but only to determine for which predictor(s) the proportional odds assumption is violated <em>if</em> <span class="math inline">\(p &lt; .05\)</span> for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which <span class="math inline">\(p &lt; .05\)</span> since our tolerance for a Type I error is 1 in 20 with <span class="math inline">\(\alpha = .05\)</span>.</p>
 <p>Since the proportional odds assumption holds, let’s review the model output:</p>
-<div class="sourceCode" id="cb388"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb388-1"><a href="log.html#cb388-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize ordinal logistic regression model</span></span>
-<span id="cb388-2"><a href="log.html#cb388-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ord.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb409"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb409-1"><a href="log.html#cb409-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize ordinal logistic regression model</span></span>
+<span id="cb409-2"><a href="log.html#cb409-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ord.fit)</span></code></pre></div>
 <pre><code>## Call:
 ## polr(formula = engagement ~ org_tenure, data = employees, Hess = TRUE)
 ## 
@@ -798,17 +743,17 @@ Figure 12.3: Department distribution by educational field.
 ## AIC: 3094.592</code></pre>
 <p>The output provides the average effect of a one-unit increase in <code>org_tenure</code> (Coefficients section) as well as intercepts on each pair of levels for <code>engagement</code> (Intercepts section). The effect of a one-unit increase in <code>org_tenure</code> in moving <code>engagement</code> from one ordinal level to the next is quite small (<span class="math inline">\(\beta = -.007\)</span>). The intercepts are often referred to as cutpoints and can be roughly translated as thresholds. While the intercepts for each cutpoint vary, note that the single coefficient on <code>org_tenure</code> is only possible because our proportional odds assumption holds and the effect is consistent (proportional) across levels of our ordered factor, <code>engagement</code>.</p>
 <p>Consistent with the default output from the <code>multinom()</code> function used for multinomial logistic regression, <span class="math inline">\(p\)</span>-values are not provided in the standard output from the <code>polr()</code> function. However, we can calculate them for reasonably large samples by comparing the <span class="math inline">\(t\)</span>-values against the standard normal distribution:</p>
-<div class="sourceCode" id="cb390"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb390-1"><a href="log.html#cb390-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store coefficients to df</span></span>
-<span id="cb390-2"><a href="log.html#cb390-2" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ord.fit))</span>
-<span id="cb390-3"><a href="log.html#cb390-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb390-4"><a href="log.html#cb390-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce p-values</span></span>
-<span id="cb390-5"><a href="log.html#cb390-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(coef_df[, <span class="st">&quot;t value&quot;</span>]), <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb390-6"><a href="log.html#cb390-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb390-7"><a href="log.html#cb390-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine p values with coefficients df</span></span>
-<span id="cb390-8"><a href="log.html#cb390-8" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(coef_df, <span class="st">&quot;p value&quot;</span> <span class="ot">=</span> p)</span>
-<span id="cb390-9"><a href="log.html#cb390-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb390-10"><a href="log.html#cb390-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Display df contents</span></span>
-<span id="cb390-11"><a href="log.html#cb390-11" aria-hidden="true" tabindex="-1"></a>coef_df</span></code></pre></div>
+<div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="log.html#cb411-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store coefficients to df</span></span>
+<span id="cb411-2"><a href="log.html#cb411-2" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> <span class="fu">coef</span>(<span class="fu">summary</span>(ord.fit))</span>
+<span id="cb411-3"><a href="log.html#cb411-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb411-4"><a href="log.html#cb411-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce p-values</span></span>
+<span id="cb411-5"><a href="log.html#cb411-5" aria-hidden="true" tabindex="-1"></a>p <span class="ot">&lt;-</span> <span class="fu">pnorm</span>(<span class="fu">abs</span>(coef_df[, <span class="st">&quot;t value&quot;</span>]), <span class="at">lower.tail =</span> <span class="cn">FALSE</span>) <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb411-6"><a href="log.html#cb411-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb411-7"><a href="log.html#cb411-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine p values with coefficients df</span></span>
+<span id="cb411-8"><a href="log.html#cb411-8" aria-hidden="true" tabindex="-1"></a>coef_df <span class="ot">&lt;-</span> <span class="fu">cbind</span>(coef_df, <span class="st">&quot;p value&quot;</span> <span class="ot">=</span> p)</span>
+<span id="cb411-9"><a href="log.html#cb411-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb411-10"><a href="log.html#cb411-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Display df contents</span></span>
+<span id="cb411-11"><a href="log.html#cb411-11" aria-hidden="true" tabindex="-1"></a>coef_df</span></code></pre></div>
 <pre><code>##                    Value  Std. Error      t value       p value
 ## org_tenure   -0.00696485 0.008032275    -0.867108  3.858828e-01
 ## 1|2          -2.86612408 0.127144280   -22.542297 1.598105e-112
