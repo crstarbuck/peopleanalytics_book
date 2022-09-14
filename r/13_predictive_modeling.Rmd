@@ -64,7 +64,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * **Precision**: Rate of correct predictions among all cases predicted true
   * **Negative Predictive Value**: Rate of correct predictions among all cases predicted false
   
-```{r confusion-mtx, out.width = "100%", echo = FALSE, fig.cap = 'Confusion Matrix', fig.align = 'center'}
+```{r confusion-mtx, out.width = "100%", echo = FALSE, fig.cap = 'Confusion matrix', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/confusion_matrix.png")
 
@@ -113,7 +113,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the $n$-count is small). 
   
-```{r decision-tree, out.width = "75%", echo = FALSE, fig.cap = 'Conceptual decision tree for employee attrition prediction.', fig.align = 'center'}
+```{r decision-tree, out.width = "75%", echo = FALSE, fig.cap = 'Conceptual decision tree for employee attrition prediction', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/decision_tree.png")
 
@@ -216,7 +216,7 @@ nrow(training_dat_os %>% dplyr::filter(active == 0)) == nrow(training_dat_os %>%
 
   Next, we will fit a binomial logistic regression model using a subset of predictors from the oversampled training data. For comparison, let's summarize a model using original and oversampled data.
   
-```{r glm-train-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on original data.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r glm-train-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on original data', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit binomial logistic regression model
 glm.fit <- glm(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat, family = binomial)
@@ -226,7 +226,7 @@ summary(glm.fit)
 
 ```
 
-```{r glm-train-os-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on oversampled data.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r glm-train-os-output, out.width = "100%", echo = FALSE, fig.cap = 'Binomial logistic regression model output for regression of active status onto overtime, job level, engagement, and interview rating trained on oversampled data', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit binomial logistic regression model
 glm.os.fit <- glm(active ~ overtime + job_lvl +  engagement + interview_rating, data = training_dat_os, family = binomial)
@@ -339,7 +339,7 @@ class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
   
   * **Step 4**: Evaluate model performance.
   
-```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = 'Classification performance for binomial logistic regression and RF models using balanced (SMOTE) and imbalanced classes.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = 'Classification performance for binomial logistic regression and RF models using balanced (SMOTE) and imbalanced classes', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -362,7 +362,7 @@ ggplot2::guides(fill = guide_legend(title = "Model"))
   
   The results also show that there is likely no benefit to compromising model interpretability by using a flexible ML model like RF since our trusty binomial logistic regression model performs just as well on these data. Nevertheless, we can construct what is known as a **Variable Importance Plot** on RF output using the `varImpPlot()` function from the `randomForest` library to understand the relative importance of each predictor in the model.
   
-```{r var-imp-plot, out.width = "100%", echo = FALSE, fig.cap = 'Variable importance plot for RF model.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r var-imp-plot, out.width = "100%", echo = FALSE, fig.cap = 'Variable importance plot for Random Forest model', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Produce variable importance plat
 randomForest::varImpPlot(rf.fit, type = 2)
@@ -375,7 +375,7 @@ randomForest::varImpPlot(rf.fit, type = 2)
   
   Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions. `rpart` is an acronym for *recursive partitioning and regression trees*:
   
-```{r rpart-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE).', fig.align = 'center'}
+```{r rpart-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE)', fig.align = 'center'}
 
 # Load libraries
 library(rpart)
@@ -423,7 +423,7 @@ test_dat <- forecasting_dat %>% dplyr::filter(job == 'People Scientist' & level 
   
   Given the significant quadratic and cubic terms identified in Chapter \@ref(lme), we will fit a cubic regression model on the training data.
 
-```{r train-cube-fit, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r train-cube-fit, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote for training set', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit cubic model
 train.cube.fit <- lm(turnover_rate ~ year + month + I(month^2) + I(month^3) + remote, data = train_dat)

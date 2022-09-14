@@ -27,7 +27,7 @@ employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalyt
 
   Nonparametric tests are generally best when working with data measured on a discrete scale since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the nonparametric *Chi-square test* and *Fisher's exact test*.
   
-```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square and Fisher Exact Test Criteria for Discrete Data', fig.align = 'center'}
+```{r discrete-tests, out.width = "100%", echo = FALSE, fig.cap = 'Chi-square and Fisher exact test criteria for discrete data', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/discrete_differences_test_table.png")
 
@@ -47,7 +47,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   While there is not consensus on the minimum sample size for this test, it is important to note that the ${\chi}^2$ statistic follows a chi-square distribution *asymptotically*. This means we can only calculate accurate $p$-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small $n$-counts is illustrated in Figure \@ref(fig:chisq-dist); the chi-square distribution approaches a vertical line as $df$ drops below 5.
   
-```{r chisq-dist, out.width = "100%", echo = FALSE, fig.cap = 'Chi-Square Distributions by Degrees of Freedom (df)', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r chisq-dist, out.width = "100%", echo = FALSE, fig.cap = 'Chi-square distributions by degrees of freedom (df)', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -80,7 +80,7 @@ cont_tbl
 
   A **mosaic plot** is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced using the `mosaicplot()` function from the `graphics` library:
 
-```{r mosaic-plot, out.width = "100%", echo = FALSE, fig.cap = 'Mosaic Plot of Residuals for Overtime x Active Status', fig.align = 'center',}
+```{r mosaic-plot, out.width = "100%", echo = FALSE, fig.cap = 'Mosaic plot of residuals for overtime x active status', fig.align = 'center',}
 
 # Load library for mosaic plot
 library("graphics")
@@ -122,7 +122,7 @@ fisher.test(cont_tbl)
   
   An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \@ref(fig:contingency-tbl) illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.
 
-```{r contingency-tbl, out.width = "75%", echo = FALSE, fig.cap = '2x2 Contingency Table of Overtime for Active and Inactive Workers', fig.align = 'center'}
+```{r contingency-tbl, out.width = "75%", echo = FALSE, fig.cap = '2x2 contingency table of overtime for active and inactive workers', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/contingency_table.png")
 
@@ -147,7 +147,7 @@ psych::phi(cont_tbl)
 
   A variety of parametric and nonparametric tests are available for evaluating differences between variables measured on a continuous scale. Figure \@ref(fig:continuous-tests) provides a side-by-side of these parametric and corresponding nonparametric tests of differences.
   
-```{r continuous-tests, out.width = "100%", echo = FALSE, fig.cap = 'Parametric and Nonparametric Tests of Differences for Continuous Data', fig.align = 'center'}
+```{r continuous-tests, out.width = "100%", echo = FALSE, fig.cap = 'Parametric and nonparametric tests of differences for continuous data', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/continuous_differences_test_table.png")
 
@@ -227,7 +227,7 @@ ggpubr::ggarrange(p[[1]], p[[2]], p[[3]], p[[4]], p[[5]], p[[6]], p[[7]], p[[8]]
   
   Next, we will walk through the steps involved in performing Welch's $t$-test. Let's first visualize the distribution of data for each group using box plots:
   
-```{r comp-job-boxplots, out.width = "100%", echo = FALSE, fig.cap = 'Annual Compensation Distributions for Managers and Research Scientists', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r comp-job-boxplots, out.width = "100%", echo = FALSE, fig.cap = 'Annual compensation distributions for managers and Research Scientists', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Subset data
 data <- subset(employees, job_title %in% c('Manager', 'Research Scientist'), select = c(annual_comp, job_title))
@@ -422,7 +422,7 @@ ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$po
   
   Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an *approximately* continuous variable. There are $2^p - p - 1$ combinations of scores, where $p$ is the number of variables. For our happiness index, there are $2^4 - 4 - 1 = 11$ combinations.
 
-```{r pre-post-diff, fig.cap = "Pre/Post Differences for Treatment and Control Groups", fig.align = 'center', warning = FALSE, message = FALSE}
+```{r pre-post-diff, fig.cap = "Pre/post differences for treatment and control groups", fig.align = 'center', warning = FALSE, message = FALSE}
 
 # Load library
 library(ggpubr)
@@ -581,7 +581,7 @@ car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
   
   Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
   
-```{r comp-dist, fig.cap = "Annual Compensation Distribution by Job Satisfaction Level", fig.align = 'center', message = FALSE, warning = FALSE}
+```{r comp-dist, fig.cap = "Annual compensation distribution by job satisfaction level", fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load data viz library
 library(ggplot2)
@@ -623,7 +623,7 @@ ggpubr::ggarrange(viz_1, viz_2, viz_3, viz_4,
   
   To test whether the assumption of normality is met, we will first produce and review a **quantile-quantile (Q-Q) plot**. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. After partitioning annual compensation into groups differentiated by job satisfaction level, we can use the `ggqqplot()` function from the `ggpubr` library to build a Q-Q plot and evaluate the distribution of residuals. 
 
-```{r qq-plot, fig.cap = "Q-Q Plot of Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+```{r qq-plot, fig.cap = "Q-Q plot of annual compensation residuals", fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Generate residuals for each group
 residuals <- c(group_1 - mean(group_1), group_2 - mean(group_2), group_3 - mean(group_3), group_4 - mean(group_4))
@@ -650,7 +650,7 @@ shapiro.test(residuals)
   
   Let's first try several common data transformations and then examine the resulting Q-Q plots:
 
-```{r qq-plots-trans, fig.cap = "Q-Q Plots of Transformed Annual Compensation Residuals", fig.align = 'center', message = FALSE, warning = FALSE}
+```{r qq-plots-trans, fig.cap = "Q-Q plots of transformed annual compensation residuals", fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Build a linear model using the natural logarithm of annual comp
 ln.model <- lm(log(annual_comp) ~ job_sat, data = employees)
@@ -727,7 +727,7 @@ summary(factorial)
 
   While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. These statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \@ref(fig:two-way-factorial).
 
-```{r two-way-factorial, out.width = "100%", echo = FALSE, fig.cap = 'Relationships of Job Satisfaction and Stock Option Level with Annual Compensation', fig.align = 'center'}
+```{r two-way-factorial, out.width = "100%", echo = FALSE, fig.cap = 'Relationships of job satisfaction and stock option level with annual compensation', fig.align = 'center'}
 
 ggplot2::ggplot(combos, aes(x = job_sat, y = annual_comp, group = stock_opt_lvl)) +
 ggplot2::geom_line(aes(color = stock_opt_lvl)) +

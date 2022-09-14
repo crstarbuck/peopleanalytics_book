@@ -20,7 +20,7 @@
   
   In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. Recall from Chapter \@ref(inf-stats) that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
   
-```{r glm-rating, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r glm-rating, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load employee data
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
@@ -47,7 +47,7 @@ summary(glm.fit)
   
   To illustrate why the logistic function is necessary, let's demonstrate differences in applying linear and logistic regression models by regressing a binary outcome `active` onto `interview_rating`.
 
-```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Fit a linear model to illustrate why this should not be done with a binary outcome
 lm.fit <- lm(active ~ interview_rating, data = employees)
@@ -82,7 +82,7 @@ ggpubr::ggarrange(p_lm, p_glm, ncol = 2, nrow = 1)
   
   For example, Figure \@ref(fig:glm-ot-lvl) provides the log odds for `active` regressed onto two binary predictors: `overtime` and `job_lvl2plus`.
 
-```{r glm-ot-lvl, out.width = "100%", fig.cap = 'Logistic regression of active status onto overtime and job level 2+.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r glm-ot-lvl, out.width = "100%", fig.cap = 'Logistic regression of active status onto overtime and job level 2+', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Create dummy-coded variable for job level 2+
 employees$job_lvl2plus <- ifelse(employees$job_lvl > 1, 1, 0)
@@ -143,7 +143,7 @@ lme4::glmer(active ~ overtime + job_lvl2plus + (1 | business_travel), data = emp
   
   Let's illustrate how to implement multinomial logistic regression by determining how variables in the `employees` dataset help in classifying employees into departments. To build this model in R, we will use the `multinom` function from the `nnet` package. It is important that the nominal response variable is defined as a factor before implementing multinomial logistic regression, so we will first convert the data type of `dept` from its native character type to a factor. We also need to identify the reference department against which the probability of each of the other departments will be evaluated; we will define this using the `ref` argument within the `relevel()` function:
 
-```{r multi-nom-mdl, out.width = "100%", fig.cap = 'Multinomial logistic regression of department onto overtime and business travel.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r multi-nom-mdl, out.width = "100%", fig.cap = 'Multinomial logistic regression of department onto overtime and business travel', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(nnet)
@@ -176,7 +176,7 @@ summary(multinom.fit)
   
   To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values using $z$ scores:
   
-```{r multi-nom-p-vals, out.width = "100%", fig.cap = '$p$-values for multinomial logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r multi-nom-p-vals, out.width = "100%", fig.cap = '$p$-values for multinomial logistic regression coefficients', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Calculate z-scores
 z_scores <- summary(multinom.fit)$coefficients / summary(multinom.fit)$standard.errors
@@ -191,7 +191,7 @@ data.frame(t(round(p_values, 3)))
   
   These $p$-values indicate that those who work overtime are not significantly more likely to work in either the Research & Development or Sales departments relative to the Human Resources department. In other words, a considerable portion of employees in all three departments work overtime, so this variable is not helpful in classifying employees into their correct departments. This is evident in Figure \@ref(fig:ot-dept).
 
-```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by overtime status.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by overtime status', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize distribution of educational fields by department
 ggplot2::ggplot(employees, aes(x = overtime, fill = dept)) +
@@ -204,7 +204,7 @@ ggplot2::theme_bw()
   
   The $p$-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \@ref(fig:ed-field-dept), which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental *purity* on the basis of `ed_field` alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
   
-```{r ed-field-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by educational field.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ed-field-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by educational field', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize distribution of educational fields by department
 ggplot2::ggplot(employees, aes(x = ifelse(ed_field == 'Human Resources', 'HR', 
@@ -291,7 +291,7 @@ summary(ord.fit)
   
   Consistent with the default output from the `multinom()` function used for multinomial logistic regression, $p$-values are not provided in the standard output from the `polr()` function. However, we can calculate them for reasonably large samples by comparing the $t$-values against the standard normal distribution:
   
-```{r ord-p-vals, out.width = "100%", fig.cap = '$p$-values for ordinal logistic regression coefficients.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ord-p-vals, out.width = "100%", fig.cap = '$p$-values for ordinal logistic regression coefficients', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Store coefficients to df
 coef_df <- coef(summary(ord.fit))

@@ -70,7 +70,7 @@ $$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, $$
   
   For each value of $X$, OLS fits a model for which the squared difference between the predicted ($\hat{\beta}_0 + \hat{\beta}_1x_i$) and actual ($y_i$) values are as small as possible. Figure \@ref(fig:lm-residuals) illustrates the result of minimizing $RSS$ using OLS:
   
-```{r lm-residuals, out.width = "100%", echo = FALSE, fig.cap = 'Minimizing RSS with Ordinary Least Squares (OLS) Fit', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r lm-residuals, out.width = "100%", echo = FALSE, fig.cap = 'Minimizing RSS with Ordinary Least Squares (OLS) fit', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load library
 library(ggplot2)
@@ -337,7 +337,7 @@ summary(slm.fit)
   
   Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases $R^2$ (explained variance in YTD leads).
   
-```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple Linear Model Fit Line for y = 20.1x + 1.6', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple linear model fit line for y = 20.1x + 1.6', fig.align = 'center', message = FALSE, warning = FALSE}
 
 ggplot2::ggplot(data = data, aes(x = engagement, y = ytd_leads)) + 
 ggplot2::labs(x = "Engagement", y = "YTD Leads") +
@@ -387,7 +387,7 @@ $$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...}
   
   We can leverage the `ggpairs()` function introduced in Chapter \@ref(desc-stats) to efficiently compute bivariate correlations and visualize data distributions:
   
-```{r ggpairs-ytd-sales, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions.', fig.align = 'center'}
+```{r ggpairs-ytd-sales, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions', fig.align = 'center'}
 
 # Produce correlation matrix
 GGally::ggpairs(subset(data, select = c(ytd_sales, engagement, job_lvl, work_exp, stock_opt_lvl, job_tenure, org_tenure, mgr_tenure)))
@@ -427,7 +427,7 @@ car::vif(mlm.fit)
   
   Next, let's evaluate the linear model assumptions to validate that fitting a linear model to these data is appropriate:
   
-```{r pre-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics.', fig.align = 'center'}
+```{r pre-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics', fig.align = 'center'}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -458,7 +458,7 @@ mlm.fit <- update(mlm.fit, weights = as.numeric(w))
 
   Now we can produce a refreshed set of diagnostic plots to evaluate the impact of transforming the response variable and removing high leverage observations:
 
-```{r post-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics (post-transformation).', fig.align = 'center'}
+```{r post-mlm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Multiple linear regression model diagnostics (post-transformation)', fig.align = 'center'}
 
 # Produce 2x2 visuals for model diagnostics
 par(mfrow = c(2,2))
@@ -536,7 +536,7 @@ equatiomatic::extract_eq(mlm.fit)
   
   We can leverage the `scale()` function to standardize the predictors' units of measurement and determine which has the largest effect on `ytd_sales`:
 
-```{r mlm-scaled, out.width = "100%", echo = FALSE, fig.cap = 'Regression of YTD sales onto multiple predictors using scaled variables.', fig.align = 'center'}
+```{r mlm-scaled, out.width = "100%", echo = FALSE, fig.cap = 'Regression of YTD sales onto multiple predictors using scaled variables', fig.align = 'center'}
 
 # Scale variables and store standardized data in new data frame
 data_std = data.frame(scale(subset(data, select = (c(ytd_sales, engagement, job_lvl, stock_opt_lvl, org_tenure)))))
@@ -557,7 +557,7 @@ summary(mlm.fit.scaled)
   
   Let's examine whether `org_tenure` influences the strength of the relationship between `job_lvl` and `sqrt(ytd_sales)`. We would generally expect sales to increase as the job level of salespeople increases, and longer tenure may amplify the strength of this association. Step one is testing whether the interaction term is statistically significant, and step two is determining the nature of any observed statistical interaction. Including the interaction term in the model (`job_lvl` * `org_tenure`) will add the predictors independently *and* jointly:
 
-```{r mlm-int, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto interaction term between job level and organization tenure.', fig.align = 'center'}
+```{r mlm-int, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto interaction term between job level and organization tenure', fig.align = 'center'}
 
 # Regress YTD sales on a combination of predictors with interaction term
 mlm.fit.int <- lm(sqrt(ytd_sales) ~ job_lvl * org_tenure, data)
@@ -582,7 +582,7 @@ car::vif(mlm.fit.int)
   
   A common method of addressing collinearity in the context of interaction testing is **variable centering**, in which each value of the predictor is subtracted from its mean ($x - \bar{x}$). Unlike other transformations we have explored, centering does not impact the interpretation of model coefficients. Coefficients continue to represent the average change in the response for a one-unit change in a predictor, as the range of values for centered variables is consistent with the range for untransformed variables. However, the coefficients on centered variables may be considerably different relative to the model with untransformed variables due to the effects of high collinearity.
   
-```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term.', fig.align = 'center'}
+```{r mlm-int-cntrd, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto centered predictors and interaction term', fig.align = 'center'}
 
 # Append centered predictors to data
 data$job_lvl_cntrd <- data$job_lvl - mean(data$job_lvl)
@@ -649,7 +649,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   Let's illustrate the implementation of this approach in R by testing the following hypothesis: Job level mediates the relationship between education level and YTD sales. Stated differently, the relationship between job level and YTD sales exists because those with more education tend to have higher job levels, and those in higher job levels tend to have stronger sales performance.
   
-```{r med-step-one, out.width = "100%", echo = FALSE, fig.cap = 'Mediation Analysis (Step 1). Simple linear regression model with X predicting Y', fig.align = 'center'}
+```{r med-step-one, out.width = "100%", echo = FALSE, fig.cap = 'Mediation analysis (step 1). Simple linear regression model with X predicting Y.', fig.align = 'center'}
 
 # Regress YTD sales on a combination of centered predictors with interaction term
 med.fit.one <- lm(sqrt(ytd_sales) ~ ed_lvl, data)
@@ -659,7 +659,7 @@ summary(med.fit.one)
 
 ```  
 
-```{r med-step-two, out.width = "100%", echo = FALSE, fig.cap = 'Mediation Analysis (Step 2). Simple linear regression model with X predicting M', fig.align = 'center'}
+```{r med-step-two, out.width = "100%", echo = FALSE, fig.cap = 'Mediation analysis (step 2). Simple linear regression model with X predicting M.', fig.align = 'center'}
 
 # Regress YTD sales on a combination of centered predictors with interaction term
 med.fit.two <- lm(job_lvl ~ ed_lvl, data)
@@ -669,7 +669,7 @@ summary(med.fit.two)
 
 ```  
 
-```{r med-step-three, out.width = "100%", echo = FALSE, fig.cap = 'Mediation Analysis (Step 3). Simple linear regression model with M predicting Y', fig.align = 'center'}
+```{r med-step-three, out.width = "100%", echo = FALSE, fig.cap = 'Mediation analysis (step 3). Simple linear regression model with M predicting Y.', fig.align = 'center'}
 
 # Regress YTD sales on a combination of centered predictors with interaction term
 med.fit.three <- lm(sqrt(ytd_sales) ~ job_lvl, data)
@@ -679,7 +679,7 @@ summary(med.fit.three)
 
 ```  
 
-```{r med-step-four, out.width = "100%", echo = FALSE, fig.cap = 'Mediation Analysis (Step 4). Simple linear regression model with X and M predicting Y', fig.align = 'center'}
+```{r med-step-four, out.width = "100%", echo = FALSE, fig.cap = 'Mediation analysis (step 4). Simple linear regression model with X and M predicting Y.', fig.align = 'center'}
 
 # Regress YTD sales on a combination of centered predictors with interaction term
 med.fit.four <- lm(sqrt(ytd_sales) ~ ed_lvl + job_lvl, data)
