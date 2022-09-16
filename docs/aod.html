@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-13" />
+<meta name="date" content="2022-09-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -242,8 +242,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="data-prep.html#data-extraction" id="toc-data-extraction"><span class="toc-section-number">6.1</span> Data Extraction</a>
 <ul>
 <li><a href="data-prep.html#data-architecture" id="toc-data-architecture"><span class="toc-section-number">6.1.1</span> Data Architecture</a></li>
-<li><a href="data-prep.html#database-normalization" id="toc-database-normalization"><span class="toc-section-number">6.1.2</span> Database Normalization</a></li>
-<li><a href="data-prep.html#modern-data-infrastructure" id="toc-modern-data-infrastructure"><span class="toc-section-number">6.1.3</span> Modern Data Infrastructure</a></li>
 </ul></li>
 <li><a href="data-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a>
 <ul>
@@ -469,9 +467,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">9.2</span> Differences in Discrete Data</h2>
 <p>Nonparametric tests are generally best when working with data measured on a discrete scale since these data do not come from normally distributed populations. The two most commonly used tests to analyze variables measured on a discrete scale are the nonparametric <em>Chi-square test</em> and <em>Fisher’s exact test</em>.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:discrete-tests"></span>
-<img src="graphics/discrete_differences_test_table.png" alt="Chi-Square and Fisher Exact Test Criteria for Discrete Data" width="100%" />
+<img src="graphics/discrete_differences_test_table.png" alt="Chi-square and Fisher exact test criteria for discrete data" width="100%" />
 <p class="caption">
-Figure 9.1: Chi-Square and Fisher Exact Test Criteria for Discrete Data
+Figure 9.1: Chi-square and Fisher exact test criteria for discrete data
 </p>
 </div>
 <p>Both tests organize data within 2x2 <strong>contingency tables</strong> which enables us to understand interrelations between variables.</p>
@@ -482,9 +480,9 @@ Figure 9.1: Chi-Square and Fisher Exact Test Criteria for Discrete Data
 <p><span class="math inline">\(H_0\)</span> states that each variable is independent of one another (i.e., there is no relationship). In addition to the <span class="math inline">\({\chi}^2\)</span> test statistic, <span class="math inline">\(df\)</span> for the contingency table, defined by <span class="math inline">\(df = (rows - 1) * (columns - 1)\)</span>, is required to determine whether we reject or fail to reject <span class="math inline">\(H_0\)</span>.</p>
 <p>While there is not consensus on the minimum sample size for this test, it is important to note that the <span class="math inline">\({\chi}^2\)</span> statistic follows a chi-square distribution <em>asymptotically</em>. This means we can only calculate accurate <span class="math inline">\(p\)</span>-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small <span class="math inline">\(n\)</span>-counts is illustrated in Figure <a href="aod.html#fig:chisq-dist">9.2</a>; the chi-square distribution approaches a vertical line as <span class="math inline">\(df\)</span> drops below 5.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:chisq-dist"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/chisq-dist-1.png" alt="Chi-Square Distributions by Degrees of Freedom (df)" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/chisq-dist-1.png" alt="Chi-square distributions by degrees of freedom (df)" width="100%" />
 <p class="caption">
-Figure 9.2: Chi-Square Distributions by Degrees of Freedom (df)
+Figure 9.2: Chi-square distributions by degrees of freedom (df)
 </p>
 </div>
 <p>We will demonstrate how to perform a chi-square test of independence by evaluating whether exit rates are independent of whether an employee works overtime. Let’s first construct a 2x2 contingency table using the <code>table()</code> function:</p>
@@ -497,9 +495,9 @@ Figure 9.2: Chi-Square Distributions by Degrees of Freedom (df)
 ##   Yes 944 289</code></pre>
 <p>A <strong>mosaic plot</strong> is a great way to visualize the delta between expected and observed frequencies for each cell. This can be produced using the <code>mosaicplot()</code> function from the <code>graphics</code> library:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:mosaic-plot"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/mosaic-plot-1.png" alt="Mosaic Plot of Residuals for Overtime x Active Status" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/mosaic-plot-1.png" alt="Mosaic plot of residuals for overtime x active status" width="100%" />
 <p class="caption">
-Figure 9.3: Mosaic Plot of Residuals for Overtime x Active Status
+Figure 9.3: Mosaic plot of residuals for overtime x active status
 </p>
 </div>
 <p>In Figure <a href="aod.html#fig:mosaic-plot">9.3</a>, blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.</p>
@@ -532,9 +530,9 @@ Figure 9.3: Mosaic Plot of Residuals for Overtime x Active Status
 <p><span class="math display">\[OR = \frac{a*d}{b*c}\]</span></p>
 <p>An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure <a href="aod.html#fig:contingency-tbl">9.4</a> illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:contingency-tbl"></span>
-<img src="graphics/contingency_table.png" alt="2x2 Contingency Table of Overtime for Active and Inactive Workers" width="75%" />
+<img src="graphics/contingency_table.png" alt="2x2 contingency table of overtime for active and inactive workers" width="75%" />
 <p class="caption">
-Figure 9.4: 2x2 Contingency Table of Overtime for Active and Inactive Workers
+Figure 9.4: 2x2 contingency table of overtime for active and inactive workers
 </p>
 </div>
 <p>Since the 95% <span class="math inline">\(CI\)</span> for the odds ratio does not include 1, we reject the null hypothesis and conclude that exit rates are related to working overtime; this is consistent with results from the chi-square test of independence. Since overtime was indicated far more often for inactive workers than for active workers, it is no surprise that the denominator of our ratio is larger than the numerator (i.e., <span class="math inline">\(OR\)</span> &lt; 1).</p>
@@ -549,9 +547,9 @@ Figure 9.4: 2x2 Contingency Table of Overtime for Active and Inactive Workers
 <h2><span class="header-section-number">9.3</span> Differences in Continuous Data</h2>
 <p>A variety of parametric and nonparametric tests are available for evaluating differences between variables measured on a continuous scale. Figure <a href="aod.html#fig:continuous-tests">9.5</a> provides a side-by-side of these parametric and corresponding nonparametric tests of differences.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:continuous-tests"></span>
-<img src="graphics/continuous_differences_test_table.png" alt="Parametric and Nonparametric Tests of Differences for Continuous Data" width="100%" />
+<img src="graphics/continuous_differences_test_table.png" alt="Parametric and nonparametric tests of differences for continuous data" width="100%" />
 <p class="caption">
-Figure 9.5: Parametric and Nonparametric Tests of Differences for Continuous Data
+Figure 9.5: Parametric and nonparametric tests of differences for continuous data
 </p>
 </div>
 <p><strong>Independent Samples </strong><span class="math inline">\(\textbf t\)</span><strong>-Test</strong></p>
@@ -566,9 +564,9 @@ Figure 9.6: Density plots comparing distributions with a mean of 100 (blue) and 
 </div>
 <p>Next, we will walk through the steps involved in performing Welch’s <span class="math inline">\(t\)</span>-test. Let’s first visualize the distribution of data for each group using box plots:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:comp-job-boxplots"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/comp-job-boxplots-1.png" alt="Annual Compensation Distributions for Managers and Research Scientists" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/comp-job-boxplots-1.png" alt="Annual compensation distributions for managers and Research Scientists" width="100%" />
 <p class="caption">
-Figure 9.7: Annual Compensation Distributions for Managers and Research Scientists
+Figure 9.7: Annual compensation distributions for managers and Research Scientists
 </p>
 </div>
 <p>While the median – rather than the mean which is being evaluated with Welch’s <span class="math inline">\(t\)</span>-test – is shown in these box plots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.</p>
@@ -763,9 +761,9 @@ Figure 9.7: Annual Compensation Distributions for Managers and Research Scientis
 <span id="cb302-24"><a href="aod.html#cb302-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Display histograms side-by-side</span></span>
 <span id="cb302-25"><a href="aod.html#cb302-25" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p_treat, p_ctrl, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pre-post-diff"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/pre-post-diff-1.png" alt="Pre/Post Differences for Treatment and Control Groups" width="672" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/pre-post-diff-1.png" alt="Pre/post differences for treatment and control groups" width="672" />
 <p class="caption">
-Figure 9.8: Pre/Post Differences for Treatment and Control Groups
+Figure 9.8: Pre/post differences for treatment and control groups
 </p>
 </div>
 <p>Based on a visual inspection, the distributions of differences appear to be roughly normal. This should not be surprising given random values were sampled from normal distributions to derive artificial post-intervention happiness indices.</p>
@@ -920,9 +918,9 @@ Figure 9.8: Pre/Post Differences for Treatment and Control Groups
 <span id="cb321-32"><a href="aod.html#cb321-32" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(viz_1, viz_2, viz_3, viz_4,</span>
 <span id="cb321-33"><a href="aod.html#cb321-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:comp-dist"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/comp-dist-1.png" alt="Annual Compensation Distribution by Job Satisfaction Level" width="672" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/comp-dist-1.png" alt="Annual compensation distribution by job satisfaction level" width="672" />
 <p class="caption">
-Figure 9.9: Annual Compensation Distribution by Job Satisfaction Level
+Figure 9.9: Annual compensation distribution by job satisfaction level
 </p>
 </div>
 <p>As we can see, annual compensation data are not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.</p>
@@ -933,9 +931,9 @@ Figure 9.9: Annual Compensation Distribution by Job Satisfaction Level
 <span id="cb322-4"><a href="aod.html#cb322-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a Q-Q plot of residuals</span></span>
 <span id="cb322-5"><a href="aod.html#cb322-5" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(residuals)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:qq-plot"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plot-1.png" alt="Q-Q Plot of Annual Compensation Residuals" width="672" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plot-1.png" alt="Q-Q plot of annual compensation residuals" width="672" />
 <p class="caption">
-Figure 9.10: Q-Q Plot of Annual Compensation Residuals
+Figure 9.10: Q-Q plot of annual compensation residuals
 </p>
 </div>
 <p>To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure <a href="aod.html#fig:qq-plot">9.10</a>, there is a clear departure from normality at both ends of the theoretical range.</p>
@@ -968,9 +966,9 @@ Figure 9.10: Q-Q Plot of Annual Compensation Residuals
 <span id="cb325-16"><a href="aod.html#cb325-16" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(ln.viz, log10.viz, sqrt.viz,</span>
 <span id="cb325-17"><a href="aod.html#cb325-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:qq-plots-trans"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plots-trans-1.png" alt="Q-Q Plots of Transformed Annual Compensation Residuals" width="672" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plots-trans-1.png" alt="Q-Q plots of transformed annual compensation residuals" width="672" />
 <p class="caption">
-Figure 9.11: Q-Q Plots of Transformed Annual Compensation Residuals
+Figure 9.11: Q-Q plots of transformed annual compensation residuals
 </p>
 </div>
 <p>Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA is demonstrated below. Performing ANOVA involves the <code>aov()</code> function along with the <code>summary()</code> function to display model output:</p>
@@ -1039,9 +1037,9 @@ Figure 9.11: Q-Q Plots of Transformed Annual Compensation Residuals
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. These statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure <a href="aod.html#fig:two-way-factorial">9.12</a>.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:two-way-factorial"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/two-way-factorial-1.png" alt="Relationships of Job Satisfaction and Stock Option Level with Annual Compensation" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/two-way-factorial-1.png" alt="Relationships of job satisfaction and stock option level with annual compensation" width="100%" />
 <p class="caption">
-Figure 9.12: Relationships of Job Satisfaction and Stock Option Level with Annual Compensation
+Figure 9.12: Relationships of job satisfaction and stock option level with annual compensation
 </p>
 </div>
 <p>As we can see, there is a strong negative relationship between job satisfaction and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.</p>

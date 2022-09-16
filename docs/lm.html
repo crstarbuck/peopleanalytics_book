@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-13" />
+<meta name="date" content="2022-09-16" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -242,8 +242,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="data-prep.html#data-extraction" id="toc-data-extraction"><span class="toc-section-number">6.1</span> Data Extraction</a>
 <ul>
 <li><a href="data-prep.html#data-architecture" id="toc-data-architecture"><span class="toc-section-number">6.1.1</span> Data Architecture</a></li>
-<li><a href="data-prep.html#database-normalization" id="toc-database-normalization"><span class="toc-section-number">6.1.2</span> Database Normalization</a></li>
-<li><a href="data-prep.html#modern-data-infrastructure" id="toc-modern-data-infrastructure"><span class="toc-section-number">6.1.3</span> Modern Data Infrastructure</a></li>
 </ul></li>
 <li><a href="data-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a>
 <ul>
@@ -495,9 +493,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><span class="math display">\[RSS = (y_1 - \hat{\beta}_0 - \hat{\beta}_1x_1)^2 + (y_2 - \hat{\beta}_0 - \hat{\beta}_1x_2)^2 + {...} + (y_n - \hat{\beta}_0 - \hat{\beta}_1x_n)^2\]</span></p>
 <p>For each value of <span class="math inline">\(X\)</span>, OLS fits a model for which the squared difference between the predicted (<span class="math inline">\(\hat{\beta}_0 + \hat{\beta}_1x_i\)</span>) and actual (<span class="math inline">\(y_i\)</span>) values are as small as possible. Figure <a href="lm.html#fig:lm-residuals">10.1</a> illustrates the result of minimizing <span class="math inline">\(RSS\)</span> using OLS:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:lm-residuals"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/lm-residuals-1.png" alt="Minimizing RSS with Ordinary Least Squares (OLS) Fit" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/lm-residuals-1.png" alt="Minimizing RSS with Ordinary Least Squares (OLS) fit" width="100%" />
 <p class="caption">
-Figure 10.1: Minimizing RSS with Ordinary Least Squares (OLS) Fit
+Figure 10.1: Minimizing RSS with Ordinary Least Squares (OLS) fit
 </p>
 </div>
 <p>The minimizers for the least squares coefficient estimates are defined by:</p>
@@ -683,9 +681,9 @@ Figure 10.5: Distribution of model residuals.
 <p>The <span class="math inline">\(R^2\)</span> value indicates that 8.9% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.</p>
 <p>Figure <a href="lm.html#fig:slm-fit">10.6</a> illustrates how the regression equation for this simple linear model (<span class="math inline">\(y\)</span> = 20.1<span class="math inline">\(x\)</span> + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases <span class="math inline">\(R^2\)</span> (explained variance in YTD leads).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:slm-fit"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/slm-fit-1.png" alt="Simple Linear Model Fit Line for y = 20.1x + 1.6" width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/slm-fit-1.png" alt="Simple linear model fit line for y = 20.1x + 1.6" width="100%" />
 <p class="caption">
-Figure 10.6: Simple Linear Model Fit Line for y = 20.1x + 1.6
+Figure 10.6: Simple linear model fit line for y = 20.1x + 1.6
 </p>
 </div>
 <p>We can use the <code>extract_eq()</code> function from the <code>equatiomatic</code> library to easily build a properly formatted LaTex regression equation from the model object:</p>
@@ -717,9 +715,9 @@ Figure 10.6: Simple Linear Model Fit Line for y = 20.1x + 1.6
 <p>Let’s demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from <code>data</code> to simplify the model and explanation. In Chapter <a href="pred-mod.html#pred-mod">13</a>, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.</p>
 <p>We can leverage the <code>ggpairs()</code> function introduced in Chapter <a href="desc-stats.html#desc-stats">7</a> to efficiently compute bivariate correlations and visualize data distributions:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-ytd-sales"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-ytd-sales-1.png" alt="GGpairs bivariate correlations and data distributions." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-ytd-sales-1.png" alt="GGpairs bivariate correlations and data distributions" width="100%" />
 <p class="caption">
-Figure 10.7: GGpairs bivariate correlations and data distributions.
+Figure 10.7: GGpairs bivariate correlations and data distributions
 </p>
 </div>
 <p>Based on the correlations, <code>org_tenure</code> is highly correlated with both <code>job_tenure</code>, <code>mgr_tenure</code> and <code>work_exp</code>. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since <code>org_tenure</code> has the strongest relationship with our response, <code>ytd_sales</code>, we will drop <code>job_tenure</code>, <code>mgr_tenure</code>, and <code>work_exp</code>.</p>
@@ -740,9 +738,9 @@ Figure 10.7: GGpairs bivariate correlations and data distributions.
 <p>Based on the output, <span class="math inline">\(VIF\)</span> &lt; 5 for each predictor, which indicates that multicollinearity is not an issue.</p>
 <p>Next, let’s evaluate the linear model assumptions to validate that fitting a linear model to these data is appropriate:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pre-mlm-diagnostics"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/pre-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/pre-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics" width="100%" />
 <p class="caption">
-Figure 10.8: Multiple linear regression model diagnostics.
+Figure 10.8: Multiple linear regression model diagnostics
 </p>
 </div>
 <p>Based on these visuals, there are obvious violations of linear model assumptions that need to first be addressed.</p>
@@ -755,9 +753,9 @@ Figure 10.8: Multiple linear regression model diagnostics.
 <span id="cb353-3"><a href="lm.html#cb353-3" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">update</span>(mlm.fit, <span class="at">weights =</span> <span class="fu">as.numeric</span>(w))</span></code></pre></div>
 <p>Now we can produce a refreshed set of diagnostic plots to evaluate the impact of transforming the response variable and removing high leverage observations:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:post-mlm-diagnostics"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/post-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics (post-transformation)." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/post-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics (post-transformation)" width="100%" />
 <p class="caption">
-Figure 10.9: Multiple linear regression model diagnostics (post-transformation).
+Figure 10.9: Multiple linear regression model diagnostics (post-transformation)
 </p>
 </div>
 <p>There is a clear improvement towards satisifying linear model assumptions.</p>
