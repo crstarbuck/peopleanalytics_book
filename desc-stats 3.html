@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>7 Descriptive Statistics | The Fundamentals of People Analytics: With Applications in R</title>
+  <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="7 Descriptive Statistics | The Fundamentals of People Analytics: With Applications in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="github-repo" content="crstarbuck/peopleanalytics-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="7 Descriptive Statistics | The Fundamentals of People Analytics: With Applications in R" />
+  
+  <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  
+
+<meta name="author" content="Craig Starbuck" />
+
+
+<meta name="date" content="2022-09-13" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="data-prep.html"/>
+<link rel="next" href="inf-stats.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">The Fundamentals of People Analytics: With Applications in R</a></li>
+
+<li class="divider"></li>
+<li><a href="dedication.html#dedication" id="toc-dedication">Dedication</a></li>
+<li><a href="foreword.html#foreword" id="toc-foreword">Foreword</a></li>
+<li><a href="preface.html#preface" id="toc-preface">Preface</a></li>
+<li><a href="getting-started.html#getting-started" id="toc-getting-started"><span class="toc-section-number">1</span> Getting Started</a>
+<ul>
+<li><a href="getting-started.html#guiding-principles" id="toc-guiding-principles"><span class="toc-section-number">1.1</span> Guiding Principles</a>
+<ul>
+<li><a href="getting-started.html#pro-employee-thinking" id="toc-pro-employee-thinking"><span class="toc-section-number">1.1.1</span> Pro-Employee Thinking</a></li>
+<li><a href="getting-started.html#quality" id="toc-quality"><span class="toc-section-number">1.1.2</span> Quality</a></li>
+<li><a href="getting-started.html#prioritization" id="toc-prioritization"><span class="toc-section-number">1.1.3</span> Prioritization</a></li>
+</ul></li>
+<li><a href="getting-started.html#tooling" id="toc-tooling"><span class="toc-section-number">1.2</span> Tooling</a></li>
+<li><a href="getting-started.html#data-sets" id="toc-data-sets"><span class="toc-section-number">1.3</span> Data Sets</a>
+<ul>
+<li><a href="getting-started.html#employees" id="toc-employees"><span class="toc-section-number">1.3.1</span> Employees</a></li>
+<li><a href="getting-started.html#turnover-trends" id="toc-turnover-trends"><span class="toc-section-number">1.3.2</span> Turnover Trends</a></li>
+<li><a href="getting-started.html#survey-responses" id="toc-survey-responses"><span class="toc-section-number">1.3.3</span> Survey Responses</a></li>
+</ul></li>
+<li><a href="getting-started.html#d-framework" id="toc-d-framework"><span class="toc-section-number">1.4</span> 4D Framework</a></li>
+</ul></li>
+<li><a href="r-intro.html#r-intro" id="toc-r-intro"><span class="toc-section-number">2</span> Introduction to R</a>
+<ul>
+<li><a href="r-intro.html#getting-started-1" id="toc-getting-started-1"><span class="toc-section-number">2.1</span> Getting Started</a>
+<ul>
+<li><a href="r-intro.html#installing-r" id="toc-installing-r"><span class="toc-section-number">2.1.1</span> Installing R</a></li>
+<li><a href="r-intro.html#installing-r-studio" id="toc-installing-r-studio"><span class="toc-section-number">2.1.2</span> Installing R Studio</a></li>
+<li><a href="r-intro.html#installing-packages" id="toc-installing-packages"><span class="toc-section-number">2.1.3</span> Installing Packages</a></li>
+<li><a href="r-intro.html#case-sensitivity" id="toc-case-sensitivity"><span class="toc-section-number">2.1.4</span> Case Sensitivity</a></li>
+<li><a href="r-intro.html#help" id="toc-help"><span class="toc-section-number">2.1.5</span> Help</a></li>
+<li><a href="r-intro.html#objects" id="toc-objects"><span class="toc-section-number">2.1.6</span> Objects</a></li>
+<li><a href="r-intro.html#comments" id="toc-comments"><span class="toc-section-number">2.1.7</span> Comments</a></li>
+<li><a href="r-intro.html#testing-early-and-often" id="toc-testing-early-and-often"><span class="toc-section-number">2.1.8</span> Testing Early and Often</a></li>
+</ul></li>
+<li><a href="r-intro.html#vectors" id="toc-vectors"><span class="toc-section-number">2.2</span> Vectors</a></li>
+<li><a href="r-intro.html#matrices" id="toc-matrices"><span class="toc-section-number">2.3</span> Matrices</a></li>
+<li><a href="r-intro.html#factors" id="toc-factors"><span class="toc-section-number">2.4</span> Factors</a></li>
+<li><a href="r-intro.html#data-frames" id="toc-data-frames"><span class="toc-section-number">2.5</span> Data Frames</a></li>
+<li><a href="r-intro.html#lists" id="toc-lists"><span class="toc-section-number">2.6</span> Lists</a></li>
+<li><a href="r-intro.html#loops" id="toc-loops"><span class="toc-section-number">2.7</span> Loops</a></li>
+<li><a href="r-intro.html#user-defined-functions-udfs" id="toc-user-defined-functions-udfs"><span class="toc-section-number">2.8</span> User-Defined Functions (UDFs)</a></li>
+<li><a href="r-intro.html#graphics" id="toc-graphics"><span class="toc-section-number">2.9</span> Graphics</a></li>
+<li><a href="r-intro.html#review-questions" id="toc-review-questions"><span class="toc-section-number">2.10</span> Review Questions</a></li>
+</ul></li>
+<li><a href="sql-intro.html#sql-intro" id="toc-sql-intro"><span class="toc-section-number">3</span> Introduction to SQL</a>
+<ul>
+<li><a href="sql-intro.html#basics" id="toc-basics"><span class="toc-section-number">3.1</span> Basics</a></li>
+<li><a href="sql-intro.html#aggregate-functions" id="toc-aggregate-functions"><span class="toc-section-number">3.2</span> Aggregate Functions</a></li>
+<li><a href="sql-intro.html#joins" id="toc-joins"><span class="toc-section-number">3.3</span> Joins</a></li>
+<li><a href="sql-intro.html#subqueries" id="toc-subqueries"><span class="toc-section-number">3.4</span> Subqueries</a></li>
+<li><a href="sql-intro.html#virtual-tables" id="toc-virtual-tables"><span class="toc-section-number">3.5</span> Virtual Tables</a></li>
+<li><a href="sql-intro.html#window-functions" id="toc-window-functions"><span class="toc-section-number">3.6</span> Window Functions</a></li>
+<li><a href="sql-intro.html#common-table-expressions-ctes" id="toc-common-table-expressions-ctes"><span class="toc-section-number">3.7</span> Common Table Expressions (CTEs)</a></li>
+<li><a href="sql-intro.html#review-questions-1" id="toc-review-questions-1"><span class="toc-section-number">3.8</span> Review Questions</a></li>
+</ul></li>
+<li><a href="research.html#research" id="toc-research"><span class="toc-section-number">4</span> Research Design</a>
+<ul>
+<li><a href="research.html#research-questions" id="toc-research-questions"><span class="toc-section-number">4.1</span> Research Questions</a></li>
+<li><a href="research.html#research-hypotheses" id="toc-research-hypotheses"><span class="toc-section-number">4.2</span> Research Hypotheses</a></li>
+<li><a href="research.html#internal-and-external-validity" id="toc-internal-and-external-validity"><span class="toc-section-number">4.3</span> Internal and External Validity</a></li>
+<li><a href="research.html#research-methods" id="toc-research-methods"><span class="toc-section-number">4.4</span> Research Methods</a></li>
+<li><a href="research.html#research-designs" id="toc-research-designs"><span class="toc-section-number">4.5</span> Research Designs</a></li>
+<li><a href="research.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measure-sampl" id="toc-measure-sampl"><span class="toc-section-number">5</span> Measurement &amp; Sampling</a>
+<ul>
+<li><a href="measure-sampl.html#variable-types" id="toc-variable-types"><span class="toc-section-number">5.1</span> Variable Types</a>
+<ul>
+<li><a href="measure-sampl.html#independent-variables-iv" id="toc-independent-variables-iv"><span class="toc-section-number">5.1.1</span> Independent Variables (IV)</a></li>
+<li><a href="measure-sampl.html#dependent-variables-dv" id="toc-dependent-variables-dv"><span class="toc-section-number">5.1.2</span> Dependent Variables (DV)</a></li>
+<li><a href="measure-sampl.html#control-variables-cv" id="toc-control-variables-cv"><span class="toc-section-number">5.1.3</span> Control Variables (CV)</a></li>
+<li><a href="measure-sampl.html#moderating-variables" id="toc-moderating-variables"><span class="toc-section-number">5.1.4</span> Moderating Variables</a></li>
+<li><a href="measure-sampl.html#mediating-variables" id="toc-mediating-variables"><span class="toc-section-number">5.1.5</span> Mediating Variables</a></li>
+<li><a href="measure-sampl.html#endogenous-vs.-exogenous-variables" id="toc-endogenous-vs.-exogenous-variables"><span class="toc-section-number">5.1.6</span> Endogenous vs. Exogenous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measurement-scales" id="toc-measurement-scales"><span class="toc-section-number">5.2</span> Measurement Scales</a>
+<ul>
+<li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">5.2.1</span> Discrete Variables</a></li>
+<li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">5.2.2</span> Continuous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-methods" id="toc-sampling-methods"><span class="toc-section-number">5.3</span> Sampling Methods</a>
+<ul>
+<li><a href="measure-sampl.html#probability-sampling" id="toc-probability-sampling"><span class="toc-section-number">5.3.1</span> Probability Sampling</a></li>
+<li><a href="measure-sampl.html#non-probability-sampling" id="toc-non-probability-sampling"><span class="toc-section-number">5.3.2</span> Non-Probability Sampling</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">5.4</span> Sampling &amp; Nonsampling Error</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-error" id="toc-sampling-error"><span class="toc-section-number">5.4.1</span> Sampling Error</a></li>
+<li><a href="measure-sampl.html#nonsampling-error" id="toc-nonsampling-error"><span class="toc-section-number">5.4.2</span> Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#scale-reliability-and-validity" id="toc-scale-reliability-and-validity"><span class="toc-section-number">5.5</span> Scale Reliability and Validity</a>
+<ul>
+<li><a href="measure-sampl.html#reliability" id="toc-reliability"><span class="toc-section-number">5.5.1</span> Reliability</a></li>
+<li><a href="measure-sampl.html#validity" id="toc-validity"><span class="toc-section-number">5.5.2</span> Validity</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-3" id="toc-review-questions-3"><span class="toc-section-number">5.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-prep" id="toc-data-prep"><span class="toc-section-number">6</span> Data Preparation</a>
+<ul>
+<li><a href="data-prep.html#data-extraction" id="toc-data-extraction"><span class="toc-section-number">6.1</span> Data Extraction</a>
+<ul>
+<li><a href="data-prep.html#data-architecture" id="toc-data-architecture"><span class="toc-section-number">6.1.1</span> Data Architecture</a></li>
+<li><a href="data-prep.html#database-normalization" id="toc-database-normalization"><span class="toc-section-number">6.1.2</span> Database Normalization</a></li>
+<li><a href="data-prep.html#modern-data-infrastructure" id="toc-modern-data-infrastructure"><span class="toc-section-number">6.1.3</span> Modern Data Infrastructure</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a>
+<ul>
+<li><a href="data-prep.html#missingness" id="toc-missingness"><span class="toc-section-number">6.2.1</span> Missingness</a></li>
+<li><a href="data-prep.html#outliers" id="toc-outliers"><span class="toc-section-number">6.2.2</span> Outliers</a></li>
+<li><a href="data-prep.html#low-variability" id="toc-low-variability"><span class="toc-section-number">6.2.3</span> Low Variability</a></li>
+<li><a href="data-prep.html#inconsistent-categories" id="toc-inconsistent-categories"><span class="toc-section-number">6.2.4</span> Inconsistent Categories</a></li>
+<li><a href="data-prep.html#data-binning" id="toc-data-binning"><span class="toc-section-number">6.2.5</span> Data Binning</a></li>
+</ul></li>
+<li><a href="data-prep.html#one-hot-encoding" id="toc-one-hot-encoding"><span class="toc-section-number">6.3</span> One-Hot Encoding</a></li>
+<li><a href="data-prep.html#feature-engineering" id="toc-feature-engineering"><span class="toc-section-number">6.4</span> Feature Engineering</a></li>
+<li><a href="data-prep.html#review-questions-4" id="toc-review-questions-4"><span class="toc-section-number">6.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="desc-stats.html#desc-stats" id="toc-desc-stats"><span class="toc-section-number">7</span> Descriptive Statistics</a>
+<ul>
+<li><a href="desc-stats.html#univariate-analysis" id="toc-univariate-analysis"><span class="toc-section-number">7.1</span> Univariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#measures-of-central-tendency" id="toc-measures-of-central-tendency"><span class="toc-section-number">7.1.1</span> Measures of Central Tendency</a></li>
+<li><a href="desc-stats.html#measures-of-spread" id="toc-measures-of-spread"><span class="toc-section-number">7.1.2</span> Measures of Spread</a></li>
+</ul></li>
+<li><a href="desc-stats.html#bivariate-analysis" id="toc-bivariate-analysis"><span class="toc-section-number">7.2</span> Bivariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#covariance" id="toc-covariance"><span class="toc-section-number">7.2.1</span> Covariance</a></li>
+<li><a href="desc-stats.html#correlation" id="toc-correlation"><span class="toc-section-number">7.2.2</span> Correlation</a></li>
+</ul></li>
+<li><a href="desc-stats.html#review-questions-5" id="toc-review-questions-5"><span class="toc-section-number">7.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="inf-stats.html#inf-stats" id="toc-inf-stats"><span class="toc-section-number">8</span> Statistical Inference</a>
+<ul>
+<li><a href="inf-stats.html#introduction-to-probability" id="toc-introduction-to-probability"><span class="toc-section-number">8.1</span> Introduction to Probability</a>
+<ul>
+<li><a href="inf-stats.html#probability-distributions" id="toc-probability-distributions"><span class="toc-section-number">8.1.1</span> Probability Distributions</a></li>
+<li><a href="inf-stats.html#conditional-probability" id="toc-conditional-probability"><span class="toc-section-number">8.1.2</span> Conditional Probability</a></li>
+</ul></li>
+<li><a href="inf-stats.html#central-limit-theorem" id="toc-central-limit-theorem"><span class="toc-section-number">8.2</span> Central Limit Theorem</a></li>
+<li><a href="inf-stats.html#confidence-intervals" id="toc-confidence-intervals"><span class="toc-section-number">8.3</span> Confidence Intervals</a>
+<ul>
+<li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
+<li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
+<li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
+<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
+<li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
+</ul></li>
+<li><a href="inf-stats.html#review-questions-6" id="toc-review-questions-6"><span class="toc-section-number">8.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="aod.html#aod" id="toc-aod"><span class="toc-section-number">9</span> Analysis of Differences</a>
+<ul>
+<li><a href="aod.html#parametric-vs.-nonparametric-tests" id="toc-parametric-vs.-nonparametric-tests"><span class="toc-section-number">9.1</span> Parametric vs. Nonparametric Tests</a></li>
+<li><a href="aod.html#differences-in-discrete-data" id="toc-differences-in-discrete-data"><span class="toc-section-number">9.2</span> Differences in Discrete Data</a></li>
+<li><a href="aod.html#differences-in-continuous-data" id="toc-differences-in-continuous-data"><span class="toc-section-number">9.3</span> Differences in Continuous Data</a></li>
+<li><a href="aod.html#review-questions-7" id="toc-review-questions-7"><span class="toc-section-number">9.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lm.html#lm" id="toc-lm"><span class="toc-section-number">10</span> Linear Regression</a>
+<ul>
+<li><a href="lm.html#sample-size" id="toc-sample-size"><span class="toc-section-number">10.1</span> Sample Size</a></li>
+<li><a href="lm.html#simple-linear-regression" id="toc-simple-linear-regression"><span class="toc-section-number">10.2</span> Simple Linear Regression</a></li>
+<li><a href="lm.html#multiple-linear-regression" id="toc-multiple-linear-regression"><span class="toc-section-number">10.3</span> Multiple Linear Regression</a></li>
+<li><a href="lm.html#moderation" id="toc-moderation"><span class="toc-section-number">10.4</span> Moderation</a></li>
+<li><a href="lm.html#mediation" id="toc-mediation"><span class="toc-section-number">10.5</span> Mediation</a></li>
+<li><a href="lm.html#review-questions-8" id="toc-review-questions-8"><span class="toc-section-number">10.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lme.html#lme" id="toc-lme"><span class="toc-section-number">11</span> Linear Model Extensions</a>
+<ul>
+<li><a href="lme.html#model-comparisons" id="toc-model-comparisons"><span class="toc-section-number">11.1</span> Model Comparisons</a></li>
+<li><a href="lme.html#hierarchical-regression" id="toc-hierarchical-regression"><span class="toc-section-number">11.2</span> Hierarchical Regression</a></li>
+<li><a href="lme.html#multilevel-models" id="toc-multilevel-models"><span class="toc-section-number">11.3</span> Multilevel Models</a></li>
+<li><a href="lme.html#polynomial-regression" id="toc-polynomial-regression"><span class="toc-section-number">11.4</span> Polynomial Regression</a></li>
+<li><a href="lme.html#review-questions-9" id="toc-review-questions-9"><span class="toc-section-number">11.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="log.html#log" id="toc-log"><span class="toc-section-number">12</span> Logistic Regression</a>
+<ul>
+<li><a href="log.html#binomial-logistic-regression" id="toc-binomial-logistic-regression"><span class="toc-section-number">12.1</span> Binomial Logistic Regression</a></li>
+<li><a href="log.html#multinomial-logistic-regression" id="toc-multinomial-logistic-regression"><span class="toc-section-number">12.2</span> Multinomial Logistic Regression</a></li>
+<li><a href="log.html#ordinal-logistic-regression" id="toc-ordinal-logistic-regression"><span class="toc-section-number">12.3</span> Ordinal Logistic Regression</a></li>
+<li><a href="log.html#review-questions-10" id="toc-review-questions-10"><span class="toc-section-number">12.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="pred-mod.html#pred-mod" id="toc-pred-mod"><span class="toc-section-number">13</span> Predictive Modeling</a>
+<ul>
+<li><a href="pred-mod.html#cross-validation" id="toc-cross-validation"><span class="toc-section-number">13.1</span> Cross-Validation</a></li>
+<li><a href="pred-mod.html#model-performance" id="toc-model-performance"><span class="toc-section-number">13.2</span> Model Performance</a></li>
+<li><a href="pred-mod.html#bias-variance-tradeoff" id="toc-bias-variance-tradeoff"><span class="toc-section-number">13.3</span> Bias-Variance Tradeoff</a></li>
+<li><a href="pred-mod.html#tree-based-algorithms" id="toc-tree-based-algorithms"><span class="toc-section-number">13.4</span> Tree-Based Algorithms</a></li>
+<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">13.5</span> Predictive Modeling</a></li>
+<li><a href="pred-mod.html#review-questions-11" id="toc-review-questions-11"><span class="toc-section-number">13.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#unsup-lrn" id="toc-unsup-lrn"><span class="toc-section-number">14</span> Unsupervised Learning</a>
+<ul>
+<li><a href="unsup-lrn.html#factor-analysis" id="toc-factor-analysis"><span class="toc-section-number">14.1</span> Factor Analysis</a>
+<ul>
+<li><a href="unsup-lrn.html#exploratory-factor-analysis-efa" id="toc-exploratory-factor-analysis-efa"><span class="toc-section-number">14.1.1</span> Exploratory Factor Analysis (EFA)</a></li>
+<li><a href="unsup-lrn.html#confirmatory-factor-analysis-cfa" id="toc-confirmatory-factor-analysis-cfa"><span class="toc-section-number">14.1.2</span> Confirmatory Factor Analysis (CFA)</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#clustering" id="toc-clustering"><span class="toc-section-number">14.2</span> Clustering</a>
+<ul>
+<li><a href="unsup-lrn.html#k-means-clustering" id="toc-k-means-clustering"><span class="toc-section-number">14.2.1</span> <span class="math inline">\(K\)</span>-Means Clustering</a></li>
+<li><a href="unsup-lrn.html#hierarchical-clustering" id="toc-hierarchical-clustering"><span class="toc-section-number">14.2.2</span> Hierarchical Clustering</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#review-questions-12" id="toc-review-questions-12"><span class="toc-section-number">14.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-viz.html#data-viz" id="toc-data-viz"><span class="toc-section-number">15</span> Data Visualization</a>
+<ul>
+<li><a href="data-viz.html#best-practices" id="toc-best-practices"><span class="toc-section-number">15.1</span> Best Practices</a>
+<ul>
+<li><a href="data-viz.html#color-palette" id="toc-color-palette"><span class="toc-section-number">15.1.1</span> Color Palette</a></li>
+<li><a href="data-viz.html#chart-borders" id="toc-chart-borders"><span class="toc-section-number">15.1.2</span> Chart Borders</a></li>
+<li><a href="data-viz.html#zero-baseline" id="toc-zero-baseline"><span class="toc-section-number">15.1.3</span> Zero Baseline</a></li>
+<li><a href="data-viz.html#intuitive-layout" id="toc-intuitive-layout"><span class="toc-section-number">15.1.4</span> Intuitive Layout</a></li>
+<li><a href="data-viz.html#preattentive-attributes" id="toc-preattentive-attributes"><span class="toc-section-number">15.1.5</span> Preattentive Attributes</a></li>
+</ul></li>
+<li><a href="data-viz.html#step-by-step-visual-upgrade" id="toc-step-by-step-visual-upgrade"><span class="toc-section-number">15.2</span> Step-by-Step Visual Upgrade</a>
+<ul>
+<li><a href="data-viz.html#step-1-build-bar-chart-with-defaults" id="toc-step-1-build-bar-chart-with-defaults"><span class="toc-section-number">15.2.1</span> Step 1: Build Bar Chart with Defaults</a></li>
+<li><a href="data-viz.html#step-2-remove-legend" id="toc-step-2-remove-legend"><span class="toc-section-number">15.2.2</span> Step 2: Remove Legend</a></li>
+<li><a href="data-viz.html#step-3-assign-colors-strategically" id="toc-step-3-assign-colors-strategically"><span class="toc-section-number">15.2.3</span> Step 3: Assign Colors Strategically</a></li>
+<li><a href="data-viz.html#step-4-add-axis-titles-and-margins" id="toc-step-4-add-axis-titles-and-margins"><span class="toc-section-number">15.2.4</span> Step 4: Add Axis Titles and Margins</a></li>
+<li><a href="data-viz.html#step-5-add-left-justified-title" id="toc-step-5-add-left-justified-title"><span class="toc-section-number">15.2.5</span> Step 5: Add Left-Justified Title</a></li>
+<li><a href="data-viz.html#step-6-remove-background" id="toc-step-6-remove-background"><span class="toc-section-number">15.2.6</span> Step 6: Remove Background</a></li>
+<li><a href="data-viz.html#step-7-remove-axis-ticks" id="toc-step-7-remove-axis-ticks"><span class="toc-section-number">15.2.7</span> Step 7: Remove Axis Ticks</a></li>
+<li><a href="data-viz.html#step-8-mute-titles" id="toc-step-8-mute-titles"><span class="toc-section-number">15.2.8</span> Step 8: Mute Titles</a></li>
+<li><a href="data-viz.html#step-9-flip-axes" id="toc-step-9-flip-axes"><span class="toc-section-number">15.2.9</span> Step 9: Flip Axes</a></li>
+<li><a href="data-viz.html#step-10-sort-data" id="toc-step-10-sort-data"><span class="toc-section-number">15.2.10</span> Step 10: Sort Data</a></li>
+</ul></li>
+<li><a href="data-viz.html#visualization-types" id="toc-visualization-types"><span class="toc-section-number">15.3</span> Visualization Types</a>
+<ul>
+<li><a href="data-viz.html#tables" id="toc-tables"><span class="toc-section-number">15.3.1</span> Tables</a></li>
+<li><a href="data-viz.html#heatmaps" id="toc-heatmaps"><span class="toc-section-number">15.3.2</span> Heatmaps</a></li>
+<li><a href="data-viz.html#scatterplots" id="toc-scatterplots"><span class="toc-section-number">15.3.3</span> Scatterplots</a></li>
+<li><a href="data-viz.html#line-graphs" id="toc-line-graphs"><span class="toc-section-number">15.3.4</span> Line Graphs</a></li>
+<li><a href="data-viz.html#slopegraphs" id="toc-slopegraphs"><span class="toc-section-number">15.3.5</span> Slopegraphs</a></li>
+<li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">15.3.6</span> Bar Charts</a></li>
+<li><a href="data-viz.html#combination-charts" id="toc-combination-charts"><span class="toc-section-number">15.3.7</span> Combination Charts</a></li>
+<li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">15.3.8</span> Waterfall Charts</a></li>
+<li><a href="data-viz.html#waffle-charts" id="toc-waffle-charts"><span class="toc-section-number">15.3.9</span> Waffle Charts</a></li>
+<li><a href="data-viz.html#sankey-diagrams" id="toc-sankey-diagrams"><span class="toc-section-number">15.3.10</span> Sankey Diagrams</a></li>
+<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.11</span> Pie Charts</a></li>
+<li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.12</span> 3D Visuals</a></li>
+</ul></li>
+<li><a href="data-viz.html#elegant-data-visualization" id="toc-elegant-data-visualization"><span class="toc-section-number">15.4</span> Elegant Data Visualization</a></li>
+<li><a href="data-viz.html#review-questions-13" id="toc-review-questions-13"><span class="toc-section-number">15.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="storytelling.html#storytelling" id="toc-storytelling"><span class="toc-section-number">16</span> Data Storytelling</a>
+<ul>
+<li><a href="storytelling.html#know-your-audience" id="toc-know-your-audience"><span class="toc-section-number">16.1</span> Know Your Audience</a></li>
+<li><a href="storytelling.html#production-status" id="toc-production-status"><span class="toc-section-number">16.2</span> Production Status</a></li>
+<li><a href="storytelling.html#structural-elements" id="toc-structural-elements"><span class="toc-section-number">16.3</span> Structural Elements</a>
+<ul>
+<li><a href="storytelling.html#tldr" id="toc-tldr"><span class="toc-section-number">16.3.1</span> TL;DR</a></li>
+<li><a href="storytelling.html#purpose" id="toc-purpose"><span class="toc-section-number">16.3.2</span> Purpose</a></li>
+<li><a href="storytelling.html#methodology" id="toc-methodology"><span class="toc-section-number">16.3.3</span> Methodology</a></li>
+<li><a href="storytelling.html#results" id="toc-results"><span class="toc-section-number">16.3.4</span> Results</a></li>
+<li><a href="storytelling.html#limitations" id="toc-limitations"><span class="toc-section-number">16.3.5</span> Limitations</a></li>
+<li><a href="storytelling.html#next-steps" id="toc-next-steps"><span class="toc-section-number">16.3.6</span> Next Steps</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">16.3.7</span> Appendix</a></li>
+</ul></li>
+<li><a href="storytelling.html#qa" id="toc-qa"><span class="toc-section-number">16.4</span> Q&amp;A</a></li>
+<li><a href="storytelling.html#review-questions-14" id="toc-review-questions-14"><span class="toc-section-number">16.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="bibli.html#bibli" id="toc-bibli"><span class="toc-section-number">17</span> Bibliography</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">18</span> Appendix</a>
+<ul>
+<li><a href="appendix.html#d-framework-1" id="toc-d-framework-1"><span class="toc-section-number">18.1</span> 4D Framework</a>
+<ul>
+<li><a href="appendix.html#discover" id="toc-discover"><span class="toc-section-number">18.1.1</span> Discover</a></li>
+<li><a href="appendix.html#design" id="toc-design"><span class="toc-section-number">18.1.2</span> Design</a></li>
+<li><a href="appendix.html#develop" id="toc-develop"><span class="toc-section-number">18.1.3</span> Develop</a></li>
+<li><a href="appendix.html#deliver" id="toc-deliver"><span class="toc-section-number">18.1.4</span> Deliver</a></li>
+</ul></li>
+<li><a href="appendix.html#data-visualization" id="toc-data-visualization"><span class="toc-section-number">18.2</span> Data Visualization</a>
+<ul>
+<li><a href="appendix.html#step-by-step-visual-upgrade-1" id="toc-step-by-step-visual-upgrade-1"><span class="toc-section-number">18.2.1</span> Step-by-Step Visual Upgrade</a></li>
+<li><a href="appendix.html#tables-1" id="toc-tables-1"><span class="toc-section-number">18.2.2</span> Tables</a></li>
+<li><a href="appendix.html#heatmaps-1" id="toc-heatmaps-1"><span class="toc-section-number">18.2.3</span> Heatmaps</a></li>
+<li><a href="appendix.html#scatterplots-1" id="toc-scatterplots-1"><span class="toc-section-number">18.2.4</span> Scatterplots</a></li>
+<li><a href="appendix.html#line-charts" id="toc-line-charts"><span class="toc-section-number">18.2.5</span> Line Charts</a></li>
+<li><a href="appendix.html#slopegraphs-1" id="toc-slopegraphs-1"><span class="toc-section-number">18.2.6</span> Slopegraphs</a></li>
+<li><a href="appendix.html#bar-charts-1" id="toc-bar-charts-1"><span class="toc-section-number">18.2.7</span> Bar Charts</a></li>
+<li><a href="appendix.html#combination-charts-1" id="toc-combination-charts-1"><span class="toc-section-number">18.2.8</span> Combination Charts</a></li>
+<li><a href="appendix.html#waterfall-charts-1" id="toc-waterfall-charts-1"><span class="toc-section-number">18.2.9</span> Waterfall Charts</a></li>
+<li><a href="appendix.html#waffle-charts-1" id="toc-waffle-charts-1"><span class="toc-section-number">18.2.10</span> Waffle Charts</a></li>
+<li><a href="appendix.html#sankey-diagrams-1" id="toc-sankey-diagrams-1"><span class="toc-section-number">18.2.11</span> Sankey Diagrams</a></li>
+<li><a href="appendix.html#pie-charts-1" id="toc-pie-charts-1"><span class="toc-section-number">18.2.12</span> Pie Charts</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The Fundamentals of People Analytics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="desc-stats" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> Descriptive Statistics</h1>
+<p>This chapter reviews essential univariate and bivariate analysis concepts that underpin the more complex statistical methods in subsequent chapters of this book. Univariate and bivariate analyses can be either descriptive or inferential, and this chapter will cover descriptive techniques while Chapter <a href="inf-stats.html#inf-stats">8</a> will cover inferential methods.</p>
+<div id="univariate-analysis" class="section level2" number="7.1">
+<h2><span class="header-section-number">7.1</span> Univariate Analysis</h2>
+<p><strong>Univariate analysis</strong> is the simplest form of statistical analysis, which explores each variable independently.</p>
+<p><strong>Descriptive statistics</strong> are rudimentary analysis techniques that help describe and summarize a variable’s data in a meaningful way. Descriptive statistics do not allow us to draw any conclusions beyond the available data but are helpful in interpreting the data at hand.</p>
+<p>There are two categories of descriptive statistics: (a) <strong>measures of central tendency</strong> describe the central position in a set of data; and (b) <strong>measures of spread</strong> describe how dispersed the data are.</p>
+<div id="measures-of-central-tendency" class="section level3" number="7.1.1">
+<h3><span class="header-section-number">7.1.1</span> Measures of Central Tendency</h3>
+<p><strong>Mean</strong></p>
+<p>Perhaps the most intuitive measure of central tendency is the <strong>mean</strong>, which is often referred to as the average. The mean of a sample is denoted by <span class="math inline">\(\bar{x}\)</span> and is defined by:</p>
+<p><span class="math display">\[ \bar{x} = \frac{\displaystyle\sum_{i=1}^{n} x_{i}}{n} \]</span></p>
+<p>The population mean is denoted by <span class="math inline">\(\mu\)</span> and is defined by:</p>
+<p><span class="math display">\[ \mu = \frac{\displaystyle\sum_{i=1}^{n} x_{i}}{N} \]</span></p>
+<p>The mean of a set of numeric values can be calculated using the <code>mean()</code> function in R:</p>
+<div class="sourceCode" id="cb162"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb162-1"><a href="desc-stats.html#cb162-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill vector x with integers</span></span>
+<span id="cb162-2"><a href="desc-stats.html#cb162-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)</span>
+<span id="cb162-3"><a href="desc-stats.html#cb162-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb162-4"><a href="desc-stats.html#cb162-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate average of vector x</span></span>
+<span id="cb162-5"><a href="desc-stats.html#cb162-5" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x)</span></code></pre></div>
+<pre><code>## [1] 87</code></pre>
+<p><strong>Median</strong></p>
+<p>The <strong>median</strong> represents the midpoint in a sorted vector of numbers. For vectors with an even number of values, the median is the average of the middle two numbers; it is simply the middle number for vectors with an odd number of values. When the distribution of data is skewed or there is an extreme value, the median <em>may</em> be a better measure of central tendency.</p>
+<p>The <code>median()</code> function in R can be used to handle the sorting and midpoint selection:</p>
+<div class="sourceCode" id="cb164"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb164-1"><a href="desc-stats.html#cb164-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate median of vector x</span></span>
+<span id="cb164-2"><a href="desc-stats.html#cb164-2" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(x)</span></code></pre></div>
+<pre><code>## [1] 3</code></pre>
+<p>In this example, the median is only <code>3</code> while the mean is <span class="math inline">\(\bar{x} = 87\)</span>. Large deltas between mean and median values provide important information about the distribution of data.</p>
+<p>Here, a single value has significant leverage on these measures of central tendency. To demonstrate, let’s eliminate one instance of <code>3</code> from the vector and recalculate the mean and median:</p>
+<div class="sourceCode" id="cb166"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb166-1"><a href="desc-stats.html#cb166-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill vector x1 with integers</span></span>
+<span id="cb166-2"><a href="desc-stats.html#cb166-2" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb167"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb167-1"><a href="desc-stats.html#cb167-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean of vector x1</span></span>
+<span id="cb167-2"><a href="desc-stats.html#cb167-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x1)</span></code></pre></div>
+<pre><code>## [1] 101</code></pre>
+<div class="sourceCode" id="cb169"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb169-1"><a href="desc-stats.html#cb169-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate median of vector x1</span></span>
+<span id="cb169-2"><a href="desc-stats.html#cb169-2" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(x1)</span></code></pre></div>
+<pre><code>## [1] 51.5</code></pre>
+<p>By removing a single value from this vector, the mean increased from <span class="math inline">\(\bar{x} = 87\)</span> to <span class="math inline">\(\bar{x} = 101\)</span> and the median from <code>3</code> to <code>51.5</code>!</p>
+<p>Note that differences in mean and median values for <code>x</code> and <code>x1</code> are <em>not</em> due to an extreme value (outlier), as <code>3</code> is similar to half of the values in the vector. However, in some cases extreme values may be the cause of large discrepancies between mean and median values since the mean can be sensitive to extreme values. Consider the following set of values:</p>
+<div class="sourceCode" id="cb171"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb171-1"><a href="desc-stats.html#cb171-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill vector x2 with integers</span></span>
+<span id="cb171-2"><a href="desc-stats.html#cb171-2" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">1000</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb172"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb172-1"><a href="desc-stats.html#cb172-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean of vector x2</span></span>
+<span id="cb172-2"><a href="desc-stats.html#cb172-2" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>(x2)</span></code></pre></div>
+<pre><code>## [1] 169.1667</code></pre>
+<div class="sourceCode" id="cb174"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb174-1"><a href="desc-stats.html#cb174-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate median of vector x2</span></span>
+<span id="cb174-2"><a href="desc-stats.html#cb174-2" aria-hidden="true" tabindex="-1"></a><span class="fu">median</span>(x2)</span></code></pre></div>
+<pre><code>## [1] 3.5</code></pre>
+<p>In this case, the value of <code>1000</code> has a significant influence on the mean (<span class="math inline">\(\bar{x} = 169.2\)</span>) but the median of <code>3.5</code> is representative of the middle of values in this vector.</p>
+<p>The reality is that both the mean and median can be misleading – and even inappropriate. It is important to understand how the data are distributed around these centers. It would not be too useful to calculate median organization tenure, for example, for a hyper-growth company that has hired the majority of its workforce in the past few months; long-tenured employees would be lost in this metric.</p>
+<p>The larger the <span class="math inline">\(n\)</span>-count, the less influential an extreme value will be on <span class="math inline">\(\bar{x}\)</span>. As we will learn in Chapter <a href="inf-stats.html#inf-stats">8</a>, sample size is fundamental to our ability to achieve precise estimates of population parameters based on sample statistics.</p>
+<p>While the focus of this section is central tendency, it is important to recognize that outlying values are often the more actionable data points in an analysis since these cases may represent those with significantly different experiences relative to the average employee. Understanding the <em>distribution</em> of data is critical, and the spread of data around measures of central tendency will receive considerable attention throughout this book.</p>
+<p><strong>Mode</strong></p>
+<p>The <strong>mode</strong> is the most frequent number in a set of values.</p>
+<p>While <code>mean()</code> and <code>median()</code> are standard functions in R, <code>mode()</code> returns the internal storage mode of the object rather than the statistical mode of the data. We can easily create a function to return the statistical mode(s):</p>
+<div class="sourceCode" id="cb176"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb176-1"><a href="desc-stats.html#cb176-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fill vector x2 with integers</span></span>
+<span id="cb176-2"><a href="desc-stats.html#cb176-2" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">300</span>, <span class="dv">300</span>)</span>
+<span id="cb176-3"><a href="desc-stats.html#cb176-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb176-4"><a href="desc-stats.html#cb176-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to calculate statistical mode(s)</span></span>
+<span id="cb176-5"><a href="desc-stats.html#cb176-5" aria-hidden="true" tabindex="-1"></a>stat.mode <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb176-6"><a href="desc-stats.html#cb176-6" aria-hidden="true" tabindex="-1"></a>  ux <span class="ot">&lt;-</span> <span class="fu">unique</span>(x)</span>
+<span id="cb176-7"><a href="desc-stats.html#cb176-7" aria-hidden="true" tabindex="-1"></a>  tab <span class="ot">&lt;-</span> <span class="fu">tabulate</span>(<span class="fu">match</span>(x, ux))</span>
+<span id="cb176-8"><a href="desc-stats.html#cb176-8" aria-hidden="true" tabindex="-1"></a>  ux[tab <span class="sc">==</span> <span class="fu">max</span>(tab)]</span>
+<span id="cb176-9"><a href="desc-stats.html#cb176-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb176-10"><a href="desc-stats.html#cb176-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb176-11"><a href="desc-stats.html#cb176-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Return mode(s) of vector x3</span></span>
+<span id="cb176-12"><a href="desc-stats.html#cb176-12" aria-hidden="true" tabindex="-1"></a><span class="fu">stat.mode</span>(x3)</span></code></pre></div>
+<pre><code>## [1]   3 300</code></pre>
+<p>In this case, we have a bimodal distribution since both <code>3</code> and <code>300</code> occur most frequently.</p>
+<p><strong>Range</strong></p>
+<p>The <strong>range</strong> is the difference between the maximum and minimum values in a set of numbers.</p>
+<p>The <code>range()</code> function in R returns the minimum and maximum numbers:</p>
+<div class="sourceCode" id="cb178"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb178-1"><a href="desc-stats.html#cb178-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return lowest and highest values of vector x</span></span>
+<span id="cb178-2"><a href="desc-stats.html#cb178-2" aria-hidden="true" tabindex="-1"></a><span class="fu">range</span>(x)</span></code></pre></div>
+<pre><code>## [1]   1 300</code></pre>
+<p>We can leverage the <code>max()</code> and <code>min()</code> functions to calculate the difference between these values:</p>
+<div class="sourceCode" id="cb180"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb180-1"><a href="desc-stats.html#cb180-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate range of vector x</span></span>
+<span id="cb180-2"><a href="desc-stats.html#cb180-2" aria-hidden="true" tabindex="-1"></a><span class="fu">max</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) <span class="sc">-</span> <span class="fu">min</span>(x, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## [1] 299</code></pre>
+<p>In people analytics, there are many conventional descriptive metrics – largely counts, percentages, and ratios cut by time series (day, month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:</p>
+<ul>
+<li>Time to Fill: average days between job requisition posting and offer acceptance</li>
+<li>Offer Acceptance Rate: percent of offers extended to candidates that are accepted</li>
+<li>Pass-Through Rate: percent of candidates in a particular stage of the recruiting process who passed through to the next stage</li>
+<li>Progress to Goal: percent of approved positions that have been filled</li>
+<li>cNPS/eNPS: candidate and employee NPS (-100 to 100)</li>
+<li>Headcount: counts and percent of workforce across worker types (employee, intern, contingent)</li>
+<li>Diversity: counts and percent of workforce across gender, ethnicity, and generational cohorts</li>
+<li>Positions: count and percent of open, committed, and filled seats</li>
+<li>Hires: counts and rates</li>
+<li>Career Moves: counts and rates</li>
+<li>Turnover: counts and rates (usually terms / average headcount over the period)</li>
+<li>Workforce Growth: net changes over time, accounting for hires, internal transfers, and exits</li>
+<li>Span of Control: ratio of people leaders to individual contributors</li>
+<li>Layers/Tiers: average and median number of layers removed from CEO</li>
+<li>Engagement: average score or top-box favorability score</li>
+</ul>
+</div>
+<div id="measures-of-spread" class="section level3" number="7.1.2">
+<h3><span class="header-section-number">7.1.2</span> Measures of Spread</h3>
+<p><strong>Variance</strong></p>
+<p><strong>Variance</strong> is a measure of variability in the data. Variance is calculated using the average of squared differences – or deviations – from the mean.</p>
+<p>Variance of a population is defined by:</p>
+<p><span class="math display">\[ \sigma^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\mu)^{2}}{N} \]</span></p>
+<p>Variance of a sample is defined by:</p>
+<p><span class="math display">\[ s^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^{2}}{n-1} \]</span></p>
+<p>It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.</p>
+<p>In R, the sample variance can be calculated using the <code>var()</code> function:</p>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="desc-stats.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library for data wrangling</span></span>
+<span id="cb182-2"><a href="desc-stats.html#cb182-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb182-3"><a href="desc-stats.html#cb182-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-4"><a href="desc-stats.html#cb182-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read employee data</span></span>
+<span id="cb182-5"><a href="desc-stats.html#cb182-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
+<span id="cb182-6"><a href="desc-stats.html#cb182-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb182-7"><a href="desc-stats.html#cb182-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sample variance for annual compensation</span></span>
+<span id="cb182-8"><a href="desc-stats.html#cb182-8" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(employees<span class="sc">$</span>annual_comp)</span></code></pre></div>
+<pre><code>## [1] 1788038934</code></pre>
+<p>Sample statistics are the default in R. Since the population variance differs from the sample variance by a factor of <span class="math inline">\(s^2 (\frac{n - 1}{n})\)</span>, it is simple to convert output from <code>var()</code> to the population variance:</p>
+<div class="sourceCode" id="cb184"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb184-1"><a href="desc-stats.html#cb184-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store number of observations</span></span>
+<span id="cb184-2"><a href="desc-stats.html#cb184-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(employees<span class="sc">$</span>annual_comp)</span>
+<span id="cb184-3"><a href="desc-stats.html#cb184-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb184-4"><a href="desc-stats.html#cb184-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate population variance for annual compensation</span></span>
+<span id="cb184-5"><a href="desc-stats.html#cb184-5" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(employees<span class="sc">$</span>annual_comp) <span class="sc">*</span> (n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> n</span></code></pre></div>
+<pre><code>## [1] 1786822581</code></pre>
+<p><strong>Standard Deviation</strong></p>
+<p>The <strong>standard deviation</strong> is simply the square root of the variance.</p>
+<p>The standard deviation of a population is defined by:</p>
+<p><span class="math display">\[ \sigma = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \mu)^{2}}{N}} \]</span></p>
+<p>The standard deviation of a sample is defined by:</p>
+<p><span class="math display">\[ s = \sqrt{\frac{\displaystyle\sum_{i=1}^{n} (x_{i} - \bar{x})^{2}}{n - 1}} \]</span></p>
+<p>Since a squared value can be converted back to its original units by taking its square root, the standard deviation expresses variability around the mean in the variable’s original units.</p>
+<p>In R, the sample standard deviation can be calculated using the <code>sd()</code> function:</p>
+<div class="sourceCode" id="cb186"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb186-1"><a href="desc-stats.html#cb186-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sample standard deviation for annual compensation</span></span>
+<span id="cb186-2"><a href="desc-stats.html#cb186-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(employees<span class="sc">$</span>annual_comp)</span></code></pre></div>
+<pre><code>## [1] 42285.21</code></pre>
+<p>Since the population standard deviation differs from the sample standard deviation by a factor of <span class="math inline">\(s \sqrt \frac{n - 1}{n}\)</span>, it is simple to convert output from <code>sd()</code> to the population standard deviation:</p>
+<div class="sourceCode" id="cb188"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb188-1"><a href="desc-stats.html#cb188-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate population standard deviation for annual compensation</span></span>
+<span id="cb188-2"><a href="desc-stats.html#cb188-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sd</span>(employees<span class="sc">$</span>annual_comp) <span class="sc">*</span> <span class="fu">sqrt</span>((n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> n)</span></code></pre></div>
+<pre><code>## [1] 42270.82</code></pre>
+<p><strong>Quartiles</strong></p>
+<p>A <strong>quartile</strong> is a type of quantile that partitions data into four equally sized parts after ordering the data. Quartiles are a staple of <strong>exploratory data analysis (EDA)</strong>, which is the process of investigating data sets, summarizing their main characteristics, and discovering general trends and patterns. Each quartile is equally sized with respect to the number of data points – not the range of values in each. Quartiles are also related to <strong>percentiles</strong>. For example, Q1 is the 25th percentile – the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.</p>
+<p>The <strong>Interquartile Range (IQR)</strong> represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than <span class="math inline">\(Q1 - 1.5 * IQR\)</span> or greater than <span class="math inline">\(Q3 + 1.5 * IQR\)</span> are generally considered outliers.</p>
+<p>In R, the <code>quantile()</code> function returns the values that bookend each quartile:</p>
+<div class="sourceCode" id="cb190"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb190-1"><a href="desc-stats.html#cb190-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return quartiles for annual compensation</span></span>
+<span id="cb190-2"><a href="desc-stats.html#cb190-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(employees<span class="sc">$</span>annual_comp)</span></code></pre></div>
+<pre><code>##     0%    25%    50%    75%   100% 
+##  62400  99840 137280 174200 208000</code></pre>
+<p>Based on this output, we know that 25% of people in our data earn annual compensation of <span class="math inline">\(99,840\)</span> USD or less, <span class="math inline">\(137,280\)</span> USD is the median annual compensation, and 75% of people earn annual compensation of <span class="math inline">\(174,200\)</span> USD or less.</p>
+<p>We can also return a specific percentile value using the <code>probs</code> argument in the <code>quantile()</code> function. For example, if we want to know the 80th percentile annual compensation value, we can execute the following:</p>
+<div class="sourceCode" id="cb192"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb192-1"><a href="desc-stats.html#cb192-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return 80th percentile annual compensation value</span></span>
+<span id="cb192-2"><a href="desc-stats.html#cb192-2" aria-hidden="true" tabindex="-1"></a><span class="fu">quantile</span>(employees<span class="sc">$</span>annual_comp, <span class="at">probs =</span> .<span class="dv">8</span>)</span></code></pre></div>
+<pre><code>##    80% 
+## 180960</code></pre>
+<p>In addition, the <code>summary()</code> function returns several common descriptive statistics for an object:</p>
+<div class="sourceCode" id="cb194"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb194-1"><a href="desc-stats.html#cb194-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return common descriptives</span></span>
+<span id="cb194-2"><a href="desc-stats.html#cb194-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>annual_comp)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   62400   99840  137280  137054  174200  208000</code></pre>
+<p><strong>Box plots</strong> are a common way to visualize the distribution of data. Box plots are not usually found in presentations to stakeholders, since they are a bit more technical and often require explanation, but these are very useful to analysts for understanding data distributions during the EDA phase.</p>
+<p>Let’s visualize the spread of annual compensation by education level and gender using the <code>geom_boxplot()</code> function from the <code>ggplot2</code> library:</p>
+<div class="sourceCode" id="cb196"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb196-1"><a href="desc-stats.html#cb196-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb196-2"><a href="desc-stats.html#cb196-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb196-3"><a href="desc-stats.html#cb196-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb196-4"><a href="desc-stats.html#cb196-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce box plots to visualize compensation distribution by education level and gender</span></span>
+<span id="cb196-5"><a href="desc-stats.html#cb196-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(employees, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">as.factor</span>(ed_lvl), <span class="at">y =</span> annual_comp, <span class="at">color =</span> gender)) <span class="sc">+</span></span>
+<span id="cb196-6"><a href="desc-stats.html#cb196-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_boxplot</span>() <span class="sc">+</span></span>
+<span id="cb196-7"><a href="desc-stats.html#cb196-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Education Level&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Annual Compensation&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb196-8"><a href="desc-stats.html#cb196-8" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">guides</span>(<span class="at">col =</span> <span class="fu">guide_legend</span>(<span class="st">&quot;Gender&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb196-9"><a href="desc-stats.html#cb196-9" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<p><img src="The_Fundamentals_of_People_Analytics_files/figure-html/unnamed-chunk-107-1.png" width="672" /></p>
+<p>Box plots can be interpreted as follows:
+* Horizontal lines represent median compensation values.
+* The box in the middle of each distribution represents the IQR.
+* The end of the line above the IQR represents the threshold for outliers in the upper range: <span class="math inline">\(Q3 + 1.5 * IQR\)</span>.
+* The end of the line below the IQR represents the threshold for outliers in the lower range: <span class="math inline">\(Q1 - 1.5 * IQR\)</span>.
+* Data points represent outliers: <span class="math inline">\(x &gt; Q3 + 1.5 * IQR\)</span> or <span class="math inline">\(x &lt; Q1 - 1.5 * IQR\)</span>.</p>
+<p>While box plots are pervasive in statistically-oriented disciplines, they can be misleading. Figure <a href="desc-stats.html#fig:boxplot-barchart-compare">7.1</a> illustrates how information about the shape of a distribution can be lost on a box plot. The range with the highest frequency (0-9) is not as obvious in the box plot relative to the bar chart.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:boxplot-barchart-compare"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/boxplot-barchart-compare-1.png" alt="The number range with the highest frequency (0-9) is not as apparent with a box plot (left) relative to the bar chart (right)." width="100%" />
+<p class="caption">
+Figure 7.1: The number range with the highest frequency (0-9) is not as apparent with a box plot (left) relative to the bar chart (right).
+</p>
+</div>
+<p>Box plot alternatives such as <strong>violin plots</strong>, <strong>jittered strip plots</strong>, and <strong>raincloud plots</strong> are often more helpful in understanding data distributions. Figure <a href="desc-stats.html#fig:boxplot-alt">7.2</a> shows the juxtaposition of a raincloud plot against a box plot. While it may seem like an oxymoron, in this case the spread of data is clearer in the rain.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:boxplot-alt"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/boxplot-alt-1.png" alt="Raincloud plot superimposed on a box plot to illustrate the data distribution." width="100%" />
+<p class="caption">
+Figure 7.2: Raincloud plot superimposed on a box plot to illustrate the data distribution.
+</p>
+</div>
+<p><strong>Skewness</strong></p>
+<p><strong>Skewness</strong> is a measure of the horizontal distance between the mode and mean – a representation of symmetric distortion. In most practical settings, data are not normally distributed. That is, the data are skewed either positively (right-tailed distribution) or negatively (left-tailed distribution). The coefficient of skewness is one of many ways in which we can ascertain the degree of skew in the data. The skewness of sample data is defined as:</p>
+<p><span class="math display">\[ Sk = \frac{1}{n} \frac{\displaystyle\sum_{i=1}^{n} (x_i-\bar{x})^3}{s^3} \]</span></p>
+<p>A positive skewness coefficient indicates positive skew, while a negative coefficient indicates negative skew. The order of descriptive statistics can also be leveraged to ascertain the direction of skew in the data:</p>
+<ul>
+<li>Positive skewness: mode &lt; median &lt; mean</li>
+<li>Negative skewness: mode &gt; median &gt; mean</li>
+<li>Symmetrical distribution: mode = median = mean</li>
+</ul>
+<p>Figure <a href="desc-stats.html#fig:skewness">7.3</a> illustrates the placement of these descriptive statistics in each of the three types of distributions:</p>
+<p><br /></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:skewness"></span>
+<img src="graphics/skewness.png" alt="Skewness" width="100%" />
+<p class="caption">
+Figure 7.3: Skewness
+</p>
+</div>
+<p><br /></p>
+<p>The magnitude of skewness can be determined by measuring the distance between the mode and mean relative to the variable’s scale. Alternatively, we can simply evaluate this using the coefficient of skewness:</p>
+<ul>
+<li>If skewness is between -0.5 - 0.5, the data are considered symmetrical.</li>
+<li>If skewness is between -0.5 and -1 or 0.5 and 1, the data are moderately skewed.</li>
+<li>If skewness is &lt; -1 or &gt; 1, the data are highly skewed.</li>
+</ul>
+<p>Since there is not a base R function for skewness, we can leverage the moments library to calculate skewness:</p>
+<div class="sourceCode" id="cb197"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb197-1"><a href="desc-stats.html#cb197-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb197-2"><a href="desc-stats.html#cb197-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(moments)</span>
+<span id="cb197-3"><a href="desc-stats.html#cb197-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb197-4"><a href="desc-stats.html#cb197-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate skewness for org tenure, rounded to two significant figures via the round() function</span></span>
+<span id="cb197-5"><a href="desc-stats.html#cb197-5" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(moments<span class="sc">::</span><span class="fu">skewness</span>(employees<span class="sc">$</span>org_tenure), <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 2.27</code></pre>
+<p><strong>Statistical Moments</strong>, after which this library was named, play an important role in specifying the appropriate probability distribution for a set of data. Moments are a set of statistical parameters used to describe the characteristics of a distribution. Skewness is the third statistical moment in the set; hence the sum of cubed differences and cubic polynomial in the denominator of the formula above. The complete set of moments comprises: (1) expected value or mean, (2) variance and standard deviation, (3) skewness, and (4) kurtosis.</p>
+<p>We can verify that the <code>skewness()</code> function from the moments library returns the expected value (per the aforementioned formula) by validating against a manual calculation:</p>
+<div class="sourceCode" id="cb199"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb199-1"><a href="desc-stats.html#cb199-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store components of skewness calculation</span></span>
+<span id="cb199-2"><a href="desc-stats.html#cb199-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">length</span>(employees<span class="sc">$</span>org_tenure)</span>
+<span id="cb199-3"><a href="desc-stats.html#cb199-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> employees<span class="sc">$</span>org_tenure</span>
+<span id="cb199-4"><a href="desc-stats.html#cb199-4" aria-hidden="true" tabindex="-1"></a>x_bar <span class="ot">=</span> <span class="fu">mean</span>(employees<span class="sc">$</span>org_tenure)</span>
+<span id="cb199-5"><a href="desc-stats.html#cb199-5" aria-hidden="true" tabindex="-1"></a>s <span class="ot">=</span> <span class="fu">sd</span>(employees<span class="sc">$</span>org_tenure)</span>
+<span id="cb199-6"><a href="desc-stats.html#cb199-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb199-7"><a href="desc-stats.html#cb199-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate skewness manually, rounded to two significant figures via the round() function</span></span>
+<span id="cb199-8"><a href="desc-stats.html#cb199-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">1</span><span class="sc">/</span>n <span class="sc">*</span> (<span class="fu">sum</span>((x <span class="sc">-</span> x_bar)<span class="sc">^</span><span class="dv">3</span>) <span class="sc">/</span> s<span class="sc">^</span><span class="dv">3</span>), <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>## [1] 2.27</code></pre>
+<p>A skewness coefficient of 2.27 indicates that organization tenure is positively skewed. We can visualize the data to confirm the expected right-tailed distribution:</p>
+<div class="sourceCode" id="cb201"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb201-1"><a href="desc-stats.html#cb201-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize sample distribution</span></span>
+<span id="cb201-2"><a href="desc-stats.html#cb201-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb201-3"><a href="desc-stats.html#cb201-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(employees<span class="sc">$</span>org_tenure) <span class="sc">+</span> </span>
+<span id="cb201-4"><a href="desc-stats.html#cb201-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Organization Tenure&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb201-5"><a href="desc-stats.html#cb201-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb201-6"><a href="desc-stats.html#cb201-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb201-7"><a href="desc-stats.html#cb201-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:org-tenure-distribution"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/org-tenure-distribution-1.png" alt="Organization Tenure Distribution" width="672" />
+<p class="caption">
+Figure 7.4: Organization Tenure Distribution
+</p>
+</div>
+<p><strong>Kurtosis</strong></p>
+<p>While skewness provides information on the symmetry of a distribution, <strong>kurtosis</strong> provides information on the heaviness of a distribution’s tails (“tailedness”). Kurtosis is the fourth statistical moment, defined by:</p>
+<p><span class="math display">\[ K = \frac{1}{n} \frac{\displaystyle\sum_{i=1}^{n} (x_i-\bar{x})^4}{s^4} \]</span></p>
+<p>Note that the quartic functions characteristic of the fourth statistical moment are the only differences from the skewness formula we reviewed in the prior section (which featured cubic functions).</p>
+<p>The terms <strong>leptokurtic</strong> and <strong>platykurtic</strong> are often used to describe distributions with light and heavy tails, respectively. “Platy-” in platykurtic is the same root as “platypus”, and I’ve found it helpful to recall the characteristics of the flat platypus when characterizing frequency distributions as platkurtic (wide and flat) vs. its antithesis, leptokurtic (tall and skinny). The normal (or Gaussian) distribution is referred to as a <strong>mesokurtic</strong> distribution in the context of kurtosis.</p>
+<p>Figure <a href="desc-stats.html#fig:kurtosis">7.5</a> illustrates the three kurtosis categorizations:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:kurtosis"></span>
+<img src="graphics/kurtosis.jpg" alt="Kurtosis" width="75%" />
+<p class="caption">
+Figure 7.5: Kurtosis
+</p>
+</div>
+<p>Kurtosis is measured relative to a normal distribution. Normal distributions have a kurtosis coefficient of 3. Therefore, the kurtosis coefficient is greater than 3 for leptokurtic distributions and less than 3 for platykurtic distributions.</p>
+<p>The moments library can also be used to calculate kurtosis in R:</p>
+<div class="sourceCode" id="cb202"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb202-1"><a href="desc-stats.html#cb202-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate kurtosis for org tenure, rounded to one significant figure</span></span>
+<span id="cb202-2"><a href="desc-stats.html#cb202-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(moments<span class="sc">::</span><span class="fu">kurtosis</span>(employees<span class="sc">$</span>org_tenure), <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## [1] 13.4</code></pre>
+<p>We can verify that the <code>kurtosis()</code> function returns the expected value (per the aforementioned formula) by validating against a manual calculation:</p>
+<div class="sourceCode" id="cb204"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb204-1"><a href="desc-stats.html#cb204-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate kurtosis manually, rounded to one significant figure</span></span>
+<span id="cb204-2"><a href="desc-stats.html#cb204-2" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">1</span><span class="sc">/</span>n <span class="sc">*</span> (<span class="fu">sum</span>((x <span class="sc">-</span> x_bar)<span class="sc">^</span><span class="dv">4</span>) <span class="sc">/</span> s<span class="sc">^</span><span class="dv">4</span>), <span class="dv">1</span>)</span></code></pre></div>
+<pre><code>## [1] 13.4</code></pre>
+<p>Our kurtosis coefficient of 13.4 indicates a leptokurtic distribution which is supported by the visual in Figure <a href="desc-stats.html#fig:org-tenure-distribution">7.4</a>.</p>
+<p>It is important not to characterize a distribution based on a single isolated metric; we need the complete set of statistical moments to fully understand the distribution of data.</p>
+</div>
+</div>
+<div id="bivariate-analysis" class="section level2" number="7.2">
+<h2><span class="header-section-number">7.2</span> Bivariate Analysis</h2>
+<p>While univariate analysis explores each variable independently, <strong>bivariate analysis</strong> explores statistical relationships between two variables.</p>
+<div id="covariance" class="section level3" number="7.2.1">
+<h3><span class="header-section-number">7.2.1</span> Covariance</h3>
+<p>While variance provides an understanding of how values for a single variable vary, <strong>covariance</strong> is an unstandardized measure of how two variables vary together. Values can range from <span class="math inline">\(-\infty\)</span> to <span class="math inline">\(+\infty\)</span>, and these values can be used to understand the direction of the linear relationship between variables. Positive covariance values indicate that the variables vary in the same direction (e.g., tend to increase or decrease together), while negative covariance values indicate that the variables vary in opposite directions (e.g., when one increases, the other decreases, or vice versa).</p>
+<p>Covariance of a sample is defined by:</p>
+<p><span class="math display">\[ cov_{x,y} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})(y_{i}-\bar{y})}{n-1} \]</span></p>
+<p>It’s important to note that while covariance aids our understanding of the direction of the relationship between two variables, we cannot use it to understand the strength of the association since it is unstandardized. Due to differences in variables’ units of measurement, the strength of the relationship between two variables with large covariance could be weak, while the strength of the relationship between another pair of variables with small covariance could be strong.</p>
+<p>In R, we can compute the covariance between a pair of numeric variables by passing the two vectors into the <code>cov()</code> function:</p>
+<div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="desc-stats.html#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)</span></span>
+<span id="cb206-2"><a href="desc-stats.html#cb206-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>age, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] 9381.677</code></pre>
+<p>In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.</p>
+<p>Just as we multiplied the sample variance by <span class="math inline">\((n - 1) / n\)</span> to obtain the population variance, we can apply the same approach to convert the sample covariance returned by <code>cov()</code> to the population covariance:</p>
+<div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="desc-stats.html#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate population covariance between annual compensation and age</span></span>
+<span id="cb208-2"><a href="desc-stats.html#cb208-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>age, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>) <span class="sc">*</span> (n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> n</span></code></pre></div>
+<pre><code>## [1] 9375.295</code></pre>
+<p>The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the <code>cov()</code> function:</p>
+<div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="desc-stats.html#cb210-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a covariance matrix among select continuous variables</span></span>
+<span id="cb210-2"><a href="desc-stats.html#cb210-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">&quot;annual_comp&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>, <span class="st">&quot;job_tenure&quot;</span>, <span class="st">&quot;prior_emplr_cnt&quot;</span>, <span class="st">&quot;commute_dist&quot;</span>)), <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
+<pre><code>##                   annual_comp          age    org_tenure    job_tenure
+## annual_comp      1.788039e+09 9381.6772019 -3921.9601469 -3693.1960749
+## age              9.381677e+03   83.4550488    17.9255146     7.0467503
+## org_tenure      -3.921960e+03   17.9255146    39.7967987    16.9797312
+## job_tenure      -3.693196e+03    7.0467503    16.9797312    13.1271220
+## prior_emplr_cnt  2.340406e+03    6.8377387    -1.8547177    -0.8213802
+## commute_dist     1.067158e+04   -0.1248728     0.7746438     0.5535206
+##                 prior_emplr_cnt  commute_dist
+## annual_comp        2340.4057552 10671.5790741
+## age                   6.8377387    -0.1248728
+## org_tenure           -1.8547177     0.7746438
+## job_tenure           -0.8213802     0.5535206
+## prior_emplr_cnt       6.2400490    -0.5923586
+## commute_dist         -0.5923586    65.7212510</code></pre>
+<p>Using the default Pearson method, the <code>cov()</code> function will return sample variances for each variable down the diagonal, since covariance is not applicable in the context of a variable with itself. We can confirm by producing the variance for age:</p>
+<div class="sourceCode" id="cb212"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb212-1"><a href="desc-stats.html#cb212-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return sample variance for age</span></span>
+<span id="cb212-2"><a href="desc-stats.html#cb212-2" aria-hidden="true" tabindex="-1"></a><span class="fu">var</span>(employees<span class="sc">$</span>age)</span></code></pre></div>
+<pre><code>## [1] 83.45505</code></pre>
+<p>As expected, the variance for age (<span class="math inline">\(s^{2} = 83.5\)</span>) matches the value found in the age x age cell of the covariance matrix.</p>
+</div>
+<div id="correlation" class="section level3" number="7.2.2">
+<h3><span class="header-section-number">7.2.2</span> Correlation</h3>
+<p><strong>Correlation</strong> is a scaled form of covariance. While covariance provides an unstandardized measure of the direction of a relationship between variables, correlation provides a standardized measure that can be used to quantify both the direction and strength of bivariate relationships. Correlation coefficients range from -1 to 1, where -1 indicates a perfectly negative association, 1 indicates a perfectly positive association, and 0 indicates the absence of an association. <strong>Pearson’s product-moment correlation coefficient</strong> <span class="math inline">\(r\)</span> is defined by:</p>
+<p><span class="math display">\[ r_{x,y} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})(y_{i}-\bar{y})}{\sqrt{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^2 \displaystyle\sum_{i=1}^{n} (y_{i}-\bar{y})^2}} \]</span></p>
+<p>In R, Pearson’s <span class="math inline">\(r\)</span> can be calculated using the <code>cor()</code> function:</p>
+<div class="sourceCode" id="cb214"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb214-1"><a href="desc-stats.html#cb214-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the correlation between annual compensation and age</span></span>
+<span id="cb214-2"><a href="desc-stats.html#cb214-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>age, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] 0.02428654</code></pre>
+<p>While we already know that the relationship between annual compensation and age is positive based on the positive covariance coefficient, Pearson’s <span class="math inline">\(r\)</span> of .02 indicates that the strength of the positive association is weak (<span class="math inline">\(r\)</span> = 0 represents the absence of a relationship). Though there are no absolute rules for categorizing the strength of relationships, as thresholds often vary by domain, the following is a general rule of thumb for interpreting the strength of bivariate associations:</p>
+<ul>
+<li>Weak = Absolute value of correlation coefficients between 0 and .3</li>
+<li>Moderate = Absolute value of correlation coefficients between .4 and .6</li>
+<li>Strong = Absolute value of correlation coefficients between .7 and 1</li>
+</ul>
+<p>There are several correlation coefficients, and the measurement scale of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> determine the appropriate type:</p>
+<p><br /></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:corr-table"></span>
+<img src="graphics/correlation_table.png" alt="Proper Applications of Correlation Coefficients" width="100%" />
+<p class="caption">
+Figure 7.6: Proper Applications of Correlation Coefficients
+</p>
+</div>
+<p><br /></p>
+<p>Pearson’s <span class="math inline">\(r\)</span> can be used when both variables are measured on continuous scales or when one is continuous and the other is dichotomous (point-biserial correlation).</p>
+<p>When one or both variables are ordinal, we can leverage <strong>Spearman’s</strong> <span class="math inline">\(\rho\)</span> or <strong>Kendall’s</strong> <span class="math inline">\(\tau\)</span>, which are both standardized nonparametric measures of the association between one or two rank-ordered variables. Let’s look at Spearman’s <span class="math inline">\(\rho\)</span>, which is defined as:</p>
+<p><span class="math display">\[ \rho = 1 - {\frac {6 \sum d_i^2}{n(n^2 - 1)}} \]</span></p>
+<p>We can override the default Pearson method in the <code>cor()</code> function to implement a specific form of rank correlation using the <code>method</code> argument:</p>
+<div class="sourceCode" id="cb216"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb216-1"><a href="desc-stats.html#cb216-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the correlation between job level and education level using Spearman&#39;s method</span></span>
+<span id="cb216-2"><a href="desc-stats.html#cb216-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(employees<span class="sc">$</span>job_lvl, employees<span class="sc">$</span>ed_lvl, <span class="at">method =</span> <span class="st">&quot;spearman&quot;</span>, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] 0.1074192</code></pre>
+<p>The <span class="math inline">\(\rho\)</span> coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass <code>method = "kendall"</code> to this <code>cor()</code> function to implement Kendall’s <span class="math inline">\(\tau\)</span>.</p>
+<p>The <strong>Phi Coefficient</strong> (<span class="math inline">\(\phi\)</span>), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:phi-tbl"></span>
+<img src="graphics/phi_coefficient_formula.png" alt="2x2 Table for Random Variables x and y" width="50%" />
+<p class="caption">
+Figure 7.7: 2x2 Table for Random Variables x and y
+</p>
+</div>
+<p>The <span class="math inline">\(\phi\)</span> coefficient is defined as:</p>
+<p><span class="math display">\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]</span></p>
+<p>To illustrate, let’s examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs. low performance). We can leverage the <code>psych</code> library to calculate <span class="math inline">\(\phi\)</span> in R:</p>
+<div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="desc-stats.html#cb218-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set females to 1 and everything else to 0</span></span>
+<span id="cb218-2"><a href="desc-stats.html#cb218-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>gender_code <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>gender <span class="sc">==</span> <span class="st">&#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb218-3"><a href="desc-stats.html#cb218-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-4"><a href="desc-stats.html#cb218-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Set stock options to 1 if level &gt; 0</span></span>
+<span id="cb218-5"><a href="desc-stats.html#cb218-5" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>stock_option_code <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>stock_opt_lvl <span class="sc">&gt;</span> <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb218-6"><a href="desc-stats.html#cb218-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-7"><a href="desc-stats.html#cb218-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a 2x2 contingency table</span></span>
+<span id="cb218-8"><a href="desc-stats.html#cb218-8" aria-hidden="true" tabindex="-1"></a>contingency_tbl <span class="ot">&lt;-</span> <span class="fu">table</span>(employees<span class="sc">$</span>gender_code, employees<span class="sc">$</span>stock_option_code)</span>
+<span id="cb218-9"><a href="desc-stats.html#cb218-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb218-10"><a href="desc-stats.html#cb218-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the Phi Coefficient between dichotomous variables</span></span>
+<span id="cb218-11"><a href="desc-stats.html#cb218-11" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">phi</span>(contingency_tbl)</span></code></pre></div>
+<pre><code>## [1] -0.01</code></pre>
+<p><span class="math inline">\(\phi\)</span> is essentially 0, which means stock options are distributed equitably across gender categories (good news!). While there are not differences in the proportion of males and females who receive at least some stock options, examining whether there is equity in the amount of stock grants and refreshes may be a good next step.</p>
+<p>A correlation matrix can be produced to surface associations among many variables by passing a dataframe or matrix object into the <code>cor()</code> function:</p>
+<div class="sourceCode" id="cb220"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb220-1"><a href="desc-stats.html#cb220-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a correlation matrix among select continuous variables</span></span>
+<span id="cb220-2"><a href="desc-stats.html#cb220-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">&quot;annual_comp&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>, <span class="st">&quot;job_tenure&quot;</span>, <span class="st">&quot;prior_emplr_cnt&quot;</span>, <span class="st">&quot;commute_dist&quot;</span>)), <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
+<pre><code>##                 annual_comp         age  org_tenure  job_tenure prior_emplr_cnt
+## annual_comp      1.00000000  0.02428654 -0.01470248 -0.02410622      0.02215688
+## age              0.02428654  1.00000000  0.31104359  0.21290106      0.29963476
+## org_tenure      -0.01470248  0.31104359  1.00000000  0.74288567     -0.11769547
+## job_tenure      -0.02410622  0.21290106  0.74288567  1.00000000     -0.09075393
+## prior_emplr_cnt  0.02215688  0.29963476 -0.11769547 -0.09075393      1.00000000
+## commute_dist     0.03113059 -0.00168612  0.01514695  0.01884500     -0.02925080
+##                 commute_dist
+## annual_comp       0.03113059
+## age              -0.00168612
+## org_tenure        0.01514695
+## job_tenure        0.01884500
+## prior_emplr_cnt  -0.02925080
+## commute_dist      1.00000000</code></pre>
+<p>Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between <code>org_tenure</code> and <code>job_tenure</code> (<span class="math inline">\(r = .7\)</span>). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.</p>
+<p>A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:corrplot-comp"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/corrplot-comp-1.png" alt="Corrplot correlation matrix" width="100%" />
+<p class="caption">
+Figure 7.8: Corrplot correlation matrix
+</p>
+</div>
+<p>The <code>GGally</code> library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-comp"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-comp-1.png" alt="GGpairs bivariate correlations and data distributions." width="100%" />
+<p class="caption">
+Figure 7.9: GGpairs bivariate correlations and data distributions.
+</p>
+</div>
+<p>We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company’s history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter <a href="lm.html#lm">10</a>.</p>
+<p>It’s important to remember that correlation is not causation. Correlations can be spurious (variables related by chance), and drawing conclusions based on bivariate associations alone – especially in the absence of sound theoretical underpinnings – can be dangerous.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:corr-comic"></span>
+<img src="graphics/correlation_comic.png" alt="Correlation comic (Source: www.explainxkcd.com)" width="75%" />
+<p class="caption">
+Figure 7.10: Correlation comic (Source: www.explainxkcd.com)
+</p>
+</div>
+<p><br /></p>
+<p>Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:spur-corr-1"></span>
+<img src="graphics/spurious_corr_maine_divorce.png" alt="Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)" width="100%" />
+<p class="caption">
+Figure 7.11: Correlation between Maine Divorce Rate and Margarine Consumption (r = .99)
+</p>
+</div>
+<p><br /></p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:spur-corr-2"></span>
+<img src="graphics/spurious_corr_mozzarella_cheese.png" alt="Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)" width="100%" />
+<p class="caption">
+Figure 7.12: Correlation between Mozzarella Cheese Consumption and Civil Engineering Doctorate Conferrals (r = .96)
+</p>
+</div>
+<p>In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.</p>
+</div>
+</div>
+<div id="review-questions-5" class="section level2" number="7.3">
+<h2><span class="header-section-number">7.3</span> Review Questions</h2>
+<ol style="list-style-type: decimal">
+<li><p>How does the mean and median compare with respect to sensitivity to extreme values (outliers)?</p></li>
+<li><p>What does the standard deviation tell us about the spread of data, and how does it compare to the variance?</p></li>
+<li><p>How does the order of the mean, median, and mode differ between positively and negatively skewed distributions?</p></li>
+<li><p>Do large covariance coefficients always indicate strong bivariate associations? Why or why not?</p></li>
+<li><p>What information is represented in box plots?</p></li>
+<li><p>Do do quartiles relate to percentiles?</p></li>
+<li><p>What type of correlation coefficient should be used when evaluating the relationship between a pair of rank-ordered variables?</p></li>
+<li><p>What type of correlation coefficient should be used when evaluating the relationship between a pair of dichotomous variables?</p></li>
+<li><p>How would you characterize the shape of platykurtic, leptokurtic, and mesokurtic distributions?</p></li>
+<li><p>When using the Pearson method, what do the values down the diagonal of a <em>covariance</em> matrix represent?</p></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="data-prep.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="inf-stats.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["The_Fundamentals_of_People_Analytics.pdf", "The_Fundamentals_of_People_Analytics.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

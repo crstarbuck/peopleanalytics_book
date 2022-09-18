@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>11 Linear Model Extensions | The Fundamentals of People Analytics: With Applications in R</title>
+  <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="11 Linear Model Extensions | The Fundamentals of People Analytics: With Applications in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="github-repo" content="crstarbuck/peopleanalytics-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="11 Linear Model Extensions | The Fundamentals of People Analytics: With Applications in R" />
+  
+  <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  
+
+<meta name="author" content="Craig Starbuck" />
+
+
+<meta name="date" content="2022-09-12" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="lm.html"/>
+<link rel="next" href="log.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">The Fundamentals of People Analytics: With Applications in R</a></li>
+
+<li class="divider"></li>
+<li><a href="dedication.html#dedication" id="toc-dedication">Dedication</a></li>
+<li><a href="foreword.html#foreword" id="toc-foreword">Foreword</a></li>
+<li><a href="preface.html#preface" id="toc-preface">Preface</a></li>
+<li><a href="getting-started.html#getting-started" id="toc-getting-started"><span class="toc-section-number">1</span> Getting Started</a>
+<ul>
+<li><a href="getting-started.html#guiding-principles" id="toc-guiding-principles"><span class="toc-section-number">1.1</span> Guiding Principles</a>
+<ul>
+<li><a href="getting-started.html#pro-employee-thinking" id="toc-pro-employee-thinking"><span class="toc-section-number">1.1.1</span> Pro-Employee Thinking</a></li>
+<li><a href="getting-started.html#quality" id="toc-quality"><span class="toc-section-number">1.1.2</span> Quality</a></li>
+<li><a href="getting-started.html#prioritization" id="toc-prioritization"><span class="toc-section-number">1.1.3</span> Prioritization</a></li>
+</ul></li>
+<li><a href="getting-started.html#tooling" id="toc-tooling"><span class="toc-section-number">1.2</span> Tooling</a></li>
+<li><a href="getting-started.html#data-sets" id="toc-data-sets"><span class="toc-section-number">1.3</span> Data Sets</a>
+<ul>
+<li><a href="getting-started.html#employees" id="toc-employees"><span class="toc-section-number">1.3.1</span> Employees</a></li>
+<li><a href="getting-started.html#turnover-trends" id="toc-turnover-trends"><span class="toc-section-number">1.3.2</span> Turnover Trends</a></li>
+<li><a href="getting-started.html#survey-responses" id="toc-survey-responses"><span class="toc-section-number">1.3.3</span> Survey Responses</a></li>
+</ul></li>
+<li><a href="getting-started.html#d-framework" id="toc-d-framework"><span class="toc-section-number">1.4</span> 4D Framework</a></li>
+</ul></li>
+<li><a href="r-intro.html#r-intro" id="toc-r-intro"><span class="toc-section-number">2</span> Introduction to R</a>
+<ul>
+<li><a href="r-intro.html#getting-started-1" id="toc-getting-started-1"><span class="toc-section-number">2.1</span> Getting Started</a>
+<ul>
+<li><a href="r-intro.html#installing-r" id="toc-installing-r"><span class="toc-section-number">2.1.1</span> Installing R</a></li>
+<li><a href="r-intro.html#installing-r-studio" id="toc-installing-r-studio"><span class="toc-section-number">2.1.2</span> Installing R Studio</a></li>
+<li><a href="r-intro.html#installing-packages" id="toc-installing-packages"><span class="toc-section-number">2.1.3</span> Installing Packages</a></li>
+<li><a href="r-intro.html#case-sensitivity" id="toc-case-sensitivity"><span class="toc-section-number">2.1.4</span> Case Sensitivity</a></li>
+<li><a href="r-intro.html#help" id="toc-help"><span class="toc-section-number">2.1.5</span> Help</a></li>
+<li><a href="r-intro.html#objects" id="toc-objects"><span class="toc-section-number">2.1.6</span> Objects</a></li>
+<li><a href="r-intro.html#comments" id="toc-comments"><span class="toc-section-number">2.1.7</span> Comments</a></li>
+<li><a href="r-intro.html#testing-early-and-often" id="toc-testing-early-and-often"><span class="toc-section-number">2.1.8</span> Testing Early and Often</a></li>
+</ul></li>
+<li><a href="r-intro.html#vectors" id="toc-vectors"><span class="toc-section-number">2.2</span> Vectors</a></li>
+<li><a href="r-intro.html#matrices" id="toc-matrices"><span class="toc-section-number">2.3</span> Matrices</a></li>
+<li><a href="r-intro.html#factors" id="toc-factors"><span class="toc-section-number">2.4</span> Factors</a></li>
+<li><a href="r-intro.html#data-frames" id="toc-data-frames"><span class="toc-section-number">2.5</span> Data Frames</a></li>
+<li><a href="r-intro.html#lists" id="toc-lists"><span class="toc-section-number">2.6</span> Lists</a></li>
+<li><a href="r-intro.html#loops" id="toc-loops"><span class="toc-section-number">2.7</span> Loops</a></li>
+<li><a href="r-intro.html#user-defined-functions-udfs" id="toc-user-defined-functions-udfs"><span class="toc-section-number">2.8</span> User-Defined Functions (UDFs)</a></li>
+<li><a href="r-intro.html#graphics" id="toc-graphics"><span class="toc-section-number">2.9</span> Graphics</a></li>
+<li><a href="r-intro.html#review-questions" id="toc-review-questions"><span class="toc-section-number">2.10</span> Review Questions</a></li>
+</ul></li>
+<li><a href="sql-intro.html#sql-intro" id="toc-sql-intro"><span class="toc-section-number">3</span> Introduction to SQL</a>
+<ul>
+<li><a href="sql-intro.html#basics" id="toc-basics"><span class="toc-section-number">3.1</span> Basics</a></li>
+<li><a href="sql-intro.html#aggregate-functions" id="toc-aggregate-functions"><span class="toc-section-number">3.2</span> Aggregate Functions</a></li>
+<li><a href="sql-intro.html#joins" id="toc-joins"><span class="toc-section-number">3.3</span> Joins</a></li>
+<li><a href="sql-intro.html#subqueries" id="toc-subqueries"><span class="toc-section-number">3.4</span> Subqueries</a></li>
+<li><a href="sql-intro.html#virtual-tables" id="toc-virtual-tables"><span class="toc-section-number">3.5</span> Virtual Tables</a></li>
+<li><a href="sql-intro.html#window-functions" id="toc-window-functions"><span class="toc-section-number">3.6</span> Window Functions</a></li>
+<li><a href="sql-intro.html#common-table-expressions-ctes" id="toc-common-table-expressions-ctes"><span class="toc-section-number">3.7</span> Common Table Expressions (CTEs)</a></li>
+<li><a href="sql-intro.html#review-questions-1" id="toc-review-questions-1"><span class="toc-section-number">3.8</span> Review Questions</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measure-sampl" id="toc-measure-sampl"><span class="toc-section-number">4</span> Measurement &amp; Sampling</a>
+<ul>
+<li><a href="measure-sampl.html#variable-types" id="toc-variable-types"><span class="toc-section-number">4.1</span> Variable Types</a>
+<ul>
+<li><a href="measure-sampl.html#independent-variables-iv" id="toc-independent-variables-iv"><span class="toc-section-number">4.1.1</span> Independent Variables (IV)</a></li>
+<li><a href="measure-sampl.html#dependent-variables-dv" id="toc-dependent-variables-dv"><span class="toc-section-number">4.1.2</span> Dependent Variables (DV)</a></li>
+<li><a href="measure-sampl.html#control-variables-cv" id="toc-control-variables-cv"><span class="toc-section-number">4.1.3</span> Control Variables (CV)</a></li>
+<li><a href="measure-sampl.html#moderating-variables" id="toc-moderating-variables"><span class="toc-section-number">4.1.4</span> Moderating Variables</a></li>
+<li><a href="measure-sampl.html#mediating-variables" id="toc-mediating-variables"><span class="toc-section-number">4.1.5</span> Mediating Variables</a></li>
+<li><a href="measure-sampl.html#endogenous-vs.-exogenous-variables" id="toc-endogenous-vs.-exogenous-variables"><span class="toc-section-number">4.1.6</span> Endogenous vs. Exogenous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measurement-scales" id="toc-measurement-scales"><span class="toc-section-number">4.2</span> Measurement Scales</a>
+<ul>
+<li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">4.2.1</span> Discrete Variables</a></li>
+<li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">4.2.2</span> Continuous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-methods" id="toc-sampling-methods"><span class="toc-section-number">4.3</span> Sampling Methods</a>
+<ul>
+<li><a href="measure-sampl.html#probability-sampling" id="toc-probability-sampling"><span class="toc-section-number">4.3.1</span> Probability Sampling</a></li>
+<li><a href="measure-sampl.html#non-probability-sampling" id="toc-non-probability-sampling"><span class="toc-section-number">4.3.2</span> Non-Probability Sampling</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">4.4</span> Sampling &amp; Nonsampling Error</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-error" id="toc-sampling-error"><span class="toc-section-number">4.4.1</span> Sampling Error</a></li>
+<li><a href="measure-sampl.html#nonsampling-error" id="toc-nonsampling-error"><span class="toc-section-number">4.4.2</span> Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#reliability-and-validity" id="toc-reliability-and-validity"><span class="toc-section-number">4.5</span> Reliability and Validity</a>
+<ul>
+<li><a href="measure-sampl.html#reliability" id="toc-reliability"><span class="toc-section-number">4.5.1</span> Reliability</a></li>
+<li><a href="measure-sampl.html#validity" id="toc-validity"><span class="toc-section-number">4.5.2</span> Validity</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="research.html#research" id="toc-research"><span class="toc-section-number">5</span> Research Fundamentals</a>
+<ul>
+<li><a href="research.html#research-questions" id="toc-research-questions"><span class="toc-section-number">5.1</span> Research Questions</a></li>
+<li><a href="research.html#research-hypotheses" id="toc-research-hypotheses"><span class="toc-section-number">5.2</span> Research Hypotheses</a></li>
+<li><a href="research.html#internal-vs.-external-validity" id="toc-internal-vs.-external-validity"><span class="toc-section-number">5.3</span> Internal vs. External Validity</a></li>
+<li><a href="research.html#research-methods" id="toc-research-methods"><span class="toc-section-number">5.4</span> Research Methods</a></li>
+<li><a href="research.html#research-designs" id="toc-research-designs"><span class="toc-section-number">5.5</span> Research Designs</a></li>
+<li><a href="research.html#review-questions-3" id="toc-review-questions-3"><span class="toc-section-number">5.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-prep" id="toc-data-prep"><span class="toc-section-number">6</span> Data Preparation</a>
+<ul>
+<li><a href="data-prep.html#data-extraction" id="toc-data-extraction"><span class="toc-section-number">6.1</span> Data Extraction</a>
+<ul>
+<li><a href="data-prep.html#data-architecture" id="toc-data-architecture"><span class="toc-section-number">6.1.1</span> Data Architecture</a></li>
+<li><a href="data-prep.html#database-normalization" id="toc-database-normalization"><span class="toc-section-number">6.1.2</span> Database Normalization</a></li>
+<li><a href="data-prep.html#modern-data-infrastructure" id="toc-modern-data-infrastructure"><span class="toc-section-number">6.1.3</span> Modern Data Infrastructure</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a>
+<ul>
+<li><a href="data-prep.html#missingness" id="toc-missingness"><span class="toc-section-number">6.2.1</span> Missingness</a></li>
+<li><a href="data-prep.html#outliers" id="toc-outliers"><span class="toc-section-number">6.2.2</span> Outliers</a></li>
+<li><a href="data-prep.html#low-variability" id="toc-low-variability"><span class="toc-section-number">6.2.3</span> Low Variability</a></li>
+<li><a href="data-prep.html#inconsistent-categories" id="toc-inconsistent-categories"><span class="toc-section-number">6.2.4</span> Inconsistent Categories</a></li>
+<li><a href="data-prep.html#data-binning" id="toc-data-binning"><span class="toc-section-number">6.2.5</span> Data Binning</a></li>
+</ul></li>
+<li><a href="data-prep.html#one-hot-encoding" id="toc-one-hot-encoding"><span class="toc-section-number">6.3</span> One-Hot Encoding</a></li>
+<li><a href="data-prep.html#feature-engineering" id="toc-feature-engineering"><span class="toc-section-number">6.4</span> Feature Engineering</a></li>
+<li><a href="data-prep.html#review-questions-4" id="toc-review-questions-4"><span class="toc-section-number">6.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="desc-stats.html#desc-stats" id="toc-desc-stats"><span class="toc-section-number">7</span> Descriptive Statistics</a>
+<ul>
+<li><a href="desc-stats.html#univariate-analysis" id="toc-univariate-analysis"><span class="toc-section-number">7.1</span> Univariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#measures-of-central-tendency" id="toc-measures-of-central-tendency"><span class="toc-section-number">7.1.1</span> Measures of Central Tendency</a></li>
+<li><a href="desc-stats.html#measures-of-spread" id="toc-measures-of-spread"><span class="toc-section-number">7.1.2</span> Measures of Spread</a></li>
+</ul></li>
+<li><a href="desc-stats.html#bivariate-analysis" id="toc-bivariate-analysis"><span class="toc-section-number">7.2</span> Bivariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#covariance" id="toc-covariance"><span class="toc-section-number">7.2.1</span> Covariance</a></li>
+<li><a href="desc-stats.html#correlation" id="toc-correlation"><span class="toc-section-number">7.2.2</span> Correlation</a></li>
+</ul></li>
+<li><a href="desc-stats.html#review-questions-5" id="toc-review-questions-5"><span class="toc-section-number">7.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="inf-stats.html#inf-stats" id="toc-inf-stats"><span class="toc-section-number">8</span> Statistical Inference</a>
+<ul>
+<li><a href="inf-stats.html#introduction-to-probability" id="toc-introduction-to-probability"><span class="toc-section-number">8.1</span> Introduction to Probability</a>
+<ul>
+<li><a href="inf-stats.html#probability-distributions" id="toc-probability-distributions"><span class="toc-section-number">8.1.1</span> Probability Distributions</a></li>
+<li><a href="inf-stats.html#conditional-probability" id="toc-conditional-probability"><span class="toc-section-number">8.1.2</span> Conditional Probability</a></li>
+</ul></li>
+<li><a href="inf-stats.html#central-limit-theorem" id="toc-central-limit-theorem"><span class="toc-section-number">8.2</span> Central Limit Theorem</a></li>
+<li><a href="inf-stats.html#confidence-intervals" id="toc-confidence-intervals"><span class="toc-section-number">8.3</span> Confidence Intervals</a>
+<ul>
+<li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
+<li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
+<li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
+<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
+<li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
+</ul></li>
+<li><a href="inf-stats.html#review-questions-6" id="toc-review-questions-6"><span class="toc-section-number">8.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="aod.html#aod" id="toc-aod"><span class="toc-section-number">9</span> Analysis of Differences</a>
+<ul>
+<li><a href="aod.html#parametric-vs.-nonparametric-tests" id="toc-parametric-vs.-nonparametric-tests"><span class="toc-section-number">9.1</span> Parametric vs. Nonparametric Tests</a></li>
+<li><a href="aod.html#differences-in-discrete-data" id="toc-differences-in-discrete-data"><span class="toc-section-number">9.2</span> Differences in Discrete Data</a></li>
+<li><a href="aod.html#differences-in-continuous-data" id="toc-differences-in-continuous-data"><span class="toc-section-number">9.3</span> Differences in Continuous Data</a></li>
+<li><a href="aod.html#review-questions-7" id="toc-review-questions-7"><span class="toc-section-number">9.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lm.html#lm" id="toc-lm"><span class="toc-section-number">10</span> Linear Regression</a>
+<ul>
+<li><a href="lm.html#sample-size" id="toc-sample-size"><span class="toc-section-number">10.1</span> Sample Size</a></li>
+<li><a href="lm.html#simple-linear-regression" id="toc-simple-linear-regression"><span class="toc-section-number">10.2</span> Simple Linear Regression</a></li>
+<li><a href="lm.html#multiple-linear-regression" id="toc-multiple-linear-regression"><span class="toc-section-number">10.3</span> Multiple Linear Regression</a></li>
+<li><a href="lm.html#moderation" id="toc-moderation"><span class="toc-section-number">10.4</span> Moderation</a></li>
+<li><a href="lm.html#mediation" id="toc-mediation"><span class="toc-section-number">10.5</span> Mediation</a></li>
+<li><a href="lm.html#review-questions-8" id="toc-review-questions-8"><span class="toc-section-number">10.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lme.html#lme" id="toc-lme"><span class="toc-section-number">11</span> Linear Model Extensions</a>
+<ul>
+<li><a href="lme.html#model-comparisons" id="toc-model-comparisons"><span class="toc-section-number">11.1</span> Model Comparisons</a></li>
+<li><a href="lme.html#hierarchical-regression" id="toc-hierarchical-regression"><span class="toc-section-number">11.2</span> Hierarchical Regression</a></li>
+<li><a href="lme.html#multilevel-models" id="toc-multilevel-models"><span class="toc-section-number">11.3</span> Multilevel Models</a></li>
+<li><a href="lme.html#polynomial-regression" id="toc-polynomial-regression"><span class="toc-section-number">11.4</span> Polynomial Regression</a></li>
+<li><a href="lme.html#review-questions-9" id="toc-review-questions-9"><span class="toc-section-number">11.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="log.html#log" id="toc-log"><span class="toc-section-number">12</span> Logistic Regression</a>
+<ul>
+<li><a href="log.html#binomial-logistic-regression" id="toc-binomial-logistic-regression"><span class="toc-section-number">12.1</span> Binomial Logistic Regression</a></li>
+<li><a href="log.html#multinomial-logistic-regression" id="toc-multinomial-logistic-regression"><span class="toc-section-number">12.2</span> Multinomial Logistic Regression</a></li>
+<li><a href="log.html#ordinal-logistic-regression" id="toc-ordinal-logistic-regression"><span class="toc-section-number">12.3</span> Ordinal Logistic Regression</a></li>
+<li><a href="log.html#review-questions-10" id="toc-review-questions-10"><span class="toc-section-number">12.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="pred-mod.html#pred-mod" id="toc-pred-mod"><span class="toc-section-number">13</span> Predictive Modeling</a>
+<ul>
+<li><a href="pred-mod.html#cross-validation" id="toc-cross-validation"><span class="toc-section-number">13.1</span> Cross-Validation</a></li>
+<li><a href="pred-mod.html#model-performance" id="toc-model-performance"><span class="toc-section-number">13.2</span> Model Performance</a></li>
+<li><a href="pred-mod.html#bias-variance-tradeoff" id="toc-bias-variance-tradeoff"><span class="toc-section-number">13.3</span> Bias-Variance Tradeoff</a></li>
+<li><a href="pred-mod.html#tree-based-algorithms" id="toc-tree-based-algorithms"><span class="toc-section-number">13.4</span> Tree-Based Algorithms</a></li>
+<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">13.5</span> Predictive Modeling</a></li>
+<li><a href="pred-mod.html#review-questions-11" id="toc-review-questions-11"><span class="toc-section-number">13.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#unsup-lrn" id="toc-unsup-lrn"><span class="toc-section-number">14</span> Unsupervised Learning</a>
+<ul>
+<li><a href="unsup-lrn.html#factor-analysis" id="toc-factor-analysis"><span class="toc-section-number">14.1</span> Factor Analysis</a>
+<ul>
+<li><a href="unsup-lrn.html#exploratory-factor-analysis-efa" id="toc-exploratory-factor-analysis-efa"><span class="toc-section-number">14.1.1</span> Exploratory Factor Analysis (EFA)</a></li>
+<li><a href="unsup-lrn.html#confirmatory-factor-analysis-cfa" id="toc-confirmatory-factor-analysis-cfa"><span class="toc-section-number">14.1.2</span> Confirmatory Factor Analysis (CFA)</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#clustering" id="toc-clustering"><span class="toc-section-number">14.2</span> Clustering</a>
+<ul>
+<li><a href="unsup-lrn.html#k-means-clustering" id="toc-k-means-clustering"><span class="toc-section-number">14.2.1</span> <span class="math inline">\(K\)</span>-Means Clustering</a></li>
+<li><a href="unsup-lrn.html#hierarchical-clustering" id="toc-hierarchical-clustering"><span class="toc-section-number">14.2.2</span> Hierarchical Clustering</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#review-questions-12" id="toc-review-questions-12"><span class="toc-section-number">14.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-viz.html#data-viz" id="toc-data-viz"><span class="toc-section-number">15</span> Data Visualization</a>
+<ul>
+<li><a href="data-viz.html#best-practices" id="toc-best-practices"><span class="toc-section-number">15.1</span> Best Practices</a>
+<ul>
+<li><a href="data-viz.html#color-palette" id="toc-color-palette"><span class="toc-section-number">15.1.1</span> Color Palette</a></li>
+<li><a href="data-viz.html#chart-borders" id="toc-chart-borders"><span class="toc-section-number">15.1.2</span> Chart Borders</a></li>
+<li><a href="data-viz.html#zero-baseline" id="toc-zero-baseline"><span class="toc-section-number">15.1.3</span> Zero Baseline</a></li>
+<li><a href="data-viz.html#intuitive-layout" id="toc-intuitive-layout"><span class="toc-section-number">15.1.4</span> Intuitive Layout</a></li>
+<li><a href="data-viz.html#preattentive-attributes" id="toc-preattentive-attributes"><span class="toc-section-number">15.1.5</span> Preattentive Attributes</a></li>
+</ul></li>
+<li><a href="data-viz.html#step-by-step-visual-upgrade" id="toc-step-by-step-visual-upgrade"><span class="toc-section-number">15.2</span> Step-by-Step Visual Upgrade</a>
+<ul>
+<li><a href="data-viz.html#step-1-build-bar-chart-with-defaults" id="toc-step-1-build-bar-chart-with-defaults"><span class="toc-section-number">15.2.1</span> Step 1: Build Bar Chart with Defaults</a></li>
+<li><a href="data-viz.html#step-2-remove-legend" id="toc-step-2-remove-legend"><span class="toc-section-number">15.2.2</span> Step 2: Remove Legend</a></li>
+<li><a href="data-viz.html#step-3-assign-colors-strategically" id="toc-step-3-assign-colors-strategically"><span class="toc-section-number">15.2.3</span> Step 3: Assign Colors Strategically</a></li>
+<li><a href="data-viz.html#step-4-add-axis-titles-and-margins" id="toc-step-4-add-axis-titles-and-margins"><span class="toc-section-number">15.2.4</span> Step 4: Add Axis Titles and Margins</a></li>
+<li><a href="data-viz.html#step-5-add-left-justified-title" id="toc-step-5-add-left-justified-title"><span class="toc-section-number">15.2.5</span> Step 5: Add Left-Justified Title</a></li>
+<li><a href="data-viz.html#step-6-remove-background" id="toc-step-6-remove-background"><span class="toc-section-number">15.2.6</span> Step 6: Remove Background</a></li>
+<li><a href="data-viz.html#step-7-remove-axis-ticks" id="toc-step-7-remove-axis-ticks"><span class="toc-section-number">15.2.7</span> Step 7: Remove Axis Ticks</a></li>
+<li><a href="data-viz.html#step-8-mute-titles" id="toc-step-8-mute-titles"><span class="toc-section-number">15.2.8</span> Step 8: Mute Titles</a></li>
+<li><a href="data-viz.html#step-9-flip-axes" id="toc-step-9-flip-axes"><span class="toc-section-number">15.2.9</span> Step 9: Flip Axes</a></li>
+<li><a href="data-viz.html#step-10-sort-data" id="toc-step-10-sort-data"><span class="toc-section-number">15.2.10</span> Step 10: Sort Data</a></li>
+</ul></li>
+<li><a href="data-viz.html#visualization-types" id="toc-visualization-types"><span class="toc-section-number">15.3</span> Visualization Types</a>
+<ul>
+<li><a href="data-viz.html#tables" id="toc-tables"><span class="toc-section-number">15.3.1</span> Tables</a></li>
+<li><a href="data-viz.html#heatmaps" id="toc-heatmaps"><span class="toc-section-number">15.3.2</span> Heatmaps</a></li>
+<li><a href="data-viz.html#scatterplots" id="toc-scatterplots"><span class="toc-section-number">15.3.3</span> Scatterplots</a></li>
+<li><a href="data-viz.html#line-graphs" id="toc-line-graphs"><span class="toc-section-number">15.3.4</span> Line Graphs</a></li>
+<li><a href="data-viz.html#slopegraphs" id="toc-slopegraphs"><span class="toc-section-number">15.3.5</span> Slopegraphs</a></li>
+<li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">15.3.6</span> Bar Charts</a></li>
+<li><a href="data-viz.html#combination-charts" id="toc-combination-charts"><span class="toc-section-number">15.3.7</span> Combination Charts</a></li>
+<li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">15.3.8</span> Waterfall Charts</a></li>
+<li><a href="data-viz.html#waffle-charts" id="toc-waffle-charts"><span class="toc-section-number">15.3.9</span> Waffle Charts</a></li>
+<li><a href="data-viz.html#sankey-diagrams" id="toc-sankey-diagrams"><span class="toc-section-number">15.3.10</span> Sankey Diagrams</a></li>
+<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.11</span> Pie Charts</a></li>
+<li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.12</span> 3D Visuals</a></li>
+</ul></li>
+<li><a href="data-viz.html#elegant-data-visualization" id="toc-elegant-data-visualization"><span class="toc-section-number">15.4</span> Elegant Data Visualization</a></li>
+<li><a href="data-viz.html#review-questions-13" id="toc-review-questions-13"><span class="toc-section-number">15.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="storytelling.html#storytelling" id="toc-storytelling"><span class="toc-section-number">16</span> Data Storytelling</a>
+<ul>
+<li><a href="storytelling.html#know-your-audience" id="toc-know-your-audience"><span class="toc-section-number">16.1</span> Know Your Audience</a></li>
+<li><a href="storytelling.html#production-status" id="toc-production-status"><span class="toc-section-number">16.2</span> Production Status</a></li>
+<li><a href="storytelling.html#structural-elements" id="toc-structural-elements"><span class="toc-section-number">16.3</span> Structural Elements</a>
+<ul>
+<li><a href="storytelling.html#tldr" id="toc-tldr"><span class="toc-section-number">16.3.1</span> TL;DR</a></li>
+<li><a href="storytelling.html#purpose" id="toc-purpose"><span class="toc-section-number">16.3.2</span> Purpose</a></li>
+<li><a href="storytelling.html#methodology" id="toc-methodology"><span class="toc-section-number">16.3.3</span> Methodology</a></li>
+<li><a href="storytelling.html#results" id="toc-results"><span class="toc-section-number">16.3.4</span> Results</a></li>
+<li><a href="storytelling.html#limitations" id="toc-limitations"><span class="toc-section-number">16.3.5</span> Limitations</a></li>
+<li><a href="storytelling.html#next-steps" id="toc-next-steps"><span class="toc-section-number">16.3.6</span> Next Steps</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">16.3.7</span> Appendix</a></li>
+</ul></li>
+<li><a href="storytelling.html#qa" id="toc-qa"><span class="toc-section-number">16.4</span> Q&amp;A</a></li>
+<li><a href="storytelling.html#review-questions-14" id="toc-review-questions-14"><span class="toc-section-number">16.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="bibli.html#bibli" id="toc-bibli"><span class="toc-section-number">17</span> Bibliography</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">18</span> Appendix</a>
+<ul>
+<li><a href="appendix.html#d-framework-1" id="toc-d-framework-1"><span class="toc-section-number">18.1</span> 4D Framework</a>
+<ul>
+<li><a href="appendix.html#discover" id="toc-discover"><span class="toc-section-number">18.1.1</span> Discover</a></li>
+<li><a href="appendix.html#design" id="toc-design"><span class="toc-section-number">18.1.2</span> Design</a></li>
+<li><a href="appendix.html#develop" id="toc-develop"><span class="toc-section-number">18.1.3</span> Develop</a></li>
+<li><a href="appendix.html#deliver" id="toc-deliver"><span class="toc-section-number">18.1.4</span> Deliver</a></li>
+</ul></li>
+<li><a href="appendix.html#data-visualization" id="toc-data-visualization"><span class="toc-section-number">18.2</span> Data Visualization</a>
+<ul>
+<li><a href="appendix.html#step-by-step-visual-upgrade-1" id="toc-step-by-step-visual-upgrade-1"><span class="toc-section-number">18.2.1</span> Step-by-Step Visual Upgrade</a></li>
+<li><a href="appendix.html#tables-1" id="toc-tables-1"><span class="toc-section-number">18.2.2</span> Tables</a></li>
+<li><a href="appendix.html#heatmaps-1" id="toc-heatmaps-1"><span class="toc-section-number">18.2.3</span> Heatmaps</a></li>
+<li><a href="appendix.html#scatterplots-1" id="toc-scatterplots-1"><span class="toc-section-number">18.2.4</span> Scatterplots</a></li>
+<li><a href="appendix.html#line-charts" id="toc-line-charts"><span class="toc-section-number">18.2.5</span> Line Charts</a></li>
+<li><a href="appendix.html#slopegraphs-1" id="toc-slopegraphs-1"><span class="toc-section-number">18.2.6</span> Slopegraphs</a></li>
+<li><a href="appendix.html#bar-charts-1" id="toc-bar-charts-1"><span class="toc-section-number">18.2.7</span> Bar Charts</a></li>
+<li><a href="appendix.html#combination-charts-1" id="toc-combination-charts-1"><span class="toc-section-number">18.2.8</span> Combination Charts</a></li>
+<li><a href="appendix.html#waterfall-charts-1" id="toc-waterfall-charts-1"><span class="toc-section-number">18.2.9</span> Waterfall Charts</a></li>
+<li><a href="appendix.html#waffle-charts-1" id="toc-waffle-charts-1"><span class="toc-section-number">18.2.10</span> Waffle Charts</a></li>
+<li><a href="appendix.html#sankey-diagrams-1" id="toc-sankey-diagrams-1"><span class="toc-section-number">18.2.11</span> Sankey Diagrams</a></li>
+<li><a href="appendix.html#pie-charts-1" id="toc-pie-charts-1"><span class="toc-section-number">18.2.12</span> Pie Charts</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The Fundamentals of People Analytics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="lme" class="section level1" number="11">
+<h1><span class="header-section-number">11</span> Linear Model Extensions</h1>
+<p>This chapter covers several techniques for expanding the linear regression framework covered in Chapter <a href="lm.html#lm">10</a> to test hypotheses with more nuance and complexity.</p>
+<div id="model-comparisons" class="section level2" number="11.1">
+<h2><span class="header-section-number">11.1</span> Model Comparisons</h2>
+<p>Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs. female employees or across ethnic cohorts.</p>
+<p>To illustrate, let’s fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.</p>
+<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="lme.html#cb372-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb372-2"><a href="lme.html#cb372-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb372-3"><a href="lme.html#cb372-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb372-4"><a href="lme.html#cb372-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb372-5"><a href="lme.html#cb372-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
+<span id="cb372-6"><a href="lme.html#cb372-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb372-7"><a href="lme.html#cb372-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
+<span id="cb372-8"><a href="lme.html#cb372-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
+<span id="cb372-9"><a href="lme.html#cb372-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb372-10"><a href="lme.html#cb372-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Partition data into overtime and non-overtime groups</span></span>
+<span id="cb372-11"><a href="lme.html#cb372-11" aria-hidden="true" tabindex="-1"></a>data_ot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span>)</span>
+<span id="cb372-12"><a href="lme.html#cb372-12" aria-hidden="true" tabindex="-1"></a>data_nonot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;No&#39;</span>)</span>
+<span id="cb372-13"><a href="lme.html#cb372-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb372-14"><a href="lme.html#cb372-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups</span></span>
+<span id="cb372-15"><a href="lme.html#cb372-15" aria-hidden="true" tabindex="-1"></a>mlm.fit.ot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_ot)</span>
+<span id="cb372-16"><a href="lme.html#cb372-16" aria-hidden="true" tabindex="-1"></a>mlm.fit.nonot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_nonot)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + 
+##     org_tenure, data = data_ot)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -80.927 -22.171  -1.383  19.740 106.769 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    121.815     14.767   8.249 3.27e-13 ***
+## engagement      13.171      4.569   2.883  0.00472 ** 
+## job_lvl         35.983      4.754   7.570 1.10e-11 ***
+## stock_opt_lvl    7.139      3.342   2.136  0.03481 *  
+## org_tenure       5.369      0.722   7.437 2.15e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 32.78 on 113 degrees of freedom
+## Multiple R-squared:  0.688,  Adjusted R-squared:  0.6769 
+## F-statistic: 62.29 on 4 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + 
+##     org_tenure, data = data_nonot)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -81.952 -19.422   0.136  20.813  96.003 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   132.3391     8.6695  15.265  &lt; 2e-16 ***
+## engagement      9.8523     2.4721   3.985 8.56e-05 ***
+## job_lvl        33.1396     3.0014  11.042  &lt; 2e-16 ***
+## stock_opt_lvl   4.6377     2.1587   2.148   0.0325 *  
+## org_tenure      6.0435     0.4039  14.964  &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 29.98 on 286 degrees of freedom
+## Multiple R-squared:  0.7332, Adjusted R-squared:  0.7295 
+## F-statistic: 196.5 on 4 and 286 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Since we are comparing two models, we need not scale the variables since comparing a specific predictor’s relationship with the response in the overtime model can be juxtaposed against the same predictor in the non-overtime model using the original units of measurement.</p>
+<p>Based on the output shown in figures in Figure <a href="#fig:mlm-ot"><strong>??</strong></a> and in Figure <a href="#fig:mlm-nonot"><strong>??</strong></a>, the model for salespeople who worked overtime explains more variance in square root transformed <code>ytd_sales</code> (<span class="math inline">\(R^2\)</span> = .73) relative to the model for salespeople without overtime (<span class="math inline">\(R^2\)</span> = .69).</p>
+<p>We can see that <code>engagement</code> has a larger effect on the transformed response among salespeople who worked overtime (<span class="math inline">\(\beta\)</span> = 13.17, <span class="math inline">\(t\)</span>(113) = 2.88, <span class="math inline">\(p\)</span> &lt; .01) relative to those who worked no overtime (<span class="math inline">\(\beta\)</span> = 9.85, <span class="math inline">\(t\)</span>(286) = 3.99, <span class="math inline">\(p\)</span> &lt; .001). In addition, <code>job_lvl</code> has a stronger association with the response in the overtime group (<span class="math inline">\(\beta\)</span> = 35.98, <span class="math inline">\(t\)</span>(113) = 7.57, <span class="math inline">\(p\)</span> &lt; .01) relative to the non-overtime group (<span class="math inline">\(\beta\)</span> = 33.14, <span class="math inline">\(t\)</span>(286) = 11.04, <span class="math inline">\(p\)</span> &lt; .001). Given that the intercept (average square root of <code>ytd_sales</code> when the values of all predictors are set to 0) is higher for the non-overtime group (<span class="math inline">\(\beta\)</span> = 132.34, <span class="math inline">\(t\)</span>(286) = 15.27, <span class="math inline">\(p\)</span> &lt; .001) than for the overtime group (<span class="math inline">\(\beta\)</span> = 121.82, <span class="math inline">\(t\)</span>(113) = 8.25, <span class="math inline">\(p\)</span> &lt; .001), differences in the coefficients on <code>job_lvl</code> may indicate that one’s job level is a proxy for skill and capacity to sell more in fewer hours.</p>
+</div>
+<div id="hierarchical-regression" class="section level2" number="11.2">
+<h2><span class="header-section-number">11.2</span> Hierarchical Regression</h2>
+<p>A multiple model approach can also be useful for understanding the incremental value a given variable – or set of variables – provides above and beyond a set of control variables. <strong>Hierarchical regression</strong> is a method by which variables are added to the model in steps and changes in model statistics are evaluated after each step. Let’s use hierarchical regression to test the hypothesis below.</p>
+<p><strong>H1:</strong> Among salespeople who work overtime, engagement has a significant positive relationship with YTD sales after controlling for job level, stock option level, and organization tenure.</p>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(ytd_sales) ~ job_lvl + stock_opt_lvl + org_tenure, 
+##     data = data_ot)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -73.279 -23.803  -0.339  23.017  96.742 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   154.6969     9.6759  15.988  &lt; 2e-16 ***
+## job_lvl        37.5715     4.8707   7.714 5.02e-12 ***
+## stock_opt_lvl   5.2397     3.3794   1.550    0.124    
+## org_tenure      5.4935     0.7434   7.389 2.64e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 33.81 on 114 degrees of freedom
+## Multiple R-squared:  0.665,  Adjusted R-squared:  0.6562 
+## F-statistic: 75.44 on 3 and 114 DF,  p-value: &lt; 2.2e-16</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + 
+##     org_tenure, data = data_ot)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -80.927 -22.171  -1.383  19.740 106.769 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)    121.815     14.767   8.249 3.27e-13 ***
+## engagement      13.171      4.569   2.883  0.00472 ** 
+## job_lvl         35.983      4.754   7.570 1.10e-11 ***
+## stock_opt_lvl    7.139      3.342   2.136  0.03481 *  
+## org_tenure       5.369      0.722   7.437 2.15e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 32.78 on 113 degrees of freedom
+## Multiple R-squared:  0.688,  Adjusted R-squared:  0.6769 
+## F-statistic: 62.29 on 4 and 113 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Comparing Figure <a href="#fig:hier-ctrl"><strong>??</strong></a> to Figure <a href="#fig:hier-main"><strong>??</strong></a>, we can determine that the addition of <code>engagement</code> to the control set explains an additional 2% of the variance in YTD sales (<span class="math inline">\(\Delta R^2 = .69 - .67 = .02\)</span>).</p>
+<p>In addition, Figure <a href="#fig:hier-ctrl"><strong>??</strong></a> shows that without <code>engagement</code> in the model, <code>stock_opt_lvl</code> is not significant. This is a good reminder that regression does not examine bivariate relationships of each predictor with the response <em>independent of other variables</em>; rather, the relationships among all variables in the model impact which predictors emerge as having a statistical association with the response.</p>
+</div>
+<div id="multilevel-models" class="section level2" number="11.3">
+<h2><span class="header-section-number">11.3</span> Multilevel Models</h2>
+<p>The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have <em>fixed</em> effects on the outcome and these effects do not vary based on group(s) to which the observations belong. These models are sometimes referred to as <strong>fixed effects</strong> models.</p>
+<p>It is often the case, however, that the strength and nature of predictors’ effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.</p>
+<p>You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of <span class="math inline">\(Y\)</span> when all predictors are set to 0 – namely the <span class="math inline">\(Y\)</span>-intercept <span class="math inline">\(\beta_0\)</span> – does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is <em>random</em> rather than <em>fixed</em> for each group. Group-level effects can also be modeled for select – or all – <span class="math inline">\(X\)</span> variables in addition to varying <span class="math inline">\(\beta_0\)</span> for each group.</p>
+<p>Consider a linear model constructed to test hypothesized relationships of every <span class="math inline">\(X\)</span> variable with an outcome <span class="math inline">\(Y\)</span>. This is the equivalent of building <span class="math inline">\(G\)</span> independent models, where <span class="math inline">\(G\)</span> is the number of groups, using data subsetted for the respective group:</p>
+<p><span class="math display">\[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon \]</span></p>
+<p>In this case, it is easy to consider wrapping the <code>lm()</code> function within a <code>for</code> loop that iterates through each <span class="math inline">\(G\)</span> group, filtering to each of the respective group’s data in turn. However, if we hypothesize that the effects of only <em>certain</em> variables depend on the <span class="math inline">\(G\)</span> group, we need to estimate both group-level <em>and</em> observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a <strong>mixed effects</strong> model. This is also known as <strong>Hierarchical Linear Modeling (HLM)</strong>, which is materially different from Hierarchical Linear Regression (HLR) covered in the prior section, which compared nested regression models.</p>
+<p>A model in which group-level effects are hypothesized for <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(X_1\)</span> and observation-level effects are hypothesized for all other predictors is expressed as:</p>
+<p><span class="math display">\[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]</span></p>
+<p>To fit a linear mixed effects model in R, we can leverage the <code>lmer()</code> function from the <code>lmerTest</code> package. Let’s demonstrate how to fit a model to understand the random effects of <code>stock_opt_lvl</code> and fixed effects of <code>engagement</code>, <code>job_lvl</code>, and <code>org_tenure</code> on <code>sqrt(ytd_sales)</code>:</p>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="lme.html#cb377-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb377-2"><a href="lme.html#cb377-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb377-3"><a href="lme.html#cb377-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb377-4"><a href="lme.html#cb377-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear mixed model</span></span>
+<span id="cb377-5"><a href="lme.html#cb377-5" aria-hidden="true" tabindex="-1"></a>lme.fit <span class="ot">&lt;-</span> lmerTest<span class="sc">::</span><span class="fu">lmer</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> stock_opt_lvl) <span class="sc">+</span> org_tenure, data_ot)</span>
+<span id="cb377-6"><a href="lme.html#cb377-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb377-7"><a href="lme.html#cb377-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize model results</span></span>
+<span id="cb377-8"><a href="lme.html#cb377-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme.fit)</span></code></pre></div>
+<pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
+## lmerModLmerTest]
+## Formula: sqrt(ytd_sales) ~ engagement + job_lvl + (1 | stock_opt_lvl) +  
+##     org_tenure
+##    Data: data_ot
+## 
+## REML criterion at convergence: 1141.3
+## 
+## Scaled residuals: 
+##      Min       1Q   Median       3Q      Max 
+## -2.52388 -0.63661  0.00411  0.61215  3.13684 
+## 
+## Random effects:
+##  Groups        Name        Variance Std.Dev.
+##  stock_opt_lvl (Intercept)   51.16   7.152  
+##  Residual                  1069.27  32.700  
+## Number of obs: 118, groups:  stock_opt_lvl, 4
+## 
+## Fixed effects:
+##             Estimate Std. Error       df t value Pr(&gt;|t|)    
+## (Intercept) 133.6129    14.5677  88.8995   9.172 1.67e-14 ***
+## engagement   12.0038     4.5140 113.9662   2.659  0.00896 ** 
+## job_lvl      35.8950     4.7470 112.4054   7.562 1.17e-11 ***
+## org_tenure    5.2542     0.7265 113.5918   7.232 5.94e-11 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Correlation of Fixed Effects:
+##            (Intr) enggmn jb_lvl
+## engagement -0.727              
+## job_lvl    -0.445 -0.110       
+## org_tenure  0.046 -0.054 -0.463</code></pre>
+<p>The results of <code>lmer()</code> contain sections for both fixed and random effects. Consistent with the interpretation of general linear model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and <code>sqrt(ytd_sales)</code> across the levels of <code>stock_opt_lvl</code> that would be missed without a mixed model that accounts for these group-level effects.</p>
+<p>For a more comprehensive treatment on multilevel models, see Gelman and Hill (2006).</p>
+</div>
+<div id="polynomial-regression" class="section level2" number="11.4">
+<h2><span class="header-section-number">11.4</span> Polynomial Regression</h2>
+<p>Linear regression is a powerful approach to understanding the relative strength of predictors’ associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this section, we will discuss how to extend the linear regression framework and relax linear model assumptions to handle non-linear relationships.</p>
+<p>In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., workforce planning model that estimates hires by month).</p>
+<p>There is often a seasonality element inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). <strong>Seasonality</strong> is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.</p>
+<p>The simple linear regression equation, <span class="math inline">\(Y = \beta_0 + \beta_1 X + \epsilon\)</span>, can be easily extended to include higher order polynomial terms and achieve a more flexible fit. This is known as <strong>polynomial regression</strong>.</p>
+<ul>
+<li>Quadratic (2nd Order Polynomial) Regression Equation: <span class="math inline">\(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon\)</span></li>
+<li>Cubic (3nd Order Polynomial) Regression Equation: <span class="math inline">\(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon\)</span></li>
+</ul>
+<p>Figure <a href="lme.html#fig:poly-fun">11.1</a> illustrates how higher-order polynomial functions can fit more curvilinear trends relative to a simple linear projection.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:poly-fun"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/poly-fun-1.png" alt="Left: Linear turnover trend for $y = .75x + 3.5$. Middle: Quadratic turnover trend for $y = 7.3x - .53x^2 - 6.97$. Right: Cubic turnover trend for $y = -12.48x + 2.47x^2 - .13x^3 + 31.01$." width="100%" />
+<p class="caption">
+Figure 11.1: Left: Linear turnover trend for <span class="math inline">\(y = .75x + 3.5\)</span>. Middle: Quadratic turnover trend for <span class="math inline">\(y = 7.3x - .53x^2 - 6.97\)</span>. Right: Cubic turnover trend for <span class="math inline">\(y = -12.48x + 2.47x^2 - .13x^3 + 31.01\)</span>.
+</p>
+</div>
+<p>It is important to note that adding higher order terms to the regression equation usually increases <span class="math inline">\(R^2\)</span> due to a more flexible fit to the data, but the additional coefficients are not necessarily significant. <span class="math inline">\(R^2\)</span> will approach 1 as the power of <span class="math inline">\(x\)</span> approaches <span class="math inline">\(n-1\)</span> since the fit line will connect every data point. However, a model that results in a perfect – or near perfect – fit is likely too flexible to generalize well to other data. This problem is known as overfitting and will be covered in Chapter <a href="pred-mod.html#pred-mod">13</a>. As a general rule, it is best not to add polynomial terms beyond the second or third orders to protect against overfitting the model.</p>
+<p>Comparing the Adjusted <span class="math inline">\(R^2\)</span> for models with higher-order terms to one with only linear terms will help in determining whether higher-order polynomials add value to the model in explaining incremental variance in the response. Evaluating whether the coefficients on higher-order polynomials are statistically significant is important in determining <em>which variables</em> are contributing to any observed increases in Adjusted <span class="math inline">\(R^2\)</span>.</p>
+<p>Let’s demonstrate how to fit a regression model with polynomial terms in R using the <code>turnover_trends</code> dataset. First, we will subset this data frame to level 4 People Scientists who work remotely, based on the notion that turnover varies by <code>level</code> and <code>remote</code>, and then visualize the turnover trend to understand month-over-month variation across years.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ps-turnover-trends"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ps-turnover-trends-1.png" alt="Year 1-5 turnover trends for level 4 People Scientists, stratified by remote (dark grey line) vs. non-remote (light grey line)." width="100%" />
+<p class="caption">
+Figure 11.2: Year 1-5 turnover trends for level 4 People Scientists, stratified by remote (dark grey line) vs. non-remote (light grey line).
+</p>
+</div>
+<p>As we can see in Figure <a href="lme.html#fig:ps-turnover-trends">11.2</a>, the relationship between month and turnover rate is non-linear, and level 4 People Scientists who work remotely leave at lower rates relative to those who do not work remotely. There is a clear seasonal pattern that is consistent across all five years as well as remote vs. non-remote groups; namely, there is a spike in turnover between March and June as well as later in the year (November/December). Fitting a model to these data will require non-linear terms.</p>
+<p>Adding polynomial terms requires an indicator variable <code>I()</code> in which the value of <span class="math inline">\(x\)</span> is raised to the desired order (e.g., <span class="math inline">\(x^2\)</span> = <code>I(x^2)</code>). Let’s start by fitting linear, quadratic, and cubic regression models (to compare performance) using only <code>month</code> as a predictor. Notice that the shape of the trends resemble the cubic function shown in Figure <a href="lme.html#fig:poly-fun">11.1</a> in that there are two discernible inflection points at which the trend reverses directions.</p>
+<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="lme.html#cb379-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover data</span></span>
+<span id="cb379-2"><a href="lme.html#cb379-2" aria-hidden="true" tabindex="-1"></a>ps.lin.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb379-3"><a href="lme.html#cb379-3" aria-hidden="true" tabindex="-1"></a>ps.quad.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> ps_turnover)</span>
+<span id="cb379-4"><a href="lme.html#cb379-4" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>), <span class="at">data =</span> ps_turnover)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ month, data = ps_turnover)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -3.2807 -1.3007 -0.3407  0.9218  4.5293 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.85067    0.35047   13.84   &lt;2e-16 ***
+## month        0.04000    0.04762    0.84    0.403    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.801 on 118 degrees of freedom
+## Multiple R-squared:  0.005944,   Adjusted R-squared:  -0.00248 
+## F-statistic: 0.7056 on 1 and 118 DF,  p-value: 0.4026</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ month + I(month^2), data = ps_turnover)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -2.9140 -1.2790 -0.3990  0.9535  4.6560 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  4.24400    0.58692   7.231 5.35e-11 ***
+## month        0.30000    0.20758   1.445    0.151    
+## I(month^2)  -0.02000    0.01554  -1.287    0.201    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.796 on 117 degrees of freedom
+## Multiple R-squared:  0.01981,    Adjusted R-squared:  0.003058 
+## F-statistic: 1.182 on 2 and 117 DF,  p-value: 0.3101</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ month + I(month^2) + I(month^3), 
+##     data = ps_turnover)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -1.924 -1.464 -0.114  0.486  3.666 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  1.514000   0.873921   1.732   0.0859 .  
+## month        2.410000   0.558831   4.313 3.41e-05 ***
+## I(month^2)  -0.410000   0.097879  -4.189 5.49e-05 ***
+## I(month^3)   0.020000   0.004963   4.030   0.0001 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.689 on 116 degrees of freedom
+## Multiple R-squared:  0.1402, Adjusted R-squared:  0.1179 
+## F-statistic: 6.304 on 3 and 116 DF,  p-value: 0.0005334</code></pre>
+<p>The linear (<span class="math inline">\(F(1,118)\)</span> = .71, <span class="math inline">\(p\)</span> = .40) and quadratic (<span class="math inline">\(F(2,117)\)</span> = 1.18, <span class="math inline">\(p\)</span> = .31) models are not significant. However, as expected based on the shape of the turnover trend, the cubic model is significant (<span class="math inline">\(F(3,116)\)</span> = 6.30, <span class="math inline">\(p\)</span> &lt; .001) and the linear (<code>month</code>), quadratic (<code>I(month^2)</code>), and cubic (<code>I(month^3)</code>) terms all provide significant information in estimating turnover rates (<span class="math inline">\(p\)</span> &lt; .001).</p>
+<p>While the cubic model achieved statistical significance at the <span class="math inline">\(p\)</span> &lt; .001 level, 86% of the variance in monthly turnover rates remains unexplained (1 - <span class="math inline">\(R^2\)</span> = .86). To improve the performance of the model, our model needs to reflect the fact that turnover varies as a function of <code>year</code> and <code>remote</code> in addition to <code>month</code>.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:turnover-pred"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/turnover-pred-1.png" alt="Linear, quadratic, and cubic model fit (red dashed line) to remote (dark grey points) and non-remote (light grey points) groups." width="100%" />
+<p class="caption">
+Figure 11.3: Linear, quadratic, and cubic model fit (red dashed line) to remote (dark grey points) and non-remote (light grey points) groups.
+</p>
+</div>
+<p>As shown in Figure <a href="lme.html#fig:turnover-pred">11.3</a>, the multidimensional data vary widely around estimates produced by the two-dimensional models (i.e., <code>turnover_rate</code> predicted on the basis of <code>month</code>). While the cubic regression model reflects the seasonality in month-over-month turnover, there are notable differences between remote and non-remote turnover rates as well as differences across years.</p>
+<p>Let’s add <code>remote</code> to the cubic regression model to see how performance changes.</p>
+<div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="lme.html#cb383-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
+<span id="cb383-2"><a href="lme.html#cb383-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb383-3"><a href="lme.html#cb383-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb383-4"><a href="lme.html#cb383-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb383-5"><a href="lme.html#cb383-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ month + I(month^2) + I(month^3) + 
+##     remote, data = ps_turnover)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -1.104 -0.764 -0.644 -0.334  2.846 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  2.334000   0.775051   3.011   0.0032 ** 
+## month        2.410000   0.488069   4.938 2.70e-06 ***
+## I(month^2)  -0.410000   0.085485  -4.796 4.89e-06 ***
+## I(month^3)   0.020000   0.004335   4.614 1.03e-05 ***
+## remoteYes   -1.640000   0.269344  -6.089 1.54e-08 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.475 on 115 degrees of freedom
+## Multiple R-squared:  0.3498, Adjusted R-squared:  0.3272 
+## F-statistic: 15.47 on 4 and 115 DF,  p-value: 3.758e-10</code></pre>
+<p>As shown in Figure <a href="#fig:ps-cube-mnthrem-output"><strong>??</strong></a>, accounting for remote status increases explained variance by 21% (.35 - .14). In addition to the change in explained variance <span class="math inline">\(\Delta R^2\)</span>, the coefficient on <code>remote</code> is statistically significant (<span class="math inline">\(\beta\)</span> = -1.64, <span class="math inline">\(t\)</span>(115) = -6.09, <span class="math inline">\(p\)</span> &lt; .001). On average, the turnover rate for remote People Scientists is 1.64% lower than the turnover rate for non-remote People Scientists.</p>
+<p>Next, let’s include <code>year</code> in the model since turnover rates also vary along this dimension.</p>
+<div class="sourceCode" id="cb385"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb385-1"><a href="lme.html#cb385-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
+<span id="cb385-2"><a href="lme.html#cb385-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> year <span class="sc">+</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb385-3"><a href="lme.html#cb385-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb385-4"><a href="lme.html#cb385-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb385-5"><a href="lme.html#cb385-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ year + month + I(month^2) + I(month^3) + 
+##     remote, data = ps_turnover)
+## 
+## Residuals:
+##    Min     1Q Median     3Q    Max 
+## -1.419 -1.104  0.321  0.666  1.536 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  0.36900    0.63650   0.580    0.563    
+## year         0.65500    0.07338   8.926 8.71e-15 ***
+## month        2.41000    0.37609   6.408 3.43e-09 ***
+## I(month^2)  -0.41000    0.06587  -6.224 8.28e-09 ***
+## I(month^3)   0.02000    0.00334   5.988 2.53e-08 ***
+## remoteYes   -1.64000    0.20755  -7.902 1.90e-12 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.137 on 114 degrees of freedom
+## Multiple R-squared:  0.6173, Adjusted R-squared:  0.6005 
+## F-statistic: 36.77 on 5 and 114 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>Explained variance increases to 62% by adding <code>year</code> to the model. While the coefficient on <code>year</code> is statistically significant (<span class="math inline">\(\beta\)</span> = .66, <span class="math inline">\(t\)</span>(114) = 8.93, <span class="math inline">\(p\)</span> &lt; .001), the change in attrition by year is not linear. Visualizing the distribution of turnover rates by year will provide evidence that a linear year-over-year growth factor will result in some large residuals since it will not capture the more complex trend present in these data.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ps-turnover-yrly-dist"></span>
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ps-turnover-yrly-dist-1.png" alt="Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group." width="100%" />
+<p class="caption">
+Figure 11.4: Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with <span class="math inline">\(y\)</span>-intercept lowered by 1.64 for remote group.
+</p>
+</div>
+<p>Given the cubic nature of the change in turnover year-over-year, let’s add quadratic and cubic terms for <code>year</code> to examine changes in model performance:</p>
+<pre><code>## 
+## Call:
+## lm(formula = turnover_rate ~ year + I(year^2) + I(year^3) + month + 
+##     I(month^2) + I(month^3) + remote, data = ps_turnover)
+## 
+## Residuals:
+##        Min         1Q     Median         3Q        Max 
+## -0.0025714 -0.0004286 -0.0004286  0.0017143  0.0017143 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept) -1.866e+00  1.875e-03  -995.2   &lt;2e-16 ***
+## year         5.906e+00  2.179e-03  2710.7   &lt;2e-16 ***
+## I(year^2)   -2.712e+00  8.087e-04 -3353.4   &lt;2e-16 ***
+## I(year^3)    3.625e-01  8.929e-05  4060.0   &lt;2e-16 ***
+## month        2.410e+00  5.491e-04  4388.7   &lt;2e-16 ***
+## I(month^2)  -4.100e-01  9.618e-05 -4262.8   &lt;2e-16 ***
+## I(month^3)   2.000e-02  4.877e-06  4100.8   &lt;2e-16 ***
+## remoteYes   -1.640e+00  3.030e-04 -5411.7   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.00166 on 112 degrees of freedom
+## Multiple R-squared:      1,  Adjusted R-squared:      1 
+## F-statistic: 1.996e+07 on 7 and 112 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The inclusion of higher-order polynomials on <code>year</code> result in a perfect fit to these data (<span class="math inline">\(R^2\)</span> = 1). This indicates that the slope of the relationship between <code>month</code> and <code>turnover_rate</code> is perfectly consistent across years and within remote and non-remote groups.</p>
+<p>Our resulting equation for estimating <code>turnover_rate</code> on the basis of a combination of linear and non-linear values of <code>year</code>, <code>month</code>, and <code>remote</code> is defined by:</p>
+<p><span class="math display">\[ \hat y = -1.87 + 5.91year - 2.71year^2 + .36year^3 + 2.41month - .41month^2 + .02month^3 - 1.64remote + \epsilon \]</span></p>
+<p>The performance of this model may initially seem like a cause for celebration, but the probability is low that this model would estimate future turnover with such a high degree of accuracy. While these data were generated with a goal to simplify illustrations and facilitate a working knowledge of polynomial regression mechanics, data which conform to such a constant pattern of seasonality across multiple years is a highly improbable situation in practice. As stated earlier in this chapter, a model that results in a perfect fit is likely too flexible to generalize well to other data, and methods of evaluating how well models are likely to perform on future data will be covered in Chapter <a href="pred-mod.html#pred-mod">13</a>.</p>
+</div>
+<div id="review-questions-9" class="section level2" number="11.5">
+<h2><span class="header-section-number">11.5</span> Review Questions</h2>
+<ol style="list-style-type: decimal">
+<li><p>What are some people analytics applications for comparing output from several regression models?</p></li>
+<li><p>What modeling technique is appropriate for understanding an independent variable’s contribution to a model’s <span class="math inline">\(R^2\)</span> beyond a set of control variables?</p></li>
+<li><p>In the context of Hierarchical Linear Regression, what is the indicator that <span class="math inline">\(\Delta{R^2}\)</span> is statistically significant when evaluating whether a particular independent variable provides meaningful information beyond a set of controls?</p></li>
+<li><p>What are some examples of hypotheses that would warrant a linear mixed effects model over a general linear model?</p></li>
+<li><p>What are the differences between Hierarchical Linear Modeling (HLM), which is also referred to as multilevel or mixed effects modeling, and Hierarchical Linear Regression (HLR)?</p></li>
+<li><p>In what ways does polynomial regression differ from linear regression?</p></li>
+<li><p>Why is it important to evaluate the nature of relationships at various levels of a categorical or time variable?</p></li>
+<li><p>What shape characterizes a quadratic function?</p></li>
+<li><p>If the coefficient on the cubic term is not statistically significant (<span class="math inline">\(p\)</span> &gt;= .05) in a cubic regression model, but the linear and quadratic terms are statistically significant (<span class="math inline">\(p\)</span> &lt; .05), what does this indicate about the model’s fit to the data?</p></li>
+<li><p>Why might adding higher-order polynomial terms to a model be problematic, even though the additional terms increase the model’s <span class="math inline">\(R^2\)</span>?</p></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="lm.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="log.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["The_Fundamentals_of_People_Analytics.pdf", "The_Fundamentals_of_People_Analytics.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

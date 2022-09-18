@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>6 Data Preparation | The Fundamentals of People Analytics: With Applications in R</title>
+  <meta name="description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="generator" content="bookdown 0.24.4 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="6 Data Preparation | The Fundamentals of People Analytics: With Applications in R" />
+  <meta property="og:type" content="book" />
+  
+  
+  <meta property="og:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  <meta name="github-repo" content="crstarbuck/peopleanalytics-book" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="6 Data Preparation | The Fundamentals of People Analytics: With Applications in R" />
+  
+  <meta name="twitter:description" content="An end-to-end guide for successful analytics projects in the social sciences" />
+  
+
+<meta name="author" content="Craig Starbuck" />
+
+
+<meta name="date" content="2022-09-13" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="measure-sampl.html"/>
+<link rel="next" href="desc-stats.html"/>
+<script src="libs/header-attrs-2.11/header-attrs.js"></script>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.0.1/anchor-sections.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.0.1/anchor-sections.js"></script>
+<script src="libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+<script src="libs/viz-1.8.2/viz.js"></script>
+<link href="libs/DiagrammeR-styles-0.2/styles.css" rel="stylesheet" />
+<script src="libs/grViz-binding-1.0.6.1/grViz.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">The Fundamentals of People Analytics: With Applications in R</a></li>
+
+<li class="divider"></li>
+<li><a href="dedication.html#dedication" id="toc-dedication">Dedication</a></li>
+<li><a href="foreword.html#foreword" id="toc-foreword">Foreword</a></li>
+<li><a href="preface.html#preface" id="toc-preface">Preface</a></li>
+<li><a href="getting-started.html#getting-started" id="toc-getting-started"><span class="toc-section-number">1</span> Getting Started</a>
+<ul>
+<li><a href="getting-started.html#guiding-principles" id="toc-guiding-principles"><span class="toc-section-number">1.1</span> Guiding Principles</a>
+<ul>
+<li><a href="getting-started.html#pro-employee-thinking" id="toc-pro-employee-thinking"><span class="toc-section-number">1.1.1</span> Pro-Employee Thinking</a></li>
+<li><a href="getting-started.html#quality" id="toc-quality"><span class="toc-section-number">1.1.2</span> Quality</a></li>
+<li><a href="getting-started.html#prioritization" id="toc-prioritization"><span class="toc-section-number">1.1.3</span> Prioritization</a></li>
+</ul></li>
+<li><a href="getting-started.html#tooling" id="toc-tooling"><span class="toc-section-number">1.2</span> Tooling</a></li>
+<li><a href="getting-started.html#data-sets" id="toc-data-sets"><span class="toc-section-number">1.3</span> Data Sets</a>
+<ul>
+<li><a href="getting-started.html#employees" id="toc-employees"><span class="toc-section-number">1.3.1</span> Employees</a></li>
+<li><a href="getting-started.html#turnover-trends" id="toc-turnover-trends"><span class="toc-section-number">1.3.2</span> Turnover Trends</a></li>
+<li><a href="getting-started.html#survey-responses" id="toc-survey-responses"><span class="toc-section-number">1.3.3</span> Survey Responses</a></li>
+</ul></li>
+<li><a href="getting-started.html#d-framework" id="toc-d-framework"><span class="toc-section-number">1.4</span> 4D Framework</a></li>
+</ul></li>
+<li><a href="r-intro.html#r-intro" id="toc-r-intro"><span class="toc-section-number">2</span> Introduction to R</a>
+<ul>
+<li><a href="r-intro.html#getting-started-1" id="toc-getting-started-1"><span class="toc-section-number">2.1</span> Getting Started</a>
+<ul>
+<li><a href="r-intro.html#installing-r" id="toc-installing-r"><span class="toc-section-number">2.1.1</span> Installing R</a></li>
+<li><a href="r-intro.html#installing-r-studio" id="toc-installing-r-studio"><span class="toc-section-number">2.1.2</span> Installing R Studio</a></li>
+<li><a href="r-intro.html#installing-packages" id="toc-installing-packages"><span class="toc-section-number">2.1.3</span> Installing Packages</a></li>
+<li><a href="r-intro.html#case-sensitivity" id="toc-case-sensitivity"><span class="toc-section-number">2.1.4</span> Case Sensitivity</a></li>
+<li><a href="r-intro.html#help" id="toc-help"><span class="toc-section-number">2.1.5</span> Help</a></li>
+<li><a href="r-intro.html#objects" id="toc-objects"><span class="toc-section-number">2.1.6</span> Objects</a></li>
+<li><a href="r-intro.html#comments" id="toc-comments"><span class="toc-section-number">2.1.7</span> Comments</a></li>
+<li><a href="r-intro.html#testing-early-and-often" id="toc-testing-early-and-often"><span class="toc-section-number">2.1.8</span> Testing Early and Often</a></li>
+</ul></li>
+<li><a href="r-intro.html#vectors" id="toc-vectors"><span class="toc-section-number">2.2</span> Vectors</a></li>
+<li><a href="r-intro.html#matrices" id="toc-matrices"><span class="toc-section-number">2.3</span> Matrices</a></li>
+<li><a href="r-intro.html#factors" id="toc-factors"><span class="toc-section-number">2.4</span> Factors</a></li>
+<li><a href="r-intro.html#data-frames" id="toc-data-frames"><span class="toc-section-number">2.5</span> Data Frames</a></li>
+<li><a href="r-intro.html#lists" id="toc-lists"><span class="toc-section-number">2.6</span> Lists</a></li>
+<li><a href="r-intro.html#loops" id="toc-loops"><span class="toc-section-number">2.7</span> Loops</a></li>
+<li><a href="r-intro.html#user-defined-functions-udfs" id="toc-user-defined-functions-udfs"><span class="toc-section-number">2.8</span> User-Defined Functions (UDFs)</a></li>
+<li><a href="r-intro.html#graphics" id="toc-graphics"><span class="toc-section-number">2.9</span> Graphics</a></li>
+<li><a href="r-intro.html#review-questions" id="toc-review-questions"><span class="toc-section-number">2.10</span> Review Questions</a></li>
+</ul></li>
+<li><a href="sql-intro.html#sql-intro" id="toc-sql-intro"><span class="toc-section-number">3</span> Introduction to SQL</a>
+<ul>
+<li><a href="sql-intro.html#basics" id="toc-basics"><span class="toc-section-number">3.1</span> Basics</a></li>
+<li><a href="sql-intro.html#aggregate-functions" id="toc-aggregate-functions"><span class="toc-section-number">3.2</span> Aggregate Functions</a></li>
+<li><a href="sql-intro.html#joins" id="toc-joins"><span class="toc-section-number">3.3</span> Joins</a></li>
+<li><a href="sql-intro.html#subqueries" id="toc-subqueries"><span class="toc-section-number">3.4</span> Subqueries</a></li>
+<li><a href="sql-intro.html#virtual-tables" id="toc-virtual-tables"><span class="toc-section-number">3.5</span> Virtual Tables</a></li>
+<li><a href="sql-intro.html#window-functions" id="toc-window-functions"><span class="toc-section-number">3.6</span> Window Functions</a></li>
+<li><a href="sql-intro.html#common-table-expressions-ctes" id="toc-common-table-expressions-ctes"><span class="toc-section-number">3.7</span> Common Table Expressions (CTEs)</a></li>
+<li><a href="sql-intro.html#review-questions-1" id="toc-review-questions-1"><span class="toc-section-number">3.8</span> Review Questions</a></li>
+</ul></li>
+<li><a href="research.html#research" id="toc-research"><span class="toc-section-number">4</span> Research Design</a>
+<ul>
+<li><a href="research.html#research-questions" id="toc-research-questions"><span class="toc-section-number">4.1</span> Research Questions</a></li>
+<li><a href="research.html#research-hypotheses" id="toc-research-hypotheses"><span class="toc-section-number">4.2</span> Research Hypotheses</a></li>
+<li><a href="research.html#internal-and-external-validity" id="toc-internal-and-external-validity"><span class="toc-section-number">4.3</span> Internal and External Validity</a></li>
+<li><a href="research.html#research-methods" id="toc-research-methods"><span class="toc-section-number">4.4</span> Research Methods</a></li>
+<li><a href="research.html#research-designs" id="toc-research-designs"><span class="toc-section-number">4.5</span> Research Designs</a></li>
+<li><a href="research.html#review-questions-2" id="toc-review-questions-2"><span class="toc-section-number">4.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measure-sampl" id="toc-measure-sampl"><span class="toc-section-number">5</span> Measurement &amp; Sampling</a>
+<ul>
+<li><a href="measure-sampl.html#variable-types" id="toc-variable-types"><span class="toc-section-number">5.1</span> Variable Types</a>
+<ul>
+<li><a href="measure-sampl.html#independent-variables-iv" id="toc-independent-variables-iv"><span class="toc-section-number">5.1.1</span> Independent Variables (IV)</a></li>
+<li><a href="measure-sampl.html#dependent-variables-dv" id="toc-dependent-variables-dv"><span class="toc-section-number">5.1.2</span> Dependent Variables (DV)</a></li>
+<li><a href="measure-sampl.html#control-variables-cv" id="toc-control-variables-cv"><span class="toc-section-number">5.1.3</span> Control Variables (CV)</a></li>
+<li><a href="measure-sampl.html#moderating-variables" id="toc-moderating-variables"><span class="toc-section-number">5.1.4</span> Moderating Variables</a></li>
+<li><a href="measure-sampl.html#mediating-variables" id="toc-mediating-variables"><span class="toc-section-number">5.1.5</span> Mediating Variables</a></li>
+<li><a href="measure-sampl.html#endogenous-vs.-exogenous-variables" id="toc-endogenous-vs.-exogenous-variables"><span class="toc-section-number">5.1.6</span> Endogenous vs. Exogenous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#measurement-scales" id="toc-measurement-scales"><span class="toc-section-number">5.2</span> Measurement Scales</a>
+<ul>
+<li><a href="measure-sampl.html#discrete-variables" id="toc-discrete-variables"><span class="toc-section-number">5.2.1</span> Discrete Variables</a></li>
+<li><a href="measure-sampl.html#continuous-variables" id="toc-continuous-variables"><span class="toc-section-number">5.2.2</span> Continuous Variables</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-methods" id="toc-sampling-methods"><span class="toc-section-number">5.3</span> Sampling Methods</a>
+<ul>
+<li><a href="measure-sampl.html#probability-sampling" id="toc-probability-sampling"><span class="toc-section-number">5.3.1</span> Probability Sampling</a></li>
+<li><a href="measure-sampl.html#non-probability-sampling" id="toc-non-probability-sampling"><span class="toc-section-number">5.3.2</span> Non-Probability Sampling</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#sampling-nonsampling-error" id="toc-sampling-nonsampling-error"><span class="toc-section-number">5.4</span> Sampling &amp; Nonsampling Error</a>
+<ul>
+<li><a href="measure-sampl.html#sampling-error" id="toc-sampling-error"><span class="toc-section-number">5.4.1</span> Sampling Error</a></li>
+<li><a href="measure-sampl.html#nonsampling-error" id="toc-nonsampling-error"><span class="toc-section-number">5.4.2</span> Nonsampling Error</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#scale-reliability-and-validity" id="toc-scale-reliability-and-validity"><span class="toc-section-number">5.5</span> Scale Reliability and Validity</a>
+<ul>
+<li><a href="measure-sampl.html#reliability" id="toc-reliability"><span class="toc-section-number">5.5.1</span> Reliability</a></li>
+<li><a href="measure-sampl.html#validity" id="toc-validity"><span class="toc-section-number">5.5.2</span> Validity</a></li>
+</ul></li>
+<li><a href="measure-sampl.html#review-questions-3" id="toc-review-questions-3"><span class="toc-section-number">5.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-prep" id="toc-data-prep"><span class="toc-section-number">6</span> Data Preparation</a>
+<ul>
+<li><a href="data-prep.html#data-extraction" id="toc-data-extraction"><span class="toc-section-number">6.1</span> Data Extraction</a>
+<ul>
+<li><a href="data-prep.html#data-architecture" id="toc-data-architecture"><span class="toc-section-number">6.1.1</span> Data Architecture</a></li>
+<li><a href="data-prep.html#database-normalization" id="toc-database-normalization"><span class="toc-section-number">6.1.2</span> Database Normalization</a></li>
+<li><a href="data-prep.html#modern-data-infrastructure" id="toc-modern-data-infrastructure"><span class="toc-section-number">6.1.3</span> Modern Data Infrastructure</a></li>
+</ul></li>
+<li><a href="data-prep.html#data-screening-cleaning" id="toc-data-screening-cleaning"><span class="toc-section-number">6.2</span> Data Screening &amp; Cleaning</a>
+<ul>
+<li><a href="data-prep.html#missingness" id="toc-missingness"><span class="toc-section-number">6.2.1</span> Missingness</a></li>
+<li><a href="data-prep.html#outliers" id="toc-outliers"><span class="toc-section-number">6.2.2</span> Outliers</a></li>
+<li><a href="data-prep.html#low-variability" id="toc-low-variability"><span class="toc-section-number">6.2.3</span> Low Variability</a></li>
+<li><a href="data-prep.html#inconsistent-categories" id="toc-inconsistent-categories"><span class="toc-section-number">6.2.4</span> Inconsistent Categories</a></li>
+<li><a href="data-prep.html#data-binning" id="toc-data-binning"><span class="toc-section-number">6.2.5</span> Data Binning</a></li>
+</ul></li>
+<li><a href="data-prep.html#one-hot-encoding" id="toc-one-hot-encoding"><span class="toc-section-number">6.3</span> One-Hot Encoding</a></li>
+<li><a href="data-prep.html#feature-engineering" id="toc-feature-engineering"><span class="toc-section-number">6.4</span> Feature Engineering</a></li>
+<li><a href="data-prep.html#review-questions-4" id="toc-review-questions-4"><span class="toc-section-number">6.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="desc-stats.html#desc-stats" id="toc-desc-stats"><span class="toc-section-number">7</span> Descriptive Statistics</a>
+<ul>
+<li><a href="desc-stats.html#univariate-analysis" id="toc-univariate-analysis"><span class="toc-section-number">7.1</span> Univariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#measures-of-central-tendency" id="toc-measures-of-central-tendency"><span class="toc-section-number">7.1.1</span> Measures of Central Tendency</a></li>
+<li><a href="desc-stats.html#measures-of-spread" id="toc-measures-of-spread"><span class="toc-section-number">7.1.2</span> Measures of Spread</a></li>
+</ul></li>
+<li><a href="desc-stats.html#bivariate-analysis" id="toc-bivariate-analysis"><span class="toc-section-number">7.2</span> Bivariate Analysis</a>
+<ul>
+<li><a href="desc-stats.html#covariance" id="toc-covariance"><span class="toc-section-number">7.2.1</span> Covariance</a></li>
+<li><a href="desc-stats.html#correlation" id="toc-correlation"><span class="toc-section-number">7.2.2</span> Correlation</a></li>
+</ul></li>
+<li><a href="desc-stats.html#review-questions-5" id="toc-review-questions-5"><span class="toc-section-number">7.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="inf-stats.html#inf-stats" id="toc-inf-stats"><span class="toc-section-number">8</span> Statistical Inference</a>
+<ul>
+<li><a href="inf-stats.html#introduction-to-probability" id="toc-introduction-to-probability"><span class="toc-section-number">8.1</span> Introduction to Probability</a>
+<ul>
+<li><a href="inf-stats.html#probability-distributions" id="toc-probability-distributions"><span class="toc-section-number">8.1.1</span> Probability Distributions</a></li>
+<li><a href="inf-stats.html#conditional-probability" id="toc-conditional-probability"><span class="toc-section-number">8.1.2</span> Conditional Probability</a></li>
+</ul></li>
+<li><a href="inf-stats.html#central-limit-theorem" id="toc-central-limit-theorem"><span class="toc-section-number">8.2</span> Central Limit Theorem</a></li>
+<li><a href="inf-stats.html#confidence-intervals" id="toc-confidence-intervals"><span class="toc-section-number">8.3</span> Confidence Intervals</a>
+<ul>
+<li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
+<li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
+<li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
+<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
+<li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
+</ul></li>
+<li><a href="inf-stats.html#review-questions-6" id="toc-review-questions-6"><span class="toc-section-number">8.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="aod.html#aod" id="toc-aod"><span class="toc-section-number">9</span> Analysis of Differences</a>
+<ul>
+<li><a href="aod.html#parametric-vs.-nonparametric-tests" id="toc-parametric-vs.-nonparametric-tests"><span class="toc-section-number">9.1</span> Parametric vs. Nonparametric Tests</a></li>
+<li><a href="aod.html#differences-in-discrete-data" id="toc-differences-in-discrete-data"><span class="toc-section-number">9.2</span> Differences in Discrete Data</a></li>
+<li><a href="aod.html#differences-in-continuous-data" id="toc-differences-in-continuous-data"><span class="toc-section-number">9.3</span> Differences in Continuous Data</a></li>
+<li><a href="aod.html#review-questions-7" id="toc-review-questions-7"><span class="toc-section-number">9.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lm.html#lm" id="toc-lm"><span class="toc-section-number">10</span> Linear Regression</a>
+<ul>
+<li><a href="lm.html#sample-size" id="toc-sample-size"><span class="toc-section-number">10.1</span> Sample Size</a></li>
+<li><a href="lm.html#simple-linear-regression" id="toc-simple-linear-regression"><span class="toc-section-number">10.2</span> Simple Linear Regression</a></li>
+<li><a href="lm.html#multiple-linear-regression" id="toc-multiple-linear-regression"><span class="toc-section-number">10.3</span> Multiple Linear Regression</a></li>
+<li><a href="lm.html#moderation" id="toc-moderation"><span class="toc-section-number">10.4</span> Moderation</a></li>
+<li><a href="lm.html#mediation" id="toc-mediation"><span class="toc-section-number">10.5</span> Mediation</a></li>
+<li><a href="lm.html#review-questions-8" id="toc-review-questions-8"><span class="toc-section-number">10.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="lme.html#lme" id="toc-lme"><span class="toc-section-number">11</span> Linear Model Extensions</a>
+<ul>
+<li><a href="lme.html#model-comparisons" id="toc-model-comparisons"><span class="toc-section-number">11.1</span> Model Comparisons</a></li>
+<li><a href="lme.html#hierarchical-regression" id="toc-hierarchical-regression"><span class="toc-section-number">11.2</span> Hierarchical Regression</a></li>
+<li><a href="lme.html#multilevel-models" id="toc-multilevel-models"><span class="toc-section-number">11.3</span> Multilevel Models</a></li>
+<li><a href="lme.html#polynomial-regression" id="toc-polynomial-regression"><span class="toc-section-number">11.4</span> Polynomial Regression</a></li>
+<li><a href="lme.html#review-questions-9" id="toc-review-questions-9"><span class="toc-section-number">11.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="log.html#log" id="toc-log"><span class="toc-section-number">12</span> Logistic Regression</a>
+<ul>
+<li><a href="log.html#binomial-logistic-regression" id="toc-binomial-logistic-regression"><span class="toc-section-number">12.1</span> Binomial Logistic Regression</a></li>
+<li><a href="log.html#multinomial-logistic-regression" id="toc-multinomial-logistic-regression"><span class="toc-section-number">12.2</span> Multinomial Logistic Regression</a></li>
+<li><a href="log.html#ordinal-logistic-regression" id="toc-ordinal-logistic-regression"><span class="toc-section-number">12.3</span> Ordinal Logistic Regression</a></li>
+<li><a href="log.html#review-questions-10" id="toc-review-questions-10"><span class="toc-section-number">12.4</span> Review Questions</a></li>
+</ul></li>
+<li><a href="pred-mod.html#pred-mod" id="toc-pred-mod"><span class="toc-section-number">13</span> Predictive Modeling</a>
+<ul>
+<li><a href="pred-mod.html#cross-validation" id="toc-cross-validation"><span class="toc-section-number">13.1</span> Cross-Validation</a></li>
+<li><a href="pred-mod.html#model-performance" id="toc-model-performance"><span class="toc-section-number">13.2</span> Model Performance</a></li>
+<li><a href="pred-mod.html#bias-variance-tradeoff" id="toc-bias-variance-tradeoff"><span class="toc-section-number">13.3</span> Bias-Variance Tradeoff</a></li>
+<li><a href="pred-mod.html#tree-based-algorithms" id="toc-tree-based-algorithms"><span class="toc-section-number">13.4</span> Tree-Based Algorithms</a></li>
+<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">13.5</span> Predictive Modeling</a></li>
+<li><a href="pred-mod.html#review-questions-11" id="toc-review-questions-11"><span class="toc-section-number">13.6</span> Review Questions</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#unsup-lrn" id="toc-unsup-lrn"><span class="toc-section-number">14</span> Unsupervised Learning</a>
+<ul>
+<li><a href="unsup-lrn.html#factor-analysis" id="toc-factor-analysis"><span class="toc-section-number">14.1</span> Factor Analysis</a>
+<ul>
+<li><a href="unsup-lrn.html#exploratory-factor-analysis-efa" id="toc-exploratory-factor-analysis-efa"><span class="toc-section-number">14.1.1</span> Exploratory Factor Analysis (EFA)</a></li>
+<li><a href="unsup-lrn.html#confirmatory-factor-analysis-cfa" id="toc-confirmatory-factor-analysis-cfa"><span class="toc-section-number">14.1.2</span> Confirmatory Factor Analysis (CFA)</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#clustering" id="toc-clustering"><span class="toc-section-number">14.2</span> Clustering</a>
+<ul>
+<li><a href="unsup-lrn.html#k-means-clustering" id="toc-k-means-clustering"><span class="toc-section-number">14.2.1</span> <span class="math inline">\(K\)</span>-Means Clustering</a></li>
+<li><a href="unsup-lrn.html#hierarchical-clustering" id="toc-hierarchical-clustering"><span class="toc-section-number">14.2.2</span> Hierarchical Clustering</a></li>
+</ul></li>
+<li><a href="unsup-lrn.html#review-questions-12" id="toc-review-questions-12"><span class="toc-section-number">14.3</span> Review Questions</a></li>
+</ul></li>
+<li><a href="data-viz.html#data-viz" id="toc-data-viz"><span class="toc-section-number">15</span> Data Visualization</a>
+<ul>
+<li><a href="data-viz.html#best-practices" id="toc-best-practices"><span class="toc-section-number">15.1</span> Best Practices</a>
+<ul>
+<li><a href="data-viz.html#color-palette" id="toc-color-palette"><span class="toc-section-number">15.1.1</span> Color Palette</a></li>
+<li><a href="data-viz.html#chart-borders" id="toc-chart-borders"><span class="toc-section-number">15.1.2</span> Chart Borders</a></li>
+<li><a href="data-viz.html#zero-baseline" id="toc-zero-baseline"><span class="toc-section-number">15.1.3</span> Zero Baseline</a></li>
+<li><a href="data-viz.html#intuitive-layout" id="toc-intuitive-layout"><span class="toc-section-number">15.1.4</span> Intuitive Layout</a></li>
+<li><a href="data-viz.html#preattentive-attributes" id="toc-preattentive-attributes"><span class="toc-section-number">15.1.5</span> Preattentive Attributes</a></li>
+</ul></li>
+<li><a href="data-viz.html#step-by-step-visual-upgrade" id="toc-step-by-step-visual-upgrade"><span class="toc-section-number">15.2</span> Step-by-Step Visual Upgrade</a>
+<ul>
+<li><a href="data-viz.html#step-1-build-bar-chart-with-defaults" id="toc-step-1-build-bar-chart-with-defaults"><span class="toc-section-number">15.2.1</span> Step 1: Build Bar Chart with Defaults</a></li>
+<li><a href="data-viz.html#step-2-remove-legend" id="toc-step-2-remove-legend"><span class="toc-section-number">15.2.2</span> Step 2: Remove Legend</a></li>
+<li><a href="data-viz.html#step-3-assign-colors-strategically" id="toc-step-3-assign-colors-strategically"><span class="toc-section-number">15.2.3</span> Step 3: Assign Colors Strategically</a></li>
+<li><a href="data-viz.html#step-4-add-axis-titles-and-margins" id="toc-step-4-add-axis-titles-and-margins"><span class="toc-section-number">15.2.4</span> Step 4: Add Axis Titles and Margins</a></li>
+<li><a href="data-viz.html#step-5-add-left-justified-title" id="toc-step-5-add-left-justified-title"><span class="toc-section-number">15.2.5</span> Step 5: Add Left-Justified Title</a></li>
+<li><a href="data-viz.html#step-6-remove-background" id="toc-step-6-remove-background"><span class="toc-section-number">15.2.6</span> Step 6: Remove Background</a></li>
+<li><a href="data-viz.html#step-7-remove-axis-ticks" id="toc-step-7-remove-axis-ticks"><span class="toc-section-number">15.2.7</span> Step 7: Remove Axis Ticks</a></li>
+<li><a href="data-viz.html#step-8-mute-titles" id="toc-step-8-mute-titles"><span class="toc-section-number">15.2.8</span> Step 8: Mute Titles</a></li>
+<li><a href="data-viz.html#step-9-flip-axes" id="toc-step-9-flip-axes"><span class="toc-section-number">15.2.9</span> Step 9: Flip Axes</a></li>
+<li><a href="data-viz.html#step-10-sort-data" id="toc-step-10-sort-data"><span class="toc-section-number">15.2.10</span> Step 10: Sort Data</a></li>
+</ul></li>
+<li><a href="data-viz.html#visualization-types" id="toc-visualization-types"><span class="toc-section-number">15.3</span> Visualization Types</a>
+<ul>
+<li><a href="data-viz.html#tables" id="toc-tables"><span class="toc-section-number">15.3.1</span> Tables</a></li>
+<li><a href="data-viz.html#heatmaps" id="toc-heatmaps"><span class="toc-section-number">15.3.2</span> Heatmaps</a></li>
+<li><a href="data-viz.html#scatterplots" id="toc-scatterplots"><span class="toc-section-number">15.3.3</span> Scatterplots</a></li>
+<li><a href="data-viz.html#line-graphs" id="toc-line-graphs"><span class="toc-section-number">15.3.4</span> Line Graphs</a></li>
+<li><a href="data-viz.html#slopegraphs" id="toc-slopegraphs"><span class="toc-section-number">15.3.5</span> Slopegraphs</a></li>
+<li><a href="data-viz.html#bar-charts" id="toc-bar-charts"><span class="toc-section-number">15.3.6</span> Bar Charts</a></li>
+<li><a href="data-viz.html#combination-charts" id="toc-combination-charts"><span class="toc-section-number">15.3.7</span> Combination Charts</a></li>
+<li><a href="data-viz.html#waterfall-charts" id="toc-waterfall-charts"><span class="toc-section-number">15.3.8</span> Waterfall Charts</a></li>
+<li><a href="data-viz.html#waffle-charts" id="toc-waffle-charts"><span class="toc-section-number">15.3.9</span> Waffle Charts</a></li>
+<li><a href="data-viz.html#sankey-diagrams" id="toc-sankey-diagrams"><span class="toc-section-number">15.3.10</span> Sankey Diagrams</a></li>
+<li><a href="data-viz.html#pie-charts" id="toc-pie-charts"><span class="toc-section-number">15.3.11</span> Pie Charts</a></li>
+<li><a href="data-viz.html#d-visuals" id="toc-d-visuals"><span class="toc-section-number">15.3.12</span> 3D Visuals</a></li>
+</ul></li>
+<li><a href="data-viz.html#elegant-data-visualization" id="toc-elegant-data-visualization"><span class="toc-section-number">15.4</span> Elegant Data Visualization</a></li>
+<li><a href="data-viz.html#review-questions-13" id="toc-review-questions-13"><span class="toc-section-number">15.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="storytelling.html#storytelling" id="toc-storytelling"><span class="toc-section-number">16</span> Data Storytelling</a>
+<ul>
+<li><a href="storytelling.html#know-your-audience" id="toc-know-your-audience"><span class="toc-section-number">16.1</span> Know Your Audience</a></li>
+<li><a href="storytelling.html#production-status" id="toc-production-status"><span class="toc-section-number">16.2</span> Production Status</a></li>
+<li><a href="storytelling.html#structural-elements" id="toc-structural-elements"><span class="toc-section-number">16.3</span> Structural Elements</a>
+<ul>
+<li><a href="storytelling.html#tldr" id="toc-tldr"><span class="toc-section-number">16.3.1</span> TL;DR</a></li>
+<li><a href="storytelling.html#purpose" id="toc-purpose"><span class="toc-section-number">16.3.2</span> Purpose</a></li>
+<li><a href="storytelling.html#methodology" id="toc-methodology"><span class="toc-section-number">16.3.3</span> Methodology</a></li>
+<li><a href="storytelling.html#results" id="toc-results"><span class="toc-section-number">16.3.4</span> Results</a></li>
+<li><a href="storytelling.html#limitations" id="toc-limitations"><span class="toc-section-number">16.3.5</span> Limitations</a></li>
+<li><a href="storytelling.html#next-steps" id="toc-next-steps"><span class="toc-section-number">16.3.6</span> Next Steps</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">16.3.7</span> Appendix</a></li>
+</ul></li>
+<li><a href="storytelling.html#qa" id="toc-qa"><span class="toc-section-number">16.4</span> Q&amp;A</a></li>
+<li><a href="storytelling.html#review-questions-14" id="toc-review-questions-14"><span class="toc-section-number">16.5</span> Review Questions</a></li>
+</ul></li>
+<li><a href="bibli.html#bibli" id="toc-bibli"><span class="toc-section-number">17</span> Bibliography</a></li>
+<li><a href="storytelling.html#appendix" id="toc-appendix"><span class="toc-section-number">18</span> Appendix</a>
+<ul>
+<li><a href="appendix.html#d-framework-1" id="toc-d-framework-1"><span class="toc-section-number">18.1</span> 4D Framework</a>
+<ul>
+<li><a href="appendix.html#discover" id="toc-discover"><span class="toc-section-number">18.1.1</span> Discover</a></li>
+<li><a href="appendix.html#design" id="toc-design"><span class="toc-section-number">18.1.2</span> Design</a></li>
+<li><a href="appendix.html#develop" id="toc-develop"><span class="toc-section-number">18.1.3</span> Develop</a></li>
+<li><a href="appendix.html#deliver" id="toc-deliver"><span class="toc-section-number">18.1.4</span> Deliver</a></li>
+</ul></li>
+<li><a href="appendix.html#data-visualization" id="toc-data-visualization"><span class="toc-section-number">18.2</span> Data Visualization</a>
+<ul>
+<li><a href="appendix.html#step-by-step-visual-upgrade-1" id="toc-step-by-step-visual-upgrade-1"><span class="toc-section-number">18.2.1</span> Step-by-Step Visual Upgrade</a></li>
+<li><a href="appendix.html#tables-1" id="toc-tables-1"><span class="toc-section-number">18.2.2</span> Tables</a></li>
+<li><a href="appendix.html#heatmaps-1" id="toc-heatmaps-1"><span class="toc-section-number">18.2.3</span> Heatmaps</a></li>
+<li><a href="appendix.html#scatterplots-1" id="toc-scatterplots-1"><span class="toc-section-number">18.2.4</span> Scatterplots</a></li>
+<li><a href="appendix.html#line-charts" id="toc-line-charts"><span class="toc-section-number">18.2.5</span> Line Charts</a></li>
+<li><a href="appendix.html#slopegraphs-1" id="toc-slopegraphs-1"><span class="toc-section-number">18.2.6</span> Slopegraphs</a></li>
+<li><a href="appendix.html#bar-charts-1" id="toc-bar-charts-1"><span class="toc-section-number">18.2.7</span> Bar Charts</a></li>
+<li><a href="appendix.html#combination-charts-1" id="toc-combination-charts-1"><span class="toc-section-number">18.2.8</span> Combination Charts</a></li>
+<li><a href="appendix.html#waterfall-charts-1" id="toc-waterfall-charts-1"><span class="toc-section-number">18.2.9</span> Waterfall Charts</a></li>
+<li><a href="appendix.html#waffle-charts-1" id="toc-waffle-charts-1"><span class="toc-section-number">18.2.10</span> Waffle Charts</a></li>
+<li><a href="appendix.html#sankey-diagrams-1" id="toc-sankey-diagrams-1"><span class="toc-section-number">18.2.11</span> Sankey Diagrams</a></li>
+<li><a href="appendix.html#pie-charts-1" id="toc-pie-charts-1"><span class="toc-section-number">18.2.12</span> Pie Charts</a></li>
+</ul></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">The Fundamentals of People Analytics</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="data-prep" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> Data Preparation</h1>
+<p>To begin a data analysis, we must first extract, combine, organize, and clean the requisite data. As depicted in Figure <a href="data-prep.html#fig:ds-tasks">6.1</a>, these data preparation tasks account for a large part of the work analytics professionals do.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:ds-tasks"></span>
+<img src="graphics/data_scientist_tasks.jpeg" alt="What Data Scientists Really Do" width="75%" />
+<p class="caption">
+Figure 6.1: What Data Scientists Really Do
+</p>
+</div>
+<div id="data-extraction" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> Data Extraction</h2>
+<p>To properly and efficiently extract data – often through the use of SQL as covered in Chapter <a href="sql-intro.html#sql-intro">3</a> – it is important to first understand some common ways in which data are stored and structured.</p>
+<div id="data-architecture" class="section level3" number="6.1.1">
+<h3><span class="header-section-number">6.1.1</span> Data Architecture</h3>
+<p>Data are generally extracted directly from the source systems in which they are generated or from downstream repositories such as a <em>data lake</em>, <em>data warehouse</em>, or <em>data mart</em>.</p>
+<p><strong>Data Lake</strong></p>
+<p>A <strong>data lake</strong> stores myriad types of data – both structured and unstructured – in its native format until needed. <strong>Structured data</strong> refers to data that fits a predefined data model, such as hire dates formatted as <code>MM/DD/YYYY</code> or zip codes stored as a five-digit string. <strong>Unstructured data</strong> has no predefined data model, such as audio and video files, free-form performance review comments, emails, or digital exhaust from messaging tools; it is difficult to structure this type of data within a set of related tables.</p>
+<p><strong>Data Warehouse</strong></p>
+<p>The main difference between a data lake and data warehouse is the type of data they are designed to store. A <strong>data warehouse (DW)</strong> is designed to support analytics across large collections of data, such as transactional data (e.g., point-of-sale systems), point-in-time snapshots (e.g., month-end close reports), survey responses, spreadsheets, and more. Data in a DW are structured and organized into schemas of related tables <em>based on business requirements and use cases</em>.</p>
+<p>A DW may contain many different types of tables, but this chapter will focus on the two most common which are known as <em>Type 1</em> and <em>Type 2</em> tables. These tables are sometimes referred to as <strong>slowly changing dimensions (SCD)</strong>.</p>
+<p>A <strong>Type 1 table</strong> is created on a regular cadence (usually daily or monthly) and contains no history – only current values. For example, a Type 1 table may contain the latest known attributes for each active and terminated worker such as job, location, and manager. Type 1 tables are often archived and appended to prior snapshots with an effective date, and this design has utility when a view of the workforce is required as of a past date or when an analysis calls for querying across multiple point-in-time snapshots (e.g., computing trailing 12-month attrition rates using average monthly headcount).</p>
+<p>It is important to note that leveraging snapshots for trending analyses has significant deficiencies given the large number of retroactive transactions processed in HCM systems that are not captured if prior snapshots are not updated. Below are some examples:</p>
+<ul>
+<li>Org changes for which incorrect manager assignments are later identified and corrected</li>
+<li>Back-dated compensation changes</li>
+<li>Job profile attribute updates, resulting in incorrect values across snapshots prior to the update date</li>
+<li>Edits to hire, promotion, transfer, and termination events after completing the business process in the system (e.g., delayed start date)</li>
+</ul>
+<p>While a past date may be set as the effective date for these transactions, snapshots would incorrectly indicate that the change was effective on the date they were entered into the system (i.e., when the value first changed across snapshots), resulting in misalignment with the system of record. This can result in inaccurate metrics related to headcount, hires, career moves, and terminations in a given period. This type of data leakage can quickly become a larger issue as the size and complexity of the workforce grows. Even a few discrepancies relative to what managers see in the source system can create mistrust in data solutions and hamstring progress up the analytics value chain.</p>
+<p>A <strong>Type 2 table</strong> is a table in which a new record is inserted when a change occurs for one or more specified dimensions. Jobs, managers, and locations are examples of slowly changing dimensions but unlike the Type 1 table which contains only the latest information, the Type 2 table houses a <em>start date</em> and <em>end date</em> (where applicable) for each worker and dimension to facilitate reporting and analysis on changes to attribute values over time. This concept of storing attribute values for the period of time during which they were effective is known as <strong>effective dating</strong>, and the inclusion of effective-dated logic in queries is fundamental to how data are accurately extracted for a specified date.</p>
+<p>Figure <a href="data-prep.html#fig:type-2-tbl">6.2</a> illustrates the design of a Type 2 SCD for an active worker’s job, manager, and location changes. As the data show, worker 123 was promoted from Data Analyst to Sr. Data Analyst 1.5 years after joining, began reporting to their original manager (456) after a short stint reporting to someone else (789), and has worked remotely throughout their tenure with the company.</p>
+<p>Note that rows where <code>end_date = '12/31/9999'</code> indicate <em>current attributes</em> for active workers. For inactive workers, <code>end_date</code> is set to the worker’s termination date for rows that represent <em>last known attributes</em>:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:type-2-tbl"></span>
+<img src="graphics/type_2_table.png" alt="Type 2 SCD" width="100%" />
+<p class="caption">
+Figure 6.2: Type 2 SCD
+</p>
+</div>
+<p>Constructing a view of the workforce as of a particular effective date involves selecting rows where the effective date is on or after <code>start_date</code> and on or prior to <code>end_date</code>. In a SQL query, this logic can be specified in the <code>WHERE</code> clause, which defines the rows to search.</p>
+<p>To construct a view of the last known attributes for each worker in this table, we could select rows where the current date is on or after <code>start_date</code> and on or prior to <code>end_date</code> for active workers and then select the most recent rows (with max <code>end_date</code>) for inactive workers. However, using a Type 1 table simplifies this task since each dimension value is stored in a separate column and there is only one row per employee. Figure <a href="data-prep.html#fig:type-1-tbl">6.3</a> shows how the current record for worker 123 would look in a Type 1 SCD:</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:type-1-tbl"></span>
+<img src="graphics/type_1_table.png" alt="Type 1 SCD" width="100%" />
+<p class="caption">
+Figure 6.3: Type 1 SCD
+</p>
+</div>
+<p><strong>Data Mart</strong></p>
+<p>A <strong>data mart</strong> is a subset of a DW designed to easily deliver specific information to a certain set of users on a particular subject or for a well-defined use case. For example, in a people analytics context a diversity data mart could be developed to better isolate and secure restricted data such as gender and ethnicity. This data may be used to support diversity descriptives and trends for a limited audience approved by Data Privacy and Legal counsel based on justified business needs.</p>
+</div>
+<div id="database-normalization" class="section level3" number="6.1.2">
+<h3><span class="header-section-number">6.1.2</span> Database Normalization</h3>
+<p><strong>Normalization</strong> is the process of partitioning data into multiple tables to reduce data redundancy and promote data integrity. Conversely, <strong>denormalization</strong> combines data into a single table to facilitate easier and faster data retrieval.</p>
+<p>The tables used to explain SQL joins in Chapter <a href="sql-intro.html#sql-intro">3</a> are examples of normalized data. Normalized tables introduce more complexity for analysts since data organized across tables need to be joined together to create a flat data structure that is easier to work with for analytics. However, normalized tables have a key advantage in accounting for past-dated changes since the latest data are retrieved from the various tables when needed rather than leveraging immutable snapshots that only reflect data as of the date and time they were created. For example, if a worker snapshot was created yesterday, and today a change is processed in the system to rename location id MA123 from <code>Cambridge Office</code> to <code>Boston HQ</code> with an effective date of yesterday, a static worker snapshot created yesterday would show <code>Cambridge Office</code> as the location while querying normalized tables would show the updated <code>Boston HQ</code> location name.</p>
+<p>One way to address the shortcomings of snapshots without the more complex data engineering task of deriving them from a Type 2 table is to perform destructive loads. <strong>Destructive loads</strong>, sometimes referred to as a <strong>truncate and reload</strong> approach, involves destroying prior snapshots and rebuilding them for each effective date. For example, if there is a policy that retroactive changes cannot be processed prior to the past six months, a destructive load could be performed for a rolling six months of snapshots to ensure they reflect any past-dated worker events and non-worker attribute changes (e.g., department, location, job, position).</p>
+</div>
+<div id="modern-data-infrastructure" class="section level3" number="6.1.3">
+<h3><span class="header-section-number">6.1.3</span> Modern Data Infrastructure</h3>
+<p>Though a deep treatment of data architecture is beyond the scope of this book, it is important to acknowledge the significant advancements in infrastructure and computation since these complex SCD architectures were first introduced by Ralph Kimball decades ago. These developments have greatly improved the efficiency with which analysts can translate data into information and insight. The primitive systems in place decades ago required expensive <strong>ETL</strong> jobs to <strong>extract (E)</strong> data from source systems, <strong>transform (T)</strong> data using a set of transformation rules, and <strong>load (L)</strong> the transformed data to relational tables – which then required complex queries to wrangle and analyze the data.</p>
+<p>With modern cloud environments, the significant investment associated with humans designing, developing, and maintaining these complex architectures is often difficult to justify given how inexpensive storage and compute have become. Increasingly, the heavy computational tasks have migrated out of data pipelines and into the analytics layer wherein analytics teams have more flexibility and control. Today, daily snapshots containing <em>all</em> current and historical records can be copied and stored within partitioned DW tables for a negligible increase in storage costs, and this greatly simplifies data pipeline complexity and engineering support requirements. This changing dynamic has given rise to a new breed of data engineers focused on optimizing the heavy computation requirements of analytics teams.</p>
+</div>
+</div>
+<div id="data-screening-cleaning" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> Data Screening &amp; Cleaning</h2>
+<p>Once data are extracted, the initial data review process can commence. This process is often referred to as <strong>exploratory data analysis (EDA)</strong>. EDA involves investigating patterns, completeness, anomalies, and assumptions using summary statistics and graphical representations. An analytics ideal is <em>unimpeachable data quality</em>, which is to say that the rigor of upstream processes and downstream data screening is such that stakeholders become confident enough to channel more energy towards actioning on results than questioning the quality. Suspect data quality is often surfaced during the initial EDA step and affords the opportunity to address and avoid stakeholders discounting results during later phases of the project.</p>
+<p>A handy function in base R for initial data screening is <code>summary()</code>:</p>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="data-prep.html#cb141-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb141-2"><a href="data-prep.html#cb141-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
+<span id="cb141-3"><a href="data-prep.html#cb141-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb141-4"><a href="data-prep.html#cb141-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize df</span></span>
+<span id="cb141-5"><a href="data-prep.html#cb141-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees)</span></code></pre></div>
+<pre><code>##   employee_id      active          stock_opt_lvl      trainings    
+##  Min.   :1001   Length:1470        Min.   :0.0000   Min.   :0.000  
+##  1st Qu.:1368   Class :character   1st Qu.:0.0000   1st Qu.:2.000  
+##  Median :1736   Mode  :character   Median :1.0000   Median :3.000  
+##  Mean   :1736                      Mean   :0.7939   Mean   :2.799  
+##  3rd Qu.:2103                      3rd Qu.:1.0000   3rd Qu.:3.000  
+##  Max.   :2470                      Max.   :3.0000   Max.   :6.000  
+##                                                                    
+##       age         commute_dist        ed_lvl        ed_field        
+##  Min.   :18.00   Min.   : 1.000   Min.   :1.000   Length:1470       
+##  1st Qu.:30.00   1st Qu.: 2.000   1st Qu.:2.000   Class :character  
+##  Median :36.00   Median : 7.000   Median :3.000   Mode  :character  
+##  Mean   :36.92   Mean   : 9.193   Mean   :2.913                     
+##  3rd Qu.:43.00   3rd Qu.:14.000   3rd Qu.:4.000                     
+##  Max.   :60.00   Max.   :29.000   Max.   :5.000                     
+##                                                                     
+##     gender          marital_sts            dept             engagement  
+##  Length:1470        Length:1470        Length:1470        Min.   :1.00  
+##  Class :character   Class :character   Class :character   1st Qu.:2.00  
+##  Mode  :character   Mode  :character   Mode  :character   Median :3.00  
+##                                                           Mean   :2.73  
+##                                                           3rd Qu.:3.00  
+##                                                           Max.   :4.00  
+##                                                                         
+##     job_lvl       job_title           overtime         business_travel   
+##  Min.   :1.000   Length:1470        Length:1470        Length:1470       
+##  1st Qu.:1.000   Class :character   Class :character   Class :character  
+##  Median :2.000   Mode  :character   Mode  :character   Mode  :character  
+##  Mean   :2.064                                                           
+##  3rd Qu.:3.000                                                           
+##  Max.   :5.000                                                           
+##                                                                          
+##   hourly_rate       daily_comp     monthly_comp    annual_comp    
+##  Min.   : 30.00   Min.   :240.0   Min.   : 5200   Min.   : 62400  
+##  1st Qu.: 48.00   1st Qu.:384.0   1st Qu.: 8320   1st Qu.: 99840  
+##  Median : 66.00   Median :528.0   Median :11440   Median :137280  
+##  Mean   : 65.89   Mean   :527.1   Mean   :11421   Mean   :137054  
+##  3rd Qu.: 83.75   3rd Qu.:670.0   3rd Qu.:14517   3rd Qu.:174200  
+##  Max.   :100.00   Max.   :800.0   Max.   :17333   Max.   :208000  
+##                                                                   
+##    ytd_leads       ytd_sales       standard_hrs salary_hike_pct  perf_rating   
+##  Min.   :11.00   Min.   : 15496   Min.   :80    Min.   :11.00   Min.   :3.000  
+##  1st Qu.:45.00   1st Qu.: 56997   1st Qu.:80    1st Qu.:12.00   1st Qu.:3.000  
+##  Median :59.00   Median : 73505   Median :80    Median :14.00   Median :3.000  
+##  Mean   :55.84   Mean   : 77124   Mean   :80    Mean   :15.21   Mean   :3.154  
+##  3rd Qu.:65.00   3rd Qu.: 96002   3rd Qu.:80    3rd Qu.:18.00   3rd Qu.:3.000  
+##  Max.   :95.00   Max.   :281499   Max.   :80    Max.   :25.00   Max.   :4.000  
+##  NA&#39;s   :1061    NA&#39;s   :1061                                                  
+##  prior_emplr_cnt    env_sat         job_sat         rel_sat     
+##  Min.   :0.000   Min.   :1.000   Min.   :1.000   Min.   :1.000  
+##  1st Qu.:1.000   1st Qu.:2.000   1st Qu.:2.000   1st Qu.:2.000  
+##  Median :2.000   Median :3.000   Median :3.000   Median :3.000  
+##  Mean   :2.693   Mean   :2.722   Mean   :2.729   Mean   :2.712  
+##  3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000   3rd Qu.:4.000  
+##  Max.   :9.000   Max.   :4.000   Max.   :4.000   Max.   :4.000  
+##                                                                 
+##    wl_balance       work_exp       org_tenure       job_tenure    
+##  Min.   :1.000   Min.   : 0.00   Min.   : 0.000   Min.   : 0.000  
+##  1st Qu.:2.000   1st Qu.: 6.00   1st Qu.: 3.000   1st Qu.: 2.000  
+##  Median :2.000   Median :10.00   Median : 5.000   Median : 3.000  
+##  Mean   :1.841   Mean   :11.28   Mean   : 7.032   Mean   : 4.229  
+##  3rd Qu.:2.000   3rd Qu.:15.00   3rd Qu.: 9.000   3rd Qu.: 7.000  
+##  Max.   :2.000   Max.   :40.00   Max.   :72.000   Max.   :18.000  
+##                                                                   
+##    last_promo       mgr_tenure     interview_rating
+##  Min.   : 0.000   Min.   : 0.000   Min.   :2.000   
+##  1st Qu.: 0.000   1st Qu.: 2.000   1st Qu.:3.600   
+##  Median : 1.000   Median : 3.000   Median :4.100   
+##  Mean   : 2.188   Mean   : 4.123   Mean   :3.989   
+##  3rd Qu.: 3.000   3rd Qu.: 7.000   3rd Qu.:4.500   
+##  Max.   :15.000   Max.   :17.000   Max.   :5.000   
+## </code></pre>
+<p>Note that fields with <code>NA's</code> contain missing values. Also, by default <code>employee_id</code> is treated as an integer in R, which is why descriptive statistics appropriate for numeric data are provided. <code>employee_id</code> should actually be treated as a character string since we will not perform any arithmetic operations using these ids.</p>
+<div id="missingness" class="section level3" number="6.2.1">
+<h3><span class="header-section-number">6.2.1</span> Missingness</h3>
+<p>Before considering whether and how to handle missing data, it is important to distinguish between <em>structural missingness</em> and <em>informative missingness</em> (Kuhn &amp; Johnson, 2013).</p>
+<p><strong>Structural missingness</strong> relates to data that are missing for a logical reason. For example, we would not expect a new joiner with a few days of tenure to have a performance score. Likewise, we would not expect an active employee who is not a rehire to have a termination date. Therefore, it would not make sense to define a value to address missing data in these cases.</p>
+<p><strong>Informative missingness</strong> relates to missing data that is informative regarding an outcome of interest. For example, in a survey context we may find a relationship between missing values on manager effectiveness questions and unfavorability on a psychological safety scale. This may indicate that employees who are fearful of retaliation are uncomfortable providing honest feedback about their managers, while employees who feel it is safe to speak up about issues are more comfortable responding in prosocial ways.</p>
+<p>In some cases, we have the luxury of simply removing observations with missing values and using the remaining complete cases for analysis. However, since we are often working with wide datasets containing relatively few observations in people analytics, this may not be feasible. As we will cover in later chapters, sample size considerations are fundamental to achieving adequate power in statistical testing, so case removal is only possible with larger datasets. Also, elimination of many impacted records – even with a sufficiently large sample – may bias analyses if there are missingness patterns.</p>
+<p><strong>Data imputation</strong> refers to the methods by which missing data are replaced with substituted values when case removal is not appropriate. The most common data imputation method is replacing missing values with a descriptive statistic such as the mean, median, or mode based on available data. For example, if most employees have an age in the system, the average, median, or most frequent age could be used in place of the cases with a missing age. To be more precise, the average, median, or most frequent age of those with <em>similar characteristics</em> may be used (e.g., similar years of experience, job, level). We would expect there to be less variability in age within a well-defined segment relative to the entire employee population, so this would likely be a more accurate substitute for an individual’s actual age.</p>
+<p>Let’s evaluate the <code>employees</code> data frame for missing <code>annual_comp</code> values using the logical <code>is.na()</code> function, and return values of variables relevant in determining one’s annual compensation. The <code>subset()</code> function can be used to select a subset of data from a data frame.</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="data-prep.html#cb143-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store original annual comp for sample employee</span></span>
+<span id="cb143-2"><a href="data-prep.html#cb143-2" aria-hidden="true" tabindex="-1"></a>orig_comp <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)</span>
+<span id="cb143-3"><a href="data-prep.html#cb143-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-4"><a href="data-prep.html#cb143-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force a NA in lieu of annual comp for illustrative purposes</span></span>
+<span id="cb143-5"><a href="data-prep.html#cb143-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
+<span id="cb143-6"><a href="data-prep.html#cb143-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-7"><a href="data-prep.html#cb143-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Return relevant employee characteristics where annual comp is missing</span></span>
+<span id="cb143-8"><a href="data-prep.html#cb143-8" aria-hidden="true" tabindex="-1"></a><span class="fu">subset</span>(employees, <span class="fu">is.na</span>(annual_comp), <span class="at">select =</span> <span class="fu">c</span>(employee_id, job_title, job_lvl))</span></code></pre></div>
+<pre><code>##      employee_id              job_title job_lvl
+## 1176        2176 Manufacturing Director       2</code></pre>
+<p>Next, we can impute the average value of <code>annual_comp</code> based on employees with the same values for the relevant variables:</p>
+<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="data-prep.html#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return average annual comp for employees with similar characteristics, excluding employees with missing comp values</span></span>
+<span id="cb145-2"><a href="data-prep.html#cb145-2" aria-hidden="true" tabindex="-1"></a>imputed_comp <span class="ot">&lt;-</span> <span class="fu">sapply</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Manufacturing Director&#39;</span> <span class="sc">&amp;</span> job_lvl <span class="sc">==</span> <span class="dv">2</span>, <span class="at">select =</span> annual_comp), mean, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb145-3"><a href="data-prep.html#cb145-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-4"><a href="data-prep.html#cb145-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Impute missing comp for relevant segment</span></span>
+<span id="cb145-5"><a href="data-prep.html#cb145-5" aria-hidden="true" tabindex="-1"></a>employees[employees<span class="sc">$</span>employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="st">&#39;annual_comp&#39;</span>] <span class="ot">&lt;-</span> imputed_comp</span>
+<span id="cb145-6"><a href="data-prep.html#cb145-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb145-7"><a href="data-prep.html#cb145-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Display absolute difference between original and imputed comp</span></span>
+<span id="cb145-8"><a href="data-prep.html#cb145-8" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">abs</span>(orig_comp <span class="sc">-</span> <span class="fu">subset</span>(employees, employee_id <span class="sc">==</span> <span class="st">&#39;2176&#39;</span>, <span class="at">select =</span> annual_comp)), <span class="dv">0</span>)</span></code></pre></div>
+<pre><code>##      annual_comp
+## 1176        1169</code></pre>
+<p>While this approach should help in demonstrating the mechanics of imputing a missing value on a case-by-case basis, a more scalable solution is needed for data with a large number of missing values across employees with different values of these variables. There are more sophisticated methods of data imputation that involve models to estimate missing values. <em>Linear regression</em> and <em>K-Nearest Neighbor (KNN)</em> models are commonly used for this and will be covered in later chapters. These modeling techniques leverage a similar approach to the method outlined above in that the target values of cases with similar characteristics to those with missing values are used to aid estimation. <strong>Multiple imputation</strong> combines the information from multiple data sets imputed using different methods with a goal of minimizing the potential bias introduced by a singular method of imputation.</p>
+</div>
+<div id="outliers" class="section level3" number="6.2.2">
+<h3><span class="header-section-number">6.2.2</span> Outliers</h3>
+<p>The treatment of outliers is one of the most enduring and pervasive methodological challenges in organizational research. A literature review by Aguinis, Gottfredson, and Joo (2013) uncovered 14 unique definitions of outliers, 39 outlier identification techniques, and 20 different ways of addressing them. Appropriate methods for defining and addressing outliers are domain-specific, and there are many important considerations that should inform whether and how outliers should be handled.</p>
+<p>The water crisis in Flint, Michigan is a tragic example of a series of statistical mishaps involving poor sampling methodology and outlier handling. As the story goes, Flint stopped paying the Detroit Water and Sewer Department to source water from Lake Huron and began sourcing it from the Flint River as a cost-cutting measure in April 2014 (Langkjær-Bain, 2017). Residents of Flint began showing signs of lead poisoning, and authorities denied residents’ claims that their tap water was to blame – despite some extreme cases in which the tap water was colored orange.</p>
+<p>Water companies routinely add chemicals to water to prevent pipe corrosion which can cause lead to seep into drinking water. In Flint’s hurry to switch water sources, they failed to address the fact that the Flint River is naturally high in chloride (which corrodes pipes) by adding corrosion-inhibiting chemicals. According to the Lead and Copper Rule (LCR) of 1991, lead consumption should not exceed 15 parts per billion (ppb) in more than 10% of homes tested – though no quantity of lead is considered safe to ingest. If the 90th percentile value for sampled homes is greater than 15 ppb, action is required.</p>
+<p>Two initial samples of tap water were taken from a concerned resident’s home; one measured 104 ppb (6X higher than the LCR threshold) and the other measured 397 ppb (25X higher than the LCR threshold). Authorities dismissed these samples as outliers, citing old led pipes in the resident’s home. Authorities collected samples of their own and despite federal guidelines requiring <span class="math inline">\(n \ge 100\)</span> samples, an under-powered analysis was performed using only 71 samples. Of the 71 samples, two with levels above the 15 ppb threshold were discarded, and the removal of these outliers resulted in aggregate lead levels falling beneath the action threshold.</p>
+<p>In the end, the tenacity of the growing number of residents with health concerns resulted in new samples being analyzed by a team of researchers at Virginia Tech University. Researchers found that the 90th percentile value among the sample of households – which included homes with non-lead pipes and water filtration systems – was 26.8 ppb and the highest individual sample was 158 ppb! The city switched back to the Lake Huron water source in October 2015 (18 months later), and a state of emergency was declared. The State of Michigan has brought numerous criminal charges against state and local officials which include misconduct in office, tampering with evidence, willful neglect of duty, and various counts of conspiracy. Residents also launched a series of class action lawsuits against the Governor (Langkjær-Bain, 2017).</p>
+<p>This may seem like a dramatic appeal, but the importance of investigating outliers cannot be overstated. Simply discarding outliers may truly be a grave mistake! If outliers are attributable to measurement error, it may be appropriate to discard them. If outliers represent properly measured values, they should be investigated. As we will discuss in Chapter <a href="desc-stats.html#desc-stats">7</a>, a common method of outlier detection is identifying values which fall outside the following interval:</p>
+<p><span class="math display">\[I = Q1 - 1.5 * IQR; Q3 + 1.5 * IQR\]</span></p>
+</div>
+<div id="low-variability" class="section level3" number="6.2.3">
+<h3><span class="header-section-number">6.2.3</span> Low Variability</h3>
+<p>Variables with <strong>low variability</strong> often do not provide sufficient information for identifying patterns in data. For example, if we are interested in using information on stock options to understand why employees vary in their levels of retention risk, but find that the employee stock purchase plan (ESPP) terms are identical for nearly all employees, including a stock option variable in the analysis is unlikely to provide any meaningful signal.</p>
+<p>When working with survey data, checking for <strong>straightlining</strong> should be an early data screening step. Straightlining refers to a constant response across all survey items, which may be evidence that the respondent lost motivation or was not attentive and thoughtful when taking the survey. Since straight-line responses may influence results, it is often best to discard these cases – especially when the sample size is adequately large for the planned analyses without them. If the same response is given for both positively and negatively worded versions of a question (e.g., comparing “I plan to be here in a year” to “I do not plan to be here in a year”), which we expect to be inversely related, this gives added support for discarding these responses.</p>
+<p>Fields with low variability can be easily identified using descriptive statistics from the <code>summary()</code> function. If the <code>Min</code> and <code>Max</code> values are equal, there is no variability in the field’s values. Based on the following descriptives, we should remove <code>standard_hrs</code> from the data:</p>
+<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="data-prep.html#cb147-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
+<span id="cb147-2"><a href="data-prep.html#cb147-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>standard_hrs)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##      80      80      80      80      80      80</code></pre>
+<p>Given that the data dictionary in Chapter <a href="getting-started.html#getting-started">1</a> indicates performance ratings range from 1 to 4, the following descriptives should raise red flags:</p>
+<div class="sourceCode" id="cb149"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb149-1"><a href="data-prep.html#cb149-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return descriptives to understand distribution of standard hours</span></span>
+<span id="cb149-2"><a href="data-prep.html#cb149-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(employees<span class="sc">$</span>perf_rating)</span></code></pre></div>
+<pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##   3.000   3.000   3.000   3.154   3.000   4.000</code></pre>
+<p>Assuming not everyone in the company is a stellar performer (i.e., only Noteworthy and Exceptional ratings), we may be working with a partial data set that could bias analyses. This may be due to poor integrity of performance data in the source system or repository from which the data were pulled, or the data may have been limited via a condition in the query.</p>
+</div>
+<div id="inconsistent-categories" class="section level3" number="6.2.4">
+<h3><span class="header-section-number">6.2.4</span> Inconsistent Categories</h3>
+<p><strong>Inconsistent categories</strong> impact aggregation and trending by categorical dimensions. It is often necessary to create mappings based on logical rules in order to standardize dimension values across time. In the case of reorgs, a department may be disbanded, renamed, or integrated into one or multiple other departments. Therefore, when working with historical data, records may contain legacy department names that do not align with the current organizational taxonomy. Mapping from former to current departments may require logic based on manager ids, divisions, job profiles, locations, or other variables depending on the nature of reorgs over time.</p>
+<p>Job architecture projects often introduce the need for mappings as well. Jobs and levels may completely change for all employees with a job architecture revamp, in which case trending along job and level dimensions (e.g., attrition by job or level over multiple years) is only possible with logic that clarifies how legacy jobs and levels map to those in the new career framework.</p>
+<p>Changes to allowable values in source systems often result in inconsistent categorical data over time. For example, the education field may switch from a free-form text field in which employees can enter any value (e.g., B.S., B.A., BS, BA, Bachelor of Science, Bachelor of Arts, Bachelor’s, Bachelors, Bachelor’s Degree, Bachelor Degree, undergraduate degree, 4-year degree, four-year degree) to a standardized solution in which there is a clean and well-defined set of allowable values from which employees can choose (e.g., Bachelor’s Degree, Master’s Degree, Doctoral Degree). This warrants either a one-time historical cleanup upon implementing the allowable values or downstream logic to tidy up data for analytics. A best practice is to address data quality issues upstream (e.g., in the source system) to avoid duplicative data cleaning procedures across downstream applications.</p>
+</div>
+<div id="data-binning" class="section level3" number="6.2.5">
+<h3><span class="header-section-number">6.2.5</span> Data Binning</h3>
+<p><strong>Data binning</strong> refers to the process by which larger high-level groups of values are defined and constructed. As a general rule, extremely granular categories should be avoided – especially when there is no theoretical basis for such categories facilitating a project’s objectives or deepening insights. Where the <span class="math inline">\(n\)</span>-count is expected to be consistently low for a defined categorical bin, it is usually best to define a larger bin. For example, a variable measuring highest level of educational attainment that contains 9th, 10th, 11th, and 12th grade categories may be converted into higher-level “High School Not Completed” and “High School Completed” bins.</p>
+<p>For modeling applications, it is important to let the algorithm determine the cutpoints for numeric data in relation to the outcome. For example, if organization tenure is measured in years, arbitrarily defining bin sizes of ‘Less Than 1 Year’, ‘1-5 Years’, and ‘More Than 5 Years’ will likely result in information loss. Any variability <em>within</em> these bins that may be useful in explaining variance in the outcome would be lost with such wide bins. In fact, machine learning (ML) models such as decision trees, which will be covered in later chapters, are great for algorithmically determining cut points for binning numeric data across descriptive, diagnostic, and predictive projects alike.</p>
+</div>
+</div>
+<div id="one-hot-encoding" class="section level2" number="6.3">
+<h2><span class="header-section-number">6.3</span> One-Hot Encoding</h2>
+<p><strong>One-hot encoding</strong>, also known as <strong>dummy coding</strong>, involves transforming a categorical variable into numeric values on which statistical procedures can be performed. For EDA, this is not required, as counts and percent of total metrics can be calculated on these dimensions for descriptive purposes. However, for statistical and ML modeling applications, categorical variables must be converted into <span class="math inline">\(k-1\)</span> variables, where <span class="math inline">\(k\)</span> is the number of categories, using binary (1/0) coding.</p>
+<p>Understanding how categorical data are coded is critical to a correct interpretation of output. For example, if a remote work variable exists with “Remote” or “Non-Remote” values, we may code “Remote” values as 1 and “Non-Remote” values as 0. We could then evaluate the statistical relationship of this transformed categorical variable with other numeric variables.</p>
+<p>If a categorical variable has more than 2 values, we must create a separate 1/0 field for each value and omit one category for use as a reference group. As we will cover in Chapter <a href="lm.html#lm">10</a>, one of several assumptions in linear regression is that independent variables are not collinear; that is no pair of independent variables is highly correlated. Without an omitted category, each of the one-hot encoded fields will be perfectly correlated with the others. That is, when the field representing category A is 1, the fields for other categories will always be 0. As illustrated in Figure <a href="data-prep.html#fig:onehot-encoding">6.4</a>, by omitting a category there will be cases when all fields have a 0 value (i.e., rows where the value is the omitted category), which will reduce the strength of the bivariate correlations.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:onehot-encoding"></span>
+<img src="graphics/onehot_encoding.png" alt="One-Hot Encoding" width="75%" />
+<p class="caption">
+Figure 6.4: One-Hot Encoding
+</p>
+</div>
+<p>For a categorical variable with only two values, the <code>ifelse()</code> function can be leveraged to assign values:</p>
+<div class="sourceCode" id="cb151"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb151-1"><a href="data-prep.html#cb151-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return unique values of gender field with unique() function</span></span>
+<span id="cb151-2"><a href="data-prep.html#cb151-2" aria-hidden="true" tabindex="-1"></a><span class="fu">unique</span>(employees<span class="sc">$</span>gender)</span></code></pre></div>
+<pre><code>## [1] &quot;Female&quot; &quot;Male&quot;</code></pre>
+<div class="sourceCode" id="cb153"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb153-1"><a href="data-prep.html#cb153-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Gender one-hot encoding</span></span>
+<span id="cb153-2"><a href="data-prep.html#cb153-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>gender_ohe <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>gender <span class="sc">==</span> <span class="st">&#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb153-3"><a href="data-prep.html#cb153-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb153-4"><a href="data-prep.html#cb153-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview records</span></span>
+<span id="cb153-5"><a href="data-prep.html#cb153-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(employee_id, gender_ohe)))</span></code></pre></div>
+<pre><code>##   employee_id gender_ohe
+## 1        1001          1
+## 2        1002          0
+## 3        1003          0
+## 4        1004          1
+## 5        1005          0
+## 6        1006          0</code></pre>
+<p>For variables with more than 2 categories, we can leverage the <code>model.matrix()</code> function for one-hot encoding. Let’s illustrate be encoding locations.</p>
+<div class="sourceCode" id="cb155"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb155-1"><a href="data-prep.html#cb155-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return counts by department</span></span>
+<span id="cb155-2"><a href="data-prep.html#cb155-2" aria-hidden="true" tabindex="-1"></a>employees <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">count</span>(dept, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>##                     dept   n
+## 1 Research &amp; Development 961
+## 2                  Sales 446
+## 3        Human Resources  63</code></pre>
+<p>By default, the <code>model.matrix()</code> function will produce a matrix of 1/0 values for <span class="math inline">\(k-1\)</span> categories. The first column in the matrix is an intercept column containing a value of 1 for each row to ensure linear independence, and the default behavior results in the first value of the factor being the omitted group. For more flexibility over which value is omitted, we can drop the intercept using <code>-1</code> in the first argument passed to <code>model.matrix()</code> and then choose the reference group for the analysis in a subsequent step.</p>
+<div class="sourceCode" id="cb157"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb157-1"><a href="data-prep.html#cb157-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Department one-hot encoding</span></span>
+<span id="cb157-2"><a href="data-prep.html#cb157-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> <span class="fu">model.matrix</span>(<span class="sc">~</span>dept<span class="dv">-1</span>, <span class="at">data =</span> employees)</span>
+<span id="cb157-3"><a href="data-prep.html#cb157-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb157-4"><a href="data-prep.html#cb157-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview data</span></span>
+<span id="cb157-5"><a href="data-prep.html#cb157-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
+<pre><code>##   deptHuman Resources deptResearch &amp; Development deptSales
+## 1                   0                          0         1
+## 2                   0                          1         0
+## 3                   0                          1         0
+## 4                   0                          1         0
+## 5                   0                          1         0
+## 6                   0                          1         0</code></pre>
+<p>We will drop the department with the lowest <span class="math inline">\(n\)</span> rather than the more arbitrary method based on the first value of the factor. Since departments are coded as either <span class="math inline">\(1\)</span> or <span class="math inline">\(0\)</span>, we can use the <code>colSums()</code> function to sum each column and the <code>which.min()</code> function to identify which has the lowest sum (i.e., smallest department by employee count).</p>
+<div class="sourceCode" id="cb159"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb159-1"><a href="data-prep.html#cb159-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop department with lowest sum (lowest n-count)</span></span>
+<span id="cb159-2"><a href="data-prep.html#cb159-2" aria-hidden="true" tabindex="-1"></a>dept_ohe <span class="ot">&lt;-</span> dept_ohe[, <span class="sc">-</span><span class="fu">which.min</span>(<span class="fu">colSums</span>(dept_ohe))]</span>
+<span id="cb159-3"><a href="data-prep.html#cb159-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb159-4"><a href="data-prep.html#cb159-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Preview refined one-hot encoded data</span></span>
+<span id="cb159-5"><a href="data-prep.html#cb159-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dept_ohe)</span></code></pre></div>
+<pre><code>##   deptResearch &amp; Development deptSales
+## 1                          0         1
+## 2                          1         0
+## 3                          1         0
+## 4                          1         0
+## 5                          1         0
+## 6                          1         0</code></pre>
+<div class="sourceCode" id="cb161"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb161-1"><a href="data-prep.html#cb161-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine employees and matrix containing one-hot encoded departments</span></span>
+<span id="cb161-2"><a href="data-prep.html#cb161-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, dept_ohe)</span>
+<span id="cb161-3"><a href="data-prep.html#cb161-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb161-4"><a href="data-prep.html#cb161-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop original department field</span></span>
+<span id="cb161-5"><a href="data-prep.html#cb161-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(dept))</span></code></pre></div>
+</div>
+<div id="feature-engineering" class="section level2" number="6.4">
+<h2><span class="header-section-number">6.4</span> Feature Engineering</h2>
+<p>Level one people analytics tends to utilize only the delivered fields from the HRIS (e.g., location, job profile, org tenure), but a good next step is to derive smarter variables from these fields. These can then be used to cut data differently or as inputs in models. Below are some examples of how basic data available in the HRIS can be transformed into new variables that provide different information. This can be easily accomplished using the arithmetic functions we’ve covered.</p>
+<ul>
+<li>Number of jobs per unit of tenure (larger proportions tend to see greater career pathing)</li>
+<li>Office/remote worker (binary variable dummy coded as 1/0)</li>
+<li>Local/remote manager (binary variable dummy coded as 1/0)</li>
+<li>Hire/Rehire (binary variable dummy coded as 1/0)</li>
+<li>Hired/acquired (proxy for culture shock effects)</li>
+<li>Gender isolation (ratio of employee’s gender to number of the same within immediate work
+group)</li>
+<li>Generation isolation (comparison of age bracket to most frequent generational bracket within
+immediate work group)</li>
+<li>Ethnic isolation (ratio of employee’s ethnicity to number of the same within immediate work
+group)</li>
+<li>Difference between employee and manager age</li>
+<li>Percentage change between last two performance appraisal scores (per competency and/or
+overall)</li>
+<li>Team and department quit outbreak indicators (ratio of terms over x months relative to average
+headcount over x months)</li>
+<li>Industry experience (binary or length in years)</li>
+</ul>
+</div>
+<div id="review-questions-4" class="section level2" number="6.5">
+<h2><span class="header-section-number">6.5</span> Review Questions</h2>
+<ol style="list-style-type: decimal">
+<li><p>What are the differences between data lakes, data warehouses, and data marts?</p></li>
+<li><p>What is the difference between a Type 1 and Type 2 table in a DW?</p></li>
+<li><p>In what ways has modern cloud computing influenced data architecture?</p></li>
+<li><p>Why is it dangerous to address missing values without domain knowledge of how the data are generated?</p></li>
+<li><p>How can missing values be addressed when impacted records cannot be eliminated from a data set?</p></li>
+<li><p>When is one-hot encoding required for categorical variables?</p></li>
+<li><p>When one-hot encoding a categorical variable with more than two categories, why is an omitted category important?</p></li>
+<li><p>When binning numeric data, what are some considerations in determining the size of each bin?</p></li>
+<li><p>Why should variables with low to no variability be dropped?</p></li>
+<li><p>Where are validation rules ideally situated to limit downstream data cleaning tasks and ensure consistent categorical dimension values?</p></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="measure-sampl.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="desc-stats.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["The_Fundamentals_of_People_Analytics.pdf", "The_Fundamentals_of_People_Analytics.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
