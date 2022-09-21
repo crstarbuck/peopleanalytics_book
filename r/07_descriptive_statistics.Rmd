@@ -152,7 +152,7 @@ max(x, na.rm = TRUE) - min(x, na.rm = TRUE)
 
 ```
 
-In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and ratios cut by time series (day, month, quarter, year) and categorical dimensions (department, job, location, tenure band). Here is a sample of common measures:
+In people analytics, there are many conventional descriptive metrics -- largely counts, percentages, and averages cut by various time (e.g., day, month, quarter, year) and categorical (e.g., department, job, location, tenure band) dimensions. Here is a sample of common measures:
 
   * Time to Fill: average days between job requisition posting and offer acceptance
   * Offer Acceptance Rate: percent of offers extended to candidates that are accepted
@@ -184,7 +184,7 @@ In people analytics, there are many conventional descriptive metrics -- largely 
   
   $$ s^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^{2}}{n-1} $$
   
-  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in USD, variance should be expressed as USD squared while the mean exists in the original USD unit of measurement.
+  It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in $USD$, variance should be expressed as $USD^2$ while the mean exists in the original $USD$ unit of measurement.
  
  In R, the sample variance can be calculated using the `var()` function:
  
@@ -247,7 +247,7 @@ sd(employees$annual_comp) * sqrt((n - 1) / n)
 
   **Quartiles**
   
-  A **quartile** is a type of quantile that partitions data into four equally sized parts after ordering the data. Quartiles are a staple of **exploratory data analysis (EDA)**, which is the process of investigating data sets, summarizing their main characteristics, and discovering general trends and patterns. Each quartile is equally sized with respect to the number of data points -- not the range of values in each. Quartiles are also related to **percentiles**. For example, Q1 is the 25th percentile -- the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.
+  A **quartile** is a type of quantile that partitions data into four equally sized parts after ordering the data. Each quartile is equally sized with respect to the number of data points -- not the range of values in each. Quartiles are also related to **percentiles**. For example, Q1 is the 25th percentile -- the value at or below which 25% of values lie. Percentiles are likely more familiar than quartiles, as percentiles show up in the height and weight measurements of babies, performance on standardized tests like the SAT and GRE, among other things.
   
   The **Interquartile Range (IQR)** represents the difference between Q3 and Q1 cut point values (the middle two quartiles). The IQR is sometimes used to detect extreme values in a distribution; values less than $Q1 - 1.5 * IQR$ or greater than $Q3 + 1.5 * IQR$ are generally considered outliers.
   
@@ -299,6 +299,7 @@ ggplot2::theme_bw()
 ```  
   
   Box plots can be interpreted as follows:
+  
   * Horizontal lines represent median compensation values.
   * The box in the middle of each distribution represents the IQR.
   * The end of the line above the IQR represents the threshold for outliers in the upper range: $Q3 + 1.5 * IQR$.
@@ -412,6 +413,104 @@ ggplot2::theme(legend.position = "none",
   Figure \@ref(fig:skewness) illustrates the placement of these descriptive statistics in each of the three types of distributions:
   
 <br />
+
+```{r, eval = FALSE, echo = FALSE, message = FALSE, warning = FALSE}
+
+### Generate skewness figure ###
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Generate positively skewed distribution; store as data frame to support subsequent visualization
+pos_dist_1 <- rnorm(1000000, 30, 3)
+pos_dist_2 <- rnorm(750000, 35, 5)
+pos_dist_3 <- rnorm(750000, 45, 10)
+pos_dist_4 <- rnorm(500000, 60, 10)
+pos_dist <- data.frame(obs = 1:length(c(pos_dist_1, pos_dist_2, pos_dist_3, pos_dist_4)),
+                       x = c(pos_dist_1, pos_dist_2, pos_dist_3, pos_dist_4))
+
+# Generate negatively skewed distribution; store as data frame to support subsequent visualization
+neg_dist_1 <- rnorm(1000000, 60, 3)
+neg_dist_2 <- rnorm(750000, 55, 5)
+neg_dist_3 <- rnorm(750000, 45, 10)
+neg_dist_4 <- rnorm(500000, 30, 10)
+neg_dist <- data.frame(obs = 1:length(c(neg_dist_1, neg_dist_2, neg_dist_3, neg_dist_4)),
+                       x = c(neg_dist_1, neg_dist_2, neg_dist_3, neg_dist_4))
+
+# Generate normal distribution; store as data frame to support subsequent visualization
+norm_dist <- data.frame(obs = 1:1000000,
+                        x = rnorm(1000000, 50, 10))
+
+# Load library
+library(ggplot2)
+
+# Build histograms
+p1 <- ggplot2::ggplot() + 
+      ggplot2::labs(title = 'Positive Skew') +
+      ggplot2::aes(pos_dist$x) +
+      ggplot2::geom_density(fill = "#D9D9D9", colour = "#808080", alpha = 0.8) +
+      ggplot2::annotate(geom = "text", x = mean(pos_dist$x) + 1, y = .05, label = '<-- Mean', size = 4, hjust = 0, color = '#4472C4') +
+      ggplot2::geom_vline(xintercept = mean(pos_dist$x), size = 1.25, color = '#4472C4') +
+      ggplot2::annotate(geom = "text", x = median(pos_dist$x) + 1, y = .06, label = '<----- Median', size = 4, hjust = 0, color = '#595959') +
+      ggplot2::geom_vline(xintercept = median(pos_dist$x), size = 1.25, color = '#595959') +
+      ggplot2::annotate(geom = "text", x = 30.8 + 1, y = .07, label = '<--------- Mode', size = 4, hjust = 0, color = '#70AD47') +
+      ggplot2::geom_vline(xintercept = 30.8, size = 1.25, color = '#70AD47') +
+      ggplot2::scale_x_continuous(limits = c(22, 70)) +
+      ggplot2::theme(panel.background = ggplot2::element_blank(),
+                     legend.position = "none",
+                     axis.title.x = ggplot2::element_blank(),
+                     axis.title.y = ggplot2::element_blank(),
+                     plot.title = ggplot2::element_text(hjust = 0.5, margin = ggplot2::margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(),
+                     axis.ticks.x = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank())
+
+p2 <- ggplot2::ggplot() + 
+      ggplot2::labs(title = 'Normal') +
+      ggplot2::aes(norm_dist$x) +
+      ggplot2::geom_density(fill = "#D9D9D9", colour = "#808080", alpha = 0.8) +
+      ggplot2::geom_vline(xintercept = mean(norm_dist$x), size = 1.25, color = '#595959') +
+      ggplot2::annotate(geom = "text", x = mean(norm_dist$x) + 1, y = .07, label = 'Mode', size = 4, hjust = 0, color = '#595959') +
+      ggplot2::annotate(geom = "text", x = median(norm_dist$x) + 1, y = .06, label = 'Median', size = 4, hjust = 0, color = '#595959') +
+      ggplot2::annotate(geom = "text", x = mean(norm_dist$x) + 1, y = .05, label = 'Mean', size = 4, hjust = 0, color = '#595959') +
+      ggplot2::scale_x_continuous(limits = c(25, 75)) +
+      ggplot2::theme(panel.background = ggplot2::element_blank(),
+                     legend.position = "none",
+                     axis.title.x = ggplot2::element_blank(),
+                     axis.title.y = ggplot2::element_blank(),
+                     plot.title = ggplot2::element_text(hjust = 0.5, margin = ggplot2::margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(),
+                     axis.ticks.x = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank())
+
+p3 <- ggplot2::ggplot() + 
+      ggplot2::labs(title = 'Negative Skew') +
+      ggplot2::aes(neg_dist$x) +
+      ggplot2::geom_density(fill = "#D9D9D9", colour = "#808080", alpha = 0.8) +
+      ggplot2::annotate(geom = "text", x = mean(neg_dist$x) - 16, y = .05, label = 'Mean -->', size = 4, hjust = 0, color = '#4472C4') +
+      ggplot2::geom_vline(xintercept = mean(neg_dist$x), size = 1.25, color = '#4472C4') +
+      ggplot2::annotate(geom = "text", x = median(neg_dist$x) - 23, y = .06, label = 'Median ----->', size = 4, hjust = 0, color = '#595959') +
+      ggplot2::geom_vline(xintercept = median(neg_dist$x), size = 1.25, color = '#595959') +
+      ggplot2::annotate(geom = "text", x = 70 - 35, y = .07, label = 'Mode --------->', size = 4, hjust = 0, color = '#70AD47') +
+      ggplot2::geom_vline(xintercept = 59.5, size = 1.25, color = '#70AD47') +
+      ggplot2::scale_x_continuous(limits = c(22, 70)) +
+      ggplot2::theme(panel.background = ggplot2::element_blank(),
+                     legend.position = "none",
+                     axis.title.x = ggplot2::element_blank(),
+                     axis.title.y = ggplot2::element_blank(),
+                     plot.title = ggplot2::element_text(hjust = 0.5, margin = ggplot2::margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
+                     axis.text.x = ggplot2::element_blank(),
+                     axis.text.y = ggplot2::element_blank(),
+                     axis.ticks.x = ggplot2::element_blank(),
+                     axis.ticks.y = ggplot2::element_blank())
+
+# Display distributions side-by-side
+ggpubr::ggarrange(p1, p2, p3,
+                  ncol = 3, nrow = 1)
+
+```
 
 ```{r skewness, out.width = "100%", echo = FALSE, fig.cap = 'Skewness', fig.align = 'center'}
 
