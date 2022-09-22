@@ -634,7 +634,7 @@ cov(employees$annual_comp, employees$age, use = "complete.obs")
 
 ```
   
-  In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+  In this example, using the default method the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
   
   Just as we multiplied the sample variance by $(n - 1) / n$ to obtain the population variance, we can apply the same approach to convert the sample covariance returned by `cov()` to the population covariance:
   
@@ -645,7 +645,7 @@ cov(employees$annual_comp, employees$age, use = "complete.obs") * (n - 1) / n
 
 ```
 
-  The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the `cov()` function:
+  Rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface pairwise associations among many variables by passing a data frame or matrix object into the `cov()` function:
 
 ```{r, message = FALSE}
 
@@ -715,7 +715,11 @@ cor(employees$job_lvl, employees$ed_lvl, method = "spearman", use = "complete.ob
 
   The $\rho$ coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass `method = "kendall"` to this `cor()` function to implement Kendall's $\tau$.
   
-  The **Phi Coefficient** ($\phi$), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables $x$ and $y$:
+  The **Phi Coefficient** ($\phi$), sometimes referred to as the **mean square contingency coefficient** or **Matthews correlation** in ML, can be used to understand the association between two dichotomous variables.
+
+  For the 2x2 table for two random variables $x$ and $y$ depicted in Figure \@ref(fig:phi-tbl), the $\phi$ coefficient is defined as:
+  
+  $$ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} $$
   
 ```{r phi-tbl, out.width="50%", echo = FALSE, fig.cap = '2x2 table for random variables x and y', fig.align = 'center'}
 
@@ -723,10 +727,6 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  The $\phi$ coefficient is defined as:
-  
-  $$ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} $$
-  
   To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs. low performance). We can leverage the `psych` library to calculate $\phi$ in R:
   
 ```{r, warning = FALSE, message = FALSE}
@@ -758,9 +758,9 @@ cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure
 
   Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between `org_tenure` and `job_tenure` ($r = .7$). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
   
-  A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
+  A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables, as illustrated in Figure \@ref(fig:corrplot-comp):
   
-```{r corrplot-comp, out.width = "100%", echo = FALSE, fig.cap = 'Corrplot correlation matrix', fig.align = 'center',}
+```{r corrplot-comp, out.width = "100%", fig.cap = 'Corrplot correlation matrix', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Store correlation matrix to object M
 M <- cor(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")), use = "complete.obs")
@@ -775,9 +775,9 @@ corrplot::corrplot(M, method = "color",
 
 ```
 
-  The `GGally` library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
+  The `GGally` library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions, as illustrate in Figure \@ref(fig:ggpairs-comp):
 
-```{r ggpairs-comp, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions.', fig.align = 'center'}
+```{r ggpairs-comp, out.width = "100%", message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Visualize correlation matrix
 GGally::ggpairs(subset(employees, select = c("annual_comp", "age", "org_tenure", "job_tenure", "prior_emplr_cnt", "commute_dist")))
@@ -796,7 +796,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 <br />
   
-  Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
+  Figures \@ref(fig:spur-corr-1) and \@ref(fig:spur-corr-2) are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
   
 ```{r spur-corr-1, out.width = "100%", echo = FALSE, fig.cap = 'Correlation between Maine divorce rate and margarine consumption (r = .99)', fig.align = 'center'}
 
@@ -812,7 +812,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
 
-  In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
+  Neither covariance nor correlation alone are sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to graduate from descriptive statistics.
   
 ## Review Questions
    
