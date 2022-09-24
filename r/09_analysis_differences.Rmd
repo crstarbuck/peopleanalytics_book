@@ -1,12 +1,12 @@
 # Analysis of Differences {#aod}
 
-  There are many statistical tests that can be used to test for differences within or between two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
+  There are many statistical tests that can be used to test for differences *within* or *between* two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
 
 ## Parametric vs. Nonparametric Tests
 
   In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and $n$ is large, **parametric tests** are preferred as they generally have more statistical power. **Nonparametric tests** are **distribution-free tests** that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
   
-  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-arch-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
+  Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \@ref(measure-sampl), as well as following the data screening procedures outlined in Chapter \@ref(data-prep) (e.g., addressing concerning outliers), parametric tests of differences *generally* feature three key assumptions:
   
   1. **Independence**: Observations within each group are independent of each other
   2. **Homogeneity of Variance**: Variances of populations from which samples were drawn are equal
@@ -15,13 +15,6 @@
   While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that $\mu$ and $\sigma$ are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for *median* -- rather than *mean* -- centers.
   
   You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \@ref(inf-stats), influences our ability to utilize parametric tests with respect to the assumption of normality. It's important to remember that the normal distribution properties under the CLT relate to the *sampling distribution of means* -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \@ref(desc-stats) to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
-
-```{r, message = FALSE, warning = FALSE}
-
-# Load employee data
-employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
-
-```
 
 ## Differences in Discrete Data
 
@@ -43,7 +36,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   where $O_i$ is the observed value, and $E_i$ is the expected value. 
   
-  $H_0$ states that each variable is independent of one another (i.e., there is no relationship). In addition to the ${\chi}^2$ test statistic, $df$ for the contingency table, defined by $df = (rows - 1) * (columns - 1)$, is required to determine whether we reject or fail to reject $H_0$.
+  $H_0$ states that each variable is independent of one another (i.e., there is no relationship). In addition to the ${\chi}^2$ test statistic, $df$ for the contingency table defined by $df = (rows - 1) * (columns - 1)$, is required to determine whether we reject or fail to reject $H_0$.
   
   While there is not consensus on the minimum sample size for this test, it is important to note that the ${\chi}^2$ statistic follows a chi-square distribution *asymptotically*. This means we can only calculate accurate $p$-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small $n$-counts is illustrated in Figure \@ref(fig:chisq-dist); the chi-square distribution approaches a vertical line as $df$ drops below 5.
   
@@ -72,8 +65,12 @@ ggplot2::theme_bw()
   
 ```{r, message = FALSE, warning = FALSE}
 
+# Load employee data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+
 # Create contingency table
 cont_tbl <- table(employees$active, employees$overtime)
+
 cont_tbl
 
 ```   
@@ -82,15 +79,15 @@ cont_tbl
 
 ```{r mosaic-plot, out.width = "100%", echo = FALSE, fig.cap = 'Mosaic plot of residuals for overtime x active status', fig.align = 'center',}
 
-# Load library for mosaic plot
+# Load library
 library("graphics")
 
 # Build mosaic plot of contingency table residuals
-mosaicplot(cont_tbl, shade = TRUE, main = NULL, xlab = "Overtime", ylab = "Active")
+graphics::mosaicplot(cont_tbl, shade = TRUE, main = NULL, xlab = "Overtime", ylab = "Active")
 
 ``` 
 
-  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
+  In Figure \@ref(fig:mosaic-plot), blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the *overtime* group, and more active employees than expected in the *no overtime* group. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
 
   Let's run the chi-square test of independence to determine whether these residuals are statistically significant. This test can be performed in R by passing the contingency table into the `chisq.test()` function:
 
@@ -101,11 +98,11 @@ chisq.test(cont_tbl)
 
 ```   
 
-  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a statistically significant relationship between an employee working overtime and the rate at which they change from an active to inactive status -- confirming what was evident in the mosaic plot.
+  Based on the results, exit rates are not independent of overtime (${\chi}^2(1) = 87.56, p < .05$). Therefore, there is a statistically significant relationship between an employee working overtime and the rate at which they change from active to inactive statuses -- confirming what was evident in the mosaic plot.
   
   **Fisher's Exact Test**
   
-  When the sample size is small, **Fisher's Exact Test** can be used to calculate the *exact* $p$-value rather than an approximation, which is the case with many statistical tests such as the chi-square test.
+  When the sample size is small, **Fisher's Exact Test** can be used to calculate the *exact* $p$-value rather than the approximation characteristic of many statistical tests such as the chi-square test.
   
   $H_0$ for Fisher's exact test is the same as $H_0$ for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the `fisher.test()` function in R:
   
@@ -120,7 +117,7 @@ fisher.test(cont_tbl)
   
   $$OR = \frac{a*d}{b*c}$$
   
-  An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \@ref(fig:contingency-tbl) illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.
+  An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \@ref(fig:contingency-tbl) illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive workers.
 
 ```{r contingency-tbl, out.width = "75%", echo = FALSE, fig.cap = '2x2 contingency table of overtime for active and inactive workers', fig.align = 'center'}
 
@@ -141,7 +138,7 @@ psych::phi(cont_tbl)
 
   The relationship between active status and overtime is negative, and the strength of the relationship is weak ($\phi$ = -.25).
   
-  Another common method of measuring the strength of the association between two categorical variables is **Cramer's V**, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alernative methods, the implementation won't be covered.
+  Another common method of measuring the strength of the association between two categorical variables is **Cramer's V**, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alternative methods, the implementation won't be covered.
 
 ## Differences in Continuous Data
 
@@ -157,9 +154,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   When evaluating differences between two independent samples, social psychology researchers generally select from two tests: *Student's* $t$*-test* and *Welch's* $t$*-test*. There are other alternatives, such as *Yuen's* $t$*-test* and a *bootstrapped* $t$*-test*, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
   
-  The **Student's** $t$**-test**, which was introduced in Chapter \@ref(inf-stats), is a parametric test whose assumptions of equal variances seldom hold in people analytics. **Welch's** $t$**-test** is generally preferred to the Student's $t$-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, & Leys, 2017). When $n$ is equal between groups, the Student's $t$-test is known to be robust to violations of the equal variance assumption, as long as $n$ is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
+  The **Student's** $\textbf t$**-test**, which was introduced in Chapter \@ref(inf-stats), is a parametric test whose assumptions of equal variances seldom hold in people analytics. **Welch's** $\textbf t$**-test** is generally preferred to the Student's $t$-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, & Leys, 2017). When $n$ is equal between groups, the Student's $t$-test is known to be robust to violations of the equal variance assumption, as long as $n$ is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
   
-  Let's explore the mechanics of independent samples $t$-tests. Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a standard normal distribution with larger $df$. In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p > .05$). You may also notice that as the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
+  Let's explore the mechanics of independent samples $t$-tests. Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a normal distribution with larger $df$. In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p > .05$). You may also notice that as the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
 
 ```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1,000, and 10,000 (rows) and standard deviations of 25, 50, and 75 (columns). Dashed vertical lines represent distribution means.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -243,7 +240,7 @@ ggplot2::geom_boxplot()
 
   While the median -- rather than the mean which is being evaluated with Welch's $t$-test -- is shown in these box plots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.
   
-  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit test** (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S) test** (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk test** (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
+  There are several alternatives to a visual inspection of normality, such as the ${\chi}^2$ **Goodness-of-Fit test** (Snedecor & Cochran, 1980), **Kolmogorov-Smirnov (K-S) test** (Chakravarti, Laha, & Roy, 1967), or **Shapiro-Wilk test** (Shapiro & Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The ${\chi}^2$ Goodness-of-Fit test compares the *count* of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normally distributed population, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed *cumulative* distribution compares to the properties of a normal *cumulative* distribution. The Shapiro-Wilk test is based on *correlations* between observed and expected data.
     
   We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high $p$-value indicates that the assumption of normality is satisfied (i.e., failure to reject the null hypothesis of normally distributed data). We can use the `with()` function together with the `shapiro.test()` function to run this test in R:
   
@@ -255,7 +252,7 @@ with(employees, shapiro.test(annual_comp[job_title == 'Research Scientist']))
 
 ```  
     
-  Based on these tests, the distribution of annual compensation for Managers and Research Scientists are significantly different from normally distributed data ($p$ < .05).
+  Based on these tests, distributions of annual compensation for Managers and Research Scientists are non-normal ($p$ < .05).
     
   While we should not proceed with performing Welch's $t$-test due to unequal variances, let's do so merely to illustrate how the test is implemented in R. To perform Welch's $t$-test in R, we can simply pass into the `t.test()` function a numeric vector for each of the two groups.
   
@@ -317,7 +314,7 @@ t_rslts[9] # type of t-test
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Load library for effect size functions
+# Load library
 library(effsize)
 
 # Perform Cohen's d
@@ -353,7 +350,7 @@ wilcox.test(no_promo, promo)
   
 ```{r, message = FALSE, warning = FALSE}
 
-# Run Cliff's Delta
+# Calculate Cliff's Delta
 effsize::cliff.delta(no_promo, promo)
 
 ```    
@@ -371,8 +368,6 @@ effsize::cliff.delta(no_promo, promo)
   Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).
   
   While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \@ref(research) that this would be a weak design that may lead to inaccurate conclusions. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.
-  
-  **Difference-in-differences (DiD)** estimation is a quasi-experimental approach that originated from econometrics for this same purpose, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
   
   Let's prepare the data for this experiment. Since `employees` is a cross-sectional dataset (single point-in-time), we will generate simulated data for repeated measures (i.e., post-intervention scores).
   
@@ -486,7 +481,11 @@ t.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE, alternative =
 
 ``` 
 
-  Since $p$ > .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. Chapter \@ref(lm) will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
+  Since $p$ > .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. 
+  
+  Chapter \@ref(lm) will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV. 
+  
+  **Difference-in-differences (DiD)** estimation is an alternative quasi-experimental approach that originated from econometrics for evaluating the effects of interventions like these, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
   
   We can evaluate the magnitude of mean differences for these paired samples by passing the `paired = TRUE` argument to the same `cohen.d()` function used for independent samples:
   
@@ -538,7 +537,7 @@ effsize::cliff.delta(treat_metrics$post_ind, treat_metrics$pre_ind, paired = TRU
   
   It is important to understand that $H_0$ in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, $H_0$ requires that $\mu_A = \mu_B = \mu_C = \mu_D$ is true as well as the various complex contrasts such as $\mu_{A,B} = \mu_{C,D}$ and $\mu_A = \mu_{B,C,D}$ and $\mu_D = \mu_{B,C}$. Therefore, a difference between one or more of these contrasts results in a decision to reject $H_0$ in ANOVA. As a result, we may find a significant $F$-statistic but no significant differences between pairwise means.
   
-  In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \@ref(inf-stats), multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+  It is also possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \@ref(inf-stats), multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
   
   ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A **one-way ANOVA** is used to determine how one categorical IV influences a continuous DV. A **two-way ANOVA** is used to determine how two categorical IVs influence a continuous DV. A **three-way ANOVA** is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a **factorial ANOVA**. As discussed in Chapter \@ref(getting-started), it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
   
@@ -583,7 +582,7 @@ car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
   
 ```{r comp-dist, fig.cap = "Annual compensation distribution by job satisfaction level", fig.align = 'center', message = FALSE, warning = FALSE}
 
-# Load data viz library
+# Load libraries
 library(ggplot2)
 library(ggpubr)
 
@@ -672,12 +671,13 @@ ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
 
 ``` 
 
-  Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA is demonstrated below. Performing ANOVA involves the `aov()` function along with the `summary()` function to display model output:
+  Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, let's demonstrate the implementation steps for ANOVA. Performing ANOVA involves pairing the `aov()` function with the `summary()` function to display model output:
     
 ```{r, message = FALSE, warning = FALSE}
 
 # One-way ANOVA investigating mean differences in annual comp by job satisfaction
 one.way <- aov(annual_comp ~ job_sat, data = employees)
+
 summary(one.way)
 
 ```
@@ -703,7 +703,7 @@ pairwise.wilcox.test(employees$annual_comp, employees$job_sat, p.adjust.method =
   
   **Factorial ANOVA**
   
-  **Factorial ANOVA** is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. It is important to understand the hypothesis a factorial design tests. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
+  **Factorial ANOVA** is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -721,6 +721,7 @@ combos
 
 # Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level
 factorial <- aov(annual_comp ~ job_sat + stock_opt_lvl, data = employees)
+
 summary(factorial)
 
 ```  
@@ -740,9 +741,9 @@ ggplot2::geom_point(aes(color = stock_opt_lvl))
 
   As we can see, there is a strong negative relationship between job satisfaction and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.
   
-  These relationships may initially seem counterintuitive, as one might expect higher levels of job satisfaction to contribute to higher performance and consequently, higher compensation. There may be other variables that happen to be correlated with job satisfaction and/or stock option level that are the actual determinants of annual compensation. For example, there may be a relationship between jobs that each feature a stock option level of 3 but for which there are markedly different average job satisfaction scores and annual compensation among workers in said jobs. Without accounting for additional variables that may explain why employees vary in the amount of annual compensation they earn, the limited set of relationships shown in Figure \@ref(fig:two-way-factorial) may lead to a misleading understanding and inaccurate conclusions.
+  These relationships may initially seem counterintuitive, as one might expect higher levels of job satisfaction to contribute to higher performance and consequently, higher compensation. There may be other variables that happen to be correlated with job satisfaction and/or stock option level that are the actual determinants of annual compensation. For example, there may be a relationship between jobs that each feature a stock option level of 3 but for which there are markedly different average job satisfaction scores and annual compensation among workers in these jobs. Without accounting for additional variables that may explain why employees vary in the amount of annual compensation they earn, the limited set of relationships shown in Figure \@ref(fig:two-way-factorial) may lead to a flawed understanding and inaccurate conclusions.
   
-  Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \@ref(lm), we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly explain variation in the DV.
+  Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \@ref(lm), we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly help explain variation in the DV.
 
 ## Review Questions
 
