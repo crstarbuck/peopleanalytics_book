@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-21" />
+<meta name="date" content="2022-09-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -282,7 +282,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
 <li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
 <li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
-<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#textbf-p-values" id="toc-textbf-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(\textbf p\)</span>-Values</a></li>
 <li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
 <li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
 </ul></li>
@@ -453,22 +453,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2><span class="header-section-number">11.1</span> Model Comparisons</h2>
 <p>Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs. female employees or across ethnic cohorts.</p>
 <p>To illustrate, let’s fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.</p>
-<div class="sourceCode" id="cb372"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb372-1"><a href="lme.html#cb372-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb372-2"><a href="lme.html#cb372-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb372-3"><a href="lme.html#cb372-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-4"><a href="lme.html#cb372-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb372-5"><a href="lme.html#cb372-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
-<span id="cb372-6"><a href="lme.html#cb372-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-7"><a href="lme.html#cb372-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
-<span id="cb372-8"><a href="lme.html#cb372-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
-<span id="cb372-9"><a href="lme.html#cb372-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-10"><a href="lme.html#cb372-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Partition data into overtime and non-overtime groups</span></span>
-<span id="cb372-11"><a href="lme.html#cb372-11" aria-hidden="true" tabindex="-1"></a>data_ot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span>)</span>
-<span id="cb372-12"><a href="lme.html#cb372-12" aria-hidden="true" tabindex="-1"></a>data_nonot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;No&#39;</span>)</span>
-<span id="cb372-13"><a href="lme.html#cb372-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb372-14"><a href="lme.html#cb372-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups</span></span>
-<span id="cb372-15"><a href="lme.html#cb372-15" aria-hidden="true" tabindex="-1"></a>mlm.fit.ot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_ot)</span>
-<span id="cb372-16"><a href="lme.html#cb372-16" aria-hidden="true" tabindex="-1"></a>mlm.fit.nonot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_nonot)</span></code></pre></div>
+<div class="sourceCode" id="cb370"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb370-1"><a href="lme.html#cb370-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb370-2"><a href="lme.html#cb370-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb370-3"><a href="lme.html#cb370-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb370-4"><a href="lme.html#cb370-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb370-5"><a href="lme.html#cb370-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
+<span id="cb370-6"><a href="lme.html#cb370-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb370-7"><a href="lme.html#cb370-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
+<span id="cb370-8"><a href="lme.html#cb370-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
+<span id="cb370-9"><a href="lme.html#cb370-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb370-10"><a href="lme.html#cb370-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Partition data into overtime and non-overtime groups</span></span>
+<span id="cb370-11"><a href="lme.html#cb370-11" aria-hidden="true" tabindex="-1"></a>data_ot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span>)</span>
+<span id="cb370-12"><a href="lme.html#cb370-12" aria-hidden="true" tabindex="-1"></a>data_nonot <span class="ot">&lt;-</span> <span class="fu">subset</span>(data, overtime <span class="sc">==</span> <span class="st">&#39;No&#39;</span>)</span>
+<span id="cb370-13"><a href="lme.html#cb370-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb370-14"><a href="lme.html#cb370-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress transformed YTD sales on a combination of predictors for overtime and non-overtime groups</span></span>
+<span id="cb370-15"><a href="lme.html#cb370-15" aria-hidden="true" tabindex="-1"></a>mlm.fit.ot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_ot)</span>
+<span id="cb370-16"><a href="lme.html#cb370-16" aria-hidden="true" tabindex="-1"></a>mlm.fit.nonot <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data_nonot)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = sqrt(ytd_sales) ~ engagement + job_lvl + stock_opt_lvl + 
@@ -578,14 +578,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>A model in which group-level effects are hypothesized for <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(X_1\)</span> and observation-level effects are hypothesized for all other predictors is expressed as:</p>
 <p><span class="math display">\[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]</span></p>
 <p>To fit a linear mixed effects model in R, we can leverage the <code>lmer()</code> function from the <code>lmerTest</code> package. Let’s demonstrate how to fit a model to understand the random effects of <code>stock_opt_lvl</code> and fixed effects of <code>engagement</code>, <code>job_lvl</code>, and <code>org_tenure</code> on <code>sqrt(ytd_sales)</code>:</p>
-<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="lme.html#cb377-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb377-2"><a href="lme.html#cb377-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
-<span id="cb377-3"><a href="lme.html#cb377-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb377-4"><a href="lme.html#cb377-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear mixed model</span></span>
-<span id="cb377-5"><a href="lme.html#cb377-5" aria-hidden="true" tabindex="-1"></a>lme.fit <span class="ot">&lt;-</span> lmerTest<span class="sc">::</span><span class="fu">lmer</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> stock_opt_lvl) <span class="sc">+</span> org_tenure, data_ot)</span>
-<span id="cb377-6"><a href="lme.html#cb377-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb377-7"><a href="lme.html#cb377-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize model results</span></span>
-<span id="cb377-8"><a href="lme.html#cb377-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb375"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb375-1"><a href="lme.html#cb375-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb375-2"><a href="lme.html#cb375-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lmerTest)</span>
+<span id="cb375-3"><a href="lme.html#cb375-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb375-4"><a href="lme.html#cb375-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear mixed model</span></span>
+<span id="cb375-5"><a href="lme.html#cb375-5" aria-hidden="true" tabindex="-1"></a>lme.fit <span class="ot">&lt;-</span> lmerTest<span class="sc">::</span><span class="fu">lmer</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> (<span class="dv">1</span> <span class="sc">|</span> stock_opt_lvl) <span class="sc">+</span> org_tenure, data_ot)</span>
+<span id="cb375-6"><a href="lme.html#cb375-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb375-7"><a href="lme.html#cb375-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize model results</span></span>
+<span id="cb375-8"><a href="lme.html#cb375-8" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lme.fit)</span></code></pre></div>
 <pre><code>## Linear mixed model fit by REML. t-tests use Satterthwaite&#39;s method [
 ## lmerModLmerTest]
 ## Formula: sqrt(ytd_sales) ~ engagement + job_lvl + (1 | stock_opt_lvl) +  
@@ -649,10 +649,10 @@ Figure 11.2: Year 1-5 turnover trends for level 4 People Scientists, stratified 
 </div>
 <p>As we can see in Figure <a href="lme.html#fig:ps-turnover-trends">11.2</a>, the relationship between month and turnover rate is non-linear, and level 4 People Scientists who work remotely leave at lower rates relative to those who do not work remotely. There is a clear seasonal pattern that is consistent across all five years as well as remote vs. non-remote groups; namely, there is a spike in turnover between March and June as well as later in the year (November/December). Fitting a model to these data will require non-linear terms.</p>
 <p>Adding polynomial terms requires an indicator variable <code>I()</code> in which the value of <span class="math inline">\(x\)</span> is raised to the desired order (e.g., <span class="math inline">\(x^2\)</span> = <code>I(x^2)</code>). Let’s start by fitting linear, quadratic, and cubic regression models (to compare performance) using only <code>month</code> as a predictor. Notice that the shape of the trends resemble the cubic function shown in Figure <a href="lme.html#fig:poly-fun">11.1</a> in that there are two discernible inflection points at which the trend reverses directions.</p>
-<div class="sourceCode" id="cb379"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb379-1"><a href="lme.html#cb379-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover data</span></span>
-<span id="cb379-2"><a href="lme.html#cb379-2" aria-hidden="true" tabindex="-1"></a>ps.lin.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month, <span class="at">data =</span> ps_turnover)</span>
-<span id="cb379-3"><a href="lme.html#cb379-3" aria-hidden="true" tabindex="-1"></a>ps.quad.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> ps_turnover)</span>
-<span id="cb379-4"><a href="lme.html#cb379-4" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>), <span class="at">data =</span> ps_turnover)</span></code></pre></div>
+<div class="sourceCode" id="cb377"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb377-1"><a href="lme.html#cb377-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover data</span></span>
+<span id="cb377-2"><a href="lme.html#cb377-2" aria-hidden="true" tabindex="-1"></a>ps.lin.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb377-3"><a href="lme.html#cb377-3" aria-hidden="true" tabindex="-1"></a>ps.quad.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>), <span class="at">data =</span> ps_turnover)</span>
+<span id="cb377-4"><a href="lme.html#cb377-4" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>), <span class="at">data =</span> ps_turnover)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = turnover_rate ~ month, data = ps_turnover)
@@ -721,11 +721,11 @@ Figure 11.3: Linear, quadratic, and cubic model fit (red dashed line) to remote 
 </div>
 <p>As shown in Figure <a href="lme.html#fig:turnover-pred">11.3</a>, the multidimensional data vary widely around estimates produced by the two-dimensional models (i.e., <code>turnover_rate</code> predicted on the basis of <code>month</code>). While the cubic regression model reflects the seasonality in month-over-month turnover, there are notable differences between remote and non-remote turnover rates as well as differences across years.</p>
 <p>Let’s add <code>remote</code> to the cubic regression model to see how performance changes.</p>
-<div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="lme.html#cb383-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
-<span id="cb383-2"><a href="lme.html#cb383-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
-<span id="cb383-3"><a href="lme.html#cb383-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb383-4"><a href="lme.html#cb383-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
-<span id="cb383-5"><a href="lme.html#cb383-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb381"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb381-1"><a href="lme.html#cb381-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
+<span id="cb381-2"><a href="lme.html#cb381-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb381-3"><a href="lme.html#cb381-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb381-4"><a href="lme.html#cb381-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb381-5"><a href="lme.html#cb381-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = turnover_rate ~ month + I(month^2) + I(month^3) + 
@@ -750,11 +750,11 @@ Figure 11.3: Linear, quadratic, and cubic model fit (red dashed line) to remote 
 ## F-statistic: 15.47 on 4 and 115 DF,  p-value: 3.758e-10</code></pre>
 <p>As shown in Figure <a href="#fig:ps-cube-mnthrem-output"><strong>??</strong></a>, accounting for remote status increases explained variance by 21% (.35 - .14). In addition to the change in explained variance <span class="math inline">\(\Delta R^2\)</span>, the coefficient on <code>remote</code> is statistically significant (<span class="math inline">\(\beta\)</span> = -1.64, <span class="math inline">\(t\)</span>(115) = -6.09, <span class="math inline">\(p\)</span> &lt; .001). On average, the turnover rate for remote People Scientists is 1.64% lower than the turnover rate for non-remote People Scientists.</p>
 <p>Next, let’s include <code>year</code> in the model since turnover rates also vary along this dimension.</p>
-<div class="sourceCode" id="cb385"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb385-1"><a href="lme.html#cb385-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
-<span id="cb385-2"><a href="lme.html#cb385-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> year <span class="sc">+</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
-<span id="cb385-3"><a href="lme.html#cb385-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb385-4"><a href="lme.html#cb385-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
-<span id="cb385-5"><a href="lme.html#cb385-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb383"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb383-1"><a href="lme.html#cb383-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit linear, quadratic, and cubic models to ps_turnover df</span></span>
+<span id="cb383-2"><a href="lme.html#cb383-2" aria-hidden="true" tabindex="-1"></a>ps.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> year <span class="sc">+</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> ps_turnover)</span>
+<span id="cb383-3"><a href="lme.html#cb383-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb383-4"><a href="lme.html#cb383-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb383-5"><a href="lme.html#cb383-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(ps.cube.fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = turnover_rate ~ year + month + I(month^2) + I(month^3) + 

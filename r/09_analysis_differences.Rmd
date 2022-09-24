@@ -156,7 +156,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   The **Student's** $\textbf t$**-test**, which was introduced in Chapter \@ref(inf-stats), is a parametric test whose assumptions of equal variances seldom hold in people analytics. **Welch's** $\textbf t$**-test** is generally preferred to the Student's $t$-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, & Leys, 2017). When $n$ is equal between groups, the Student's $t$-test is known to be robust to violations of the equal variance assumption, as long as $n$ is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
   
-  Let's explore the mechanics of independent samples $t$-tests. Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a normal distribution with larger $df$. In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p > .05$). You may also notice that as the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
+  Let's explore the mechanics of independent samples $t$-tests. Figure \@ref(fig:mean-group-diff) illustrates mean differences ($MD$) for nine Welch's $t$-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large $n$, as $t$ distributions approximate a normal distribution with larger $df$. In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both $MD$ and $n$ are relatively small, mean differences are not statistically significant ($p$ >= .05). You may also notice that as the $t$-statistic approaches 0, statistical differences become less likely since a smaller $t$-statistic indicates a smaller difference between mean values.
 
 ```{r mean-group-diff, out.width = "100%", echo = FALSE, fig.cap = 'Density plots comparing distributions with a mean of 100 (blue) and 120 (grey) with sample sizes of 100, 1,000, and 10,000 (rows) and standard deviations of 25, 50, and 75 (columns). Dashed vertical lines represent distribution means.', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -203,7 +203,7 @@ for (n in n_counts){
 
     # Store viz to object
     p[[i]] <- ggplot2::ggplot(ab, aes(x, fill = group)) + 
-              ggplot2::labs(title = paste0("MD = ", xbar_delta, "\n t = ", round(t_test$statistic, 1), ifelse(t_test$p.value < .05, ", p < .05", ", p > .05")), x = "x", y = "Density") +  
+              ggplot2::labs(title = paste0("MD = ", xbar_delta, "\n t = ", round(t_test$statistic, 1), ifelse(t_test$p.value < .05, ", p < .05", ", p >= .05")), x = "x", y = "Density") +  
               ggplot2::geom_density(alpha = 0.6) +
               ggplot2::scale_fill_manual(values = c("skyblue", "lightgrey")) +
               ggplot2::geom_vline(data = mean_df, aes(xintercept = mean), colour = c("blue", "#3D3D3D"), size = .5, linetype = "dashed") +
@@ -459,7 +459,7 @@ shapiro.test(ctrl_metrics$diff)
 
 ```
   
-  Since $p$ > .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples $t$-test.
+  Since $p$ >= .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples $t$-test.
   
   We can run a paired samples $t$-test in R by passing `paired = TRUE` as an argument to the same `t.test()` function used for the independent samples $t$-test. Since we are investigating whether the average post-intervention happiness index is significantly *greater* than the average pre-intervention happiness index, we also need the `alternative = "greater"` argument since the default two-tailed test only evaluates whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).
   
@@ -481,7 +481,7 @@ t.test(ctrl_metrics$post_ind, ctrl_metrics$pre_ind, paired = TRUE, alternative =
 
 ``` 
 
-  Since $p$ > .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. 
+  Since $p$ >= .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. 
   
   Chapter \@ref(lm) will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV. 
   
@@ -576,7 +576,7 @@ car::leveneTest(annual_comp ~ as.factor(job_sat), data = employees)
 
 ```  
   
-  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p > .05$, we fail to reject this null hypothesis and can assume equal variances.
+  The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since $p$ >= .05, we fail to reject this null hypothesis and can assume equal variances.
   
   Next, let's test the assumption of normality. It is important to note that the assumption of normality *does not* apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., $y - \bar{y}_A$, $y - \bar{y}_B$, $y - \bar{y}_C$). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
   
@@ -643,7 +643,7 @@ shapiro.test(residuals)
 
 ``` 
 
-  Since $p < .05$, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
+  Since $p$ < .05, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \@ref(fig:qq-plot).
   
   Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.
   
@@ -691,7 +691,7 @@ kruskal.test(annual_comp ~ job_sat, data = employees)
 
 ```
 
-  Since $p < .05$, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the `pairwise.wilcox.test()` function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
+  Since $p$ < .05, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the `pairwise.wilcox.test()` function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
 
 ```{r, message = FALSE, warning = FALSE}
 

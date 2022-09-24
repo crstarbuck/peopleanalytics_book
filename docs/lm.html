@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-21" />
+<meta name="date" content="2022-09-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -282,7 +282,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
 <li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
 <li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
-<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#textbf-p-values" id="toc-textbf-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(\textbf p\)</span>-Values</a></li>
 <li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
 <li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
 </ul></li>
@@ -448,20 +448,18 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="lm" class="section level1" number="10">
 <h1><span class="header-section-number">10</span> Linear Regression</h1>
-<p>It’s important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events – even at the expense of interpretability. To be clear, this isn’t to say that predictive models cannot be interpreted – they certainly can – but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning.</p>
-<p>This chapter is dedicated to inferential modeling to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. Chapter <a href="pred-mod.html#pred-mod">13</a> will provide an overview of predictive modeling frameworks.</p>
 <p>Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Let’s first develop an intuitive understanding of the mechanics of regression.</p>
-<p>Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the <em>average</em> annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.</p>
-<p>Let’s consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It’s also unlikely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.</p>
+<p>Imagine we are sitting at a large public park in New York City on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the <em>average</em> annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.</p>
+<p>Let’s consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It’s also less likely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.</p>
 <p>Let’s now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be quite helpful in reducing the size of the population who could walk by. This should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year. That an important variable may become unimportant in the presence of another variable is a key feature of regression.</p>
-<p>Furthermore, let’s consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise – all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly <em>within each</em> – likely making the average compensation in each group a more nuanced and reasonable estimate.</p>
-<p>What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs. Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.</p>
+<p>In addition, let’s consider that only those who reside in NYC and Boise, Idaho were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise – all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should significantly limit the range of annual compensation <em>within each</em> – likely making the average compensation in each group a more nuanced and reasonable estimate.</p>
+<p>What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs. Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a meaningful degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining the variance in annual compensation.</p>
 <p>What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn and should, therefore, not be considered.</p>
-<p>You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations with the same characteristics – such as senior analysts with a graduate degree who reside in NYC – there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It’s likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.</p>
+<p>You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations <em>with the same characteristics</em> – such as senior analysts with a graduate degree who reside in NYC – there is a distribution of annual compensation. This distribution reflects <em>unexplained</em> variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was a more effective negotiator when offered the same role and commanded a higher salary. It’s likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is to identify the variables that provide the most information in helping us tighten the distribution so that estimating the expected (average) value will generally be an accurate estimate for those in the larger population with the same characteristics.</p>
 <p>While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (<span class="math inline">\(n\)</span> &lt; 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered in Chapter <a href="pred-mod.html#pred-mod">13</a>.</p>
 <p>This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.</p>
 <p><strong>Assumptions &amp; Diagnostics</strong></p>
-<p>First, the <strong>sample size</strong> needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum – and realistic – <span class="math inline">\(n\)</span>-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.</p>
+<p>As we learned in the context of power analysis in Chapter <a href="inf-stats.html#inf-stats">8</a>, the sample size needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum – and realistic – <span class="math inline">\(n\)</span>-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.</p>
 <p>Consistent with the assumptions of parametric tests covered in Chapter <a href="aod.html#aod">9</a>, there are several assumptions that need to be validated to determine if a linear model is appropriate for understanding relationships in the data. These assumptions largely relate to the residuals (<span class="math inline">\(\hat{y}\)</span> - <span class="math inline">\(y\)</span>):</p>
 <ol style="list-style-type: decimal">
 <li><strong>Independence</strong>: Residuals are independent of each other; consecutive residuals in time series data are unrelated</li>
@@ -476,19 +474,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </ol>
 <div id="sample-size" class="section level2" number="10.1">
 <h2><span class="header-section-number">10.1</span> Sample Size</h2>
-<p>While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IVs, the power analysis section in Chapter <a href="inf-stats.html#inf-stats">8</a> covered a more rigorous approach to calculating the sample size needed to observe significant effects.</p>
+<p>While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IV, Chapter <a href="inf-stats.html#inf-stats">8</a> covered a more rigorous approach for calculating the sample size needed to observe significant effects.</p>
 <p>For linear regression, power analysis involves a comparison of model fit between a model with a full set of predictors relative to one with only a subset of the full model’s predictors. The function from the <code>pwr</code> library to call is <code>pwr.f2.test(u = , v = , f2 = , sig.level = , power = )</code>, where <code>u</code> and <code>v</code> are the numerator and denominator degrees of freedom, respectively, and <code>f2</code> is defined as:</p>
 <p><span class="math display">\[ f^2 = \frac {R^2_{AB} - R^2_A}{1 - R^2_{AB}}, \]</span></p>
-<p>where <span class="math inline">\(R^2_{AB}\)</span> represents the variance accounted for by a full model with all predictors, and <span class="math inline">\(R^2_A\)</span> represents the variance accounted for by a model containing only a subset of the full model’s predictors. For example, power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.</p>
+<p>where <span class="math inline">\(R^2_{AB}\)</span> represents the variance accounted for by a full model with all predictors, and <span class="math inline">\(R^2_A\)</span> represents the variance accounted for by a model containing only a subset of the full model’s predictors. Power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.</p>
 </div>
 <div id="simple-linear-regression" class="section level2" number="10.2">
 <h2><span class="header-section-number">10.2</span> Simple Linear Regression</h2>
-<p><strong>Simple linear regression</strong> is a simple technique for estimating the value of a quantitative DV, denoted as <span class="math inline">\(Y\)</span>, on the basis of a single IV, denoted as <span class="math inline">\(X\)</span>. It is assumed that there is an approximately linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Often, this relationship is expressed as <em>regressing</em> <span class="math inline">\(Y\)</span> on <span class="math inline">\(X\)</span> and is defined mathematically as:</p>
+<p><strong>Simple linear regression</strong> is a simple technique for estimating the value of a quantitative DV, denoted as <span class="math inline">\(Y\)</span>, on the basis of a single IV, denoted as <span class="math inline">\(X\)</span>. It is assumed that there is an approximately linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>. Often, this relationship is expressed as <em>regressing</em> <span class="math inline">\(Y\)</span> onto <span class="math inline">\(X\)</span> and is defined mathematically as:</p>
 <p><span class="math display">\[ Y = \beta_0 + \beta_1 X + \epsilon, \]</span></p>
-<p>where <span class="math inline">\(\beta_0\)</span> is the expected value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X = 0\)</span> (the <em>intercept</em>), and <span class="math inline">\(\beta_1\)</span> represents the average change in <span class="math inline">\(Y\)</span> for a one-unit increase in <span class="math inline">\(X\)</span> (the <em>slope</em>). <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are unknown <em>parameters</em> or <em>coefficients</em>. The error term, <span class="math inline">\(\epsilon\)</span>, acknowledges that there is variation in <span class="math inline">\(Y\)</span> not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, as additional variables not included in the model are likely influencing <span class="math inline">\(Y\)</span>.</p>
+<p>where <span class="math inline">\(\beta_0\)</span> is the expected value of <span class="math inline">\(Y\)</span> when <span class="math inline">\(X = 0\)</span> (the <em>intercept</em>), and <span class="math inline">\(\beta_1\)</span> represents the average change in <span class="math inline">\(Y\)</span> for a one-unit increase in <span class="math inline">\(X\)</span> (the <em>slope</em>). <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span> are unknown <em>parameters</em> or <em>coefficients</em>. The error term, <span class="math inline">\(\epsilon\)</span>, acknowledges that there is variation in <span class="math inline">\(Y\)</span> not accounted for by this simple linear model – <em>unexplained</em> variance. In other words, it is highly unlikely that there is a perfectly linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, as additional variables not included in the model are likely to also influence <span class="math inline">\(Y\)</span>.</p>
 <p>Once we estimate the unknown model coefficients, <span class="math inline">\(\beta_0\)</span> and <span class="math inline">\(\beta_1\)</span>, we can estimate <span class="math inline">\(Y\)</span> for a particular value of <span class="math inline">\(X\)</span> by calculating:</p>
 <p><span class="math display">\[ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, \]</span></p>
-<p>where <span class="math inline">\(\hat{y}\)</span> represents an estimate of <span class="math inline">\(Y\)</span> for the <span class="math inline">\(i\)</span>-ith value of <span class="math inline">\(X\)</span> equal to <span class="math inline">\(x\)</span>. The <span class="math inline">\(\hat{}\)</span> symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.</p>
+<p>where <span class="math inline">\(\hat{y}\)</span> represents an estimate of <span class="math inline">\(Y\)</span> for the <span class="math inline">\(i\)</span>-ith value of <span class="math inline">\(X = x\)</span>. The hat (<span class="math inline">\(\hat{}\)</span>) symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.</p>
 <p>The earliest form of linear regression is the <em>least squares</em> method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, &amp; Tibshirani, 2013). While there are several approaches to fitting a linear regression model, <strong>ordinary least squares (OLS)</strong> is the most common. OLS selects coefficients for <span class="math inline">\(\hat{\beta}_0\)</span> and <span class="math inline">\(\hat{\beta}_1\)</span> that minimize the residual sum of squares (RSS) defined by:</p>
 <p><span class="math display">\[RSS = (y_1 - \hat{\beta}_0 - \hat{\beta}_1x_1)^2 + (y_2 - \hat{\beta}_0 - \hat{\beta}_1x_2)^2 + {...} + (y_n - \hat{\beta}_0 - \hat{\beta}_1x_n)^2\]</span></p>
 <p>For each value of <span class="math inline">\(X\)</span>, OLS fits a model for which the squared difference between the predicted (<span class="math inline">\(\hat{\beta}_0 + \hat{\beta}_1x_i\)</span>) and actual (<span class="math inline">\(y_i\)</span>) values are as small as possible. Figure <a href="lm.html#fig:lm-residuals">10.1</a> illustrates the result of minimizing <span class="math inline">\(RSS\)</span> using OLS:</p>
@@ -510,77 +508,23 @@ Figure 10.2: Left: Least squares regression model fit to n = 2 observations. Rig
 </p>
 </div>
 <p>In R, we can build (or <em>fit</em>) a simple linear regression model using the <code>lm()</code> function. The syntax is <code>lm(Y ~ X, dataset)</code>:</p>
-<div class="sourceCode" id="cb336"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb336-1"><a href="lm.html#cb336-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb336-2"><a href="lm.html#cb336-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb336-3"><a href="lm.html#cb336-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb336-4"><a href="lm.html#cb336-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb336-5"><a href="lm.html#cb336-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
-<span id="cb336-6"><a href="lm.html#cb336-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb336-7"><a href="lm.html#cb336-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
-<span id="cb336-8"><a href="lm.html#cb336-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
-<span id="cb336-9"><a href="lm.html#cb336-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb336-10"><a href="lm.html#cb336-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD leads on engagement</span></span>
-<span id="cb336-11"><a href="lm.html#cb336-11" aria-hidden="true" tabindex="-1"></a>slm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_leads <span class="sc">~</span> engagement, data)</span></code></pre></div>
+<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="lm.html#cb337-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb337-2"><a href="lm.html#cb337-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb337-3"><a href="lm.html#cb337-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-4"><a href="lm.html#cb337-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
+<span id="cb337-5"><a href="lm.html#cb337-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
+<span id="cb337-6"><a href="lm.html#cb337-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-7"><a href="lm.html#cb337-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
+<span id="cb337-8"><a href="lm.html#cb337-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
+<span id="cb337-9"><a href="lm.html#cb337-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-10"><a href="lm.html#cb337-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD leads on engagement</span></span>
+<span id="cb337-11"><a href="lm.html#cb337-11" aria-hidden="true" tabindex="-1"></a>slm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_leads <span class="sc">~</span> engagement, data)</span></code></pre></div>
 <p>In practice, linear assumptions are rarely – if ever – perfectly met, but there must be evidence that the assumptions are <em>generally</em> satisfied.</p>
 <p>Before performing model diagnostics, it is important to note the following:</p>
 <ol style="list-style-type: decimal">
 <li>Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).</li>
-<li>Outliers are not always an issue, as we discussed in Chapter <a href="#data-arch-prep"><strong>??</strong></a>. Figure <a href="lm.html#fig:high-leverage">10.3</a> illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).</li>
+<li>Outliers are not always an issue, as we discussed in Chapter <a href="data-prep.html#data-prep">6</a>. Figure <a href="lm.html#fig:high-leverage">10.3</a> illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).</li>
 </ol>
-<pre><code>## 
-## Call:
-## lm(formula = Y ~ X)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -1.4332 -0.5482 -0.0275  0.2867  2.6413 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)   0.4395     0.4084   1.076    0.296    
-## X             3.1303     0.1515  20.659  5.5e-14 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.8829 on 18 degrees of freedom
-## Multiple R-squared:  0.9595, Adjusted R-squared:  0.9573 
-## F-statistic: 426.8 on 1 and 18 DF,  p-value: 5.498e-14</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Y.out ~ X.out)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -1.34746 -0.56288 -0.09021  0.29951  2.66197 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)    
-## (Intercept)   0.5224     0.3399   1.537    0.141    
-## X.out         3.0900     0.1077  28.703   &lt;2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 0.863 on 19 degrees of freedom
-## Multiple R-squared:  0.9775, Adjusted R-squared:  0.9763 
-## F-statistic: 823.9 on 1 and 19 DF,  p-value: &lt; 2.2e-16</code></pre>
-<pre><code>## 
-## Call:
-## lm(formula = Y.lev ~ X.lev)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -10.3085  -1.8776   0.8556   2.0309   4.8048 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(&gt;|t|)   
-## (Intercept)   3.9645     1.3559   2.924  0.00871 **
-## X.lev         1.4180     0.4295   3.302  0.00375 **
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-## 
-## Residual standard error: 3.443 on 19 degrees of freedom
-## Multiple R-squared:  0.3646, Adjusted R-squared:  0.3311 
-## F-statistic:  10.9 on 1 and 19 DF,  p-value: 0.00375</code></pre>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:high-leverage"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/high-leverage-1.png" alt="Left: Model fit with non-influential outlier. Right: Model fit with high leverage outlier. Outlier shown in red. Black solid line represents model fit without outliers. Red dashed line represents model fit with outliers." width="100%" />
 <p class="caption">
@@ -589,9 +533,9 @@ Figure 10.3: Left: Model fit with non-influential outlier. Right: Model fit with
 </div>
 <p>We can conveniently perform linear model diagnostics using the <code>plot()</code> function in conjunction with the object holding linear model results (<code>slm.fit</code>). This produces the following standard plots shown in Figure <a href="lm.html#fig:slm-diagnostics">10.4</a>:</p>
 <ul>
-<li><strong>Residuals vs Fitted</strong>: Shows how residuals (<span class="math inline">\(y\)</span>-axis) change across the range of fitted values (<span class="math inline">\(x\)</span>-axis)</li>
+<li><strong>Residuals vs Fitted</strong>: Shows how residuals (<span class="math inline">\(y\)</span>-axis) vary across the range of fitted values (<span class="math inline">\(x\)</span>-axis)</li>
 <li><strong>Normal Q-Q</strong>: Compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other</li>
-<li><strong>Scale-Location</strong>: Shows how <em>standardized</em> residuals (<span class="math inline">\(y\)</span>-axis) change across the range of fitted values (<span class="math inline">\(x\)</span>-axis)</li>
+<li><strong>Scale-Location</strong>: Shows how <em>standardized</em> residuals (<span class="math inline">\(y\)</span>-axis) vary across the range of fitted values (<span class="math inline">\(x\)</span>-axis)</li>
 <li><strong>Residuals vs Leverage</strong>: Shows the leverage of each data point (<span class="math inline">\(x\)</span>-axis) against their standardized residuals (<span class="math inline">\(y\)</span>-axis)</li>
 </ul>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:slm-diagnostics"></span>
@@ -600,49 +544,49 @@ Figure 10.3: Left: Model fit with non-influential outlier. Right: Model fit with
 Figure 10.4: Simple linear regression model diagnostics.
 </p>
 </div>
-<p>The <em>Residuals vs Fitted</em> and <em>Scale-Location</em> plots help evaluate assumptions of homoscedasticity, linearity, and normality – which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.</p>
-<p>Cook’s distance in the <em>Residuals vs Leverage</em> plot provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook’s distance line. In this case, there are no observations with enough leverage for the dashed Cook’s distance line to show on the plot, so no action is warranted.</p>
+<p>The <em>Residuals vs Fitted</em> and <em>Scale-Location</em> plots help evaluate assumptions of homoscedasticity, linearity, and normality – which are intricately linked. Data are heteroscedastic if there is flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be constant variance with respect to the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the <em>Scale-Location</em> plot, the slope of the line in the <em>Residuals vs Fitted</em> plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.</p>
+<p><strong>Cook’s distance</strong>, shown in the <em>Residuals vs Leverage</em> plot, provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook’s distance line. In this case, there are no observations with enough leverage for the dashed Cook’s distance line to show on the plot, so no action is warranted.</p>
 <p>In addition to the visual inspection, we can perform the <strong>Breusch-Pagan test</strong> using the <code>bptest()</code> function from the <code>lmtest</code> library to test the null hypothesis that the data are homoscedastic. If <span class="math inline">\(p\)</span> &lt; .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.</p>
-<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="lm.html#cb340-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
-<span id="cb340-2"><a href="lm.html#cb340-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="lm.html#cb338-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
+<span id="cb338-2"><a href="lm.html#cb338-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(slm.fit)</span></code></pre></div>
 <pre><code>## 
 ##  studentized Breusch-Pagan test
 ## 
 ## data:  slm.fit
 ## BP = 0.07603, df = 1, p-value = 0.7828</code></pre>
-<p>Since <span class="math inline">\(p\)</span> &gt; .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (<code>log()</code>) or square root (<code>sqrt()</code>) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.</p>
+<p>Since <span class="math inline">\(p\)</span> &gt;= .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (<code>log()</code>) or square root (<code>sqrt()</code>) of <span class="math inline">\(Y\)</span>. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.</p>
 <p>Let’s illustrate how to transform the response variable:</p>
-<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="lm.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Square root transformation of YTD leads</span></span>
-<span id="cb342-2"><a href="lm.html#cb342-2" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span>
-<span id="cb342-3"><a href="lm.html#cb342-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb342-4"><a href="lm.html#cb342-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Natural logarithmic transformation of YTD leads</span></span>
-<span id="cb342-5"><a href="lm.html#cb342-5" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span></code></pre></div>
+<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="lm.html#cb340-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Square root transformation of YTD leads</span></span>
+<span id="cb340-2"><a href="lm.html#cb340-2" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span>
+<span id="cb340-3"><a href="lm.html#cb340-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb340-4"><a href="lm.html#cb340-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Natural logarithmic transformation of YTD leads</span></span>
+<span id="cb340-5"><a href="lm.html#cb340-5" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span></code></pre></div>
 <p>The <em>Normal Q-Q Plot</em> in Figure <a href="lm.html#fig:slm-diagnostics">10.4</a> is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the <span class="math inline">\(x\)</span>-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.</p>
-<p>We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 – that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values (<span class="math inline">\(\hat{y}\)</span> - <span class="math inline">\(y\)</span> = 0).</p>
-<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="lm.html#cb343-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
-<span id="cb343-2"><a href="lm.html#cb343-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb343-3"><a href="lm.html#cb343-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(slm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
-<span id="cb343-4"><a href="lm.html#cb343-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb343-5"><a href="lm.html#cb343-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb343-6"><a href="lm.html#cb343-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb343-7"><a href="lm.html#cb343-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<p>We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0; this indicates the model correctly estimates YTD leads, resulting in no difference between estimated and observed values (<span class="math inline">\(\hat{y}\)</span> - <span class="math inline">\(y\)</span> = 0).</p>
+<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="lm.html#cb341-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
+<span id="cb341-2"><a href="lm.html#cb341-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb341-3"><a href="lm.html#cb341-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(slm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
+<span id="cb341-4"><a href="lm.html#cb341-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb341-5"><a href="lm.html#cb341-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb341-6"><a href="lm.html#cb341-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb341-7"><a href="lm.html#cb341-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:slm-residuals"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/slm-residuals-1.png" alt="Distribution of model residuals." width="672" />
 <p class="caption">
 Figure 10.5: Distribution of model residuals.
 </p>
 </div>
-<p>Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic is sufficient evidence of normality:</p>
-<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="lm.html#cb344-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb344-2"><a href="lm.html#cb344-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(slm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
+<p>Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic (<span class="math inline">\(p\)</span> &gt;= .05) is sufficient evidence of normality:</p>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="lm.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb342-2"><a href="lm.html#cb342-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(slm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  slm.fit$residuals
 ## W = 0.99339, p-value = 0.07029</code></pre>
 <p>Next, let’s display our simple linear model results:</p>
-<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="lm.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
-<span id="cb346-2"><a href="lm.html#cb346-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="lm.html#cb344-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb344-2"><a href="lm.html#cb344-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(slm.fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = ytd_leads ~ engagement, data = data)
@@ -665,21 +609,21 @@ Figure 10.5: Distribution of model residuals.
 <ul>
 <li><code>Estimate</code>: <em>Unstandardized</em> Beta coefficient associated with the predictor</li>
 <li><code>Std. Error</code>: Average distance between the observed and estimated values per the fitted regression line</li>
-<li><code>t value</code>: <code>Estimate</code> / <code>Standard Error</code>. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.</li>
+<li><code>t value</code>: Test statistic calculated by <code>Estimate</code> / <code>Standard Error</code>. Larger values provide more evidence for a non-zero coefficient (relationship) for the respective predictor in the population.</li>
 <li><code>Pr(&gt;|t|)</code>: <span class="math inline">\(p\)</span>-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., <span class="math inline">\(x\)</span> has a relationship with <span class="math inline">\(y\)</span>)</li>
-<li><code>Intercept</code>: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, height, weight, IQ).</li>
-<li><code>Signif. codes</code>: Symbols to quickly ascertain whether predictors are significant at key levels, such as <span class="math inline">\(p\)</span> &lt; .001, <span class="math inline">\(p\)</span> &lt; .01, or <span class="math inline">\(p\)</span> &lt; .05.</li>
+<li><code>Intercept</code>: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, day, month, quarter, year).</li>
+<li><code>Signif. codes</code>: Symbols to quickly ascertain whether predictors are significant at key levels, such as <span class="math inline">\(p\)</span> &lt; .001 (<code>***</code>), <span class="math inline">\(p\)</span> &lt; .01 (<code>**</code>), or <span class="math inline">\(p\)</span> &lt; .05 (<code>*</code>).</li>
 <li><code>Residual standard error</code>: Measure of model fit which reflects the standard deviation of the residuals (<span class="math inline">\(\sqrt {\sum(y-\hat{y})^2 / df}\)</span>)</li>
 <li><code>Degrees of freedom</code>: <span class="math inline">\(n\)</span> - <span class="math inline">\(p\)</span>, where <span class="math inline">\(n\)</span> is the number of observations and <span class="math inline">\(p\)</span> is the number of predictors</li>
 <li><code>Multiple R-squared</code>: Percent of variance in <span class="math inline">\(y\)</span> (when multiplied by 100) explained by the predictors in the model. This is also known as the <strong>Coefficient of Determination</strong>. For simple linear regression, this is simply the squared value of Pearson’s <span class="math inline">\(r\)</span> for the bivariate relationship between the predictor and response (execute <code>cor(data$engagement, data$ytd_leads)^2</code> to validate).</li>
-<li><code>Adjusted R-squared</code>: Modified version of <span class="math inline">\(R^2\)</span> that adjusts the estimate for non-significant predictors. A large delta between <span class="math inline">\(R^2\)</span> and Adjusted <span class="math inline">\(R^2\)</span> coefficients generally indicates a model containing a larger number of non-significant predictors relative to when <span class="math inline">\(R^2\)</span> and Adjusted <span class="math inline">\(R^2\)</span> values are similar.</li>
+<li><code>Adjusted R-squared</code>: Modified version of <span class="math inline">\(R^2\)</span> that adjusts the estimate for non-significant predictors. A large delta between <span class="math inline">\(R^2\)</span> and Adjusted <span class="math inline">\(R^2\)</span> coefficients generally indicates a model containing a larger number of non-significant predictors.</li>
 <li><code>F-statistic</code>: Statistic used in conjunction with the <code>p-value</code> for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in <span class="math inline">\(y\)</span>.</li>
 </ul>
-<p>The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (<span class="math inline">\(\beta\)</span> = 20.1, <span class="math inline">\(t\)</span>(407) = 56.2, <span class="math inline">\(p\)</span> &lt; .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., <span class="math inline">\(\beta\)</span> is the square root or natural log of the average change in leads for a one-level increase in engagement).</p>
-<p>Thanks to the properties of the CLT, which requires normally distributed <em>residuals</em>, we can be confident that the true relationship between engagement and YTD leads in the population is not 0 since the 95% CI (<span class="math inline">\(\beta\)</span> +/- 2<span class="math inline">\(SE\)</span>) does not include 0.</p>
-<p>While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.</p>
+<p>The output of this simple linear regression model indicates that for each one-unit increase in engagement, the average increase in YTD leads is about 20 (<span class="math inline">\(\beta\)</span> = 20.1, <span class="math inline">\(t\)</span>(407) = 56.2, <span class="math inline">\(p\)</span> &lt; .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., <span class="math inline">\(\beta\)</span> is the square root or natural log of the average change in leads for a one-level increase in engagement).</p>
+<p>With these normally distributed <em>residuals</em>, we can draw upon the properties of the CLT and conclude that the true relationship between engagement and YTD leads in the population is statistically unlikely to be 0 since the 95% CI (<span class="math inline">\(\beta\)</span> +/- 2<span class="math inline">\(SE\)</span>) does not include 0.</p>
+<p>While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable – especially in a social science context. Additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.</p>
 <p>The <span class="math inline">\(R^2\)</span> value indicates that 8.9% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.</p>
-<p>Figure <a href="lm.html#fig:slm-fit">10.6</a> illustrates how the regression equation for this simple linear model (<span class="math inline">\(y\)</span> = 20.1<span class="math inline">\(x\)</span> + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases <span class="math inline">\(R^2\)</span> (explained variance in YTD leads).</p>
+<p>Figure <a href="lm.html#fig:slm-fit">10.6</a> illustrates how the regression equation for this simple linear model (<span class="math inline">\(y\)</span> = 20.1<span class="math inline">\(x\)</span> + 1.6) fits the data points for sales employees. The distribution of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases <span class="math inline">\(R^2\)</span> (explained variance in YTD leads).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:slm-fit"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/slm-fit-1.png" alt="Simple linear model fit line for y = 20.1x + 1.6" width="100%" />
 <p class="caption">
@@ -687,18 +631,18 @@ Figure 10.6: Simple linear model fit line for y = 20.1x + 1.6
 </p>
 </div>
 <p>We can use the <code>extract_eq()</code> function from the <code>equatiomatic</code> library to easily build a properly formatted LaTex regression equation from the model object:</p>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="lm.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb348-2"><a href="lm.html#cb348-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(equatiomatic)</span>
-<span id="cb348-3"><a href="lm.html#cb348-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb348-4"><a href="lm.html#cb348-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
-<span id="cb348-5"><a href="lm.html#cb348-5" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="lm.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb346-2"><a href="lm.html#cb346-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(equatiomatic)</span>
+<span id="cb346-3"><a href="lm.html#cb346-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb346-4"><a href="lm.html#cb346-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
+<span id="cb346-5"><a href="lm.html#cb346-5" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(slm.fit)</span></code></pre></div>
 <p><span class="math display">\[
 \operatorname{ytd\_leads} = \alpha + \beta_{1}(\operatorname{engagement}) + \epsilon
 \]</span></p>
 </div>
 <div id="multiple-linear-regression" class="section level2" number="10.3">
 <h2><span class="header-section-number">10.3</span> Multiple Linear Regression</h2>
-<p><strong>Multiple linear regression</strong> extends the simple linear model to one with two or more predictor variables. A multiple regression model generally explains more variance in the response relative to the simple linear model, and is defined by:</p>
+<p><strong>Multiple linear regression</strong> extends the simple linear model to one with two or more predictor variables. Assuming the multiple predictors add meaningful information, multiple regression models generally explain more variance in the response relative to simple linear models, and is defined by:</p>
 <p><span class="math display">\[ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]</span></p>
 <p>Once we estimate the unknown model coefficients, <span class="math inline">\(\beta_0\)</span> through <span class="math inline">\(\beta_p\)</span>, we can estimate <span class="math inline">\(Y\)</span> for a particular combination of values for <span class="math inline">\(X_1\)</span> through <span class="math inline">\(X_p\)</span> by calculating:</p>
 <p><span class="math display">\[ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...} + \hat{\beta_p} x_{ip} \]</span></p>
@@ -710,29 +654,29 @@ Figure 10.6: Simple linear model fit line for y = 20.1x + 1.6
 <li>Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) – call them predictors A and B.</li>
 <li>Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B.</li>
 <li>If predictor A has a larger average absolute correlation, remove it; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives or hypotheses.</li>
-<li>Repeat steps 1-3 until <span class="math inline">\(|r|\)</span> &lt; .7.</li>
+<li>Repeat steps 1-3 until <span class="math inline">\(|r|\)</span> &lt; .7 for each pair of predictors.</li>
 </ol>
-<p>Let’s demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from <code>data</code> to simplify the model and explanation. In Chapter <a href="pred-mod.html#pred-mod">13</a>, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.</p>
-<p>We can leverage the <code>ggpairs()</code> function introduced in Chapter <a href="desc-stats.html#desc-stats">7</a> to efficiently compute bivariate correlations and visualize data distributions:</p>
+<p>Let’s demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from <code>data</code> to simplify this example. In Chapter <a href="pred-mod.html#pred-mod">13</a>, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.</p>
+<p>We can leverage the <code>ggpairs()</code> function from the <code>GGally</code> library introduced in Chapter <a href="desc-stats.html#desc-stats">7</a> to efficiently compute bivariate correlations and visualize relationships:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-ytd-sales"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-ytd-sales-1.png" alt="GGpairs bivariate correlations and data distributions" width="100%" />
 <p class="caption">
 Figure 10.7: GGpairs bivariate correlations and data distributions
 </p>
 </div>
-<p>Based on the correlations, <code>org_tenure</code> is highly correlated with both <code>job_tenure</code>, <code>mgr_tenure</code> and <code>work_exp</code>. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since <code>org_tenure</code> has the strongest relationship with our response, <code>ytd_sales</code>, we will drop <code>job_tenure</code>, <code>mgr_tenure</code>, and <code>work_exp</code>.</p>
-<p>Since <span class="math inline">\(|r|\)</span> &lt; .7 for all pairwise relationships, let’s fit the more parsimonious multiple regression model using the resulting subset of predictors. We can include multiple predictors in the model using the <code>+</code> symbol in the <code>lm()</code> function:</p>
-<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="lm.html#cb349-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
-<span id="cb349-2"><a href="lm.html#cb349-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_sales <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
+<p>Based on the correlations, <code>org_tenure</code> is highly correlated with <code>job_tenure</code>, <code>mgr_tenure</code> and <code>work_exp</code>. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since <code>org_tenure</code> has the strongest relationship with our response, <code>ytd_sales</code>, we will drop <code>job_tenure</code>, <code>mgr_tenure</code>, and <code>work_exp</code>.</p>
+<p>Since <span class="math inline">\(|r|\)</span> &lt; .7 for all pairwise relationships, let’s fit the more parsimonious multiple regression model using the resulting subset of predictors. We can chain together multiple predictors in the model using the <code>+</code> symbol in the <code>lm()</code> function:</p>
+<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="lm.html#cb347-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
+<span id="cb347-2"><a href="lm.html#cb347-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_sales <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
 <p>While Kuhn and Johnson’s procedure is a good first step, this may not eliminate what is known as <strong>multicollinearity</strong>, which is collinearity among three or more predictors. It is possible for collinearity to exist between three or more variables, even in the absence of a strong correlation for a pair of variables. We can evaluate the <strong>Variance Inflation Factor (VIF)</strong> for the predictors that remain following the bivariate correlation review to ensure multicollinearity is not present. <span class="math inline">\(VIF\)</span> is defined by:</p>
 <p><span class="math display">\[ VIF(\hat{\beta_j}) = \frac{1}{1 - R^2_{X_j|X_{-j}}}, \]</span></p>
 <p>where the denominator, <span class="math inline">\(R^2_{X_j|X_{-j}}\)</span>, is the <span class="math inline">\(R^2\)</span> from regressing <span class="math inline">\(X_j\)</span> onto all other predictors. The smallest value of <span class="math inline">\(VIF\)</span> is 1, which indicates a complete absence of collinearity. Problematic collinearity exists if <span class="math inline">\(VIF\)</span> for any variable exceeds 5.</p>
 <p>We can produce <span class="math inline">\(VIF\)</span> for each variable using the <code>vif()</code> function from the <code>car</code> library:</p>
-<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="lm.html#cb350-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb350-2"><a href="lm.html#cb350-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb350-3"><a href="lm.html#cb350-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb350-4"><a href="lm.html#cb350-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each predictor</span></span>
-<span id="cb350-5"><a href="lm.html#cb350-5" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="lm.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb348-2"><a href="lm.html#cb348-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb348-3"><a href="lm.html#cb348-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb348-4"><a href="lm.html#cb348-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each predictor</span></span>
+<span id="cb348-5"><a href="lm.html#cb348-5" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit)</span></code></pre></div>
 <pre><code>##    engagement       job_lvl stock_opt_lvl    org_tenure 
 ##      1.001459      1.407192      1.009435      1.395797</code></pre>
 <p>Based on the output, <span class="math inline">\(VIF\)</span> &lt; 5 for each predictor, which indicates that multicollinearity is not an issue.</p>
@@ -745,12 +689,12 @@ Figure 10.8: Multiple linear regression model diagnostics
 </div>
 <p>Based on these visuals, there are obvious violations of linear model assumptions that need to first be addressed.</p>
 <p>First, given the long right tail for the <code>ytd_sales</code> distribution shown in Figure <a href="lm.html#fig:pre-mlm-diagnostics">10.8</a>, let’s apply a square root transformation to the response variable:</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="lm.html#cb352-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
-<span id="cb352-2"><a href="lm.html#cb352-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="lm.html#cb350-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
+<span id="cb350-2"><a href="lm.html#cb350-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
 <p>Additionally, the diagnostic plots indicate that there are data points with high leverage on the fit. Let’s address using Cook’s distance as the criterion:</p>
-<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="lm.html#cb353-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove high leverage observations per Cook&#39;s distance</span></span>
-<span id="cb353-2"><a href="lm.html#cb353-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rstudent</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(<span class="fu">cooks.distance</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">4</span><span class="sc">/</span><span class="fu">nrow</span>(mlm.fit<span class="sc">$</span>model)</span>
-<span id="cb353-3"><a href="lm.html#cb353-3" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">update</span>(mlm.fit, <span class="at">weights =</span> <span class="fu">as.numeric</span>(w))</span></code></pre></div>
+<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="lm.html#cb351-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove high leverage observations per Cook&#39;s distance</span></span>
+<span id="cb351-2"><a href="lm.html#cb351-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rstudent</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(<span class="fu">cooks.distance</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">4</span><span class="sc">/</span><span class="fu">nrow</span>(mlm.fit<span class="sc">$</span>model)</span>
+<span id="cb351-3"><a href="lm.html#cb351-3" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">update</span>(mlm.fit, <span class="at">weights =</span> <span class="fu">as.numeric</span>(w))</span></code></pre></div>
 <p>Now we can produce a refreshed set of diagnostic plots to evaluate the impact of transforming the response variable and removing high leverage observations:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:post-mlm-diagnostics"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/post-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics (post-transformation)" width="100%" />
@@ -760,29 +704,29 @@ Figure 10.9: Multiple linear regression model diagnostics (post-transformation)
 </div>
 <p>There is a clear improvement towards satisifying linear model assumptions.</p>
 <p>Let’s perform the Breusch-Pagan test to validate that the assumption of homoscedasticity is met:</p>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="lm.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
-<span id="cb354-2"><a href="lm.html#cb354-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="lm.html#cb352-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
+<span id="cb352-2"><a href="lm.html#cb352-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(mlm.fit)</span></code></pre></div>
 <pre><code>## 
 ##  studentized Breusch-Pagan test
 ## 
 ## data:  mlm.fit
 ## BP = 2.2111, df = 4, p-value = 0.697</code></pre>
 <p>Next, let’s ensure residuals are normally distributed around 0:</p>
-<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="lm.html#cb356-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
-<span id="cb356-2"><a href="lm.html#cb356-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb356-3"><a href="lm.html#cb356-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(mlm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
-<span id="cb356-4"><a href="lm.html#cb356-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb356-5"><a href="lm.html#cb356-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb356-6"><a href="lm.html#cb356-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb356-7"><a href="lm.html#cb356-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="lm.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
+<span id="cb354-2"><a href="lm.html#cb354-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb354-3"><a href="lm.html#cb354-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(mlm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
+<span id="cb354-4"><a href="lm.html#cb354-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb354-5"><a href="lm.html#cb354-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb354-6"><a href="lm.html#cb354-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb354-7"><a href="lm.html#cb354-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:mlm-residuals"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/mlm-residuals-1.png" alt="Distribution of model residuals" width="672" />
 <p class="caption">
 Figure 10.10: Distribution of model residuals
 </p>
 </div>
-<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="lm.html#cb357-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb357-2"><a href="lm.html#cb357-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mlm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="lm.html#cb355-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb355-2"><a href="lm.html#cb355-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mlm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -820,15 +764,15 @@ Figure 10.10: Distribution of model residuals
 ## Multiple R-squared:  0.7783, Adjusted R-squared:  0.7759 
 ## F-statistic: 329.1 on 4 and 375 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>We can view the multiple regression equation for estimating <code>sqrt(ytd_sales)</code> with these four predictors using the <code>extract_eq</code> function:</p>
-<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="lm.html#cb360-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
-<span id="cb360-2"><a href="lm.html#cb360-2" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="lm.html#cb358-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
+<span id="cb358-2"><a href="lm.html#cb358-2" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(mlm.fit)</span></code></pre></div>
 <p><span class="math display">\[
 \operatorname{sqrt(ytd\_sales)} = \alpha + \beta_{1}(\operatorname{engagement}) + \beta_{2}(\operatorname{job\_lvl}) + \beta_{3}(\operatorname{stock\_opt\_lvl}) + \beta_{4}(\operatorname{org\_tenure}) + \epsilon
 \]</span></p>
 <p>Based on the model output, the combination of predictors explains about 78% of the variance in YTD sales (<span class="math inline">\(R^2\)</span> = .778). In people analytics settings, it is rare to explain three-quarters of the variance for an outcome given people data are especially noisy.</p>
 <p>By default, the coefficients on the predictors are unstandardized; that is, they represent the average change in the square root transformed response for each one-unit increase for the respective predictor. Since the predictors have different units of measurement, such as <code>stock_opt_lvl</code> ranging from 0 to 3 and <code>org_tenure</code> ranging from 0 to 40, the unstandardized coefficients cannot be compared to determine which variable has the largest effect on YTD sales. We must standardize these coefficients and adjust for differences in the units of measurement for an apples-to-apples comparison.</p>
 <p>We can scale variables by subtracting the variable’s mean from <span class="math inline">\(x\)</span> and dividing the difference into the variable’s standard deviation:</p>
-<p><span class="math display">\[ x_{scaled} = \frac{x - \bar{x}} {s} \]</span></p>
+<p><span class="math display">\[ x_{scaled} = \frac{x_i - \bar{x}} {s} \]</span></p>
 <p>We can leverage the <code>scale()</code> function to standardize the predictors’ units of measurement and determine which has the largest effect on <code>ytd_sales</code>:</p>
 <pre><code>## 
 ## Call:
@@ -856,7 +800,7 @@ Figure 10.10: Distribution of model residuals
 </div>
 <div id="moderation" class="section level2" number="10.4">
 <h2><span class="header-section-number">10.4</span> Moderation</h2>
-<p>As discussed in Chapter <a href="measure-sampl.html#measure-sampl">5</a>, a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an <strong>interaction term</strong>, which is the product of the two variables (<span class="math inline">\(X_1\)</span> * <span class="math inline">\(X_2\)</span>).</p>
+<p>As discussed in Chapter <a href="measure-sampl.html#measure-sampl">5</a>, a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in a linear model requires an <strong>interaction term</strong>, which is the product of the two variables (<span class="math inline">\(X_1\)</span> * <span class="math inline">\(X_2\)</span>).</p>
 <p>Let’s examine whether <code>org_tenure</code> influences the strength of the relationship between <code>job_lvl</code> and <code>sqrt(ytd_sales)</code>. We would generally expect sales to increase as the job level of salespeople increases, and longer tenure may amplify the strength of this association. Step one is testing whether the interaction term is statistically significant, and step two is determining the nature of any observed statistical interaction. Including the interaction term in the model (<code>job_lvl</code> * <code>org_tenure</code>) will add the predictors independently <em>and</em> jointly:</p>
 <pre><code>## 
 ## Call:
@@ -880,8 +824,8 @@ Figure 10.10: Distribution of model residuals
 ## F-statistic: 386.6 on 3 and 405 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>The results show that both the main and interaction effects are statistically significant (<span class="math inline">\(p\)</span> &lt; .001).</p>
 <p>Since interaction terms can be highly correlated with independent predictors, it is good to check for collinearity:</p>
-<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="lm.html#cb363-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each model term</span></span>
-<span id="cb363-2"><a href="lm.html#cb363-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
+<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="lm.html#cb361-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each model term</span></span>
+<span id="cb361-2"><a href="lm.html#cb361-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
 <pre><code>##            job_lvl         org_tenure job_lvl:org_tenure 
 ##           2.189565           9.246489          12.308142</code></pre>
 <p><span class="math inline">\(VIF\)</span> is greater than 5 for both <code>org_tenure</code> and the interaction term; therefore, there is a problematic level of collinearity between these variables.</p>
@@ -907,8 +851,8 @@ Figure 10.10: Distribution of model residuals
 ## Residual standard error: 29.4 on 405 degrees of freedom
 ## Multiple R-squared:  0.7412, Adjusted R-squared:  0.7393 
 ## F-statistic: 386.6 on 3 and 405 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="lm.html#cb366-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for centered variables</span></span>
-<span id="cb366-2"><a href="lm.html#cb366-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
+<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="lm.html#cb364-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for centered variables</span></span>
+<span id="cb364-2"><a href="lm.html#cb364-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
 <pre><code>##                  job_lvl_cntrd               org_tenure_cntrd 
 ##                       1.397803                       1.773279 
 ## job_lvl_cntrd:org_tenure_cntrd 
@@ -920,7 +864,7 @@ Figure 10.10: Distribution of model residuals
 <li><em>High organization tenure</em>: <span class="math inline">\(Y = -2.51 (6.57 + 5.12)X + 276.56\)</span></li>
 <li><em>Low organization tenure</em>: <span class="math inline">\(Y = -2.51 (6.57 - 5.12)X + 276.56,\)</span></li>
 </ul>
-<p>where 6.57 is <code>mean(data$org_tenure)</code>, 5.12 is <code>sd(data$org_tenure)</code>, and <span class="math inline">\(X\)</span> is a vector of values for <code>job_lvl</code>.</p>
+<p>where 6.57 is <code>mean(data$org_tenure)</code>, 5.12 is <code>sd(data$org_tenure)</code>, <span class="math inline">\(X\)</span> is a vector of values for <code>job_lvl</code>, and 276.56 is the <span class="math inline">\(y\)</span>-intercept.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:int-effects"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/int-effects-1.png" alt="Regression of square root transformed YTD sales onto job level x organization tenure interaction term. High organization tenure (red line): Y = -2.51 (6.57 + 5.12)X + 276.56. Low organization tenure (blue line): Y = -2.51 (6.57 - 5.12)X + 276.56." width="100%" />
 <p class="caption">

@@ -189,7 +189,6 @@ df.orig <- data.frame(X = X, Y = Y)
 
 # Model data
 model <- lm(Y ~ X)
-summary(model)
 
 # Visualize model fit to observations
 p1 <- ggplot2::ggplot(data = df.orig, aes(x = X, y = Y)) + 
@@ -203,7 +202,6 @@ X.out <- c(X, 8)
 Y.out <- c(Y, 25)
 df.out <- data.frame(X = X.out, Y = Y.out)
 model.out <- lm(Y.out ~ X.out)
-summary(model.out)
 
 # Visualize model fit to observations
 p2 <- ggplot2::ggplot(data = df.out, aes(x = X, y = Y)) + 
@@ -218,7 +216,6 @@ X.lev <- c(X, 8)
 Y.lev <- c(Y, 5)
 df.lev <- data.frame(X = X.lev, Y = Y.lev)
 model.lev <- lm(Y.lev ~ X.lev)
-summary(model.lev)
 
 # Visualize model fit to observations
 p3 <- ggplot2::ggplot(data = df.lev, aes(x = X, y = Y)) + 
@@ -235,9 +232,9 @@ ggpubr::ggarrange(p2, p3, ncol = 2, nrow = 1)
  
   We can conveniently perform linear model diagnostics using the `plot()` function in conjunction with the object holding linear model results (`slm.fit`). This produces the following standard plots shown in Figure \@ref(fig:slm-diagnostics):
   
-  * **Residuals vs Fitted**: Shows how residuals ($y$-axis) change across the range of fitted values ($x$-axis)
+  * **Residuals vs Fitted**: Shows how residuals ($y$-axis) vary across the range of fitted values ($x$-axis)
   * **Normal Q-Q**: Compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other
-  * **Scale-Location**: Shows how *standardized* residuals ($y$-axis) change across the range of fitted values ($x$-axis)
+  * **Scale-Location**: Shows how *standardized* residuals ($y$-axis) vary across the range of fitted values ($x$-axis)
   * **Residuals vs Leverage**: Shows the leverage of each data point ($x$-axis) against their standardized residuals ($y$-axis)
 
 ```{r slm-diagnostics, out.width = "100%", echo = FALSE, fig.cap = 'Simple linear regression model diagnostics.', fig.align = 'center',}
@@ -248,9 +245,9 @@ plot(slm.fit)
 
 ```
 
-  The *Residuals vs Fitted* and *Scale-Location* plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between $X$ and $Y$, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
+  The *Residuals vs Fitted* and *Scale-Location* plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be constant variance with respect to the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between $X$ and $Y$, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the *Scale-Location* plot, the slope of the line in the *Residuals vs Fitted* plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
   
-  Cook's distance in the *Residuals vs Leverage* plot provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
+  **Cook's distance**, shown in the *Residuals vs Leverage* plot, provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
 
   In addition to the visual inspection, we can perform the **Breusch-Pagan test** using the `bptest()` function from the `lmtest` library to test the null hypothesis that the data are homoscedastic. If $p$ < .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.
 
@@ -261,7 +258,7 @@ lmtest::bptest(slm.fit)
 
 ```
 
-  Since $p$ > .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (`log()`) or square root (`sqrt()`) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
+  Since $p$ >= .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (`log()`) or square root (`sqrt()`) of $Y$. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
   
   Let's illustrate how to transform the response variable:
 
@@ -277,7 +274,7 @@ slm.fit.trans <- lm(log(ytd_leads) ~ engagement, data)
 
   The *Normal Q-Q Plot* in Figure \@ref(fig:slm-diagnostics) is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the $x$-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.
 
-  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
+  We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0; this indicates the model correctly estimates YTD leads, resulting in no difference between estimated and observed values ($\hat{y}$ - $y$ = 0).
   
 ```{r slm-residuals, fig.cap = "Distribution of model residuals.", fig.align = 'center', message = FALSE}
 
@@ -291,7 +288,7 @@ ggplot2::theme_bw()
 
 ```
 
-  Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic is sufficient evidence of normality:
+  Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic ($p$ >= .05) is sufficient evidence of normality:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -313,25 +310,25 @@ summary(slm.fit)
   
   * `Estimate`: *Unstandardized* Beta coefficient associated with the predictor
   * `Std. Error`: Average distance between the observed and estimated values per the fitted regression line
-  * `t value`: `Estimate` / `Standard Error`. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.
+  * `t value`: Test statistic calculated by `Estimate` / `Standard Error`. Larger values provide more evidence for a non-zero coefficient (relationship) for the respective predictor in the population.
   * `Pr(>|t|)`: $p$-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., $x$ has a relationship with $y$)
-  * `Intercept`: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, height, weight, IQ).
-  * `Signif. codes`: Symbols to quickly ascertain whether predictors are significant at key levels, such as $p$ < .001, $p$ < .01, or $p$ < .05.
+  * `Intercept`: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, day, month, quarter, year).
+  * `Signif. codes`: Symbols to quickly ascertain whether predictors are significant at key levels, such as $p$ < .001 (`***`), $p$ < .01 (`**`), or $p$ < .05 (`*`).
   * `Residual standard error`: Measure of model fit which reflects the standard deviation of the residuals ($\sqrt {\sum(y-\hat{y})^2 / df}$)
   * `Degrees of freedom`: $n$ - $p$, where $n$ is the number of observations and $p$ is the number of predictors
   * `Multiple R-squared`: Percent of variance in $y$ (when multiplied by 100) explained by the predictors in the model. This is also known as the **Coefficient of Determination**. For simple linear regression, this is simply the squared value of Pearson's $r$ for the bivariate relationship between the predictor and response (execute `cor(data$engagement, data$ytd_leads)^2` to validate).
-  * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors relative to when $R^2$ and Adjusted $R^2$ values are similar.
+  * `Adjusted R-squared`: Modified version of $R^2$ that adjusts the estimate for non-significant predictors. A large delta between $R^2$ and Adjusted $R^2$ coefficients generally indicates a model containing a larger number of non-significant predictors.
   * `F-statistic`: Statistic used in conjunction with the `p-value` for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in $y$.
   
-  The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., $\beta$ is the square root or natural log of the average change in leads for a one-level increase in engagement).
+  The output of this simple linear regression model indicates that for each one-unit increase in engagement, the average increase in YTD leads is about 20 ($\beta$ = 20.1, $t$(407) = 56.2, $p$ < .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., $\beta$ is the square root or natural log of the average change in leads for a one-level increase in engagement).
   
-  Thanks to the properties of the CLT, which requires normally distributed *residuals*, we can be confident that the true relationship between engagement and YTD leads in the population is not 0 since the 95% CI ($\beta$ +/- 2$SE$) does not include 0.
+  With these normally distributed *residuals*, we can draw upon the properties of the CLT and conclude that the true relationship between engagement and YTD leads in the population is statistically unlikely to be 0 since the 95% CI ($\beta$ +/- 2$SE$) does not include 0.
   
-  While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+  While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable -- especially in a social science context. Additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
   
   The $R^2$ value indicates that 8.9% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
   
-  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases $R^2$ (explained variance in YTD leads).
+  Figure \@ref(fig:slm-fit) illustrates how the regression equation for this simple linear model ($y$ = 20.1$x$ + 1.6) fits the data points for sales employees. The distribution of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases $R^2$ (explained variance in YTD leads).
   
 ```{r slm-fit, out.width = "100%", echo = FALSE, fig.cap = 'Simple linear model fit line for y = 20.1x + 1.6', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -358,7 +355,7 @@ equatiomatic::extract_eq(slm.fit)
 
 ## Multiple Linear Regression
 
-  **Multiple linear regression** extends the simple linear model to one with two or more predictor variables. A multiple regression model generally explains more variance in the response relative to the simple linear model, and is defined by:
+  **Multiple linear regression** extends the simple linear model to one with two or more predictor variables. Assuming the multiple predictors add meaningful information, multiple regression models generally explain more variance in the response relative to simple linear models, and is defined by:
 
 $$ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon $$
 
@@ -377,11 +374,11 @@ $$ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_{i1} + \hat{\beta_2}x_{i2} + {...}
   1. Determine the two predictors associated with the largest absolute pairwise correlation (whether they are positively or negatively related does not matter) -- call them predictors A and B.
   2. Determine the average absolute correlation between predictor A and the other variables. Do the same for predictor B.
   3. If predictor A has a larger average absolute correlation, remove it; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives or hypotheses.
-  4. Repeat steps 1-3 until $|r|$ < .7.
+  4. Repeat steps 1-3 until $|r|$ < .7 for each pair of predictors.
 
-  Let's demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from `data` to simplify the model and explanation. In Chapter \@ref(pred-mod), we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.
+  Let's demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from `data` to simplify this example. In Chapter \@ref(pred-mod), we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.
   
-  We can leverage the `ggpairs()` function introduced in Chapter \@ref(desc-stats) to efficiently compute bivariate correlations and visualize data distributions:
+  We can leverage the `ggpairs()` function from the `GGally` library introduced in Chapter \@ref(desc-stats) to efficiently compute bivariate correlations and visualize relationships:
   
 ```{r ggpairs-ytd-sales, out.width = "100%", echo = FALSE, message = FALSE, fig.cap = 'GGpairs bivariate correlations and data distributions', fig.align = 'center'}
 
@@ -390,9 +387,9 @@ GGally::ggpairs(subset(data, select = c(ytd_sales, engagement, job_lvl, work_exp
 
 ```
 
-  Based on the correlations, `org_tenure` is highly correlated with both `job_tenure`, `mgr_tenure` and `work_exp`. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since `org_tenure` has the strongest relationship with our response, `ytd_sales`, we will drop `job_tenure`, `mgr_tenure`, and `work_exp`.
+  Based on the correlations, `org_tenure` is highly correlated with `job_tenure`, `mgr_tenure` and `work_exp`. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since `org_tenure` has the strongest relationship with our response, `ytd_sales`, we will drop `job_tenure`, `mgr_tenure`, and `work_exp`.
   
-  Since $|r|$ < .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model using the resulting subset of predictors. We can include multiple predictors in the model using the `+` symbol in the `lm()` function:
+  Since $|r|$ < .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model using the resulting subset of predictors. We can chain together multiple predictors in the model using the `+` symbol in the `lm()` function:
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -528,7 +525,7 @@ equatiomatic::extract_eq(mlm.fit)
 
   We can scale variables by subtracting the variable's mean from $x$ and dividing the difference into the variable's standard deviation:
   
-  $$ x_{scaled} = \frac{x - \bar{x}} {s} $$
+  $$ x_{scaled} = \frac{x_i - \bar{x}} {s} $$
   
   We can leverage the `scale()` function to standardize the predictors' units of measurement and determine which has the largest effect on `ytd_sales`:
 
@@ -549,7 +546,7 @@ summary(mlm.fit.scaled)
   
 ## Moderation
 
-  As discussed in Chapter \@ref(measure-sampl), a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an **interaction term**, which is the product of the two variables ($X_1$ * $X_2$).
+  As discussed in Chapter \@ref(measure-sampl), a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in a linear model requires an **interaction term**, which is the product of the two variables ($X_1$ * $X_2$).
   
   Let's examine whether `org_tenure` influences the strength of the relationship between `job_lvl` and `sqrt(ytd_sales)`. We would generally expect sales to increase as the job level of salespeople increases, and longer tenure may amplify the strength of this association. Step one is testing whether the interaction term is statistically significant, and step two is determining the nature of any observed statistical interaction. Including the interaction term in the model (`job_lvl` * `org_tenure`) will add the predictors independently *and* jointly:
 
@@ -608,7 +605,7 @@ car::vif(mlm.fit.int)
   * *High organization tenure*: $Y = -2.51 (6.57 + 5.12)X + 276.56$
   * *Low organization tenure*: $Y = -2.51 (6.57 - 5.12)X + 276.56,$
   
-  where 6.57 is `mean(data$org_tenure)`, 5.12 is `sd(data$org_tenure)`, and $X$ is a vector of values for `job_lvl`.
+  where 6.57 is `mean(data$org_tenure)`, 5.12 is `sd(data$org_tenure)`, $X$ is a vector of values for `job_lvl`, and 276.56 is the $y$-intercept.
   
 ```{r int-effects, out.width = "100%", echo = FALSE, fig.cap = 'Regression of square root transformed YTD sales onto job level x organization tenure interaction term. High organization tenure (red line): Y = -2.51 (6.57 + 5.12)X + 276.56. Low organization tenure (blue line): Y = -2.51 (6.57 - 5.12)X + 276.56.', fig.align = 'center', message = FALSE, warning = FALSE}
 

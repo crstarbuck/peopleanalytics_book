@@ -128,7 +128,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-09-21}
+\date{2022-09-24}
 
 \begin{document}
 \maketitle
@@ -1254,7 +1254,7 @@ We can load the \texttt{ggplot2} library using the \texttt{library()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library for data viz}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(ggplot2)}
 \end{Highlighting}
 \end{Shaded}
@@ -1418,7 +1418,7 @@ A best practice in writing SQL is to capitalize the names of clauses and functio
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load SQL library}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(sqldf)}
 
 \CommentTok{\# Store SQL query as a character string using the paste() function}
@@ -1780,7 +1780,7 @@ When integrating data within R, the \texttt{tidyverse} provides a more efficient
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load tidyverse}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(tidyverse)}
 
 \NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(demographics,}
@@ -2424,7 +2424,7 @@ We can use the \texttt{sample()} function in R to randomly select from a vector 
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library for data wrangling}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{\# Read employee data}
@@ -3514,7 +3514,7 @@ In R, the sample variance can be calculated using the \texttt{var()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library for data wrangling}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{\# Read employee data}
@@ -3876,7 +3876,7 @@ In R, we can compute the covariance between a pair of numeric variables by passi
 ## [1] 9381.677
 \end{verbatim}
 
-In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
+In this example, using the default method the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.
 
 Just as we multiplied the sample variance by \((n - 1) / n\) to obtain the population variance, we can apply the same approach to convert the sample covariance returned by \texttt{cov()} to the population covariance:
 
@@ -3891,7 +3891,7 @@ Just as we multiplied the sample variance by \((n - 1) / n\) to obtain the popul
 ## [1] 9375.295
 \end{verbatim}
 
-The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the \texttt{cov()} function:
+Rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface pairwise associations among many variables by passing a data frame or matrix object into the \texttt{cov()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -3996,7 +3996,11 @@ We can override the default Pearson method in the \texttt{cor()} function to imp
 
 The \(\rho\) coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass \texttt{method\ =\ "kendall"} to this \texttt{cor()} function to implement Kendall's \(\tau\).
 
-The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables \(x\) and \(y\):
+The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the \textbf{mean square contingency coefficient} or \textbf{Matthews correlation} in ML, can be used to understand the association between two dichotomous variables.
+
+For the 2x2 table for two random variables \(x\) and \(y\) depicted in Figure \ref{fig:phi-tbl}, the \(\phi\) coefficient is defined as:
+
+\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]
 
 \begin{figure}
 
@@ -4006,10 +4010,6 @@ The \textbf{Phi Coefficient} (\(\phi\)), sometimes referred to as the mean squar
 
 \caption{2x2 table for random variables x and y}\label{fig:phi-tbl}
 \end{figure}
-
-The \(\phi\) coefficient is defined as:
-
-\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]
 
 To illustrate, let's examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs.~low performance). We can leverage the \texttt{psych} library to calculate \(\phi\) in R:
 
@@ -4063,7 +4063,22 @@ A correlation matrix can be produced to surface associations among many variable
 
 Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between \texttt{org\_tenure} and \texttt{job\_tenure} (\(r = .7\)). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.
 
-A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:
+A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables, as illustrated in Figure \ref{fig:corrplot-comp}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Store correlation matrix to object M}
+\NormalTok{M }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(}\StringTok{"annual\_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org\_tenure"}\NormalTok{, }\StringTok{"job\_tenure"}\NormalTok{, }\StringTok{"prior\_emplr\_cnt"}\NormalTok{, }\StringTok{"commute\_dist"}\NormalTok{)), }\AttributeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+
+\CommentTok{\# Visualize correlation matrix}
+\NormalTok{corrplot}\SpecialCharTok{::}\FunctionTok{corrplot}\NormalTok{(M, }\AttributeTok{method =} \StringTok{"color"}\NormalTok{,  }
+                   \AttributeTok{type =} \StringTok{"upper"}\NormalTok{, }\AttributeTok{order =} \StringTok{"hclust"}\NormalTok{, }\CommentTok{\# Apply hierarchical clustering for ordering coefficients above the diagonal}
+                   \AttributeTok{addCoef.col =} \StringTok{"black"}\NormalTok{, }\CommentTok{\# Add correlation coefficient}
+                   \AttributeTok{tl.col =} \StringTok{"grey"}\NormalTok{, }\AttributeTok{tl.srt =} \DecValTok{45}\NormalTok{, }\CommentTok{\# Label color and rotation}
+                   \AttributeTok{diag =} \ConstantTok{FALSE} \CommentTok{\# Hide correlation coefficient on the principal diagonal}
+\NormalTok{                   )}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{figure}
 
@@ -4074,7 +4089,14 @@ A great R library for visualizing correlation matrices is corrplot. Several argu
 \caption{Corrplot correlation matrix}\label{fig:corrplot-comp}
 \end{figure}
 
-The \texttt{GGally} library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:
+The \texttt{GGally} library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions, as illustrate in Figure \ref{fig:ggpairs-comp}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Visualize correlation matrix}
+\NormalTok{GGally}\SpecialCharTok{::}\FunctionTok{ggpairs}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, }\AttributeTok{select =} \FunctionTok{c}\NormalTok{(}\StringTok{"annual\_comp"}\NormalTok{, }\StringTok{"age"}\NormalTok{, }\StringTok{"org\_tenure"}\NormalTok{, }\StringTok{"job\_tenure"}\NormalTok{, }\StringTok{"prior\_emplr\_cnt"}\NormalTok{, }\StringTok{"commute\_dist"}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{figure}
 
@@ -4082,7 +4104,7 @@ The \texttt{GGally} library produces a variety of useful information, including 
 
 }
 
-\caption{GGpairs bivariate correlations and data distributions.}\label{fig:ggpairs-comp}
+\caption{GGpairs bivariate correlations and data distributions}\label{fig:ggpairs-comp}
 \end{figure}
 
 We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company's history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter \ref{lm}.
@@ -4098,7 +4120,7 @@ It's important to remember that correlation is not causation. Correlations can b
 \caption{Correlation comic (Source: www.explainxkcd.com)}\label{fig:corr-comic}
 \end{figure}
 
-Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
+Figures \ref{fig:spur-corr-1} and \ref{fig:spur-corr-2} are two examples of nearly perfect correlations between variables for which there is likely no true direct association:
 
 \begin{figure}
 
@@ -4118,7 +4140,7 @@ Here are two examples of nearly perfect correlations between variables for which
 \caption{Correlation between mozzarella cheese consumption and civil engineering doctorate conferrals (r = .96)}\label{fig:spur-corr-2}
 \end{figure}
 
-In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.
+Neither covariance nor correlation alone are sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to graduate from descriptive statistics.
 
 \hypertarget{review-questions-5}{%
 \section{Review Questions}\label{review-questions-5}}
@@ -4168,7 +4190,7 @@ For example, let's look at how org tenure is distributed across employees. We ca
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library for data wrangling}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(dplyr)}
 
 \CommentTok{\# Read employee data}
@@ -4184,7 +4206,7 @@ For example, let's look at how org tenure is distributed across employees. We ca
 ##   0.000   3.000   5.000   7.032   9.000  72.000
 \end{verbatim}
 
-Comparing the higher mean value of 7.03 to the median value of 5 indicates there are larger values skewing the mean upward which can be seen in the Q3 and max values.
+Comparing the higher mean value of 7.03 to the median value of 5 indicates there are larger values skewing the mean upward which is further evidenced in the large delta between Q3 and max values.
 
 Beyond descriptives, visuals are often helpful in understanding a variable's distribution. As shown in Figure \ref{fig:org-tenure-dist}, it is clear that org tenure is positively skewed, and understanding the shape (or spread) of this distribution enables us to identify which values are most likely in order to estimate the likelihood of different results:
 
@@ -4209,7 +4231,7 @@ Beyond descriptives, visuals are often helpful in understanding a variable's dis
 \caption{Organization tenure distribution}\label{fig:org-tenure-dist}
 \end{figure}
 
-You can likely image the shape of probability distributions for many common events. If we consider the probability of employees exiting an organization, the outcome is binary. That is, employees either leave or stay; there are no options between these extremes. However, the distribution of performance scores will look quite different. Most organizations have expected -- or even forced -- distributions in which an average rating is awarded most frequently and low and high performance ratings less frequently. This would start to look more like a bell curve as the number of performance levels increases.
+You can likely imagine the shape of probability distributions for many common events. If we consider the probability of employees exiting an organization, the outcome is binary. That is, employees either leave or stay; there are no options between these extremes. However, the distribution of performance scores will likely look quite different. Most organizations have expected -- or even forced -- distributions in which an average rating is awarded most frequently and low and high performance ratings less frequently. This would start to look more like a bell curve as the number of performance levels increases.
 
 Just as we grouped variables into discrete and continuous categories in Chapter \ref{measure-sampl}, this is also how probability distributions are categorized. If you read Chapter \ref{measure-sampl}, you likely already have some a priori expectations about the characteristics of discrete and continuous distributions.
 
@@ -4268,7 +4290,10 @@ Next, we will visualize each distribution:
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Create user{-}defined function (UDF) to simplify probability distribution visualization}
-\CommentTok{\# Function arguments: (1) data = object containing random distribution values; (2) type = \textquotesingle{}discrete\textquotesingle{} or \textquotesingle{}continuous\textquotesingle{} probability distribution; and (3) title = name of distribution}
+\CommentTok{\# Function arguments:}
+\CommentTok{\#   (1) data = object containing random distribution values }
+\CommentTok{\#   (2) type = \textquotesingle{}discrete\textquotesingle{} or \textquotesingle{}continuous\textquotesingle{} probability distribution}
+\CommentTok{\#   (3) title = name of distribution}
 \NormalTok{dist.viz }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(data, type, title) \{}
   
   \ControlFlowTok{if}\NormalTok{ (type }\SpecialCharTok{==} \StringTok{"discrete"}\NormalTok{)\{}
@@ -4339,9 +4364,9 @@ Next, we will visualize each distribution:
   \textbf{F}: developed to examine variances from random samples taken from two independent normal populations
 \end{itemize}
 
-The normal distribution is colloquially known as a \emph{bell curve}. It is important to note that a \emph{normal distribution} and \emph{standard normal distribution} are not one-and-the-same. The standard normal distribution is a special case of the normal distribution which has no free parameters; \(\mu = 0\) and \(\sigma = 1\). However, the parameters of a normal distribution are unspecified, and \(\mu\) and \(\sigma\) can take on values other than 0 and 1, respectively.
+The normal distribution is colloquially known as a \emph{bell curve}. It is important to note that a \emph{normal distribution} and \emph{standard normal distribution} are not one-and-the-same. The standard normal distribution is a special case of the normal distribution which has no free parameters; its parameters are always \(\mu = 0\) and \(\sigma = 1\). The parameters of a normal distribution are unspecified, and \(\mu\) and \(\sigma\) can take on values other than 0 and 1, respectively.
 
-A number of functions are available in R to simulate PDFs. While the precise shape of a distribution depends on the parameters, we will simulate and visualize these common PDFs to illustrate differences in the general shape of each. Let's first draw 1,000 random values from each distribution with a specified set of parameters:
+A number of functions are available in R to simulate PDFs. While the precise shape of a distribution is parameter dependent, we will simulate and visualize these common PDFs to illustrate differences in the general shape of each. Let's first draw 1,000 random values from each distribution with a specified set of parameters:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4496,9 +4521,9 @@ As we can see, wins occur nearly 50\% more often when contestants switch doors. 
 \hypertarget{central-limit-theorem}{%
 \section{Central Limit Theorem}\label{central-limit-theorem}}
 
-The \textbf{Central Limit Theorem (CLT)} is a mainstay of statistics and probability and fundamental to understanding the mechanics of statistical inference. The CLT was initially coined by a French-born mathematician named Abraham De Moivre in the 1700s.
+The \textbf{Central Limit Theorem (CLT)} is a mainstay of statistics and probability and fundamental to understanding the mechanics of statistical inference.
 
-The CLT states that given a sufficiently large sample size, the average of independent random variables tends to follow a normal (or Gaussian) distribution as the number of samples increases. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
+Coined by a French-born mathematician named Abraham De Moivre in the 1700s, the CLT states that given a sufficiently large sample size, the average of independent random variables tends to follow a normal (or Gaussian) distribution as the number of samples increases. The distribution of sample means approaches a normal distribution regardless of the shape of the population distribution from which the samples are drawn. This is important because the normal distribution has properties that can be used to test the likelihood that an observed value, difference, or relationship in a sample is also present in the population.
 
 \begin{figure}
 
@@ -4509,11 +4534,15 @@ The CLT states that given a sufficiently large sample size, the average of indep
 \caption{The Empirical Rule}\label{fig:emp-rule}
 \end{figure}
 
-Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- based on the ``fun'' factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
+Let's begin with an intuitive example of CLT. Imagine that we have a reliable way to measure how fun a population is on a 100-point scale, where 100 indicates maximum fun (life of the party) and 1 indicates maximum boringness. Consider that a small statistics conference is in progress at a nearby convention center, and there are 40 statisticians in attendance. In a separate room at the same convention center, there is also a group of 40 random people (non-statisticians) who are gathered to discuss some less interesting topic. Our job is to walk into one of the rooms and determine -- based on the \emph{fun} factor alone -- whether we have entered the statistics conference or the other, less interesting gathering of non-statisticians.
 
-Instinctively, we already know the statisticians will be more fun than the other group. However, let's assume we need the mean fun score and standard deviation of these two groups for this example. The group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the standard error (the standard deviation of the sample means) provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
+Instinctively, we already know the statisticians will be more fun than the other group. However, let's assume we need the mean fun score and standard deviation of these two groups for this example. The group of statisticians have, on average, a fun score of 85 with a standard deviation of 2, while the group of non-statisticians are a bit less fun with a mean score of 65 and a standard deviation of 4. With a known population mean and standard deviation, the \textbf{standard error (SE)} -- the standard deviation of sample means -- provides the ability to calculate the probability that the sample (the room of 40 people) belongs to the population of interest (fellow statisticians).
 
-Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a `reasonably sized' sample of statisticians with average funness so extremely different from the population average.
+The SE is defined by:
+
+\[ SE = \frac{\sigma}{\sqrt{n}} \]
+
+Herein lies the beauty of the CLT: roughly 68 percent of sample means will lie within one standard error of the population mean, roughly 95 percent within two standard errors of the population mean, and roughly 99 percent within three standard errors of the population mean. Therefore, any room whose members have an average fun score that is not within two standard errors of the population mean (between 81 and 89 for our statisticians) is statistically unlikely to be the group of statisticians for which we are searching. This is because in less than 5 in 100 cases could we randomly draw a \emph{reasonably sized} sample of statisticians with average funness so extremely different from the population average.
 
 Because small samples lend to anomalies, we could -- by chance -- select a single person who happens to fall in the tails (extremely boring or extremely fun); however, as the sample size increases, it becomes more and more likely that the observed average reflects the average of the larger population. It would be virtually impossible (in less than 1 in 100 cases) to draw a random sample of statisticians from the population with average funness that is not within three standard errors of the population mean (between 79 and 91). Therefore, if we find that the room of people have an average fun score of 75, we will likely have far more fun in the other room!
 
@@ -4639,11 +4668,9 @@ If we draw random samples from a population, we can compute a CI for each sample
 \caption{Intervals for 95 percent confidence level}\label{fig:conf-int}
 \end{figure}
 
-It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to \emph{population parameters}. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exists, and this is inaccurate. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!
+It is important to note that CIs should not be applied to the distribution of sample values; CIs relate to \emph{population parameters}. A common misinterpretation of a CI is that it represents an interval within which a certain percent of sample values exists. Because this misinterpretation is so prevalent, there is a good chance you will be tested on your understanding of CIs when applying to positions involving statistical analyses!
 
-A related concept that is fundamental to estimating CIs is the \textbf{standard error (SE)}, which is the standard deviation of sample means. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases. The SE is defined by:
-
-\[ SE = \frac{\sigma}{\sqrt{n}} \]
+The standard error is fundamental to estimating CIs. While the standard deviation is a measure of variability for a random variable, the variability captured by the SE reflects how well a sample represents the population. Since sample statistics will approach the actual population parameters as the size of the sample increases, the SE and sample size are inversely related; that is, the SE decreases as the sample size increases.
 
 Since the CLT is fundamental to inferential statistics, let's validate that our simulated distribution of sample means adheres to the properties of normally distributed data per the Empirical Rule:
 
@@ -4677,9 +4704,9 @@ Since the CLT is fundamental to inferential statistics, let's validate that our 
 ## [1] 99.79
 \end{verbatim}
 
-Nearly all of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean `from the same population' that falls outside this interval.
+Nearly all of the sample means are within 3 SEs, indicating that it would be highly unlikely -- nearly impossible even -- to observe a sample mean \emph{from the same population} that falls outside this interval.
 
-Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-Test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95\% CI represents the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population.
+Now, let's illustrate the relationship between CIs and standard errors using sample data from our uniform population distribution. In our example, both \(\mu\) and \(\sigma\) are known and our sample size \(n\) is at least 30; therefore, we can use a \textbf{Z-test} to calculate the 95\% CI. A \(z\) score of 1.96 corresponds to the 95\% CI for a two-tailed distribution; that is, we are looking for significantly different values in either the larger or smaller direction. The 95\% CI represents the range of values we would expect to include \(\mu\) in at least 95 of 100 random samples taken from the population.
 
 The CI in this case is defined by:
 
@@ -4759,7 +4786,7 @@ Next, let's look at a 99\% CI. We will enter 2.576 for \(z\):
 
 Like the 95\% CI, this slightly wider 99\% CI (46.2 - 60.7) also includes our \(\mu\) of 51.2.
 
-If \(\sigma\) is not known, and/or we have a small sample (\(n\) \textless{} 30), we need to use a \(t\)\textbf{-test} to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
+If \(\sigma\) is not known, and/or we have a small sample (\(n\) \textless{} 30), we need to use a \(\textbf t\)\textbf{-test} to calculate the CIs. In a people analytics setting, the reality is that population parameters are often unknown. For example, if we knew how engagement scores vary in the employee population, there would be no need to survey a sample of employees and make inferences about said population.
 
 As we will see, the \(t\)-test underpins many statistical tests and models germane to the people analytics discipline since we are often working with small datasets, so it is important to understand the mechanics. As shown in Figure \ref{fig:t-distribution}, the \(t\) distribution is increasingly wider and shorter relative to the normal distribution as the sample size decreases; this is also characteristic of the sampling distribution of means for smaller samples we observed in our CLT example. Specifically, \textbf{degrees of freedom (df)} is used to determine the shape of the probability distribution. Degrees of freedom represents the number of observations in the data that are free to vary when estimating statistical parameters, which is a function of the sample size (\(n - 1\)). For example, if we could choose 1 of 5 projects to work on each day between Monday and Friday, we would only be able to \emph{choose} 4 out of the 5 days; on Friday, only 1 project would remain to be selected, so our degrees of freedom (the number of days in which we have a choice between projects) would be 4.
 
@@ -4864,9 +4891,9 @@ As expected, the 95\% CI using the \(t\) statistic is much wider (35.2 - 59.6), 
 
 \[ H_0: \mu_A = \mu_B \]
 
-The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is `nothing' of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
+The objective of hypothesis testing is to determine if there is sufficient evidence to reject the null hypothesis in favor of an alternative hypothesis. The null hypothesis always states that there is \emph{nothing} of significance. For example, if we want to test whether an intervention has an effect on an outcome in a population, the null hypothesis states that there is no effect. If we want to test whether there is a difference in average scores between two groups in a population, the null hypothesis states that there is no difference.
 
-An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly `larger' or `smaller' average value than Population B; Variable A is `positively' or `negatively' related to Variable B). Therefore, alternative hypotheses are defined by:
+An alternative hypothesis may simply state that there is a difference or relationship in the population, or it may specify the expected direction (e.g., Population A has a significantly \emph{larger} or \emph{smaller} average value than Population B; Variable A is \emph{positively} or \emph{negatively} related to Variable B). Therefore, alternative hypotheses are defined by:
 
 \[ H_A: \mu_A \neq \mu_B \]
 
@@ -4877,11 +4904,11 @@ An alternative hypothesis may simply state that there is a difference or relatio
 \hypertarget{alpha}{%
 \subsection{Alpha}\label{alpha}}
 
-The \textbf{alpha} level of a hypothesis test, denoted by \(\alpha\), represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, \(\alpha\) is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should have failed to reject it because there is insufficient evidence to support the alternative hypothesis.
+The \textbf{alpha} level of a hypothesis test, denoted by \(\alpha\), represents the probability of obtaining observed results due to chance if the null hypothesis is true. In other words, \(\alpha\) is the probability of rejecting the null hypothesis (and therefore claiming that there is a significant difference or relationship) when in fact we should fail to reject it because there is insufficient evidence to support the alternative hypothesis.
 
 \(\alpha\) is often set at .05 but is sometimes set at a more rigorous .01, depending upon the context and tolerance for error. An \(\alpha\) of .05 corresponds to a 95\% CI (1 - .05), and .01 to a 99\% CI (1 - .01). With non-directional alternative hypotheses, we must divide \(\alpha\) by 2 (i.e., we could observe a significant result in either tail of the distribution), while one-tailed tests position the rejection region entirely within one tail based on what is being hypothesized.
 
-At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Note that we observed this behavior with our simulated distribution of sample means. While we could observe more extreme values by chance with repeated attempts, in less than 1 in every 20 times would we expect a 95\% CI that does not capture \(\mu\). Moreover, in less than 1 in every 100 times should we expect a sample with a 99\% CI that does not capture \(\mu\).
+At the .05 level, we would conclude that a finding is statistically significant if the chance of observing a value at least as extreme as the one observed is less than 1 in 20 if the null hypothesis is true. Recall that we observed this behavior with our simulated distribution of sample means. While we could observe more extreme values by chance with repeated attempts, in less than 1 in every 20 times would we expect a 95\% CI that does not capture \(\mu\). Moreover, in less than 1 in every 100 times should we expect a sample with a 99\% CI that does not capture \(\mu\).
 
 \hypertarget{type-i-ii-errors}{%
 \subsection{Type I \& II Errors}\label{type-i-ii-errors}}
@@ -4897,8 +4924,8 @@ A \textbf{Type I Error} is a false positive, wherein we conclude that there is a
 \caption{Type I and II errors}\label{fig:hyp-errs}
 \end{figure}
 
-\hypertarget{p-values}{%
-\subsection{\texorpdfstring{\(p\)-Values}{p-Values}}\label{p-values}}
+\hypertarget{textbf-p-values}{%
+\subsection{\texorpdfstring{\(\textbf p\)-Values}{\textbackslash textbf p-Values}}\label{textbf-p-values}}
 
 In statistical tests, the \(\textbf p\)\textbf{-value} is referenced to determine whether the null hypothesis can be rejected. We generally rely on the availability of a \textbf{theoretical null distribution} to obtain a \(p\)-value associated with a particular test statistic. The p-value represents the probability of obtaining a result at least as extreme as the one observed if the null hypothesis is true. As a general rule, if \(p\) \textless{} .05, we can confidently reject the null hypothesis and conclude that the observed difference or relationship was unlikely a chance observation.
 
@@ -4907,7 +4934,7 @@ While statistical significance helps us understand the probability of observing 
 \hypertarget{bonferroni-correction}{%
 \subsection{Bonferroni Correction}\label{bonferroni-correction}}
 
-One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equivalent to the number of tests performed. It's important to note that there is not agreement among statisticians about how (or even whether) the p-value threshold for statistical significance needs to be adjusted to account for this increased risk. Nevertheless, we will cover this conservative approach for mitigating this risk.
+One caveat when leveraging a p-value to determine statistical significance is that when multiple testing is performed -- that is, multiple tests using the same sample data -- the probability of a Type I error increases by a factor equivalent to the number of tests performed. Though there is not agreement among statisticians about how (or even whether) the \(p\)-value threshold for statistical significance needs to be adjusted to account for this increased risk, we will cover a conservative approach known as the \textbf{Bonferroni Correction} to mitigate this risk.
 
 Thus far, we have only discussed statistical significance in the context of a \textbf{per analysis error rate} -- that is, the probability of committing a Type I error for a single statistical test. However, when two or more tests are being conducted on the same sample, the \textbf{familywise error rate} is an important factor in determining statistical significance. The familywise error rate reflects the fact that as we conduct more and more analyses on the same sample, the probability of a Type I error across the set (or family) of analyses increases. The familywise error rate can be calculated by:
 
@@ -4915,18 +4942,18 @@ Thus far, we have only discussed statistical significance in the context of a \t
 
 where \(c\) is equal to the number of comparisons (or statistical tests) performed, and \(\alpha_{PC}\) is equal to the specified per analysis error rate (usually .05). For example, if \(\alpha\) = .05 per analysis, the probability of a Type I error with three tests on the same data increases from 5\% to 14.3\%: \(1 - (1 - .05)^3 = .143\).
 
-The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the \textbf{Bonferroni Correction}. To implement this correction, we can simply divide \(\alpha\) by the number of analyses performed on the dataset -- such as \(\alpha / 3 = .017\) in the case of three analyses with \(\alpha = .05\). This means that for each statistical test, we must achieve \(p < .017\) to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis p-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive \(p = .014\), \(p = .047\), and \(p = .125\), we would achieve one significant result with the first method (\(p < .017\)) as well as with the alternative since the first statistical test satisfies the per analysis error rate (\(p < .05\)): \(p = .014 * 3 = .042\).
+The most common method of adjusting the familywise error rate down to the specified per analysis error rate is the Bonferroni Correction. To implement this correction, we can simply divide \(\alpha\) by the number of analyses performed on the dataset -- such as \(\alpha / 3 = .017\) in the case of three analyses with \(\alpha = .05\). This means that for each statistical test, we must achieve \(p\) \textless{} .017 to report a statistically significant result. An alternative which allows us to achieve the same number of statistically significant results is to multiply the unadjusted per analysis \(p\)-values for each statistical test by the number of tests. For example, if we run three statistical tests and receive \(p\) = .014, \(p\) = .047, and \(p\) = .125, we would achieve one significant result with the first method (\(p\) \textless{} .017) as well as with the alternative since the first statistical test satisfies the per analysis error rate (\(p\) \textless{} .05): \(p\) = .014 * 3 = .042.
 
-Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these ``adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference.'' The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research, though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
+Perneger (1998) is one of many who oppose the use of the Bonferroni Correction, suggesting that these ``adjustments are, at best, unnecessary and, at worst, deleterious to sound statistical inference.'' The Bonferroni Correction is controversial among researchers because while applying the correction reduces the chance of a Type I error, it also increases the chance of a Type II error. Because this correction makes it more difficult to detect significant results, it is rare to find such a correction reported in published research -- though research often involves multiple testing on the same sample. Perneger suggests that simply describing the statistical tests that were performed, and why, is sufficient for dealing with potential problems introduced by multiple testing.
 
 \hypertarget{statistical-power}{%
 \subsection{Statistical Power}\label{statistical-power}}
 
 Whereas \(\alpha\) is the probability of a Type I error, \textbf{Beta} \(\beta\) is the opposite: the probability of accepting \(H_0\) when it is false (Type II error).
 
-\(\beta\) is related to the \emph{power} of the analysis, which is calculated by 1 - \(\beta\) and reflects our ability to detect a difference or relationship if one exists. For example, if a study has 80\% power, it has an 80\% chance of detecting an effect if one actually exists in the population. \textbf{Power analysis} helps with defining the optimal \(n\)-count for detecting a population effect in sample data (i.e., correctly rejecting a false \(H_0\)). Increasing the power of a statistical test decreases the probability that we will fail to detect a significant effect present in the population.
+\(\beta\) is related to the \emph{power} of the analysis, which is calculated by 1 - \(\beta\) and reflects our ability to detect a difference or relationship if one exists. If a study has 80\% power, for example, it has an 80\% chance of detecting an effect if one actually exists in the population. \textbf{Power analysis} helps with defining the optimal \(n\)-count for detecting a population effect in sample data (i.e., correctly rejecting a false \(H_0\)). Increasing the power of a statistical test decreases the probability that we will fail to detect a significant effect present in the population.
 
-At this point, it should be intuitive that larger samples increase our chances of observing significant results. As we observed in the \(t\)-test example, CIs for small samples (\(n\) \textless{} 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how different the values of \(x\) must be to observe non-overlapping CIs.
+At this point, it should be intuitive that larger samples increase our chances of detecting significant results when they exist. As we observed in the \(t\)-test example, CIs for small samples (\(n\) \textless{} 30) are quite wide relative to those for large samples; therefore, the power of the analysis to detect significance is limited given how different the values of \(x\) must be to observe non-overlapping CIs.
 
 Before diving into the mechanics of power analysis, it is important to understand the three important -- and interrelated -- considerations in hypothesis tests that influence whether effects are real or a product of random sampling error:
 
@@ -4940,7 +4967,7 @@ Before diving into the mechanics of power analysis, it is important to understan
   \textbf{Variability}: Greater variability in the data is likely to result in differences that are attributable to random sampling error
 \end{itemize}
 
-It may be helpful to think of power analysis as an optimization problem. The goal is to achieve a large enough sample size to detect meaningful effects -- but not wastefully large as data collection can be expensive -- whilst protecting against an underpowered analysis with a low probability of detecting an important effect.
+Power analysis may be thought of as an optimization problem. The goal is to achieve a large enough sample size to detect meaningful effects -- but not wastefully large as data collection can be expensive -- whilst protecting against an underpowered analysis with a low probability of detecting an important effect (Type II error).
 
 To estimate the sample size needed to achieve a given power level, one must use domain expertise to specify parameters. The effect size parameter varies based on the statistical test but when in doubt, we can use Cohen's (1988) conventional effect sizes which are defined in Figure \ref{fig:conv-eff-size-tbl}. The effect size for a particular test can also be retrieved using the \texttt{cohen.ES()} function. For example, the following command returns 0.25 as the medium effect size threshold for ANOVA: \texttt{cohen.ES(test\ =\ "anov",\ size\ =\ "medium")}.
 
@@ -4953,7 +4980,7 @@ To estimate the sample size needed to achieve a given power level, one must use 
 \caption{Cohen's conventional effect sizes by statistical test}\label{fig:conv-eff-size-tbl}
 \end{figure}
 
-Let's illustrate by calculating the sample size required for a one-way ANOVA that involves four groups. We will set \(\alpha = .05\) and specify an 80\% chance (power = .8) of detecting a moderate population effect. We can leverage the \texttt{pwr} library in R to perform power analysis. Executing \texttt{?pwr} will provide package documentation that clarifies what function to execute to calculate the sample size requirement for various statistical tests.
+Let's illustrate by calculating the sample size required for a one-way ANOVA that involves four groups. We will set \(\alpha\) = .05 and specify an 80\% chance (power = .8) of detecting a moderate population effect. We can leverage the \texttt{pwr} library in R to perform power analysis. Executing \texttt{?pwr} will provide package documentation that clarifies what function to execute to calculate the sample size requirement for various statistical tests.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -4963,7 +4990,7 @@ Let's illustrate by calculating the sample size required for a one-way ANOVA tha
 \CommentTok{\# Calculate sample size for one{-}way ANOVA}
 \CommentTok{\# k = 4 indicates we plan to compare 4 groups}
 \CommentTok{\# f = .25 indicates we wish to detect a medium effect}
-\FunctionTok{pwr.anova.test}\NormalTok{(}\AttributeTok{k =} \DecValTok{4}\NormalTok{, }\AttributeTok{f =}\NormalTok{ .}\DecValTok{25}\NormalTok{, }\AttributeTok{sig.level =}\NormalTok{ .}\DecValTok{05}\NormalTok{, }\AttributeTok{power =}\NormalTok{ .}\DecValTok{8}\NormalTok{)}
+\NormalTok{pwr}\SpecialCharTok{::}\FunctionTok{pwr.anova.test}\NormalTok{(}\AttributeTok{k =} \DecValTok{4}\NormalTok{, }\AttributeTok{f =}\NormalTok{ .}\DecValTok{25}\NormalTok{, }\AttributeTok{sig.level =}\NormalTok{ .}\DecValTok{05}\NormalTok{, }\AttributeTok{power =}\NormalTok{ .}\DecValTok{8}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4980,7 +5007,7 @@ Let's illustrate by calculating the sample size required for a one-way ANOVA tha
 ## NOTE: n is number in each group
 \end{verbatim}
 
-The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 45\) \emph{within each} of the four groups to achieve an 80\% chance of detecting a medium population effect across the four groups when setting \(\alpha = .05\).
+The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 45\) \emph{within each} of the four groups to achieve an 80\% chance of detecting a medium population effect across the four groups when setting \(\alpha\) = .05.
 
 \hypertarget{review-questions-6}{%
 \section{Review Questions}\label{review-questions-6}}
@@ -5012,14 +5039,14 @@ The power analysis for this one-way ANOVA shows that we need a minimum of \(n = 
 \hypertarget{aod}{%
 \chapter{Analysis of Differences}\label{aod}}
 
-There are many statistical tests that can be used to test for differences within or between two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
+There are many statistical tests that can be used to test for differences \emph{within} or \emph{between} two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
 
 \hypertarget{parametric-vs.-nonparametric-tests}{%
 \section{Parametric vs.~Nonparametric Tests}\label{parametric-vs.-nonparametric-tests}}
 
 In the context of data measured on a continuous scale (quantitative), we will cover parametric tests along with their nonparametric counterparts. When the hypothesis relates to average (mean) differences and \(n\) is large, \textbf{parametric tests} are preferred as they generally have more statistical power. \textbf{Nonparametric tests} are \textbf{distribution-free tests} that do not require the population's distribution to be characterized by certain parameters, such as a normal distribution defined by a mean and standard deviation. Nonparametric tests are great for qualitative data since the distribution of non-numeric data cannot be characterized by parameters.
 
-Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \ref{measure-sampl}, as well as following the data screening procedures outlined in Chapter \ref{data-arch-prep} (e.g., addressing concerning outliers), parametric tests of differences \emph{generally} feature three key assumptions:
+Beyond ensuring the data were generated from a random and representative process as discussed in Chapter \ref{measure-sampl}, as well as following the data screening procedures outlined in Chapter \ref{data-prep} (e.g., addressing concerning outliers), parametric tests of differences \emph{generally} feature three key assumptions:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -5035,13 +5062,6 @@ Beyond ensuring the data were generated from a random and representative process
 While homogeneity of variance assumes the variances across multiple groups are equal, parametric tests are generally robust to violations of equal variances when the sample sizes are large. Also, you may recall that \(\mu\) and \(\sigma\) are sufficient to characterize a population distribution when data are situated symmetrically around the mean. However, the mean can be sensitive to outliers so if outliers are present in the data, the median may be a better way of representing the data's center (i.e., nonparametric tests); just remember that the use of nonparametric tests requires hypotheses to be modified to adjust for \emph{median} -- rather than \emph{mean} -- centers.
 
 You may be wondering whether the magical elixir that is the CLT, which we covered in Chapter \ref{inf-stats}, influences our ability to utilize parametric tests with respect to the assumption of normality. It's important to remember that the normal distribution properties under the CLT relate to the \emph{sampling distribution of means} -- not to the distribution of the population or to the data for an individual sample. The CLT is important for estimating population parameters, but it does not transform a population distribution from nonnormal to normal. If we know the population distribution is nonnormal (e.g., ordinal, nominal, or skewed data), nonparametric tests should be considered. This is why we used Spearman's correlation coefficient -- a nonparametric test -- in Chapter \ref{desc-stats} to evaluate the relationship between job level and education; these ordinal data are not normally distributed in the population.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# Load employee data}
-\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics\_book/master/data/employees.csv"}\NormalTok{)}
-\end{Highlighting}
-\end{Shaded}
 
 \hypertarget{differences-in-discrete-data}{%
 \section{Differences in Discrete Data}\label{differences-in-discrete-data}}
@@ -5067,7 +5087,7 @@ The \textbf{Chi-Square Test of Independence} evaluates patterns of observations 
 
 where \(O_i\) is the observed value, and \(E_i\) is the expected value.
 
-\(H_0\) states that each variable is independent of one another (i.e., there is no relationship). In addition to the \({\chi}^2\) test statistic, \(df\) for the contingency table, defined by \(df = (rows - 1) * (columns - 1)\), is required to determine whether we reject or fail to reject \(H_0\).
+\(H_0\) states that each variable is independent of one another (i.e., there is no relationship). In addition to the \({\chi}^2\) test statistic, \(df\) for the contingency table defined by \(df = (rows - 1) * (columns - 1)\), is required to determine whether we reject or fail to reject \(H_0\).
 
 While there is not consensus on the minimum sample size for this test, it is important to note that the \({\chi}^2\) statistic follows a chi-square distribution \emph{asymptotically}. This means we can only calculate accurate \(p\)-values for larger samples, and a general rule of thumb is that the expected value for each cell needs to be at least 5. The challenge with small \(n\)-counts is illustrated in Figure \ref{fig:chisq-dist}; the chi-square distribution approaches a vertical line as \(df\) drops below 5.
 
@@ -5084,8 +5104,12 @@ We will demonstrate how to perform a chi-square test of independence by evaluati
 
 \begin{Shaded}
 \begin{Highlighting}[]
+\CommentTok{\# Load employee data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics\_book/master/data/employees.csv"}\NormalTok{)}
+
 \CommentTok{\# Create contingency table}
 \NormalTok{cont\_tbl }\OtherTok{\textless{}{-}} \FunctionTok{table}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{active, employees}\SpecialCharTok{$}\NormalTok{overtime)}
+
 \NormalTok{cont\_tbl}
 \end{Highlighting}
 \end{Shaded}
@@ -5108,7 +5132,7 @@ A \textbf{mosaic plot} is a great way to visualize the delta between expected an
 \caption{Mosaic plot of residuals for overtime x active status}\label{fig:mosaic-plot}
 \end{figure}
 
-In Figure \ref{fig:mosaic-plot}, blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the overtime group, and more active employees than expected in the group with no overtime. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
+In Figure \ref{fig:mosaic-plot}, blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the \emph{overtime} group, and more active employees than expected in the \emph{no overtime} group. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.
 
 Let's run the chi-square test of independence to determine whether these residuals are statistically significant. This test can be performed in R by passing the contingency table into the \texttt{chisq.test()} function:
 
@@ -5127,11 +5151,11 @@ Let's run the chi-square test of independence to determine whether these residua
 ## X-squared = 87.564, df = 1, p-value < 2.2e-16
 \end{verbatim}
 
-Based on the results, exit rates are not independent of overtime (\({\chi}^2(1) = 87.56, p < .05\)). Therefore, there is a statistically significant relationship between an employee working overtime and the rate at which they change from an active to inactive status -- confirming what was evident in the mosaic plot.
+Based on the results, exit rates are not independent of overtime (\({\chi}^2(1) = 87.56, p < .05\)). Therefore, there is a statistically significant relationship between an employee working overtime and the rate at which they change from active to inactive statuses -- confirming what was evident in the mosaic plot.
 
 \textbf{Fisher's Exact Test}
 
-When the sample size is small, \textbf{Fisher's Exact Test} can be used to calculate the \emph{exact} \(p\)-value rather than an approximation, which is the case with many statistical tests such as the chi-square test.
+When the sample size is small, \textbf{Fisher's Exact Test} can be used to calculate the \emph{exact} \(p\)-value rather than the approximation characteristic of many statistical tests such as the chi-square test.
 
 \(H_0\) for Fisher's exact test is the same as \(H_0\) for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher's exact test using the \texttt{fisher.test()} function in R:
 
@@ -5160,7 +5184,7 @@ Note the \emph{odds ratio} shown in this output. The \textbf{odds ratio} represe
 
 \[OR = \frac{a*d}{b*c}\]
 
-An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \ref{fig:contingency-tbl} illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive (termed) workers.
+An odds ratio of 1 indicates no difference in overtime frequency between active and inactive workers. Figure \ref{fig:contingency-tbl} illustrates the cells for the odds ratio calculation for the 2x2 contingency table of overtime for active and inactive workers.
 
 \begin{figure}
 
@@ -5188,7 +5212,7 @@ As discussed in Chapter \ref{desc-stats}, we can produce a \(\phi\) coefficient 
 
 The relationship between active status and overtime is negative, and the strength of the relationship is weak (\(\phi\) = -.25).
 
-Another common method of measuring the strength of the association between two categorical variables is \textbf{Cramer's V}, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alernative methods, the implementation won't be covered.
+Another common method of measuring the strength of the association between two categorical variables is \textbf{Cramer's V}, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alternative methods, the implementation won't be covered.
 
 \hypertarget{differences-in-continuous-data}{%
 \section{Differences in Continuous Data}\label{differences-in-continuous-data}}
@@ -5208,9 +5232,9 @@ A variety of parametric and nonparametric tests are available for evaluating dif
 
 When evaluating differences between two independent samples, social psychology researchers generally select from two tests: \emph{Student's} \(t\)\emph{-test} and \emph{Welch's} \(t\)\emph{-test}. There are other alternatives, such as \emph{Yuen's} \(t\)\emph{-test} and a \emph{bootstrapped} \(t\)\emph{-test}, but these are less commonly reported in scholarly social science journals and will not be covered in this book.
 
-The \textbf{Student's} \(t\)\textbf{-test}, which was introduced in Chapter \ref{inf-stats}, is a parametric test whose assumptions of equal variances seldom hold in people analytics. \textbf{Welch's} \(t\)\textbf{-test} is generally preferred to the Student's \(t\)-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, \& Leys, 2017). When \(n\) is equal between groups, the Student's \(t\)-test is known to be robust to violations of the equal variance assumption, as long as \(n\) is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
+The \textbf{Student's} \(\textbf t\)\textbf{-test}, which was introduced in Chapter \ref{inf-stats}, is a parametric test whose assumptions of equal variances seldom hold in people analytics. \textbf{Welch's} \(\textbf t\)\textbf{-test} is generally preferred to the Student's \(t\)-test because it has been shown to provide better control of Type 1 error rates when homogeneity of variance is not met, whilst losing little robustness (e.g., Delacre, Lakens, \& Leys, 2017). When \(n\) is equal between groups, the Student's \(t\)-test is known to be robust to violations of the equal variance assumption, as long as \(n\) is sufficiently high to accurately estimate parameters and the underlying distribution is not characterized by high skewness and kurtosis.
 
-Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:mean-group-diff} illustrates mean differences (\(MD\)) for nine Welch's \(t\)-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large \(n\), as \(t\) distributions approximate a standard normal distribution with larger \(df\). In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both \(MD\) and \(n\) are relatively small, mean differences are not statistically significant (\(p > .05\)). You may also notice that as the \(t\)-statistic approaches 0, statistical differences become less likely since a smaller \(t\)-statistic indicates a smaller difference between mean values.
+Let's explore the mechanics of independent samples \(t\)-tests. Figure \ref{fig:mean-group-diff} illustrates mean differences (\(MD\)) for nine Welch's \(t\)-tests based on random sample data generated from independent normal populations. Remember that statistical power increases with a large \(n\), as \(t\) distributions approximate a normal distribution with larger \(df\). In the context of analysis of differences, this translates to an increase in the likelihood of detecting statistical differences in the means of two distributions. Note that for the two cases where both \(MD\) and \(n\) are relatively small, mean differences are not statistically significant (\(p\) \textgreater= .05). You may also notice that as the \(t\)-statistic approaches 0, statistical differences become less likely since a smaller \(t\)-statistic indicates a smaller difference between mean values.
 
 \begin{figure}
 
@@ -5234,7 +5258,7 @@ Next, we will walk through the steps involved in performing Welch's \(t\)-test. 
 
 While the median -- rather than the mean which is being evaluated with Welch's \(t\)-test -- is shown in these box plots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.
 
-There are several alternatives to a visual inspection of normality, such as the \({\chi}^2\) \textbf{Goodness-of-Fit test} (Snedecor \& Cochran, 1980), \textbf{Kolmogorov-Smirnov (K-S) test} (Chakravarti, Laha, \& Roy, 1967), or \textbf{Shapiro-Wilk test} (Shapiro \& Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The \({\chi}^2\) Goodness-of-Fit test compares the \emph{count} of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normal population distribution, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed \emph{cumulative} distribution compares to the properties of a normal \emph{cumulative} distribution. The Shapiro-Wilk test is based on \emph{correlations} between observed and expected data.
+There are several alternatives to a visual inspection of normality, such as the \({\chi}^2\) \textbf{Goodness-of-Fit test} (Snedecor \& Cochran, 1980), \textbf{Kolmogorov-Smirnov (K-S) test} (Chakravarti, Laha, \& Roy, 1967), or \textbf{Shapiro-Wilk test} (Shapiro \& Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The \({\chi}^2\) Goodness-of-Fit test compares the \emph{count} of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normally distributed population, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed \emph{cumulative} distribution compares to the properties of a normal \emph{cumulative} distribution. The Shapiro-Wilk test is based on \emph{correlations} between observed and expected data.
 
 We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high \(p\)-value indicates that the assumption of normality is satisfied (i.e., failure to reject the null hypothesis of normally distributed data). We can use the \texttt{with()} function together with the \texttt{shapiro.test()} function to run this test in R:
 
@@ -5267,7 +5291,7 @@ We will test for normality using the Shapiro-Wilk test. The null hypothesis for 
 ## W = 0.96002, p-value = 3.427e-07
 \end{verbatim}
 
-Based on these tests, the distribution of annual compensation for Managers and Research Scientists are significantly different from normally distributed data (\(p\) \textless{} .05).
+Based on these tests, distributions of annual compensation for Managers and Research Scientists are non-normal (\(p\) \textless{} .05).
 
 While we should not proceed with performing Welch's \(t\)-test due to unequal variances, let's do so merely to illustrate how the test is implemented in R. To perform Welch's \(t\)-test in R, we can simply pass into the \texttt{t.test()} function a numeric vector for each of the two groups.
 
@@ -5419,7 +5443,7 @@ Cohen's \(d\) can be produced using the \texttt{cohen.d()} function from the \te
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library for effect size functions}
+\CommentTok{\# Load library}
 \FunctionTok{library}\NormalTok{(effsize)}
 
 \CommentTok{\# Perform Cohen\textquotesingle{}s d}
@@ -5474,7 +5498,7 @@ Just as Cohen's \(d\) is used to measure the magnitude of difference between a p
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Run Cliff\textquotesingle{}s Delta}
+\CommentTok{\# Calculate Cliff\textquotesingle{}s Delta}
 \NormalTok{effsize}\SpecialCharTok{::}\FunctionTok{cliff.delta}\NormalTok{(no\_promo, promo)}
 \end{Highlighting}
 \end{Shaded}
@@ -5502,8 +5526,6 @@ To illustrate, let's design an experiment. Let's assume morale has declined for 
 Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).
 
 While we could simply look at the pre/post differences for the treatment group, we understand from Chapter \ref{research} that this would be a weak design that may lead to inaccurate conclusions. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.
-
-\textbf{Difference-in-differences (DiD)} estimation is a quasi-experimental approach that originated from econometrics for this same purpose, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
 
 Let's prepare the data for this experiment. Since \texttt{employees} is a cross-sectional dataset (single point-in-time), we will generate simulated data for repeated measures (i.e., post-intervention scores).
 
@@ -5625,7 +5647,7 @@ Let's test for normality by performing the Shapiro-Wilk test on vectors of diffe
 ## W = 0.99096, p-value = 0.5134
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples \(t\)-test.
+Since \(p\) \textgreater= .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples \(t\)-test.
 
 We can run a paired samples \(t\)-test in R by passing \texttt{paired\ =\ TRUE} as an argument to the same \texttt{t.test()} function used for the independent samples \(t\)-test. Since we are investigating whether the average post-intervention happiness index is significantly \emph{greater} than the average pre-intervention happiness index, we also need the \texttt{alternative\ =\ "greater"} argument since the default two-tailed test only evaluates whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).
 
@@ -5675,7 +5697,11 @@ Let's run the same paired samples \(t\)-test using the control group indices:
 ##            4.953658e-05
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit. Chapter \ref{lm} will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
+Since \(p\) \textgreater= .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit.
+
+Chapter \ref{lm} will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.
+
+\textbf{Difference-in-differences (DiD)} estimation is an alternative quasi-experimental approach that originated from econometrics for evaluating the effects of interventions like these, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.
 
 We can evaluate the magnitude of mean differences for these paired samples by passing the \texttt{paired\ =\ TRUE} argument to the same \texttt{cohen.d()} function used for independent samples:
 
@@ -5765,7 +5791,7 @@ With Cliff's delta, we observe a small difference between pre/post indices for t
 
 It is important to understand that \(H_0\) in ANOVA not only requires all group means to be equal but their complex contrasts as well. For example, if we have four groups named A, B, C, and D, \(H_0\) requires that \(\mu_A = \mu_B = \mu_C = \mu_D\) is true as well as the various complex contrasts such as \(\mu_{A,B} = \mu_{C,D}\) and \(\mu_A = \mu_{B,C,D}\) and \(\mu_D = \mu_{B,C}\). Therefore, a difference between one or more of these contrasts results in a decision to reject \(H_0\) in ANOVA. As a result, we may find a significant \(F\)-statistic but no significant differences between pairwise means.
 
-In addition, it is possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \ref{inf-stats}, multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
+It is also possible to find a significant pairwise mean difference but a non-significant result from ANOVA. As you may recall from Chapter \ref{inf-stats}, multiple comparisons reduce the power of statistical tests. Since multiple tests of mean differences are performed with ANOVA, the family-wise error rate is used to adjust for the increased probability of a Type I error across the set of analyses. Since the power of a single pairwise test is greater relative to the power of familywise comparisons, we may find a significant result for the former but not the latter.
 
 ANOVA requires IVs to be categorical (nominal or ordinal) and the DV to be continuous (interval or ratio). A \textbf{one-way ANOVA} is used to determine how one categorical IV influences a continuous DV. A \textbf{two-way ANOVA} is used to determine how two categorical IVs influence a continuous DV. A \textbf{three-way ANOVA} is used to evaluate how three categorical IVs influence a continuous DV. An ANOVA that uses two or more categorical IVs is often referred to as a \textbf{factorial ANOVA}. As discussed in Chapter \ref{getting-started}, it is important to remain grounded in specific hypotheses, as a significant ANOVA may not actually test what is being hypothesized.
 
@@ -5818,13 +5844,13 @@ Levene's test (Levene, 1960) can be used to test the homogeneity of variance ass
 ##       1466
 \end{verbatim}
 
-The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since \(p > .05\), we fail to reject this null hypothesis and can assume equal variances.
+The test statistic associated with Levene's test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since \(p\) \textgreater= .05, we fail to reject this null hypothesis and can assume equal variances.
 
 Next, let's test the assumption of normality. It is important to note that the assumption of normality \emph{does not} apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., \(y - \bar{y}_A\), \(y - \bar{y}_B\), \(y - \bar{y}_C\)). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load data viz library}
+\CommentTok{\# Load libraries}
 \FunctionTok{library}\NormalTok{(ggplot2)}
 \FunctionTok{library}\NormalTok{(ggpubr)}
 
@@ -5911,7 +5937,7 @@ Let's test for normality using the Shapiro-Wilk test:
 ## W = 0.95874, p-value < 2.2e-16
 \end{verbatim}
 
-Since \(p < .05\), we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \ref{fig:qq-plot}.
+Since \(p\) \textless{} .05, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure \ref{fig:qq-plot}.
 
 Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.
 
@@ -5948,12 +5974,13 @@ Let's first try several common data transformations and then examine the resulti
 \caption{Q-Q plots of transformed annual compensation residuals}\label{fig:qq-plots-trans}
 \end{figure}
 
-Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, the implementation of ANOVA is demonstrated below. Performing ANOVA involves the \texttt{aov()} function along with the \texttt{summary()} function to display model output:
+Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, let's demonstrate the implementation steps for ANOVA. Performing ANOVA involves pairing the \texttt{aov()} function with the \texttt{summary()} function to display model output:
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# One{-}way ANOVA investigating mean differences in annual comp by job satisfaction}
 \NormalTok{one.way }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ job\_sat, }\AttributeTok{data =}\NormalTok{ employees)}
+
 \FunctionTok{summary}\NormalTok{(one.way)}
 \end{Highlighting}
 \end{Shaded}
@@ -5983,7 +6010,7 @@ The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way
 ## Kruskal-Wallis chi-squared = 8.3242, df = 3, p-value = 0.03977
 \end{verbatim}
 
-Since \(p < .05\), we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the \texttt{pairwise.wilcox.test()} function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
+Since \(p\) \textless{} .05, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the \texttt{pairwise.wilcox.test()} function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6009,7 +6036,7 @@ Based on the results, there are significant pairwise differences in median annua
 
 \textbf{Factorial ANOVA}
 
-\textbf{Factorial ANOVA} is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. It is important to understand the hypothesis a factorial design tests. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
+\textbf{Factorial ANOVA} is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors -- job satisfaction and stock option level.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6047,6 +6074,7 @@ Factorial ANOVA can be performed by adding variables with \texttt{+} within the 
 \begin{Highlighting}[]
 \CommentTok{\# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level}
 \NormalTok{factorial }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ job\_sat }\SpecialCharTok{+}\NormalTok{ stock\_opt\_lvl, }\AttributeTok{data =}\NormalTok{ employees)}
+
 \FunctionTok{summary}\NormalTok{(factorial)}
 \end{Highlighting}
 \end{Shaded}
@@ -6073,9 +6101,9 @@ While mean annual compensation is significantly different by both job satisfacti
 
 As we can see, there is a strong negative relationship between job satisfaction and average annual compensation among employees with the highest stock option level (3). The relationship between job satisfaction and average annual compensation appears to be negative for employees with other stock option levels as well, albeit much weaker.
 
-These relationships may initially seem counterintuitive, as one might expect higher levels of job satisfaction to contribute to higher performance and consequently, higher compensation. There may be other variables that happen to be correlated with job satisfaction and/or stock option level that are the actual determinants of annual compensation. For example, there may be a relationship between jobs that each feature a stock option level of 3 but for which there are markedly different average job satisfaction scores and annual compensation among workers in said jobs. Without accounting for additional variables that may explain why employees vary in the amount of annual compensation they earn, the limited set of relationships shown in Figure \ref{fig:two-way-factorial} may lead to a misleading understanding and inaccurate conclusions.
+These relationships may initially seem counterintuitive, as one might expect higher levels of job satisfaction to contribute to higher performance and consequently, higher compensation. There may be other variables that happen to be correlated with job satisfaction and/or stock option level that are the actual determinants of annual compensation. For example, there may be a relationship between jobs that each feature a stock option level of 3 but for which there are markedly different average job satisfaction scores and annual compensation among workers in these jobs. Without accounting for additional variables that may explain why employees vary in the amount of annual compensation they earn, the limited set of relationships shown in Figure \ref{fig:two-way-factorial} may lead to a flawed understanding and inaccurate conclusions.
 
-Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \ref{lm}, we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly explain variation in the DV.
+Three-way factorials (and beyond) become difficult to visualize and understand in the way one-way ANOVA and two-way factorials have been explained in this chapter. In Chapter \ref{lm}, we will discuss how to create linear combinations of many IVs and parse the output to understand how they independently and jointly help explain variation in the DV.
 
 \hypertarget{review-questions-7}{%
 \section{Review Questions}\label{review-questions-7}}
@@ -6107,25 +6135,21 @@ Three-way factorials (and beyond) become difficult to visualize and understand i
 \hypertarget{lm}{%
 \chapter{Linear Regression}\label{lm}}
 
-It's important to draw a distinction between inferential and predictive models. Inferential models are highly interpretable and their utility is largely in understanding the nature and magnitude of the effect variables have on outcomes. Inferential models also lend to quantifying the extent to which we can generalize the observed effects to the larger population from which the sample was drawn. The objective in predictive modeling is to also to learn from patterns in historical data but for the purpose of achieving the most accurate predictions for future events -- even at the expense of interpretability. To be clear, this isn't to say that predictive models cannot be interpreted -- they certainly can -- but there are relatively few applications for predictive modeling in people analytics because models generally need to be highly interpretable to support action planning.
-
-This chapter is dedicated to inferential modeling to support a working understanding of how to interpret model output and communicate clear, data-driven narratives that respect the nuance and noise characteristic of people data. Chapter \ref{pred-mod} will provide an overview of predictive modeling frameworks.
-
 Regression is perhaps the most important statistical learning technique for people analytics. If you have taken a statistics course at the undergraduate or graduate levels, you have surely already encountered it. Let's first develop an intuitive understanding of the mechanics of regression.
 
-Imagine we are sitting at a large public park in NYC on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the \emph{average} annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.
+Imagine we are sitting at a large public park in New York City on a nice fall afternoon. If asked to estimate the annual compensation of the next person to walk by, how would you estimate this in the absence of any additional information? Most would likely estimate the \emph{average} annual compensation of everyone capable of walking by. Since this would include both residents and visitors, this would be a very large population of people! The obvious limitation with this approach is that among the large group of people capable of walking by, there is likely a significant range of annual compensation values. Many walking by may be children, unemployed, or retirees who earn no annual compensation, while others may be highly compensated senior executives at the pinnacle of their careers. Since the range of annual compensation could be zero to millions of dollars, estimating the average of such a large population is likely going to be highly inaccurate without more information.
 
-Let's consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It's also unlikely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.
+Let's consider that we are sitting outside on a weekday afternoon. Should this influence our annual compensation estimate? It is likely that we can eliminate a large segment of those likely to walk by, as we would expect most children to be in school on a typical fall weekday afternoon. It's also less likely that those who are employed and not on vacation will walk by on a fall weekday afternoon. Therefore, factoring in that it is a weekday should limit the size of the population which in turn may reduce the range of annual compensation values for our population of passerbys.
 
 Let's now consider that the park is open only to invited guests for a symposium on people analytics. Though it may be difficult to believe, a relatively small subset of the population is likely interested in attending such a symposium, so this information will likely be quite helpful in reducing the size of the population who could walk by. This should further reduce the range of annual compensation since we probably have a good idea of the profile of those most likely to attend. This probably also lessens (or altogether eliminates) the importance of the weekday factor in explaining why people vary in the amount of compensation they earn each year. That an important variable may become unimportant in the presence of another variable is a key feature of regression.
 
-Furthermore, let's consider that only those who reside in NYC and Boise were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should limit the range of annual compensation significantly \emph{within each} -- likely making the average compensation in each group a more nuanced and reasonable estimate.
+In addition, let's consider that only those who reside in NYC and Boise, Idaho were invited, and that the next person to walk by resides in Boise. Most companies apply a significant cost of living multiplier to the compensation for those in an expensive region such as NYC, resulting in a significant difference in compensation relative to those residing in a much less expensive city like Boise -- all else being equal. Therefore, if we can partition attendees into two groups based on their geography, this should significantly limit the range of annual compensation \emph{within each} -- likely making the average compensation in each group a more nuanced and reasonable estimate.
 
-What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs.~Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a significant degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining differences in annual compensation.
+What if we also learn the specific zip code in which the next passerby from Boise resides? The important information is likely captured at the larger city level (NYC vs.~Boise), as the compensation for the specific zip codes within each city are unlikely to vary to a meaningful degree. Assuming this is true, it probably would not make sense to consider both the city name and zip code since they are effectively redundant pieces of information with regard to explaining the variance in annual compensation.
 
 What if we learn that the next person to walk by will be wearing a blue shirt? Does this influence your estimate? Unless there is research to suggest shirt color and earnings are related, this information will likely not contribute any significant information to our understanding of why people vary in the amount of compensation they earn and should, therefore, not be considered.
 
-You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations with the same characteristics -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects unexplained variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was simply a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is simply to identify the variables that provide the most information in helping us tighten the distribution so that estimating the average value will generally be an accurate estimate for those in the larger population with the same characteristics.
+You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations \emph{with the same characteristics} -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects \emph{unexplained} variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is to identify the variables that provide the most information in helping us tighten the distribution so that estimating the expected (average) value will generally be an accurate estimate for those in the larger population with the same characteristics.
 
 While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (\(n\) \textless{} 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered in Chapter \ref{pred-mod}.
 
@@ -6133,7 +6157,7 @@ This is the essence of linear regression modeling: find a limited number of vari
 
 \textbf{Assumptions \& Diagnostics}
 
-First, the \textbf{sample size} needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum -- and realistic -- \(n\)-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.
+As we learned in the context of power analysis in Chapter \ref{inf-stats}, the sample size needs to be large enough to model and detect significant associations of one or more predictors with the response variable. In practice, people analytics practitioners are often constrained by the data at hand, which is to say that one generally has little control over the amount of data that can be collected. For example, despite the most earnest participation campaigns, only a subset of invited employees are likely to complete a survey, so collecting additional data to achieve a larger sample is likely not a viable option. It is important to establish a minimum -- and realistic -- \(n\)-count threshold during the planning stage of a project based on the research objectives and variables that need to be factored into the analysis.
 
 Consistent with the assumptions of parametric tests covered in Chapter \ref{aod}, there are several assumptions that need to be validated to determine if a linear model is appropriate for understanding relationships in the data. These assumptions largely relate to the residuals (\(\hat{y}\) - \(y\)):
 
@@ -6164,28 +6188,28 @@ Beyond these core assumptions for linear models, additional diagnostics are impo
 \hypertarget{sample-size}{%
 \section{Sample Size}\label{sample-size}}
 
-While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IVs, the power analysis section in Chapter \ref{inf-stats} covered a more rigorous approach to calculating the sample size needed to observe significant effects.
+While a general rule-of-thumb for regression analysis is a minimum of a 20:1 ratio of observations to IV, Chapter \ref{inf-stats} covered a more rigorous approach for calculating the sample size needed to observe significant effects.
 
 For linear regression, power analysis involves a comparison of model fit between a model with a full set of predictors relative to one with only a subset of the full model's predictors. The function from the \texttt{pwr} library to call is \texttt{pwr.f2.test(u\ =\ ,\ v\ =\ ,\ f2\ =\ ,\ sig.level\ =\ ,\ power\ =\ )}, where \texttt{u} and \texttt{v} are the numerator and denominator degrees of freedom, respectively, and \texttt{f2} is defined as:
 
 \[ f^2 = \frac {R^2_{AB} - R^2_A}{1 - R^2_{AB}}, \]
 
-where \(R^2_{AB}\) represents the variance accounted for by a full model with all predictors, and \(R^2_A\) represents the variance accounted for by a model containing only a subset of the full model's predictors. For example, power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.
+where \(R^2_{AB}\) represents the variance accounted for by a full model with all predictors, and \(R^2_A\) represents the variance accounted for by a model containing only a subset of the full model's predictors. Power analysis can be leveraged in determining the sample size needed for detecting the incremental main effects for a set of predictors beyond the variance accounted for by a set of controls.
 
 \hypertarget{simple-linear-regression}{%
 \section{Simple Linear Regression}\label{simple-linear-regression}}
 
-\textbf{Simple linear regression} is a simple technique for estimating the value of a quantitative DV, denoted as \(Y\), on the basis of a single IV, denoted as \(X\). It is assumed that there is an approximately linear relationship between \(X\) and \(Y\). Often, this relationship is expressed as \emph{regressing} \(Y\) on \(X\) and is defined mathematically as:
+\textbf{Simple linear regression} is a simple technique for estimating the value of a quantitative DV, denoted as \(Y\), on the basis of a single IV, denoted as \(X\). It is assumed that there is an approximately linear relationship between \(X\) and \(Y\). Often, this relationship is expressed as \emph{regressing} \(Y\) onto \(X\) and is defined mathematically as:
 
 \[ Y = \beta_0 + \beta_1 X + \epsilon, \]
 
-where \(\beta_0\) is the expected value of \(Y\) when \(X = 0\) (the \emph{intercept}), and \(\beta_1\) represents the average change in \(Y\) for a one-unit increase in \(X\) (the \emph{slope}). \(\beta_0\) and \(\beta_1\) are unknown \emph{parameters} or \emph{coefficients}. The error term, \(\epsilon\), acknowledges that there is variation in \(Y\) not accounted for by this simple linear model. In other words, it is highly unlikely that there is a perfectly linear relationship between \(X\) and \(Y\), as additional variables not included in the model are likely influencing \(Y\).
+where \(\beta_0\) is the expected value of \(Y\) when \(X = 0\) (the \emph{intercept}), and \(\beta_1\) represents the average change in \(Y\) for a one-unit increase in \(X\) (the \emph{slope}). \(\beta_0\) and \(\beta_1\) are unknown \emph{parameters} or \emph{coefficients}. The error term, \(\epsilon\), acknowledges that there is variation in \(Y\) not accounted for by this simple linear model -- \emph{unexplained} variance. In other words, it is highly unlikely that there is a perfectly linear relationship between \(X\) and \(Y\), as additional variables not included in the model are likely to also influence \(Y\).
 
 Once we estimate the unknown model coefficients, \(\beta_0\) and \(\beta_1\), we can estimate \(Y\) for a particular value of \(X\) by calculating:
 
 \[ \hat{y_i} = \hat{\beta}_0 + \hat{\beta_1}x_i, \]
 
-where \(\hat{y}\) represents an estimate of \(Y\) for the \(i\)-ith value of \(X\) equal to \(x\). The \(\hat{}\) symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
+where \(\hat{y}\) represents an estimate of \(Y\) for the \(i\)-ith value of \(X = x\). The hat (\(\hat{}\)) symbol is used to denote an estimated value of an unknown coefficient, parameter, or outcome.
 
 The earliest form of linear regression is the \emph{least squares} method, which was developed at the beginning of the nineteenth century and applied to astronomy problems (James, Witten, Hastie, \& Tibshirani, 2013). While there are several approaches to fitting a linear regression model, \textbf{ordinary least squares (OLS)} is the most common. OLS selects coefficients for \(\hat{\beta}_0\) and \(\hat{\beta}_1\) that minimize the residual sum of squares (RSS) defined by:
 
@@ -6249,71 +6273,8 @@ Before performing model diagnostics, it is important to note the following:
 \item
   Collinearity diagnostics are only applicable in the context of multiple regression, as simple linear models have only one IV (this will be covered later in the chapter).
 \item
-  Outliers are not always an issue, as we discussed in Chapter \ref{data-arch-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
+  Outliers are not always an issue, as we discussed in Chapter \ref{data-prep}. Figure \ref{fig:high-leverage} illustrates differences between an outlier that does not influence the model fit (left) relative to one which has significant leverage on the model fit (right).
 \end{enumerate}
-
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = Y ~ X)
-## 
-## Residuals:
-##     Min      1Q  Median      3Q     Max 
-## -1.4332 -0.5482 -0.0275  0.2867  2.6413 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)   0.4395     0.4084   1.076    0.296    
-## X             3.1303     0.1515  20.659  5.5e-14 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.8829 on 18 degrees of freedom
-## Multiple R-squared:  0.9595, Adjusted R-squared:  0.9573 
-## F-statistic: 426.8 on 1 and 18 DF,  p-value: 5.498e-14
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = Y.out ~ X.out)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -1.34746 -0.56288 -0.09021  0.29951  2.66197 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)    
-## (Intercept)   0.5224     0.3399   1.537    0.141    
-## X.out         3.0900     0.1077  28.703   <2e-16 ***
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 0.863 on 19 degrees of freedom
-## Multiple R-squared:  0.9775, Adjusted R-squared:  0.9763 
-## F-statistic: 823.9 on 1 and 19 DF,  p-value: < 2.2e-16
-\end{verbatim}
-
-\begin{verbatim}
-## 
-## Call:
-## lm(formula = Y.lev ~ X.lev)
-## 
-## Residuals:
-##      Min       1Q   Median       3Q      Max 
-## -10.3085  -1.8776   0.8556   2.0309   4.8048 
-## 
-## Coefficients:
-##             Estimate Std. Error t value Pr(>|t|)   
-## (Intercept)   3.9645     1.3559   2.924  0.00871 **
-## X.lev         1.4180     0.4295   3.302  0.00375 **
-## ---
-## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-## 
-## Residual standard error: 3.443 on 19 degrees of freedom
-## Multiple R-squared:  0.3646, Adjusted R-squared:  0.3311 
-## F-statistic:  10.9 on 1 and 19 DF,  p-value: 0.00375
-\end{verbatim}
 
 \begin{figure}
 
@@ -6329,11 +6290,11 @@ We can conveniently perform linear model diagnostics using the \texttt{plot()} f
 \begin{itemize}
 \tightlist
 \item
-  \textbf{Residuals vs Fitted}: Shows how residuals (\(y\)-axis) change across the range of fitted values (\(x\)-axis)
+  \textbf{Residuals vs Fitted}: Shows how residuals (\(y\)-axis) vary across the range of fitted values (\(x\)-axis)
 \item
   \textbf{Normal Q-Q}: Compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other
 \item
-  \textbf{Scale-Location}: Shows how \emph{standardized} residuals (\(y\)-axis) change across the range of fitted values (\(x\)-axis)
+  \textbf{Scale-Location}: Shows how \emph{standardized} residuals (\(y\)-axis) vary across the range of fitted values (\(x\)-axis)
 \item
   \textbf{Residuals vs Leverage}: Shows the leverage of each data point (\(x\)-axis) against their standardized residuals (\(y\)-axis)
 \end{itemize}
@@ -6347,9 +6308,9 @@ We can conveniently perform linear model diagnostics using the \texttt{plot()} f
 \caption{Simple linear regression model diagnostics.}\label{fig:slm-diagnostics}
 \end{figure}
 
-The \emph{Residuals vs Fitted} and \emph{Scale-Location} plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is a flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be a constant variance about the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between \(X\) and \(Y\), in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the Scale-Location plot, the slope of the line in the Residuals vs Fitted plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
+The \emph{Residuals vs Fitted} and \emph{Scale-Location} plots help evaluate assumptions of homoscedasticity, linearity, and normality -- which are intricately linked. Data are heteroscedastic if there is flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be constant variance with respect to the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between \(X\) and \(Y\), in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the \emph{Scale-Location} plot, the slope of the line in the \emph{Residuals vs Fitted} plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.
 
-Cook's distance in the \emph{Residuals vs Leverage} plot provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
+\textbf{Cook's distance}, shown in the \emph{Residuals vs Leverage} plot, provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook's distance line. In this case, there are no observations with enough leverage for the dashed Cook's distance line to show on the plot, so no action is warranted.
 
 In addition to the visual inspection, we can perform the \textbf{Breusch-Pagan test} using the \texttt{bptest()} function from the \texttt{lmtest} library to test the null hypothesis that the data are homoscedastic. If \(p\) \textless{} .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.
 
@@ -6368,7 +6329,7 @@ In addition to the visual inspection, we can perform the \textbf{Breusch-Pagan t
 ## BP = 0.07603, df = 1, p-value = 0.7828
 \end{verbatim}
 
-Since \(p\) \textgreater{} .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (\texttt{log()}) or square root (\texttt{sqrt()}) of the raw data. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
+Since \(p\) \textgreater= .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (\texttt{log()}) or square root (\texttt{sqrt()}) of \(Y\). While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.
 
 Let's illustrate how to transform the response variable:
 
@@ -6384,7 +6345,7 @@ Let's illustrate how to transform the response variable:
 
 The \emph{Normal Q-Q Plot} in Figure \ref{fig:slm-diagnostics} is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the \(x\)-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.
 
-We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0 -- that is, in most cases the model correctly estimates YTD leads resulting in no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
+We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0; this indicates the model correctly estimates YTD leads, resulting in no difference between estimated and observed values (\(\hat{y}\) - \(y\) = 0).
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6407,7 +6368,7 @@ We can also visualize the distribution of model residuals using a histogram. In 
 \caption{Distribution of model residuals.}\label{fig:slm-residuals}
 \end{figure}
 
-Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic is sufficient evidence of normality:
+Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic (\(p\) \textgreater= .05) is sufficient evidence of normality:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6463,13 +6424,13 @@ There are several important pieces of information in this output:
 \item
   \texttt{Std.\ Error}: Average distance between the observed and estimated values per the fitted regression line
 \item
-  \texttt{t\ value}: \texttt{Estimate} / \texttt{Standard\ Error}. Larger values provide more evidence for a non-zero coefficient (relationship) in the population.
+  \texttt{t\ value}: Test statistic calculated by \texttt{Estimate} / \texttt{Standard\ Error}. Larger values provide more evidence for a non-zero coefficient (relationship) for the respective predictor in the population.
 \item
   \texttt{Pr(\textgreater{}\textbar{}t\textbar{})}: \(p\)-value for evaluating whether there is sufficient evidence in the sample that the coefficient (relationship) between the respective predictor and response variable is not 0 in the population (i.e., \(x\) has a relationship with \(y\))
 \item
-  \texttt{Intercept}: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, height, weight, IQ).
+  \texttt{Intercept}: Mean value of the response variable when all predictors are equal to 0. Note that the interpretation of the intercept is often nonsensical since many predictors cannot have 0 values (e.g., age, day, month, quarter, year).
 \item
-  \texttt{Signif.\ codes}: Symbols to quickly ascertain whether predictors are significant at key levels, such as \(p\) \textless{} .001, \(p\) \textless{} .01, or \(p\) \textless{} .05.
+  \texttt{Signif.\ codes}: Symbols to quickly ascertain whether predictors are significant at key levels, such as \(p\) \textless{} .001 (\texttt{***}), \(p\) \textless{} .01 (\texttt{**}), or \(p\) \textless{} .05 (\texttt{*}).
 \item
   \texttt{Residual\ standard\ error}: Measure of model fit which reflects the standard deviation of the residuals (\(\sqrt {\sum(y-\hat{y})^2 / df}\))
 \item
@@ -6477,20 +6438,20 @@ There are several important pieces of information in this output:
 \item
   \texttt{Multiple\ R-squared}: Percent of variance in \(y\) (when multiplied by 100) explained by the predictors in the model. This is also known as the \textbf{Coefficient of Determination}. For simple linear regression, this is simply the squared value of Pearson's \(r\) for the bivariate relationship between the predictor and response (execute \texttt{cor(data\$engagement,\ data\$ytd\_leads)\^{}2} to validate).
 \item
-  \texttt{Adjusted\ R-squared}: Modified version of \(R^2\) that adjusts the estimate for non-significant predictors. A large delta between \(R^2\) and Adjusted \(R^2\) coefficients generally indicates a model containing a larger number of non-significant predictors relative to when \(R^2\) and Adjusted \(R^2\) values are similar.
+  \texttt{Adjusted\ R-squared}: Modified version of \(R^2\) that adjusts the estimate for non-significant predictors. A large delta between \(R^2\) and Adjusted \(R^2\) coefficients generally indicates a model containing a larger number of non-significant predictors.
 \item
   \texttt{F-statistic}: Statistic used in conjunction with the \texttt{p-value} for testing differences between the specified model and an intercept-only model (a model with no predictors). This test helps us evaluate whether our predictors are helpful in explaining variance in \(y\).
 \end{itemize}
 
-The output of this simple linear regression model indicates that for each level increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., \(\beta\) is the square root or natural log of the average change in leads for a one-level increase in engagement).
+The output of this simple linear regression model indicates that for each one-unit increase in engagement, the average increase in YTD leads is about 20 (\(\beta\) = 20.1, \(t\)(407) = 56.2, \(p\) \textless{} .001). Had we transformed the response variable from its original unit of measurement, the interpretation would be expressed in the transformed units (e.g., \(\beta\) is the square root or natural log of the average change in leads for a one-level increase in engagement).
 
-Thanks to the properties of the CLT, which requires normally distributed \emph{residuals}, we can be confident that the true relationship between engagement and YTD leads in the population is not 0 since the 95\% CI (\(\beta\) +/- 2\(SE\)) does not include 0.
+With these normally distributed \emph{residuals}, we can draw upon the properties of the CLT and conclude that the true relationship between engagement and YTD leads in the population is statistically unlikely to be 0 since the 95\% CI (\(\beta\) +/- 2\(SE\)) does not include 0.
 
-While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable, and additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
+While it may be tempting to conclude that employee engagement has a significant influence on leads based on the model output, we know that bivariate relationships may be spurious; that is, engagement may be correlated with another variable that is actually influencing leads. In practice, a simple linear model is rarely sufficient for explaining a meaningful percent of variance in a response variable -- especially in a social science context. Additional predictors are usually needed to capture the complex and nuanced relationships characteristic of people analytics problems.
 
 The \(R^2\) value indicates that 8.9\% of the variance in leads can be explained by the variation in engagement levels. Put differently, this simple model does not account for 91.1\% of variation in leads. Since a large portion of the variance in leads is unexplained, we need signal from additional predictors to understand the other dimensions along which leads vary.
 
-Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 20.1\(x\) + 1.6) fits the data points for sales employees. The spread of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases \(R^2\) (explained variance in YTD leads).
+Figure \ref{fig:slm-fit} illustrates how the regression equation for this simple linear model (\(y\) = 20.1\(x\) + 1.6) fits the data points for sales employees. The distribution of leads at each engagement level indicates that there are other factors that explain variance in leads that need to be accounted for in the regression equation to achieve more accurate estimates. The reduction in the spread of leads for a combination of significant predictor values increases \(R^2\) (explained variance in YTD leads).
 
 \begin{figure}
 
@@ -6520,7 +6481,7 @@ We can use the \texttt{extract\_eq()} function from the \texttt{equatiomatic} li
 \hypertarget{multiple-linear-regression}{%
 \section{Multiple Linear Regression}\label{multiple-linear-regression}}
 
-\textbf{Multiple linear regression} extends the simple linear model to one with two or more predictor variables. A multiple regression model generally explains more variance in the response relative to the simple linear model, and is defined by:
+\textbf{Multiple linear regression} extends the simple linear model to one with two or more predictor variables. Assuming the multiple predictors add meaningful information, multiple regression models generally explain more variance in the response relative to simple linear models, and is defined by:
 
 \[ Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + {...} + \beta_p X_p + \epsilon \]
 
@@ -6546,12 +6507,12 @@ Kuhn and Johnson (2013) recommend the simple procedure outlined below to identif
 \item
   If predictor A has a larger average absolute correlation, remove it; otherwise, remove predictor B. The exception to this rule is when predictors A and B have similar average absolute correlations with all other predictors but the predictor with the slightly higher correlation is a key variable that, if dropped, will prevent you from addressing one or more stated objectives or hypotheses.
 \item
-  Repeat steps 1-3 until \(|r|\) \textless{} .7.
+  Repeat steps 1-3 until \(|r|\) \textless{} .7 for each pair of predictors.
 \end{enumerate}
 
-Let's demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from \texttt{data} to simplify the model and explanation. In Chapter \ref{pred-mod}, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.
+Let's demonstrate the procedures and mechanics for multiple linear regression by estimating YTD sales using multiple predictor variables. While not appropriate in practice, we will select a subset of the available predictors from \texttt{data} to simplify this example. In Chapter \ref{pred-mod}, we will discuss the use of machine learning (ML) models for more efficient and comprehensive variable selection.
 
-We can leverage the \texttt{ggpairs()} function introduced in Chapter \ref{desc-stats} to efficiently compute bivariate correlations and visualize data distributions:
+We can leverage the \texttt{ggpairs()} function from the \texttt{GGally} library introduced in Chapter \ref{desc-stats} to efficiently compute bivariate correlations and visualize relationships:
 
 \begin{figure}
 
@@ -6562,9 +6523,9 @@ We can leverage the \texttt{ggpairs()} function introduced in Chapter \ref{desc-
 \caption{GGpairs bivariate correlations and data distributions}\label{fig:ggpairs-ytd-sales}
 \end{figure}
 
-Based on the correlations, \texttt{org\_tenure} is highly correlated with both \texttt{job\_tenure}, \texttt{mgr\_tenure} and \texttt{work\_exp}. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since \texttt{org\_tenure} has the strongest relationship with our response, \texttt{ytd\_sales}, we will drop \texttt{job\_tenure}, \texttt{mgr\_tenure}, and \texttt{work\_exp}.
+Based on the correlations, \texttt{org\_tenure} is highly correlated with \texttt{job\_tenure}, \texttt{mgr\_tenure} and \texttt{work\_exp}. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since \texttt{org\_tenure} has the strongest relationship with our response, \texttt{ytd\_sales}, we will drop \texttt{job\_tenure}, \texttt{mgr\_tenure}, and \texttt{work\_exp}.
 
-Since \(|r|\) \textless{} .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model using the resulting subset of predictors. We can include multiple predictors in the model using the \texttt{+} symbol in the \texttt{lm()} function:
+Since \(|r|\) \textless{} .7 for all pairwise relationships, let's fit the more parsimonious multiple regression model using the resulting subset of predictors. We can chain together multiple predictors in the model using the \texttt{+} symbol in the \texttt{lm()} function:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -6761,7 +6722,7 @@ By default, the coefficients on the predictors are unstandardized; that is, they
 
 We can scale variables by subtracting the variable's mean from \(x\) and dividing the difference into the variable's standard deviation:
 
-\[ x_{scaled} = \frac{x - \bar{x}} {s} \]
+\[ x_{scaled} = \frac{x_i - \bar{x}} {s} \]
 
 We can leverage the \texttt{scale()} function to standardize the predictors' units of measurement and determine which has the largest effect on \texttt{ytd\_sales}:
 
@@ -6795,7 +6756,7 @@ Based on the standardized coefficients in Figure \ref{fig:mlm-scaled}, \texttt{o
 \hypertarget{moderation}{%
 \section{Moderation}\label{moderation}}
 
-As discussed in Chapter \ref{measure-sampl}, a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in an linear model requires an \textbf{interaction term}, which is the product of the two variables (\(X_1\) * \(X_2\)).
+As discussed in Chapter \ref{measure-sampl}, a moderating variable is a third variable which amplifies (strengthens) or attenuates (weakens) the relationship between an IV and the response. Accounting for a moderating variable in a linear model requires an \textbf{interaction term}, which is the product of the two variables (\(X_1\) * \(X_2\)).
 
 Let's examine whether \texttt{org\_tenure} influences the strength of the relationship between \texttt{job\_lvl} and \texttt{sqrt(ytd\_sales)}. We would generally expect sales to increase as the job level of salespeople increases, and longer tenure may amplify the strength of this association. Step one is testing whether the interaction term is statistically significant, and step two is determining the nature of any observed statistical interaction. Including the interaction term in the model (\texttt{job\_lvl} * \texttt{org\_tenure}) will add the predictors independently \emph{and} jointly:
 
@@ -6894,7 +6855,7 @@ To better understand the nature of the interaction effect (\(\beta\) = -2.51, \(
   \emph{Low organization tenure}: \(Y = -2.51 (6.57 - 5.12)X + 276.56,\)
 \end{itemize}
 
-where 6.57 is \texttt{mean(data\$org\_tenure)}, 5.12 is \texttt{sd(data\$org\_tenure)}, and \(X\) is a vector of values for \texttt{job\_lvl}.
+where 6.57 is \texttt{mean(data\$org\_tenure)}, 5.12 is \texttt{sd(data\$org\_tenure)}, \(X\) is a vector of values for \texttt{job\_lvl}, and 276.56 is the \(y\)-intercept.
 
 \begin{figure}
 
@@ -7959,13 +7920,13 @@ The implementation of ordinal logistic regression will be demonstrated by evalua
 ##  Ord.factor w/ 5 levels "1"<"2"<"3"<"4"<..: 3 2 2 3 3 3 4 3 2 3 ...
 \end{verbatim}
 
-Next, the proportional odds assumption will be checked using the \textbf{Brant test}. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether \(\beta_{j1}\) through \(\beta_{jp}\) are consistent across each of the \(j\) levels. This is done via a \(\chi^2\) test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the \(j\) levels; therefore, \(p < .05\) indicates that significant differences in effects are present across the \(j\) levels and, thus, the proportional odds assumption is violated.
+Next, the proportional odds assumption will be checked using the \textbf{Brant test}. The Brant test is a set of comparisons of the separate binary logistic models underlying the overall model (Brant, 1990). This test evaluates whether \(\beta_{j1}\) through \(\beta_{jp}\) are consistent across each of the \(j\) levels. This is done via a \(\chi^2\) test to compare coefficients and determine whether observed differences are larger departures from what we would expect by chance. The null hypothesis states that coefficients are not statistically different across the \(j\) levels; therefore, \(p\) \textless{} .05 indicates that significant differences in effects are present across the \(j\) levels and, thus, the proportional odds assumption is violated.
 
 We can leverage the \texttt{brant} package in R for this, which is compatible with the \texttt{polr()} function from the \texttt{MASS} package that will be used to perform ordinal logistic regression. Since we will be evaluating model statistics, rather than merely using the model for prediction (the subject of Chapter \ref{pred-mod}), we need to specify the \texttt{Hess\ =\ TRUE} argument in the \texttt{polr()} function to include the \emph{Hessian matrix} (observed information matrix) in the output.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\CommentTok{\# Load library}
+\CommentTok{\# Load libraries}
 \FunctionTok{library}\NormalTok{(MASS)}
 \FunctionTok{library}\NormalTok{(brant)}
 
@@ -7993,7 +7954,7 @@ Notice the line in the output for the omnibus test, which shows an identical \(\
 \(H_0\): The odds are proportional for all predictors in the model.
 \(H_A\): The odds are non-proportional for at least one predictor.
 
-The results of Brant's test indicate that we fail to reject \(H_0\) since \(p = .82\) for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated \emph{if} \(p < .05\) for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which \(p < .05\) since our tolerance for a Type I error is 1 in 20 with \(\alpha = .05\).
+The results of Brant's test indicate that we fail to reject \(H_0\) since \(p\) = .82 for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated \emph{if} \(p\) \textless{} .05 for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which \(p\) \textless{} .05 since our tolerance for a Type I error is 1 in 20 with \(\alpha = .05\).
 
 Since the proportional odds assumption holds, let's review the model output:
 
@@ -8659,7 +8620,7 @@ Given the significant quadratic and cubic terms identified in Chapter \ref{lme},
 ## F-statistic: 341.4 on 5 and 90 DF,  p-value: < 2.2e-16
 \end{verbatim}
 
-All linear, quadratic, and cubic terms on \texttt{month} are statistically significant at the \(p < .001\) level.
+All linear, quadratic, and cubic terms on \texttt{month} are statistically significant at the \(p\) \textless{} .001 level.
 
 \begin{itemize}
 \tightlist
@@ -8916,7 +8877,7 @@ The \texttt{KMO()} and \texttt{cortest.bartlett()} functions from the \texttt{ps
 ## [1] 66
 \end{verbatim}
 
-Data satisfy the factorability requirements since \(KMO = .90\) (\texttt{Overall\ MSA}) and Bartlett's test is significant at the \(p < .001\) level.
+Data satisfy the factorability requirements since \(KMO\) = .90 (\texttt{Overall\ MSA}) and Bartlett's test is significant at the \(p\) \textless{} .001 level.
 
 \textbf{Step 2: Factor Extraction}
 
@@ -8977,7 +8938,7 @@ To illustrate how to extract principal components, we can use base R's \texttt{p
 \caption{Plot showing the percent of total variance explained by 12 principal components}\label{fig:pca-var-plot}
 \end{figure}
 
-Note that while we can theoretically have as many factors as we have variables (\(p = 12\)), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
+Note that while we can theoretically have as many factors as we have variables (\(p\) = 12), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
 
 As shown in Figure \ref{fig:pca-var-plot}, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the \emph{elbow} to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer more meaningful variables.
 
@@ -9237,7 +9198,7 @@ The \texttt{lavaan} package provides many fit measures, but we will focus only o
 
 Given data sets are often small in people analytics, it is important to note that RMSEA often exceeds thresholds with small \(df\) and \(n\) -- even when the model is correctly specified (Kenny, Kaniskan, \& McCoach, 2015). Therefore, it is important to index more on fit indices such as \(CFI\) and \(LTI\) in determining how well the data fit the measurement model.
 
-The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p < .05\)) indicates a lack of fit. Though \(\chi^2\) is significant (\(p < .001\)), both CFI (\(.98\)) and TLI (\(.97\)) are above the \(.95\) threshold for good fit. In addition, \(SRMR = .04\) is beneath the threshold of \(.08\) and \(RMSEA = .09\) is between the mediocre fit threshold range of \(.08\) and \(.10\). Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model.
+The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p\) \textless{} .05) indicates a lack of fit. Though \(\chi^2\) is significant (\(p\) \textless{} .001), both CFI (\(.98\)) and TLI (\(.97\)) are above the \(.95\) threshold for good fit. In addition, \(SRMR\) = .04 is beneath the threshold of \(.08\) and \(RMSEA\) = .09 is between the mediocre fit threshold range of \(.08\) and \(.10\). Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model.
 
 For more extensive coverage of SEM, Kline (2005) is an excellent resource.
 

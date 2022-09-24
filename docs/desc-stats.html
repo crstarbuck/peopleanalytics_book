@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-21" />
+<meta name="date" content="2022-09-24" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -282,7 +282,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="inf-stats.html#hypothesis-testing" id="toc-hypothesis-testing"><span class="toc-section-number">8.3.1</span> Hypothesis Testing</a></li>
 <li><a href="inf-stats.html#alpha" id="toc-alpha"><span class="toc-section-number">8.3.2</span> Alpha</a></li>
 <li><a href="inf-stats.html#type-i-ii-errors" id="toc-type-i-ii-errors"><span class="toc-section-number">8.3.3</span> Type I &amp; II Errors</a></li>
-<li><a href="inf-stats.html#p-values" id="toc-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(p\)</span>-Values</a></li>
+<li><a href="inf-stats.html#textbf-p-values" id="toc-textbf-p-values"><span class="toc-section-number">8.3.4</span> <span class="math inline">\(\textbf p\)</span>-Values</a></li>
 <li><a href="inf-stats.html#bonferroni-correction" id="toc-bonferroni-correction"><span class="toc-section-number">8.3.5</span> Bonferroni Correction</a></li>
 <li><a href="inf-stats.html#statistical-power" id="toc-statistical-power"><span class="toc-section-number">8.3.6</span> Statistical Power</a></li>
 </ul></li>
@@ -554,7 +554,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><span class="math display">\[ s^{2} = \frac{\displaystyle\sum_{i=1}^{n} (x_{i}-\bar{x})^{2}}{n-1} \]</span></p>
 <p>It is important to note that since differences are squared, the variance is always non-negative. In addition, we cannot compare these squared differences to the arithmetic mean since the units are different. For example, if we calculate the variance of annual compensation measured in <span class="math inline">\(USD\)</span>, variance should be expressed as <span class="math inline">\(USD^2\)</span> while the mean exists in the original <span class="math inline">\(USD\)</span> unit of measurement.</p>
 <p>In R, the sample variance can be calculated using the <code>var()</code> function:</p>
-<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="desc-stats.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library for data wrangling</span></span>
+<div class="sourceCode" id="cb182"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb182-1"><a href="desc-stats.html#cb182-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
 <span id="cb182-2"><a href="desc-stats.html#cb182-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb182-3"><a href="desc-stats.html#cb182-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb182-4"><a href="desc-stats.html#cb182-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Read employee data</span></span>
@@ -732,12 +732,12 @@ Figure 7.5: Kurtosis
 <div class="sourceCode" id="cb206"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb206-1"><a href="desc-stats.html#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate sample covariance between annual compensation and age using complete observations (missing values will cause issues if not addressed)</span></span>
 <span id="cb206-2"><a href="desc-stats.html#cb206-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>age, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 9381.677</code></pre>
-<p>In this example, using the default Pearson method, the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.</p>
+<p>In this example, using the default method the covariance between annual compensation and age is 9,381.7. The positive value indicates that annual compensation is generally higher for older employees and lower for younger employees.</p>
 <p>Just as we multiplied the sample variance by <span class="math inline">\((n - 1) / n\)</span> to obtain the population variance, we can apply the same approach to convert the sample covariance returned by <code>cov()</code> to the population covariance:</p>
 <div class="sourceCode" id="cb208"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb208-1"><a href="desc-stats.html#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate population covariance between annual compensation and age</span></span>
 <span id="cb208-2"><a href="desc-stats.html#cb208-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>age, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>) <span class="sc">*</span> (n <span class="sc">-</span> <span class="dv">1</span>) <span class="sc">/</span> n</span></code></pre></div>
 <pre><code>## [1] 9375.295</code></pre>
-<p>The examples thus far have only examined associations between two variables at a time. However, rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface associations among many variables by passing a dataframe or matrix object into the <code>cov()</code> function:</p>
+<p>Rather than looking at isolated pairwise relationships, we can produce a covariance matrix to surface pairwise associations among many variables by passing a data frame or matrix object into the <code>cov()</code> function:</p>
 <div class="sourceCode" id="cb210"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb210-1"><a href="desc-stats.html#cb210-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate a covariance matrix among select continuous variables</span></span>
 <span id="cb210-2"><a href="desc-stats.html#cb210-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cov</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">&quot;annual_comp&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>, <span class="st">&quot;job_tenure&quot;</span>, <span class="st">&quot;prior_emplr_cnt&quot;</span>, <span class="st">&quot;commute_dist&quot;</span>)), <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
 <pre><code>##                   annual_comp          age    org_tenure    job_tenure
@@ -791,15 +791,15 @@ Figure 7.6: Proper applications of correlation coefficients
 <span id="cb216-2"><a href="desc-stats.html#cb216-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cor</span>(employees<span class="sc">$</span>job_lvl, employees<span class="sc">$</span>ed_lvl, <span class="at">method =</span> <span class="st">&quot;spearman&quot;</span>, <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span></code></pre></div>
 <pre><code>## [1] 0.1074192</code></pre>
 <p>The <span class="math inline">\(\rho\)</span> coefficient of .11 indicates that the positive association between job level and education level is weak. We could also pass <code>method = "kendall"</code> to this <code>cor()</code> function to implement Kendall’s <span class="math inline">\(\tau\)</span>.</p>
-<p>The <strong>Phi Coefficient</strong> (<span class="math inline">\(\phi\)</span>), sometimes referred to as the mean square contingency coefficient or Matthews correlation in ML, can be used to understand the association between two dichotomous variables. For a 2x2 table for two random variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>:</p>
+<p>The <strong>Phi Coefficient</strong> (<span class="math inline">\(\phi\)</span>), sometimes referred to as the <strong>mean square contingency coefficient</strong> or <strong>Matthews correlation</strong> in ML, can be used to understand the association between two dichotomous variables.</p>
+<p>For the 2x2 table for two random variables <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span> depicted in Figure <a href="desc-stats.html#fig:phi-tbl">7.7</a>, the <span class="math inline">\(\phi\)</span> coefficient is defined as:</p>
+<p><span class="math display">\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]</span></p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:phi-tbl"></span>
 <img src="graphics/phi_coefficient_formula.png" alt="2x2 table for random variables x and y" width="50%" />
 <p class="caption">
 Figure 7.7: 2x2 table for random variables x and y
 </p>
 </div>
-<p>The <span class="math inline">\(\phi\)</span> coefficient is defined as:</p>
-<p><span class="math display">\[ \phi = {\frac {(AD-BC)}{\sqrt{(A+B)(C+D)(A+C)(B+D)}}} \]</span></p>
 <p>To illustrate, let’s examine whether there is a relationship between gender and performance after transforming performance from its ordinal form to a dichotomous variable (high vs. low performance). We can leverage the <code>psych</code> library to calculate <span class="math inline">\(\phi\)</span> in R:</p>
 <div class="sourceCode" id="cb218"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb218-1"><a href="desc-stats.html#cb218-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set females to 1 and everything else to 0</span></span>
 <span id="cb218-2"><a href="desc-stats.html#cb218-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>gender_code <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>gender <span class="sc">==</span> <span class="st">&#39;Female&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
@@ -832,18 +832,30 @@ Figure 7.7: 2x2 table for random variables x and y
 ## prior_emplr_cnt  -0.02925080
 ## commute_dist      1.00000000</code></pre>
 <p>Based on this correlation matrix, most pairwise associations are weak with the exception of the relationship between <code>org_tenure</code> and <code>job_tenure</code> (<span class="math inline">\(r = .7\)</span>). The values down the diagonal are 1 because these represent the correlation between each variable with itself. You may also notice that the information above and below the diagonal is identical and, therefore, redundant.</p>
-<p>A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables:</p>
+<p>A great R library for visualizing correlation matrices is corrplot. Several arguments can be specified for various visual representations of the relationships among variables, as illustrated in Figure <a href="desc-stats.html#fig:corrplot-comp">7.8</a>:</p>
+<div class="sourceCode" id="cb222"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb222-1"><a href="desc-stats.html#cb222-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Store correlation matrix to object M</span></span>
+<span id="cb222-2"><a href="desc-stats.html#cb222-2" aria-hidden="true" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">cor</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">&quot;annual_comp&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>, <span class="st">&quot;job_tenure&quot;</span>, <span class="st">&quot;prior_emplr_cnt&quot;</span>, <span class="st">&quot;commute_dist&quot;</span>)), <span class="at">use =</span> <span class="st">&quot;complete.obs&quot;</span>)</span>
+<span id="cb222-3"><a href="desc-stats.html#cb222-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb222-4"><a href="desc-stats.html#cb222-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize correlation matrix</span></span>
+<span id="cb222-5"><a href="desc-stats.html#cb222-5" aria-hidden="true" tabindex="-1"></a>corrplot<span class="sc">::</span><span class="fu">corrplot</span>(M, <span class="at">method =</span> <span class="st">&quot;color&quot;</span>,  </span>
+<span id="cb222-6"><a href="desc-stats.html#cb222-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">type =</span> <span class="st">&quot;upper&quot;</span>, <span class="at">order =</span> <span class="st">&quot;hclust&quot;</span>, <span class="co"># Apply hierarchical clustering for ordering coefficients above the diagonal</span></span>
+<span id="cb222-7"><a href="desc-stats.html#cb222-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">addCoef.col =</span> <span class="st">&quot;black&quot;</span>, <span class="co"># Add correlation coefficient</span></span>
+<span id="cb222-8"><a href="desc-stats.html#cb222-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">tl.col =</span> <span class="st">&quot;grey&quot;</span>, <span class="at">tl.srt =</span> <span class="dv">45</span>, <span class="co"># Label color and rotation</span></span>
+<span id="cb222-9"><a href="desc-stats.html#cb222-9" aria-hidden="true" tabindex="-1"></a>                   <span class="at">diag =</span> <span class="cn">FALSE</span> <span class="co"># Hide correlation coefficient on the principal diagonal</span></span>
+<span id="cb222-10"><a href="desc-stats.html#cb222-10" aria-hidden="true" tabindex="-1"></a>                   )</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:corrplot-comp"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/corrplot-comp-1.png" alt="Corrplot correlation matrix" width="100%" />
 <p class="caption">
 Figure 7.8: Corrplot correlation matrix
 </p>
 </div>
-<p>The <code>GGally</code> library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions:</p>
+<p>The <code>GGally</code> library produces a variety of useful information, including correlation coefficients, bivariate scatterplots, and univariate distributions, as illustrate in Figure <a href="desc-stats.html#fig:ggpairs-comp">7.9</a>:</p>
+<div class="sourceCode" id="cb223"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb223-1"><a href="desc-stats.html#cb223-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize correlation matrix</span></span>
+<span id="cb223-2"><a href="desc-stats.html#cb223-2" aria-hidden="true" tabindex="-1"></a>GGally<span class="sc">::</span><span class="fu">ggpairs</span>(<span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="fu">c</span>(<span class="st">&quot;annual_comp&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;org_tenure&quot;</span>, <span class="st">&quot;job_tenure&quot;</span>, <span class="st">&quot;prior_emplr_cnt&quot;</span>, <span class="st">&quot;commute_dist&quot;</span>)))</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:ggpairs-comp"></span>
-<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-comp-1.png" alt="GGpairs bivariate correlations and data distributions." width="100%" />
+<img src="The_Fundamentals_of_People_Analytics_files/figure-html/ggpairs-comp-1.png" alt="GGpairs bivariate correlations and data distributions" width="100%" />
 <p class="caption">
-Figure 7.9: GGpairs bivariate correlations and data distributions.
+Figure 7.9: GGpairs bivariate correlations and data distributions
 </p>
 </div>
 <p>We may find that these bivariate associations look quite different for certain business areas or jobs, assuming departments and jobs were created at different points in the company’s history. There is often a lot of noise in data at the broader company level, so understanding the nature and nuance of associations will be highly important. We will explore this further in the context of linear regression in Chapter <a href="lm.html#lm">10</a>.</p>
@@ -855,7 +867,7 @@ Figure 7.10: Correlation comic (Source: www.explainxkcd.com)
 </p>
 </div>
 <p><br /></p>
-<p>Here are two examples of nearly perfect correlations between variables for which there is likely no true direct association:</p>
+<p>Figures <a href="desc-stats.html#fig:spur-corr-1">7.11</a> and <a href="desc-stats.html#fig:spur-corr-2">7.12</a> are two examples of nearly perfect correlations between variables for which there is likely no true direct association:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:spur-corr-1"></span>
 <img src="graphics/spurious_corr_maine_divorce.png" alt="Correlation between Maine divorce rate and margarine consumption (r = .99)" width="100%" />
 <p class="caption">
@@ -869,7 +881,7 @@ Figure 7.11: Correlation between Maine divorce rate and margarine consumption (r
 Figure 7.12: Correlation between mozzarella cheese consumption and civil engineering doctorate conferrals (r = .96)
 </p>
 </div>
-<p>In addition, covariance and correlation alone are not sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to move beyond descriptive measures.</p>
+<p>Neither covariance nor correlation alone are sufficient for determining whether an observed association in sample data is also present in the population. To understand the likelihood that patterns observed in sample data are also present in the larger population of interest, we need to graduate from descriptive statistics.</p>
 </div>
 </div>
 <div id="review-questions-5" class="section level2" number="7.3">
