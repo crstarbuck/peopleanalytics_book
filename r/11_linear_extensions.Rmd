@@ -4,9 +4,9 @@
 
 ## Model Comparisons
 
-  Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs. female employees or across ethnic cohorts.
+  Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs. female employees or across ethnic groups.
   
-  To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
+  To illustrate, let's fit a multiple regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -45,13 +45,13 @@ summary(mlm.fit.nonot)
 
   Since we are comparing two models, we need not scale the variables since comparing a specific predictor's relationship with the response in the overtime model can be juxtaposed against the same predictor in the non-overtime model using the original units of measurement.
   
-  Based on the output shown in figures in Figure \@ref(fig:mlm-ot) and in Figure \@ref(fig:mlm-nonot), the model for salespeople who worked overtime explains more variance in square root transformed `ytd_sales` ($R^2$ = .73) relative to the model for salespeople without overtime ($R^2$ = .69).
+  Based on the output shown in Figures \@ref(fig:mlm-ot) and \@ref(fig:mlm-nonot), the model for salespeople who worked overtime explains more variance in square root transformed `ytd_sales` ($R^2$ = .73) relative to the model for salespeople without overtime ($R^2$ = .69).
   
   We can see that `engagement` has a larger effect on the transformed response among salespeople who worked overtime ($\beta$ = 13.17, $t$(113) = 2.88, $p$ < .01) relative to those who worked no overtime ($\beta$ = 9.85, $t$(286) = 3.99, $p$ < .001). In addition, `job_lvl` has a stronger association with the response in the overtime group ($\beta$ = 35.98, $t$(113) = 7.57, $p$ < .01) relative to the non-overtime group ($\beta$ = 33.14, $t$(286) = 11.04, $p$ < .001). Given that the intercept (average square root of `ytd_sales` when the values of all predictors are set to 0) is higher for the non-overtime group ($\beta$ = 132.34, $t$(286) = 15.27, $p$ < .001) than for the overtime group ($\beta$ = 121.82, $t$(113) = 8.25, $p$ < .001), differences in the coefficients on `job_lvl` may indicate that one's job level is a proxy for skill and capacity to sell more in fewer hours.
   
 ## Hierarchical Regression
   
-  A multiple model approach can also be useful for understanding the incremental value a given variable -- or set of variables -- provides above and beyond a set of control variables. **Hierarchical regression** is a method by which variables are added to the model in steps and changes in model statistics are evaluated after each step. Let's use hierarchical regression to test the hypothesis below.
+  A multiple model approach can also be useful for understanding the incremental value a given variable -- or set of variables -- provides above and beyond a set of control variables. **Hierarchical regression** is a method by which variables are added to the model in steps, and changes in model statistics are evaluated after each step. Let's use hierarchical regression to test the hypothesis below.
   
   **H1:** Among salespeople who work overtime, engagement has a significant positive relationship with YTD sales after controlling for job level, stock option level, and organization tenure.
   
@@ -83,15 +83,15 @@ summary(mlm.fit.ot)
 
   The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have *fixed* effects on the outcome and these effects do not vary based on group(s) to which the observations belong. These models are sometimes referred to as **fixed effects** models.
   
-  It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
+  It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters who are focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
   
-  You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of $Y$ when all predictors are set to 0 -- namely the $Y$-intercept $\beta_0$ -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is *random* rather than *fixed* for each group. Group-level effects can also be modeled for select -- or all -- $X$ variables in addition to varying $\beta_0$ for each group.
+  You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of $Y$ when all predictors are set to 0 -- namely the $Y$-intercept $\beta_0$ -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is *random* rather than *fixed* for each group. Group-level effects can also be modeled for select (or all) $X$ variables in addition to varying $\beta_0$ for each group.
   
   Consider a linear model constructed to test hypothesized relationships of every $X$ variable with an outcome $Y$. This is the equivalent of building $G$ independent models, where $G$ is the number of groups, using data subsetted for the respective group:
   
   $$ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon $$
   
-  In this case, it is easy to consider wrapping the `lm()` function within a `for` loop that iterates through each $G$ group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only *certain* variables depend on the $G$ group, we need to estimate both group-level *and* observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a **mixed effects** model. This is also known as **Hierarchical Linear Modeling (HLM)**, which is materially different from Hierarchical Linear Regression (HLR) covered in the prior section, which compared nested regression models. 
+  In this case, it is easy to consider wrapping the `lm()` function within a loop that iterates through each $G$ group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only *certain* variables depend on the $G$ group, we need to estimate both group-level *and* observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a **mixed effects** model. This is also known as **Hierarchical Linear Modeling (HLM)**, which is materially different from Hierarchical Regression covered in the prior section, which compared nested regression models. 
   
   A model in which group-level effects are hypothesized for $\beta_0$ and $X_1$ and observation-level effects are hypothesized for all other predictors is expressed as:
   
@@ -112,7 +112,7 @@ summary(lme.fit)
 
 ```  
   
-  The results of `lmer()` contain sections for both fixed and random effects. Consistent with the interpretation of general linear model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and `sqrt(ytd_sales)` across the levels of `stock_opt_lvl` that would be missed without a mixed model that accounts for these group-level effects.
+  The results of `lmer()` contain sections for both fixed and random effects. Consistent with the interpretation of linear regression model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and `sqrt(ytd_sales)` across the levels of `stock_opt_lvl` that would be missed without a mixed model that accounts for these group-level effects.
   
   For a more comprehensive treatment on multilevel models, see Gelman and Hill (2006).
   
@@ -120,14 +120,14 @@ summary(lme.fit)
 
   Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this section, we will discuss how to extend the linear regression framework and relax linear model assumptions to handle non-linear relationships.
   
-  In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., workforce planning model that estimates hires by month).
+  In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., a workforce planning model that estimates hires by month).
   
   There is often a seasonality element inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). **Seasonality** is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
   
   The simple linear regression equation, $Y = \beta_0 + \beta_1 X + \epsilon$, can be easily extended to include higher order polynomial terms and achieve a more flexible fit. This is known as **polynomial regression**.
   
   * Quadratic (2nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon$
-  * Cubic (3nd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$
+  * Cubic (3rd Order Polynomial) Regression Equation: $Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon$
   
   Figure \@ref(fig:poly-fun) illustrates how higher-order polynomial functions can fit more curvilinear trends relative to a simple linear projection.
   
@@ -293,7 +293,7 @@ summary(ps.cube.fit)
   
   While the cubic model achieved statistical significance at the $p$ < .001 level, 86% of the variance in monthly turnover rates remains unexplained (1 - $R^2$ = .86). To improve the performance of the model, our model needs to reflect the fact that turnover varies as a function of `year` and `remote` in addition to `month`.
 
-```{r turnover-pred, out.width = "100%", echo = FALSE, fig.cap = 'Linear, quadratic, and cubic model fit (red dashed line) to remote (dark grey points) and non-remote (light grey points) groups', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r turnover-pred, out.width = "100%", echo = FALSE, fig.cap = 'Linear, quadratic, and cubic models fitted to turnover data (red dashed lines). Remote workers are represented in dark grey points, and non-remote workers in light grey points.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Apply models to predict people scientist turnover rates for each month in year 1
 ps_lin_pred <- data.frame(month = 1:12,
@@ -353,9 +353,9 @@ summary(ps.cube.fit)
 
 ```
 
-  As shown in Figure \@ref(fig:ps-cube-mnthrem-output), accounting for remote status increases explained variance by 21% (.35 - .14). In addition to the change in explained variance $\Delta R^2$, the coefficient on `remote` is statistically significant ($\beta$ = -1.64, $t$(115) = -6.09, $p$ < .001). On average, the turnover rate for remote People Scientists is 1.64% lower than the turnover rate for non-remote People Scientists.
+  As shown in Figure \@ref(fig:ps-cube-mnthrem-output), accounting for remote status increases explained variance by 21% ($\Delta R^2$ = .35 - .14). In addition to the increase in explained variance, the coefficient on `remote` is statistically significant ($\beta$ = -1.64, $t$(115) = -6.09, $p$ < .001). On average, the turnover rate for remote People Scientists is 1.64% lower than the turnover rate for non-remote People Scientists.
 
-  Next, let's include `year` in the model since turnover rates also vary along this dimension.
+  Next, let's include `year` as a linear term in the model since turnover rates also vary along this dimension.
 
 ```{r ps-cube-yrmnthrem-output1, out.width = "100%", fig.cap = 'Cubic model output for regression of turnover rate onto year, month, and remote', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -369,7 +369,7 @@ summary(ps.cube.fit)
 
   Explained variance increases to 62% by adding `year` to the model. While the coefficient on `year` is statistically significant ($\beta$ = .66, $t$(114) = 8.93, $p$ < .001), the change in attrition by year is not linear. Visualizing the distribution of turnover rates by year will provide evidence that a linear year-over-year growth factor will result in some large residuals since it will not capture the more complex trend present in these data.
   
-```{r ps-turnover-yrly-dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ps-turnover-yrly-dist, out.width = "100%", echo = FALSE, fig.cap = 'Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered 1.64 percent for remote group.', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Model linear relationship between year and turnover rate, grouped by remote vs. non-remote
 ps.lin.fit <- lm(turnover_rate ~ year + remote, data = ps_turnover)
@@ -407,7 +407,7 @@ summary(ps.cube.fit)
 
 ```
 
-  The inclusion of higher-order polynomials on `year` result in a perfect fit to these data ($R^2$ = 1). This indicates that the slope of the relationship between `month` and `turnover_rate` is perfectly consistent across years and within remote and non-remote groups.
+  The inclusion of higher-order polynomials on `year` result in a perfect fit to these data ($R^2$ = 1). Albeit a statistical improbability in practice, this indicates that the slope of the relationship between `month` and `turnover_rate` is perfectly consistent across years within remote and non-remote groups.
   
   Our resulting equation for estimating `turnover_rate` on the basis of a combination of linear and non-linear values of `year`, `month`, and `remote` is defined by:
   
@@ -421,11 +421,11 @@ summary(ps.cube.fit)
 
 2. What modeling technique is appropriate for understanding an independent variable's contribution to a model's $R^2$ beyond a set of control variables?
 
-3. In the context of Hierarchical Linear Regression, what is the indicator that $\Delta{R^2}$ is statistically significant when evaluating whether a particular independent variable provides meaningful information beyond a set of controls?
+3. In the context of Hierarchical Regression, what is the indicator that $\Delta{R^2}$ is statistically significant when evaluating whether a particular independent variable provides meaningful information beyond a set of controls?
 
 4. What are some examples of hypotheses that would warrant a linear mixed effects model over a general linear model?
 
-5. What are the differences between Hierarchical Linear Modeling (HLM), which is also referred to as multilevel or mixed effects modeling, and Hierarchical Linear Regression (HLR)?
+5. What are the differences between Hierarchical Linear Modeling (HLM), which is also referred to as multilevel or mixed effects modeling, and Hierarchical Regression?
 
 6. In what ways does polynomial regression differ from linear regression?
 

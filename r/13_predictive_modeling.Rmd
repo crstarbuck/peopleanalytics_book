@@ -1,10 +1,10 @@
 # Predictive Modeling {#pred-mod}
 
-  In people analytics, inferential models like those covered in Chapters \@ref(lm) and \@ref(lme) are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or *predict* the most likely future values. This type of modeling is often referred to as **predictive analytics** and is the subject of this chapter.
+  In people analytics, inferential models like those covered in Chapters \@ref(lm), \@ref(lme), and \@ref(log) are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or *predict* the most likely future values. This type of modeling is often referred to as **predictive analytics** and is the subject of this chapter.
   
   A branch of **Artificial Intelligence (AI)** known as **Machine Learning (ML)** is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. The difference between statistics and ML is largely philosophical. Logistic regression, for example, is covered in both statistics and ML textbooks. While statistics focuses more on modeling, and ML is more algorithmic, both can be used for prediction. The broader field of **data science** often further confounds distinctions between these disciplines, though data science represents the entire end-to-end process -- from data extraction and engineering to modeling and analysis.
   
-  A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP's start date need to be associated with the *current* -- rather than former -- VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers' department, leader, and job attributes that can be used to assign current executives to past data such as historical termination events or month-end worker snapshots.
+  A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five-year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP's start date need to be associated with the *current* -- rather than *former* -- VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers' department, leader, and job attributes that can be used to assign current executives to past data (e.g., historical termination events, month-end worker snapshots).
   
   It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is generally a bad idea. Despite the glamour predictive analytics has seen in recent years due to the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting. Unfortunately, the hype has given rise to AI snake oil to justify a premium price point for modern HR tech solutions, which are often little more than the descriptive statistics covered in Chapter \@ref(desc-stats).
   
@@ -22,9 +22,9 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   Predictive modeling involves training a model on a data set referred to as a **training set** and using the model to make predictions for observations on a separate data set known as the **test set** or **validation set** to evaluate model performance. 
   
-  A model is blind to data in the test set, since only data in the training set are used to *train* the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.
+  A model is blind to data in the test set, since only the data in the training set are used to *train* the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.
   
-  This partitioning procedure is known as **cross-validation (CV)**. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.
+  This partitioning procedure is known as **cross-validation (CV)**. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature consistent patterning.
   
   This section will explore a few of the most common CV methods.
   
@@ -42,7 +42,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
 ## Model Performance
 
-  There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predicting modeling applications will be categorized as either *classification* or *forecasting* to reflect the families of use cases germane to people analytics.
+  There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predictive modeling applications will be categorized as either *classification* or *forecasting* to reflect the families of use cases germane to people analytics.
   
   **Classification**
   
@@ -52,7 +52,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   where $I$ is an indicator variable equal to $1$ if $y_i \ne \hat y_i$ and $0$ if $y_i = \hat y_i$.
   
-  A **confusion matrix** is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure \@ref(fig:confusion-mtx):
+  A **confusion matrix** is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are represented in Figure \@ref(fig:confusion-mtx):
   
   * **True Positive**: Number of correct true predictions
   * **True Negative**: Number of correct false predictions
@@ -76,17 +76,17 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   * Mean absolute deviation (MAD): Average absolute difference between actual $y$ and predicted $\hat y$ values
   
-  $$ \frac{\sum|y_i - \hat y_i|}{n} $$
+  $$ MAD = \frac{\sum|y_i - \hat y_i|}{n} $$
 
   * Mean square error (MSE): Average squared difference between actual $y$ and predicted $\hat y$ values
   
-  $$ \frac{\sum(y_i - \hat y_i)^2}{n} $$
+  $$ MSE = \frac{\sum(y_i - \hat y_i)^2}{n} $$
   
-  Squaring differences accomplishes two key objectives: (1) converts negative differences to positive consistent with the MAD approach, and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., $1^2 = 1$, $2^2 = 4$, $3^2 = 9$, $4^2 = 16$). MSE is perhaps the most pervasive model performance measure in predictive modeling.
+  Squaring differences accomplishes two key objectives: (1) converts negative differences to positive (consistent with the MAD approach), and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., $2^2 = 4$, $3^2 = 9$, $4^2 = 16$). MSE is perhaps the most pervasive model performance measure in predictive modeling.
   
   * Mean absolute percentage error (MAPE): Average absolute difference expressed as a percentage
   
-  $$ (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| $$
+  $$ MAPE = (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| $$
   
 ## Bias-Variance Tradeoff
 
@@ -105,13 +105,13 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ## Tree-Based Algorithms
 
-  While there are many flexible ML algorithms, such as **Extreme Gradient Boosting (XGBoost)**, **Artificial Neural Networks (ANN)**, and **Support Vector Machines (SVM)**, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more *interpretable* tree-based algorithms that are more suitable for people analytics. 
+  While there are many flexible ML algorithms, such as **Extreme Gradient Boosting (XGBoost)**, **Artificial Neural Networks (ANN)**, and **Support Vector Machines (SVM)**, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more *interpretable* tree-based algorithms that have more applications to people analytics. 
   
   **Decision Trees**
   
   In addition to the inferential models covered in previous chapters, **decision trees** are also excellent tools that lend to simple and effective narratives about factors influencing outcomes in either a regression or classification setting. As illustrated in Figure \@ref(fig:decision-tree), decision trees resemble a tree that depicts a set of decisions as well as consequences of those decisions. The top-level `Department` variable is known as a root node, and the remaining `Tenure`, `Performance Rating`, and `Remote` nodes are known as interior nodes. Decisions represented in `Active` and `Inactive` boxes are referred to as leaf, terminal, or end nodes. 
   
-  As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the $n$-count is small). 
+  As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected in the presence of meaningful variables. If leaf nodes for a classification problem are comprised of a single class, it may be evidence of overfitting, especially if the $n$-count is small. 
   
 ```{r decision-tree, out.width = "75%", echo = FALSE, fig.cap = 'Conceptual decision tree for employee attrition prediction', fig.align = 'center'}
 
@@ -119,7 +119,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
   
-  The accuracy of predictions based on a deep tree with an excessive number of partitions and few observations will likely be unacceptable beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement on random guessing (e.g., 50/50 chance in a binary classification setting).
+  Predictions based on a deep tree with an excessive number of partitions and few observations will likely be highly inaccurate beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement over random guessing (e.g., 50/50 chance in a binary classification setting).
 
   **Random Forests**
   
@@ -138,7 +138,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * **Step 3**: Use models to make predictions on test data.
   * **Step 4**: Evaluate model performance.
   
-  **Classification**
+### Classification
   
   To demonstrate the prediction workflow steps for classification, we will leverage our `employees` data set:
   
@@ -155,7 +155,7 @@ prediction_dat$active <- ifelse(prediction_dat$active == 'No', 1, 0)
 
 ```
 
-  * **Step 1**: Partition data into training and test sets for cross-validation.
+  **Step 1: Partition data into training and test sets for cross-validation.**
   
   For this example, we will implement the validation set approach for CV.
   
@@ -178,7 +178,7 @@ nrow(training_dat) + nrow(test_dat) == nrow(prediction_dat)
 
 ```
   
-  * **Step 2**: Build models using training data.
+  **Step 2: Build models using training data.**
   
   Machine learning (ML) algorithms are sensitive to imbalanced classes. That is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our `employees` data set, there are 1,233 observations for active employees but only 237 observations for inactive employees. Therefore, we will introduce a popular technique to address this known as **Synthetic Minority Oversampling Technique (SMOTE)**, which will be important for the RF model we will train. This technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class's representation in the dataset and achieve balanced classes.
     
@@ -255,7 +255,7 @@ rf.os.fit <- randomForest::randomForest(active ~ overtime + job_lvl + engagement
     
   While RFs generally offer a significant lift in performance beyond a single decision tree, we could also apply *tuning wrappers* around the `randomForest()` function to tune the model's hyperparameters. Experimenting with a range of values for parameters, such as `mtry` for the number of variables to randomly sample and `ntree` for the number of trees to grow, may further improve model performance. Hyperparameter tuning is beyond the scope of this book, but Kuhn and Johnson (2013) is an excellent resource for a more exhaustive treatment on ML models.
   
-  * **Step 3**: Use models to make predictions on test data.
+  **Step 3: Use models to make predictions on test data.**
   
   While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility into how each metric is calculated:
   
@@ -295,7 +295,7 @@ classifier.perf <- function(actual, predicted){
 
 ```
 
-  We can use the `predict()` function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into one class versus the other. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives). 
+  We can use the `predict()` function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into classes. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives). 
   
   We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:
 
@@ -337,7 +337,7 @@ class.perf.metrics <- rbind(class.perf.metrics, cbind.data.frame(
 
 ```
   
-  * **Step 4**: Evaluate model performance.
+  **Step 4: Evaluate model performance.**
   
 ```{r class-mdl-perf, out.width = "100%", echo = FALSE, fig.cap = 'Classification performance for binomial logistic regression and RF models using balanced (SMOTE) and imbalanced classes', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -350,7 +350,7 @@ class.perf.metrics$stat_nm <- factor(class.perf.metrics$stat_nm, levels = c("acc
 # Visualize performance stats by model type
 ggplot2::ggplot(class.perf.metrics,
 ggplot2::aes(x = stat_nm, y = stat_vl)) +
-ggplot2::labs(x = "\nPerformance Statistic", y = "Performance Value (%)") +
+ggplot2::labs(x = "\nPerformance Measure", y = "Performance Value (%)") +
 ggplot2::geom_bar(aes(fill = model), position = "dodge", stat = "identity") +
 ggplot2::theme_bw() +
 ggplot2::scale_fill_manual(values = c("#003366", "#0033FF", "#0099FF", "#66CCFF")) +
@@ -373,9 +373,9 @@ randomForest::varImpPlot(rf.fit, type = 2)
   
   Figure \@ref(fig:var-imp-plot) shows that `interview_rating` is far more important than the second most important predictor, `overtime`. This is consistent with what we observed in the results of the binomial logistic regression models too.
   
-  Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions. `rpart` is an acronym for *recursive partitioning and regression trees*:
+  Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the `rpart()` and `rpart.plot()` functions from libraries by the same names. `rpart` is an acronym for *recursive partitioning and regression trees*:
   
-```{r rpart-tree, out.width = "75%", echo = FALSE, fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE)', fig.align = 'center'}
+```{r rpart-tree, out.width = "75%", fig.cap = 'Decision tree for employee attrition prediction using training data with balanced classes (SMOTE)', fig.align = 'center', message = FALSE, warning = FALSE}
 
 # Load libraries
 library(rpart)
@@ -391,7 +391,7 @@ rpart.plot::rpart.plot(tree)
   
   As shown in Figure \@ref(fig:rpart-tree), the most important predictor for splitting the data is `interview_rating` when using a single decision tree. At the root node, there is a 50 percent chance of leaving and staying, which is expected given we balanced the classes using SMOTE. A prediction that is no better than a fair coin toss is of course not helpful. Walking down to the leaf nodes, we can see that for the 50% of employees with `interview_rating >= 3.5`, the algorithm predicts they will stay (`status = 0`); for the 50% of employees with `interview_rating < 3.5`, the algorithm predicts they will leave (`status = 1`). Given what we observed in the results of the binomial logistic regression output, additional partitioning by `overtime` may further increase node purity on the test data since classes are mixed for those with interview ratings between `3.3` and `3.6`. However, given the strong performance splitting data only on `interview_rating`, further partitioning will likely result in modeling noise and overfitting.
   
-  **Forecasting**
+### Forecasting
   
   To demonstrate the prediction workflow steps for forecasting, we will leverage our `turnover_trends` data set:
   
@@ -405,9 +405,9 @@ forecasting_dat <- read.csv("https://raw.githubusercontent.com/crstarbuck/people
 
 ```
   
-  * **Step 1**: Partition data into training and test sets for cross-validation.
+  **Step 1: Partition data into training and test sets for cross-validation.**
   
-  Since we have 60 months of data for each combination of `job`, `level`, and `remote` in the data, we will select a combination for which `turnover_rate` can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
+  Since we have 60 months of data for each combination of values for the `job`, `level`, and `remote` variables, we will select a combination for which `turnover_rate` can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -419,7 +419,7 @@ test_dat <- forecasting_dat %>% dplyr::filter(job == 'People Scientist' & level 
 
 ```
   
-  * **Step 2**: Build models using training data.
+  **Step 2: Build models using training data.**
   
   Given the significant quadratic and cubic terms identified in Chapter \@ref(lme), we will fit a cubic regression model on the training data.
 
@@ -435,7 +435,7 @@ summary(train.cube.fit)
 
   All linear, quadratic, and cubic terms on `month` are statistically significant at the $p$ < .001 level.
   
-  * **Step 3**: Use models to make predictions on test data.
+  **Step 3: Use models to make predictions on test data.**
   
   We will again build a function to evaluate the performance of the fitted models applied to test data rather than using delivered functions. The following function will return *mean absolute deviation (MAD)*, *mean squared error (MSE)*, and *mean absolute percentage error (MAPE)*:
 
@@ -481,7 +481,7 @@ forecast.metrics <- rbind(forecast.metrics, cbind.data.frame(
 
 ```
 
-  * **Step 4**: Evaluate model performance.
+  **Step 4: Evaluate model performance.**
 
   Next, we can pass a vector of actual and corresponding predicted values into the  `forecast.perf()` function to return MAD, MSE, and MAPE performance metrics for the fitted model applied to year 5 data.
 

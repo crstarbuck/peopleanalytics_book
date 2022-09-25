@@ -128,7 +128,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-09-24}
+\date{2022-09-25}
 
 \begin{document}
 \maketitle
@@ -6151,7 +6151,7 @@ What if we learn that the next person to walk by will be wearing a blue shirt? D
 
 You can probably think of many relevant variables that would help further narrow the range of annual compensation. These may include job, level, years of experience, education, among other factors. The main thing to understand is that for each group of observations \emph{with the same characteristics} -- such as senior analysts with a graduate degree who reside in NYC -- there is a distribution of annual compensation. This distribution reflects \emph{unexplained} variance. That is, we do not have information to explain why the compensation for each and every person is not the same and in social science contexts, it simply is not practical to explain 100 percent of the variance in outcomes. For example, two people may be similar on dozens of factors (experience, education, skills) but one was a more effective negotiator when offered the same role and commanded a higher salary. It's likely we do not have data on salary negotiation ability so this information would leave us with unexplained variance in compensation. The goal is to identify the variables that provide the most information in helping us tighten the distribution so that estimating the expected (average) value will generally be an accurate estimate for those in the larger population with the same characteristics.
 
-While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (\(n\) \textless{} 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise. This is a phenomenon known as overfitting that will be covered in Chapter \ref{pred-mod}.
+While we can generally improve our estimates with more relevant information (not shirt color or residential zip code in this case), it is important to understand that samples which are too small (\(n\) \textless{} 30) lend to anomalies; modeling noise in sparse data can result in models that are unlikely to generalize beyond the sample data. For example, if the only people from Boise to attend the people analytics symposium happen to be two ultra wealthy tech entrepreneurs who earn millions each year, it would not be appropriate to use this as the basis for our estimates of all future attendees from Boise.
 
 This is the essence of linear regression modeling: find a limited number of variables which independently and/or jointly provide significant information that helps explain (by reducing) variance around the average value. As illustrated in this example, adding additional variables (information) can impact the importance of other variables or may offer no incremental information at all. In this chapter, we will cover how to identify which variables are important and how to quantify the effect they have on an outcome.
 
@@ -7022,9 +7022,9 @@ This chapter covers several techniques for expanding the linear regression frame
 \hypertarget{model-comparisons}{%
 \section{Model Comparisons}\label{model-comparisons}}
 
-Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs.~female employees or across ethnic cohorts.
+Assuming it is warranted by the research objective, it is sometimes helpful to subset data and compare coefficients between models to determine how the strength of associations between predictors and the response compares between cohorts. This is a common approach in pay equity studies, as it clearly highlights differences in how a particular factor such as job level, job profile, or geography impacts compensation for male vs.~female employees or across ethnic groups.
 
-To illustrate, let's fit a multiple linear regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
+To illustrate, let's fit a multiple regression model to understand drivers of YTD sales for salespeople with overtime relative to those without overtime.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -7099,14 +7099,14 @@ To illustrate, let's fit a multiple linear regression model to understand driver
 
 Since we are comparing two models, we need not scale the variables since comparing a specific predictor's relationship with the response in the overtime model can be juxtaposed against the same predictor in the non-overtime model using the original units of measurement.
 
-Based on the output shown in figures in Figure \ref{fig:mlm-ot} and in Figure \ref{fig:mlm-nonot}, the model for salespeople who worked overtime explains more variance in square root transformed \texttt{ytd\_sales} (\(R^2\) = .73) relative to the model for salespeople without overtime (\(R^2\) = .69).
+Based on the output shown in Figures \ref{fig:mlm-ot} and \ref{fig:mlm-nonot}, the model for salespeople who worked overtime explains more variance in square root transformed \texttt{ytd\_sales} (\(R^2\) = .73) relative to the model for salespeople without overtime (\(R^2\) = .69).
 
 We can see that \texttt{engagement} has a larger effect on the transformed response among salespeople who worked overtime (\(\beta\) = 13.17, \(t\)(113) = 2.88, \(p\) \textless{} .01) relative to those who worked no overtime (\(\beta\) = 9.85, \(t\)(286) = 3.99, \(p\) \textless{} .001). In addition, \texttt{job\_lvl} has a stronger association with the response in the overtime group (\(\beta\) = 35.98, \(t\)(113) = 7.57, \(p\) \textless{} .01) relative to the non-overtime group (\(\beta\) = 33.14, \(t\)(286) = 11.04, \(p\) \textless{} .001). Given that the intercept (average square root of \texttt{ytd\_sales} when the values of all predictors are set to 0) is higher for the non-overtime group (\(\beta\) = 132.34, \(t\)(286) = 15.27, \(p\) \textless{} .001) than for the overtime group (\(\beta\) = 121.82, \(t\)(113) = 8.25, \(p\) \textless{} .001), differences in the coefficients on \texttt{job\_lvl} may indicate that one's job level is a proxy for skill and capacity to sell more in fewer hours.
 
 \hypertarget{hierarchical-regression}{%
 \section{Hierarchical Regression}\label{hierarchical-regression}}
 
-A multiple model approach can also be useful for understanding the incremental value a given variable -- or set of variables -- provides above and beyond a set of control variables. \textbf{Hierarchical regression} is a method by which variables are added to the model in steps and changes in model statistics are evaluated after each step. Let's use hierarchical regression to test the hypothesis below.
+A multiple model approach can also be useful for understanding the incremental value a given variable -- or set of variables -- provides above and beyond a set of control variables. \textbf{Hierarchical regression} is a method by which variables are added to the model in steps, and changes in model statistics are evaluated after each step. Let's use hierarchical regression to test the hypothesis below.
 
 \textbf{H1:} Among salespeople who work overtime, engagement has a significant positive relationship with YTD sales after controlling for job level, stock option level, and organization tenure.
 
@@ -7168,15 +7168,15 @@ In addition, Figure \ref{fig:hier-ctrl} shows that without \texttt{engagement} i
 
 The models covered thus far have focused only on observation-level effects. That is, there has been an inherent assumption that predictor variables have \emph{fixed} effects on the outcome and these effects do not vary based on group(s) to which the observations belong. These models are sometimes referred to as \textbf{fixed effects} models.
 
-It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
+It is often the case, however, that the strength and nature of predictors' effects on an outcome vary across categorical dimensions. For example, estimating the number of requisitions that can be filled by a Talent Acquisition team over a certain period may require inputs such as the number of recruiters and position backfill expectations based on attrition assumptions. However, the model should probably account for how these factors impact recruiter productivity at the intersections of group-level factors such as geography, job family, and job level as well. Estimates for recruiters who are focused on filling executive-level positions in geographies with a limited talent pool or fiercely competitive labor market will look quite different relative to recruiters focused on entry-level, low-skilled positions that are location agnostic. Failure to incorporate these group-level effects may result in inaccurate estimates or incorrectly concluding that variables are not significant in explaining why recruiters vary in the number of requisitions they can fill.
 
-You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of \(Y\) when all predictors are set to 0 -- namely the \(Y\)-intercept \(\beta_0\) -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is \emph{random} rather than \emph{fixed} for each group. Group-level effects can also be modeled for select -- or all -- \(X\) variables in addition to varying \(\beta_0\) for each group.
+You may wonder how this concept is different from simply including dummy-coded variables in the model to reflect the groups to which individual observations belong. The difference is that the average value of \(Y\) when all predictors are set to 0 -- namely the \(Y\)-intercept \(\beta_0\) -- does not vary by group with dummy-coded categorical variables. In a multilevel model, the intercept is \emph{random} rather than \emph{fixed} for each group. Group-level effects can also be modeled for select (or all) \(X\) variables in addition to varying \(\beta_0\) for each group.
 
 Consider a linear model constructed to test hypothesized relationships of every \(X\) variable with an outcome \(Y\). This is the equivalent of building \(G\) independent models, where \(G\) is the number of groups, using data subsetted for the respective group:
 
 \[ Y_G = \beta_{G0} + \beta_{G1} X_1 + \beta_{G2} X_2 + {...} + \beta_{Gp} X_p + \epsilon \]
 
-In this case, it is easy to consider wrapping the \texttt{lm()} function within a \texttt{for} loop that iterates through each \(G\) group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only \emph{certain} variables depend on the \(G\) group, we need to estimate both group-level \emph{and} observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a \textbf{mixed effects} model. This is also known as \textbf{Hierarchical Linear Modeling (HLM)}, which is materially different from Hierarchical Linear Regression (HLR) covered in the prior section, which compared nested regression models.
+In this case, it is easy to consider wrapping the \texttt{lm()} function within a loop that iterates through each \(G\) group, filtering to each of the respective group's data in turn. However, if we hypothesize that the effects of only \emph{certain} variables depend on the \(G\) group, we need to estimate both group-level \emph{and} observation-level effects within the same model. A multilevel model featuring this mixture of fixed and random effects is known as a \textbf{mixed effects} model. This is also known as \textbf{Hierarchical Linear Modeling (HLM)}, which is materially different from Hierarchical Regression covered in the prior section, which compared nested regression models.
 
 A model in which group-level effects are hypothesized for \(\beta_0\) and \(X_1\) and observation-level effects are hypothesized for all other predictors is expressed as:
 
@@ -7232,7 +7232,7 @@ To fit a linear mixed effects model in R, we can leverage the \texttt{lmer()} fu
 ## org_tenure  0.046 -0.054 -0.463
 \end{verbatim}
 
-The results of \texttt{lmer()} contain sections for both fixed and random effects. Consistent with the interpretation of general linear model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and \texttt{sqrt(ytd\_sales)} across the levels of \texttt{stock\_opt\_lvl} that would be missed without a mixed model that accounts for these group-level effects.
+The results of \texttt{lmer()} contain sections for both fixed and random effects. Consistent with the interpretation of linear regression model output, we can see that the fixed effects of each predictor are statistically significant. The key difference here is that the variance shown for the intercept of the random effects model is large. This indicates that there are meaningful differences in the relationships between predictors and \texttt{sqrt(ytd\_sales)} across the levels of \texttt{stock\_opt\_lvl} that would be missed without a mixed model that accounts for these group-level effects.
 
 For a more comprehensive treatment on multilevel models, see Gelman and Hill (2006).
 
@@ -7241,7 +7241,7 @@ For a more comprehensive treatment on multilevel models, see Gelman and Hill (20
 
 Linear regression is a powerful approach to understanding the relative strength of predictors' associations with a response variable. While linear models have advantages in interpretation, inference, and implementation simplicity, the linearity assumption often limits predictive power since this assumption is often a poor approximation of actual relationships in the data. In this section, we will discuss how to extend the linear regression framework and relax linear model assumptions to handle non-linear relationships.
 
-In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., workforce planning model that estimates hires by month).
+In a people analytics context, many data sets are cross-sectional and time-invariant, meaning they represent data collected at a single point in time. However, data collected across multiple points in time (time series data) are needed for forecasting future values of a dependent variable (e.g., a workforce planning model that estimates hires by month).
 
 There is often a seasonality element inherent in the relationship between time and the outcome that is being estimated, which requires accounting for time-variant features (e.g., monthly attrition rate assumptions). \textbf{Seasonality} is the variation that occurs at regular intervals within a year. For example, companies with an annual bonus often experience a seasonal spike in voluntary attrition following bonus payouts (beginning in March for many organizations). Accounting for seasonality in models helps reduce error, but it requires estimating a more complex set of model coefficients relative to a more naive linear projection.
 
@@ -7252,7 +7252,7 @@ The simple linear regression equation, \(Y = \beta_0 + \beta_1 X + \epsilon\), c
 \item
   Quadratic (2nd Order Polynomial) Regression Equation: \(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \epsilon\)
 \item
-  Cubic (3nd Order Polynomial) Regression Equation: \(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon\)
+  Cubic (3rd Order Polynomial) Regression Equation: \(Y = \beta_0 + \beta_1 X + \beta_2 X^2 + \beta_3 X^3 + \epsilon\)
 \end{itemize}
 
 Figure \ref{fig:poly-fun} illustrates how higher-order polynomial functions can fit more curvilinear trends relative to a simple linear projection.
@@ -7371,7 +7371,7 @@ While the cubic model achieved statistical significance at the \(p\) \textless{}
 
 }
 
-\caption{Linear, quadratic, and cubic model fit (red dashed line) to remote (dark grey points) and non-remote (light grey points) groups}\label{fig:turnover-pred}
+\caption{Linear, quadratic, and cubic models fitted to turnover data (red dashed lines). Remote workers are represented in dark grey points, and non-remote workers in light grey points.}\label{fig:turnover-pred}
 \end{figure}
 
 As shown in Figure \ref{fig:turnover-pred}, the multidimensional data vary widely around estimates produced by the two-dimensional models (i.e., \texttt{turnover\_rate} predicted on the basis of \texttt{month}). While the cubic regression model reflects the seasonality in month-over-month turnover, there are notable differences between remote and non-remote turnover rates as well as differences across years.
@@ -7413,9 +7413,9 @@ Let's add \texttt{remote} to the cubic regression model to see how performance c
 ## F-statistic: 15.47 on 4 and 115 DF,  p-value: 3.758e-10
 \end{verbatim}
 
-As shown in Figure \ref{fig:ps-cube-mnthrem-output}, accounting for remote status increases explained variance by 21\% (.35 - .14). In addition to the change in explained variance \(\Delta R^2\), the coefficient on \texttt{remote} is statistically significant (\(\beta\) = -1.64, \(t\)(115) = -6.09, \(p\) \textless{} .001). On average, the turnover rate for remote People Scientists is 1.64\% lower than the turnover rate for non-remote People Scientists.
+As shown in Figure \ref{fig:ps-cube-mnthrem-output}, accounting for remote status increases explained variance by 21\% (\(\Delta R^2\) = .35 - .14). In addition to the increase in explained variance, the coefficient on \texttt{remote} is statistically significant (\(\beta\) = -1.64, \(t\)(115) = -6.09, \(p\) \textless{} .001). On average, the turnover rate for remote People Scientists is 1.64\% lower than the turnover rate for non-remote People Scientists.
 
-Next, let's include \texttt{year} in the model since turnover rates also vary along this dimension.
+Next, let's include \texttt{year} as a linear term in the model since turnover rates also vary along this dimension.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -7461,7 +7461,7 @@ Explained variance increases to 62\% by adding \texttt{year} to the model. While
 
 }
 
-\caption{Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered by 1.64 for remote group.}\label{fig:ps-turnover-yrly-dist}
+\caption{Turnover rate distribution by year for remote (left) and non-remote (right) groups. Red dashed line reflects linear relationship between year and turnover rate, with $y$-intercept lowered 1.64 percent for remote group.}\label{fig:ps-turnover-yrly-dist}
 \end{figure}
 
 Given the cubic nature of the change in turnover year-over-year, let's add quadratic and cubic terms for \texttt{year} to examine changes in model performance:
@@ -7494,7 +7494,7 @@ Given the cubic nature of the change in turnover year-over-year, let's add quadr
 ## F-statistic: 1.996e+07 on 7 and 112 DF,  p-value: < 2.2e-16
 \end{verbatim}
 
-The inclusion of higher-order polynomials on \texttt{year} result in a perfect fit to these data (\(R^2\) = 1). This indicates that the slope of the relationship between \texttt{month} and \texttt{turnover\_rate} is perfectly consistent across years and within remote and non-remote groups.
+The inclusion of higher-order polynomials on \texttt{year} result in a perfect fit to these data (\(R^2\) = 1). Albeit a statistical improbability in practice, this indicates that the slope of the relationship between \texttt{month} and \texttt{turnover\_rate} is perfectly consistent across years within remote and non-remote groups.
 
 Our resulting equation for estimating \texttt{turnover\_rate} on the basis of a combination of linear and non-linear values of \texttt{year}, \texttt{month}, and \texttt{remote} is defined by:
 
@@ -7512,11 +7512,11 @@ The performance of this model may initially seem like a cause for celebration, b
 \item
   What modeling technique is appropriate for understanding an independent variable's contribution to a model's \(R^2\) beyond a set of control variables?
 \item
-  In the context of Hierarchical Linear Regression, what is the indicator that \(\Delta{R^2}\) is statistically significant when evaluating whether a particular independent variable provides meaningful information beyond a set of controls?
+  In the context of Hierarchical Regression, what is the indicator that \(\Delta{R^2}\) is statistically significant when evaluating whether a particular independent variable provides meaningful information beyond a set of controls?
 \item
   What are some examples of hypotheses that would warrant a linear mixed effects model over a general linear model?
 \item
-  What are the differences between Hierarchical Linear Modeling (HLM), which is also referred to as multilevel or mixed effects modeling, and Hierarchical Linear Regression (HLR)?
+  What are the differences between Hierarchical Linear Modeling (HLM), which is also referred to as multilevel or mixed effects modeling, and Hierarchical Regression?
 \item
   In what ways does polynomial regression differ from linear regression?
 \item
@@ -7534,7 +7534,7 @@ The performance of this model may initially seem like a cause for celebration, b
 
 \textbf{Logistic regression} is a type of \textbf{generalized linear model}, which is a family of models for which key linear assumptions are relaxed. Logistic regression is an excellent tool for modeling relationships with outcomes that are not measured on a continuous scale (a key requirement for linear regression). Logistic regression is often leveraged to model the probability of observations belonging to different classes of a categorical outcome, and this type of modeling is known as \textbf{classification}. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of \emph{regression} analysis, which by definition returns a numeric outcome -- and probabilities are numeric! Logistic regression accomplishes this by using a link function to generalize the linear model for non-continuous outcomes.
 
-You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \ref{data-arch-prep}. In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for \(\hat\beta X\) that represents the estimated probability of the outcome coded as 1 given \(X\). For example, if attrition is the binary outcome and \(Y = 1\) for employees who left and \(Y = 0\) for employees who stayed, \(\hat Y > .5\) could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities.
+You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \ref{data-prep}. In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for \(\hat\beta X\) that represents the estimated probability of the outcome coded as 1 given \(X\). For example, if attrition is the binary outcome and \(Y = 1\) for employees who left and \(Y = 0\) for employees who stayed, \(\hat Y > .5\) could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities.
 
 This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our \texttt{employees} dataset to model the probability of \texttt{active} given a value for \texttt{interview\_rating}, which would be written as \(Pr\)(\texttt{active} = Yes \textbar{} \texttt{interview\_rating}) or simply, \(p\)(\texttt{inteview\_rating}). A probability of \texttt{active} = Yes will be estimated for a given value of \texttt{interview\_rating}, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
@@ -7551,7 +7551,7 @@ Taking the ratio of \(\frac {p(X)}{1 - p(X)}\) will give the odds of the outcome
 
 Recall that in linear regression, the coefficient \(\beta\) on a predictor is interpreted as the average change in \(Y\) for a one-unit increase in the respective predictor's value. In logistic regression, the interpretation is similar but rather than \(\beta\) representing the average change in \(Y\), it represents the average unit change in the \emph{log of the odds} for a one-unit increase in the predictor's value.
 
-In R, the \texttt{glm()} function is used in conjunction with the \texttt{family\ =\ binomial} argument to fit a logistic regression model. Recall from Chapter \ref{inf-stats} that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our \texttt{active} variable featuring only \emph{yes} and \emph{no} values. Therefore, we need to pass the \texttt{family\ =\ binomial} argument into the \texttt{glm()} function. The formula passed into the function is structured consistent with the \texttt{lm()} function used for linear regression: \texttt{glm(y\ \textasciitilde{}\ x,\ data)}.
+In R, the \texttt{glm()} function is used in conjunction with the \texttt{family\ =\ binomial} argument to fit a logistic regression model. As we covered in Chapter \ref{inf-stats}, discrete probability distributions can be leveraged to model different types of nominal variables, and the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our \texttt{active} variable featuring only \emph{yes} and \emph{no} values. Therefore, we need to pass the \texttt{family\ =\ binomial} argument into the \texttt{glm()} function. The formula passed into the function is structured consistent with the \texttt{lm()} function used for linear regression: \texttt{glm(y\ \textasciitilde{}\ x,\ data)}.
 
 \begin{verbatim}
 ## 
@@ -7586,7 +7586,7 @@ The output shown in Figure \ref{fig:glm-rating} has some differences relative to
 \item
   \texttt{Estimate}: Average change in the log of odds for each one-unit increase in the value of the predictor
 \item
-  \texttt{z\ value}: Ratio of Estimate / Standard Error. Assuming \(\alpha\) = .05, a \(z\)-value of 2 is a good rule of thumb for achieving statistical significance (\(p\) \textless{} .05) per the properties of the normal distribution.
+  \texttt{z\ value}: Ratio of \texttt{Estimate} / \texttt{Standard\ Error}. Assuming \(\alpha\) = .05, a \(|z\)-value\(|\) \textgreater= 2 (2\(s\) of the mean) is a good rule of thumb for achieving statistical significance per the properties of the normal distribution.
 \item
   \texttt{Null\ deviance}: Measure of how well the response can be predicted by a model with only an intercept term; the lower the number, the better the fit.
 \item
@@ -7756,7 +7756,7 @@ Let's illustrate how to implement multinomial logistic regression by determining
 
 \CommentTok{\# Fit multinomial logistic regression model}
 \CommentTok{\# An omitted group for categorical variables is defined by default}
-\NormalTok{multinom.fit }\OtherTok{\textless{}{-}} \FunctionTok{multinom}\NormalTok{(dept }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ ed\_field, }\AttributeTok{data =}\NormalTok{ employees)}
+\NormalTok{multinom.fit }\OtherTok{\textless{}{-}}\NormalTok{ nnet}\SpecialCharTok{::}\FunctionTok{multinom}\NormalTok{(dept }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ ed\_field, }\AttributeTok{data =}\NormalTok{ employees)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -7779,7 +7779,7 @@ Let's illustrate how to implement multinomial logistic regression by determining
 
 \begin{verbatim}
 ## Call:
-## multinom(formula = dept ~ overtime + ed_field, data = employees)
+## nnet::multinom(formula = dept ~ overtime + ed_field, data = employees)
 ## 
 ## Coefficients:
 ##                        (Intercept) overtimeYes ed_fieldLife Sciences
@@ -7816,7 +7816,7 @@ where \(n\) is the number of observations, \(k\) is the number of parameters (pr
 
 \[ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  \]
 
-Just as we compared \(R^2\) across linear regression models in Chapter \ref{lm}, AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted \(R^2\) statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score.
+Just as we compared \(R^2\) across linear regression models in Chapter \ref{lm}, AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted \(R^2\) statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will achieve a lower AIC score.
 
 To determine whether the coefficients are statistically significant, we need to perform an additional step to compute \(p\)-values using \(z\) scores:
 
@@ -7852,10 +7852,10 @@ These \(p\)-values indicate that those who work overtime are not significantly m
 
 }
 
-\caption{Department distribution by overtime status}\label{fig:ot-dept}
+\caption{Overtime by department}\label{fig:ot-dept}
 \end{figure}
 
-The \(p\)-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \ref{fig:ed-field-dept}, which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental \emph{purity} on the basis of \texttt{ed\_field} alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R\&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
+The \(p\)-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \ref{fig:ed-field-dept}, which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental \emph{purity} on the basis of \texttt{ed\_field} alone. All employees who studied Marketing work in Sales and all employees who studied HR work in the HR department. However, those who work in R\&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
 
 \begin{figure}
 
@@ -7931,7 +7931,7 @@ We can leverage the \texttt{brant} package in R for this, which is compatible wi
 \FunctionTok{library}\NormalTok{(brant)}
 
 \CommentTok{\# Fit a ordinal logistic regression model}
-\NormalTok{ord.fit }\OtherTok{\textless{}{-}} \FunctionTok{polr}\NormalTok{(engagement }\SpecialCharTok{\textasciitilde{}}\NormalTok{ org\_tenure, }\AttributeTok{data =}\NormalTok{ employees, }\AttributeTok{Hess =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{ord.fit }\OtherTok{\textless{}{-}}\NormalTok{ MASS}\SpecialCharTok{::}\FunctionTok{polr}\NormalTok{(engagement }\SpecialCharTok{\textasciitilde{}}\NormalTok{ org\_tenure, }\AttributeTok{data =}\NormalTok{ employees, }\AttributeTok{Hess =} \ConstantTok{TRUE}\NormalTok{)}
 
 \CommentTok{\# Test proportional odds assumption using the Brant test}
 \NormalTok{brant}\SpecialCharTok{::}\FunctionTok{brant}\NormalTok{(ord.fit)}
@@ -7951,8 +7951,13 @@ We can leverage the \texttt{brant} package in R for this, which is compatible wi
 
 Notice the line in the output for the omnibus test, which shows an identical \(\chi^2\), \(df\), and \(p\)-value to the line associated with \texttt{org\_tenure}. \textbf{Omnibus tests} are statistical tests which test for the significance of several parameters in a model at once. For example, a one-way ANOVA evaluating differences in mean commute time across three locations is an omnibus test since it has more than two parameters. As we covered in Chapter \ref{aod}, the null hypothesis is rejected in the context of ANOVA if there is at least \emph{one} difference in complex contrasts -- even if the mean commute time is not significantly different between \emph{all} groups. Test statistics are identical for this ordinal logistic regression model because there is a single predictor, but Brant's omnibus test investigates equality of coefficients for all predictors jointly in the case of more than two parameters (Martin, 2022). The null and alternative hypotheses for Brant's omnibus test are:
 
-\(H_0\): The odds are proportional for all predictors in the model.
-\(H_A\): The odds are non-proportional for at least one predictor.
+\begin{itemize}
+\tightlist
+\item
+  \(H_0\): The odds are proportional for all predictors in the model.
+\item
+  \(H_A\): The odds are non-proportional for at least one predictor.
+\end{itemize}
 
 The results of Brant's test indicate that we fail to reject \(H_0\) since \(p\) = .82 for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated \emph{if} \(p\) \textless{} .05 for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which \(p\) \textless{} .05 since our tolerance for a Type I error is 1 in 20 with \(\alpha = .05\).
 
@@ -7967,7 +7972,8 @@ Since the proportional odds assumption holds, let's review the model output:
 
 \begin{verbatim}
 ## Call:
-## polr(formula = engagement ~ org_tenure, data = employees, Hess = TRUE)
+## MASS::polr(formula = engagement ~ org_tenure, data = employees, 
+##     Hess = TRUE)
 ## 
 ## Coefficients:
 ##                Value Std. Error t value
@@ -8047,11 +8053,11 @@ We can now estimate the likelihood of a particular observation having a specifie
 \hypertarget{pred-mod}{%
 \chapter{Predictive Modeling}\label{pred-mod}}
 
-In people analytics, inferential models like those covered in Chapters \ref{lm} and \ref{lme} are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or \emph{predict} the most likely future values. This type of modeling is often referred to as \textbf{predictive analytics} and is the subject of this chapter.
+In people analytics, inferential models like those covered in Chapters \ref{lm}, \ref{lme}, and \ref{log} are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or \emph{predict} the most likely future values. This type of modeling is often referred to as \textbf{predictive analytics} and is the subject of this chapter.
 
 A branch of \textbf{Artificial Intelligence (AI)} known as \textbf{Machine Learning (ML)} is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. The difference between statistics and ML is largely philosophical. Logistic regression, for example, is covered in both statistics and ML textbooks. While statistics focuses more on modeling, and ML is more algorithmic, both can be used for prediction. The broader field of \textbf{data science} often further confounds distinctions between these disciplines, though data science represents the entire end-to-end process -- from data extraction and engineering to modeling and analysis.
 
-A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP's start date need to be associated with the \emph{current} -- rather than former -- VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers' department, leader, and job attributes that can be used to assign current executives to past data such as historical termination events or month-end worker snapshots.
+A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five-year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP's start date need to be associated with the \emph{current} -- rather than \emph{former} -- VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers' department, leader, and job attributes that can be used to assign current executives to past data (e.g., historical termination events, month-end worker snapshots).
 
 It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is generally a bad idea. Despite the glamour predictive analytics has seen in recent years due to the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting. Unfortunately, the hype has given rise to AI snake oil to justify a premium price point for modern HR tech solutions, which are often little more than the descriptive statistics covered in Chapter \ref{desc-stats}.
 
@@ -8073,9 +8079,9 @@ People data are messy, and understanding why people vary in attitudes, perceptio
 
 Predictive modeling involves training a model on a data set referred to as a \textbf{training set} and using the model to make predictions for observations on a separate data set known as the \textbf{test set} or \textbf{validation set} to evaluate model performance.
 
-A model is blind to data in the test set, since only data in the training set are used to \emph{train} the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.
+A model is blind to data in the test set, since only the data in the training set are used to \emph{train} the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.
 
-This partitioning procedure is known as \textbf{cross-validation (CV)}. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.
+This partitioning procedure is known as \textbf{cross-validation (CV)}. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature consistent patterning.
 
 This section will explore a few of the most common CV methods.
 
@@ -8094,7 +8100,7 @@ The \textbf{validation set approach} is the most basic form of CV. This approach
 \hypertarget{model-performance}{%
 \section{Model Performance}\label{model-performance}}
 
-There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predicting modeling applications will be categorized as either \emph{classification} or \emph{forecasting} to reflect the families of use cases germane to people analytics.
+There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predictive modeling applications will be categorized as either \emph{classification} or \emph{forecasting} to reflect the families of use cases germane to people analytics.
 
 \textbf{Classification}
 
@@ -8104,7 +8110,7 @@ In a classification setting, predictions are either right or wrong. Therefore, c
 
 where \(I\) is an indicator variable equal to \(1\) if \(y_i \ne \hat y_i\) and \(0\) if \(y_i = \hat y_i\).
 
-A \textbf{confusion matrix} is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure \ref{fig:confusion-mtx}:
+A \textbf{confusion matrix} is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are represented in Figure \ref{fig:confusion-mtx}:
 
 \begin{itemize}
 \tightlist
@@ -8147,7 +8153,7 @@ While predictions are either right or wrong in a classification context, evaluat
   Mean absolute deviation (MAD): Average absolute difference between actual \(y\) and predicted \(\hat y\) values
 \end{itemize}
 
-\[ \frac{\sum|y_i - \hat y_i|}{n} \]
+\[ MAD = \frac{\sum|y_i - \hat y_i|}{n} \]
 
 \begin{itemize}
 \tightlist
@@ -8155,9 +8161,9 @@ While predictions are either right or wrong in a classification context, evaluat
   Mean square error (MSE): Average squared difference between actual \(y\) and predicted \(\hat y\) values
 \end{itemize}
 
-\[ \frac{\sum(y_i - \hat y_i)^2}{n} \]
+\[ MSE = \frac{\sum(y_i - \hat y_i)^2}{n} \]
 
-Squaring differences accomplishes two key objectives: (1) converts negative differences to positive consistent with the MAD approach, and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., \(1^2 = 1\), \(2^2 = 4\), \(3^2 = 9\), \(4^2 = 16\)). MSE is perhaps the most pervasive model performance measure in predictive modeling.
+Squaring differences accomplishes two key objectives: (1) converts negative differences to positive (consistent with the MAD approach), and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., \(2^2 = 4\), \(3^2 = 9\), \(4^2 = 16\)). MSE is perhaps the most pervasive model performance measure in predictive modeling.
 
 \begin{itemize}
 \tightlist
@@ -8165,7 +8171,7 @@ Squaring differences accomplishes two key objectives: (1) converts negative diff
   Mean absolute percentage error (MAPE): Average absolute difference expressed as a percentage
 \end{itemize}
 
-\[ (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| \]
+\[ MAPE = (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| \]
 
 \hypertarget{bias-variance-tradeoff}{%
 \section{Bias-Variance Tradeoff}\label{bias-variance-tradeoff}}
@@ -8194,13 +8200,13 @@ As a general rule, the more flexible the model, the more variance and less bias.
 \hypertarget{tree-based-algorithms}{%
 \section{Tree-Based Algorithms}\label{tree-based-algorithms}}
 
-While there are many flexible ML algorithms, such as \textbf{Extreme Gradient Boosting (XGBoost)}, \textbf{Artificial Neural Networks (ANN)}, and \textbf{Support Vector Machines (SVM)}, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more \emph{interpretable} tree-based algorithms that are more suitable for people analytics.
+While there are many flexible ML algorithms, such as \textbf{Extreme Gradient Boosting (XGBoost)}, \textbf{Artificial Neural Networks (ANN)}, and \textbf{Support Vector Machines (SVM)}, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more \emph{interpretable} tree-based algorithms that have more applications to people analytics.
 
 \textbf{Decision Trees}
 
 In addition to the inferential models covered in previous chapters, \textbf{decision trees} are also excellent tools that lend to simple and effective narratives about factors influencing outcomes in either a regression or classification setting. As illustrated in Figure \ref{fig:decision-tree}, decision trees resemble a tree that depicts a set of decisions as well as consequences of those decisions. The top-level \texttt{Department} variable is known as a root node, and the remaining \texttt{Tenure}, \texttt{Performance\ Rating}, and \texttt{Remote} nodes are known as interior nodes. Decisions represented in \texttt{Active} and \texttt{Inactive} boxes are referred to as leaf, terminal, or end nodes.
 
-As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the \(n\)-count is small).
+As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It's important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node -- though a more frequent class or range of values is expected in the presence of meaningful variables. If leaf nodes for a classification problem are comprised of a single class, it may be evidence of overfitting, especially if the \(n\)-count is small.
 
 \begin{figure}
 
@@ -8211,7 +8217,7 @@ As evidenced by the inactive status prediction in the leaf node, this decision t
 \caption{Conceptual decision tree for employee attrition prediction}\label{fig:decision-tree}
 \end{figure}
 
-The accuracy of predictions based on a deep tree with an excessive number of partitions and few observations will likely be unacceptable beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement on random guessing (e.g., 50/50 chance in a binary classification setting).
+Predictions based on a deep tree with an excessive number of partitions and few observations will likely be highly inaccurate beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement over random guessing (e.g., 50/50 chance in a binary classification setting).
 
 \textbf{Random Forests}
 
@@ -8238,7 +8244,8 @@ We will now integrate these concepts into attrition classification and forecasti
   \textbf{Step 4}: Evaluate model performance.
 \end{itemize}
 
-\textbf{Classification}
+\hypertarget{classification}{%
+\subsection{Classification}\label{classification}}
 
 To demonstrate the prediction workflow steps for classification, we will leverage our \texttt{employees} data set:
 
@@ -8255,11 +8262,7 @@ To demonstrate the prediction workflow steps for classification, we will leverag
 \end{Highlighting}
 \end{Shaded}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 1}: Partition data into training and test sets for cross-validation.
-\end{itemize}
+\textbf{Step 1: Partition data into training and test sets for cross-validation.}
 
 For this example, we will implement the validation set approach for CV.
 
@@ -8286,11 +8289,7 @@ For this example, we will implement the validation set approach for CV.
 ## [1] TRUE
 \end{verbatim}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 2}: Build models using training data.
-\end{itemize}
+\textbf{Step 2: Build models using training data.}
 
 Machine learning (ML) algorithms are sensitive to imbalanced classes. That is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our \texttt{employees} data set, there are 1,233 observations for active employees but only 237 observations for inactive employees. Therefore, we will introduce a popular technique to address this known as \textbf{Synthetic Minority Oversampling Technique (SMOTE)}, which will be important for the RF model we will train. This technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class's representation in the dataset and achieve balanced classes.
 
@@ -8409,11 +8408,7 @@ Using a similar syntax, we can fit a RF using the \texttt{randomForest()} functi
 
 While RFs generally offer a significant lift in performance beyond a single decision tree, we could also apply \emph{tuning wrappers} around the \texttt{randomForest()} function to tune the model's hyperparameters. Experimenting with a range of values for parameters, such as \texttt{mtry} for the number of variables to randomly sample and \texttt{ntree} for the number of trees to grow, may further improve model performance. Hyperparameter tuning is beyond the scope of this book, but Kuhn and Johnson (2013) is an excellent resource for a more exhaustive treatment on ML models.
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 3}: Use models to make predictions on test data.
-\end{itemize}
+\textbf{Step 3: Use models to make predictions on test data.}
 
 While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility into how each metric is calculated:
 
@@ -8453,7 +8448,7 @@ While there are packages in R which provide performance metrics for predictive m
 \end{Highlighting}
 \end{Shaded}
 
-We can use the \texttt{predict()} function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into one class versus the other. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives).
+We can use the \texttt{predict()} function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into classes. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives).
 
 We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:
 
@@ -8495,11 +8490,7 @@ We will predict the class using both binomial logistic regression and RF models,
 \end{Highlighting}
 \end{Shaded}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 4}: Evaluate model performance.
-\end{itemize}
+\textbf{Step 4: Evaluate model performance.}
 
 \begin{figure}
 
@@ -8527,11 +8518,21 @@ Variable importance plots are based on the mean decrease in \textbf{Gini importa
 
 Figure \ref{fig:var-imp-plot} shows that \texttt{interview\_rating} is far more important than the second most important predictor, \texttt{overtime}. This is consistent with what we observed in the results of the binomial logistic regression models too.
 
-Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the \texttt{rpart()} and \texttt{rpart.plot()} functions. \texttt{rpart} is an acronym for \emph{recursive partitioning and regression trees}:
+Let's compare the information from the RF's Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the \texttt{rpart()} and \texttt{rpart.plot()} functions from libraries by the same names. \texttt{rpart} is an acronym for \emph{recursive partitioning and regression trees}:
 
-\begin{verbatim}
-## Warning: package 'rpart' was built under R version 4.0.5
-\end{verbatim}
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Load libraries}
+\FunctionTok{library}\NormalTok{(rpart)}
+\FunctionTok{library}\NormalTok{(rpart.plot)}
+
+\CommentTok{\# Construct decision tree on balanced training data}
+\NormalTok{tree }\OtherTok{\textless{}{-}}\NormalTok{ rpart}\SpecialCharTok{::}\FunctionTok{rpart}\NormalTok{(active }\SpecialCharTok{\textasciitilde{}}\NormalTok{ overtime }\SpecialCharTok{+}\NormalTok{ job\_lvl }\SpecialCharTok{+}\NormalTok{  engagement }\SpecialCharTok{+}\NormalTok{ interview\_rating, }\AttributeTok{data =}\NormalTok{ training\_dat\_os, }\AttributeTok{method =} \StringTok{"class"}\NormalTok{)}
+
+\CommentTok{\# Visualize decision tree}
+\NormalTok{rpart.plot}\SpecialCharTok{::}\FunctionTok{rpart.plot}\NormalTok{(tree)}
+\end{Highlighting}
+\end{Shaded}
 
 \begin{figure}
 
@@ -8544,7 +8545,8 @@ Let's compare the information from the RF's Variable Importance Plot to a single
 
 As shown in Figure \ref{fig:rpart-tree}, the most important predictor for splitting the data is \texttt{interview\_rating} when using a single decision tree. At the root node, there is a 50 percent chance of leaving and staying, which is expected given we balanced the classes using SMOTE. A prediction that is no better than a fair coin toss is of course not helpful. Walking down to the leaf nodes, we can see that for the 50\% of employees with \texttt{interview\_rating\ \textgreater{}=\ 3.5}, the algorithm predicts they will stay (\texttt{status\ =\ 0}); for the 50\% of employees with \texttt{interview\_rating\ \textless{}\ 3.5}, the algorithm predicts they will leave (\texttt{status\ =\ 1}). Given what we observed in the results of the binomial logistic regression output, additional partitioning by \texttt{overtime} may further increase node purity on the test data since classes are mixed for those with interview ratings between \texttt{3.3} and \texttt{3.6}. However, given the strong performance splitting data only on \texttt{interview\_rating}, further partitioning will likely result in modeling noise and overfitting.
 
-\textbf{Forecasting}
+\hypertarget{forecasting}{%
+\subsection{Forecasting}\label{forecasting}}
 
 To demonstrate the prediction workflow steps for forecasting, we will leverage our \texttt{turnover\_trends} data set:
 
@@ -8558,13 +8560,9 @@ To demonstrate the prediction workflow steps for forecasting, we will leverage o
 \end{Highlighting}
 \end{Shaded}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 1}: Partition data into training and test sets for cross-validation.
-\end{itemize}
+\textbf{Step 1: Partition data into training and test sets for cross-validation.}
 
-Since we have 60 months of data for each combination of \texttt{job}, \texttt{level}, and \texttt{remote} in the data, we will select a combination for which \texttt{turnover\_rate} can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
+Since we have 60 months of data for each combination of values for the \texttt{job}, \texttt{level}, and \texttt{remote} variables, we will select a combination for which \texttt{turnover\_rate} can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8576,11 +8574,7 @@ Since we have 60 months of data for each combination of \texttt{job}, \texttt{le
 \end{Highlighting}
 \end{Shaded}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 2}: Build models using training data.
-\end{itemize}
+\textbf{Step 2: Build models using training data.}
 
 Given the significant quadratic and cubic terms identified in Chapter \ref{lme}, we will fit a cubic regression model on the training data.
 
@@ -8622,11 +8616,7 @@ Given the significant quadratic and cubic terms identified in Chapter \ref{lme},
 
 All linear, quadratic, and cubic terms on \texttt{month} are statistically significant at the \(p\) \textless{} .001 level.
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 3}: Use models to make predictions on test data.
-\end{itemize}
+\textbf{Step 3: Use models to make predictions on test data.}
 
 We will again build a function to evaluate the performance of the fitted models applied to test data rather than using delivered functions. The following function will return \emph{mean absolute deviation (MAD)}, \emph{mean squared error (MSE)}, and \emph{mean absolute percentage error (MAPE)}:
 
@@ -8672,11 +8662,7 @@ We can produce a prediction interval by passing an additional \texttt{interval\ 
 \end{Highlighting}
 \end{Shaded}
 
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Step 4}: Evaluate model performance.
-\end{itemize}
+\textbf{Step 4: Evaluate model performance.}
 
 Next, we can pass a vector of actual and corresponding predicted values into the \texttt{forecast.perf()} function to return MAD, MSE, and MAPE performance metrics for the fitted model applied to year 5 data.
 
@@ -8778,7 +8764,7 @@ People analytics often involves the unique challenge of analyzing high-dimension
 
 Consider a case in which a colleague uses verbose rhetoric to convey a simple message that could be effectively communicated with fewer words. The superfluous language is unnecessary and does not provide additional information or value. This is analogous to dimension reduction in that we are interested in identifying a limited set of meaningful attributes and discarding redundant and unimportant information that does not contribute to the analysis objectives.
 
-Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a \emph{subspace} of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture \emph{some} information about distance. The limited information loss in moving from three to two dimensions is likely acceptable given the benefit of capturing the memory of the team in a photograph.
+Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a \emph{subspace} of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture \emph{some} information about distance. The limited information loss in moving from three to two dimensions is likely acceptable, assuming the objective is to capture the memory of the team in a photograph.
 
 Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs that are relatively uncorrelated with survey items used to measure other independent constructs. Intuitively, we know that highly correlated variables do not capture unique information, as one is a sufficient proxy to capture the available signal in the larger number of features. As we have covered, models with highly correlated variables can create problems due to multicollinearity, and dimension reduction is an alternative approach to variable selection techniques such as the backward stepwise procedure covered in Chapter \ref{lm}.
 
@@ -8789,7 +8775,7 @@ This chapter will cover dimension reduction fundamentals as well as technical im
 
 The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides conceptual support for the construct -- the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of \emph{operationalizing} the conceptual scheme into a measurement approach.
 
-There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of latent constructs that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES).
+There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of \textbf{latent constructs} that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES).
 
 Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the \(n:p\) ratio in supervised learning settings.
 
@@ -8905,7 +8891,7 @@ Based on Figure \ref{fig:scree-plot}, factors 1 and 2 appear to provide relative
 
 You may notice the \texttt{pc\ =\ FALSE} argument in the \texttt{scree()} function call. This relates to \textbf{principal components analysis (PCA)}, which is an alternative method of dimension reduction. Principal components are new independent variables that represent linear transformations of scaled (\((x - \bar{x}) / s\)) versions of the observed variables. While we will focus on factor analysis and PCA in this section, which are most common in the social sciences, there are additional dimension reduction techniques one could explore (e.g., \textbf{parallel analysis}).
 
-While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like motivation or belonging, so we instead measure indicators of the latent variables using question sets on surveys.
+While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like psychological safety or belonging.
 
 To illustrate how to extract principal components, we can use base R's \texttt{prcomp()} function:
 
@@ -8938,9 +8924,9 @@ To illustrate how to extract principal components, we can use base R's \texttt{p
 \caption{Plot showing the percent of total variance explained by 12 principal components}\label{fig:pca-var-plot}
 \end{figure}
 
-Note that while we can theoretically have as many factors as we have variables (\(p\) = 12), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
+Note that while we can theoretically have as many factors as we have variables (\(p\) = 12), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to \emph{reduce} the number of factors (or components) to a subset that captures the majority of the information in the data.
 
-As shown in Figure \ref{fig:pca-var-plot}, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the \emph{elbow} to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer more meaningful variables.
+As shown in Figure \ref{fig:pca-var-plot}, principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the \emph{elbow} to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer, more meaningful variables.
 
 As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as \textbf{principal components regression (PCR)}. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
 
@@ -8948,7 +8934,7 @@ As an aside, in a supervised learning context we could insert these principal co
 
 For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
-The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and \(n\)-count.
+The \texttt{fa()} (factor analysis) function from the \texttt{psych} package can be used for the implementation in R. Based on the scree plot, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and \(n\)-count.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -8987,7 +8973,7 @@ The sum of squared loadings (\texttt{SS\ loadings}) are the eigenvalues for each
 
 By reviewing the factor loadings, we gain an understanding of which variables are part of each factor (i.e., highly correlated variables which cluster together). Factor loadings represent the correlation of each item with the respective factor. While there is not a consensus on thresholds, a general rule of thumb is that \emph{absolute} factor loadings should be at least \(.5\). Items with lower factor loadings should be removed from the measurement model.
 
-For the first factor \texttt{MR1}, the three retention items cluster together with happiness and leadership (after rounding). This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization.
+For the first factor \texttt{MR1}, the three retention items cluster together with happiness and leadership. This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization.
 
 Loadings for the second factor \texttt{MR2} indicate that the three engagement items cluster together with discretionary effort. This makes intuitive sense, as we would expect highly engaged employees to contribute higher levels of effort towards their work.
 
@@ -9015,7 +9001,7 @@ We can visualize this information using the \texttt{fa.diagram()} function from 
 
 \textbf{Confirmatory factor analysis (CFA)} is used to test how well data aligns with a theoretical factor structure.
 
-We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to \emph{always} be associated with a commensurate change in retention.
+We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also influence one's decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to \emph{always} be associated with a commensurate change in retention.
 
 We can illustrate using our \texttt{survey\_responses} data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items:
 
@@ -9025,7 +9011,7 @@ We can illustrate using our \texttt{survey\_responses} data, which contains thre
 
 }
 
-\caption{Bivariate correlations and data distributions for engagement and retention survey items}\label{fig:ggpairs-eng-ret}
+\caption{Bivariate correlations and relationship visualizations for engagement and retention survey items}\label{fig:ggpairs-eng-ret}
 \end{figure}
 
 As expected, \texttt{eng\_1}, \texttt{eng\_2}, and \texttt{eng\_3} have stronger correlations with each other (\(r \ge .70\)) than with \texttt{ret\_1}, \texttt{ret\_2}, or \texttt{ret\_3} (\(r \le .52\)).
@@ -9043,7 +9029,7 @@ CFA enables us to move beyond inter-item correlations to quantify the extent to 
   Interpret the output.
 \end{enumerate}
 
-\textbf{Step 1: Model Definition}
+\textbf{Step 1: Define the model.}
 
 Step one is defining the model within a string per the syntax required by \texttt{lavaan}:
 
@@ -9058,7 +9044,7 @@ Step one is defining the model within a string per the syntax required by \textt
 \end{Highlighting}
 \end{Shaded}
 
-\textbf{Step 2: Model Fitting}
+\textbf{Step 2: Fit the model.}
 
 Step two is fitting the model to the data using the \texttt{cfa()} function from the \texttt{lavaan} package:
 
@@ -9085,9 +9071,9 @@ The \texttt{lavaanPlot()} package can be used to create and visualize path diagr
 
 \label{fig:path-diagram}Path diagram showing survey items as indicators of latent engagement and retention factors
 
-Factor loadings are shown for each indicator of the latent variable in Figure \ref{fig:path-diagram}. All are well above the \emph{absolute} threshold of at least \(.5\).
+Factor loadings are shown for each indicator of the latent variable in Figure \ref{fig:path-diagram}. All are well above the \emph{absolute} threshold of .5.
 
-\textbf{Step 3: Model Interpretation}
+\textbf{Step 3: Interpret the model.}
 
 Step three is interpreting the output of the fitted model:
 
@@ -9198,7 +9184,7 @@ The \texttt{lavaan} package provides many fit measures, but we will focus only o
 
 Given data sets are often small in people analytics, it is important to note that RMSEA often exceeds thresholds with small \(df\) and \(n\) -- even when the model is correctly specified (Kenny, Kaniskan, \& McCoach, 2015). Therefore, it is important to index more on fit indices such as \(CFI\) and \(LTI\) in determining how well the data fit the measurement model.
 
-The \(\chi^2\) statistic is sometimes referred to a `badness of fit' measure since rejecting the null hypothesis (\(p\) \textless{} .05) indicates a lack of fit. Though \(\chi^2\) is significant (\(p\) \textless{} .001), both CFI (\(.98\)) and TLI (\(.97\)) are above the \(.95\) threshold for good fit. In addition, \(SRMR\) = .04 is beneath the threshold of \(.08\) and \(RMSEA\) = .09 is between the mediocre fit threshold range of \(.08\) and \(.10\). Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model.
+The \(\chi^2\) statistic is sometimes referred to as a `badness of fit' measure since rejecting the null hypothesis (\(p\) \textless{} .05) indicates a lack of fit. Though \(\chi^2\) is significant (\(p\) \textless{} .001), both CFI (\(.98\)) and TLI (\(.97\)) are above the \(.95\) threshold for good fit. In addition, \(SRMR\) = .04 is beneath the threshold of \(.08\) and \(RMSEA\) = .09 is between the mediocre fit threshold range of \(.08\) and \(.10\). Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model.
 
 For more extensive coverage of SEM, Kline (2005) is an excellent resource.
 
@@ -9281,7 +9267,7 @@ When interpreting Figure \ref{fig:kmeans-elbow-plot}, we are looking for the \em
 
 There is a discernible elbow at three clusters in Figure \ref{fig:kmeans-elbow-plot}. Intuitively, fewer clusters promotes action taking in people analytics since clusters need to be defined, and this becomes increasingly challenging as the number of clusters increases. With a large number of clusters, it may be difficult to meaningfully tailor career development or retention strategies, for example, to the unique needs of employees assigned to each cluster as the distinction between each subgroup becomes more opaque.
 
-We can now implement \(K\)-means clustering, with \(K = 3\), using the \texttt{kmeans()} function in base R:
+We can now implement \(K\)-means clustering with \(K = 3\) using the \texttt{kmeans()} function in base R:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9342,7 +9328,7 @@ We can also add a new column in the \texttt{employees} data frame with the clust
 \end{Highlighting}
 \end{Shaded}
 
-While \(K\)-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of \(K\) is not always ideal. \(K\)-means clustering will create \(K\) clusters -- even if they are nonsensical -- so caution must be exercised. Plotting WSS against cluster count as shown in Figure \ref{fig:kmeans-elbow-plot} can be helpful in defining \(K\), but alternative clustering algorithms exist that do not require \(K\) to be manually defined.
+While \(K\)-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of \(K\) is not always ideal. \(K\)-means clustering will create \(K\) clusters -- even if they are nonsensical -- so caution must be exercised. Plotting WSS against cluster count as shown in Figure \ref{fig:kmeans-elbow-plot} can be helpful in defining \(K\), but alternative clustering algorithms exist that do not require \(K\) to be predefined.
 
 \hypertarget{hierarchical-clustering}{%
 \subsection{Hierarchical Clustering}\label{hierarchical-clustering}}
@@ -9376,7 +9362,7 @@ Since we do not know what linkage method will work best for these data, we will 
 \FunctionTok{library}\NormalTok{(cluster)}
 
 \CommentTok{\# Define linkage methods}
-\CommentTok{\# Note: centroid is not available for forthcoming agnes() function}
+\CommentTok{\# Note: centroid is not available for agnes() function}
 \NormalTok{methods }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"complete"}\NormalTok{, }\StringTok{"single"}\NormalTok{, }\StringTok{"average"}\NormalTok{, }\StringTok{"ward"}\NormalTok{)}
 \FunctionTok{names}\NormalTok{(methods) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"complete"}\NormalTok{, }\StringTok{"single"}\NormalTok{, }\StringTok{"average"}\NormalTok{, }\StringTok{"ward"}\NormalTok{)}
 
@@ -9396,7 +9382,7 @@ Since we do not know what linkage method will work best for these data, we will 
 ## 0.7990373 0.6248688 0.7582732 0.9571736
 \end{verbatim}
 
-Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, so we will implement hierarchical clustering using this linkage option.
+Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, and we will implement hierarchical clustering using this linkage option.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -9419,7 +9405,7 @@ To produce a dendrogram, the \texttt{pltree()} function from the \texttt{cluster
 
 }
 
-\caption{Dendrogram for hierarchical clustering of employees using Ward linkage method}\label{fig:hclust-dendrogram}
+\caption{Dendrogram for hierarchical clustering of employees using Ward linkage}\label{fig:hclust-dendrogram}
 \end{figure}
 
 At the bottom of the denogram shown in Figure \ref{fig:hclust-dendrogram}, each leaf of the tree represents an individual observation. Since \(n = 1,470\), the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward's linkage method.
@@ -9495,7 +9481,7 @@ We can now cut the dendrogram into 7 clusters using the \texttt{cutree()} functi
 \hypertarget{data-viz}{%
 \chapter{Data Visualization}\label{data-viz}}
 
-Unlike content in the preceding chapters, data visualization is more of an \emph{art} than a \emph{science}. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
+Unlike content in the preceding chapters, data visualization is more an \emph{art} than a \emph{science}. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
 
 This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike. Since there is a considerable amount of code required to construct the plethora of graphics in this chapter, only the data prep code will be included. You can reference Chapter \ref{appendix} for a curated set of fully reproducible code for each data visualization provided in this chapter.
 
@@ -9606,7 +9592,7 @@ Grey is an important color in the implementation of preattentive attributes as i
 
 }
 
-\caption{The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases}\label{fig:pre-attr-1}
+\caption{The application of preattentive attributes to highlight labor costs as a key driver of increased operating expenses}\label{fig:pre-attr-1}
 \end{figure}
 
 Preattentive attributes can also be applied to data visualizations to focus the audience's attention. Figure \ref{fig:pre-attr-2} illustrates the use of preattentive attributes by assigning a different color (orange) to the labor cost for the current year and muting the labor costs associated with prior years using a less predominate grey.
@@ -9627,7 +9613,7 @@ Simply put, if something is \textbf{really important}, make sure it is different
 
 Software knows neither what we wish to highlight nor the audience to whom we intend to communicate the information. Therefore, regardless of the software, design defaults are rarely best.
 
-This section will implement data visualization best practices step-by-step beginning with the design defaults for the \texttt{ggplot2} library.
+This section will implement data visualization best practices step-by-step to improve upon the design defaults for the \texttt{ggplot2} library.
 
 \hypertarget{step-1-build-bar-chart-with-defaults}{%
 \subsection{Step 1: Build Bar Chart with Defaults}\label{step-1-build-bar-chart-with-defaults}}
@@ -9945,7 +9931,7 @@ This heatmap is excellent for focusing attention on the department + tenure segm
 
 \textbf{Scatterplots} are useful for visualizing relationships between numeric variables.
 
-A scatterplot will be used to visualize the relationship between \texttt{work\_exp} and \texttt{ytd\_sales}, with a goal of focusing the audience's attention on salespeople whose \texttt{ytd\_sales} meet or exceed the full year sales quota of \(150,000\) USD. Let's first subset \texttt{employees} data to active salespeople and append a flag to indicate sales quota attainment for use in shading data points in the scatterplot.
+Let's build a scatterplot to visualize the relationship between \texttt{work\_exp} and \texttt{ytd\_sales}, with a goal of focusing the audience's attention on salespeople whose \texttt{ytd\_sales} meet or exceed the full year sales quota of \(150,000\) USD. Let's first subset \texttt{employees} data to active salespeople and append a flag to indicate sales quota attainment for use in shading data points in the scatterplot.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -10024,7 +10010,7 @@ Figure \ref{fig:cum-iphone-sales} shows a deceptive cumulative graph of iPhone s
 
 }
 
-\caption{Deceiving cumulative sales trend}\label{fig:cum-iphone-sales}
+\caption{Deceptive cumulative sales trend}\label{fig:cum-iphone-sales}
 \end{figure}
 
 \textbf{Single Series}
@@ -10117,7 +10103,7 @@ The data structure needed to support a slopegraph is consistent with a line grap
 \end{Highlighting}
 \end{Shaded}
 
-In \texttt{ggplot2}, a slopegraph is simply a line graph with only two values on the \(x\)-axis and some additional formatting including annotations and \(y\)-axis removal. Figure \ref{fig:slopegraph} is a slopegraph comparing the engagement score changes for treatment and control groups over the observation period, with preattentive attributes applied to focus attention on the treatment group.
+In \texttt{ggplot2}, a slopegraph is simply a line graph with only two values on the \(x\)-axis and some additional formatting including annotations and \(y\)-axis removal. Figure \ref{fig:slopegraph} is a slopegraph comparing the engagement score changes for treatment and control groups over an observation period, with preattentive attributes applied to focus attention on the treatment group.
 
 \begin{figure}
 
@@ -10239,7 +10225,7 @@ As illustrated in Figure \ref{fig:combo-chart}, we can leverage a two-series lin
 
 \textbf{Waterfall charts} are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics.
 
-Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.
+Building a waterfall chart requires a bit more data prep relative to the data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -10447,7 +10433,7 @@ Figure \ref{fig:bad-donut-chart} shows a donut chart -- which is simply a pie ch
 \caption{Improper use of a donut chart}\label{fig:bad-donut-chart}
 \end{figure}
 
-There is no specific \texttt{geom()} function for building pie charts using \texttt{ggplot2}. Therefore, we need to create a bar chart and make it circular by adding a \texttt{coord\_polar("y",\ start\ =\ 0)} transformation. The \texttt{coord\_polar()} transformation complicates the positioning of labels, but we can add a \texttt{position\ =\ position\_stack(vjust\ =\ 0.5))} argument within the \texttt{geom\_text()} function to specify the alignment of gender representation metrics. We can also easily improve the aesthetics with the \texttt{theme\_void()} function, which removes the default background, grid, and labels.
+There is no specific \texttt{geom()} function for building pie charts using \texttt{ggplot2}. Therefore, we need to create a bar chart and make it circular by adding a \texttt{coord\_polar("y",\ start\ =\ 0)} transformation. The \texttt{coord\_polar()} transformation complicates the positioning of labels, but we can add a \texttt{position\ =\ position\_stack(vjust\ =\ 0.5))} argument within the \texttt{geom\_text()} function to easily achieve metric centering within the respective category. We can also easily improve the aesthetics with the \texttt{theme\_void()} function, which removes the default background, grid, and labels.
 
 The data need to be structured consistent with the requirements for a bar chart. A basic data cube with descriptive statistics by gender category will simplify the construction of the pie chart in \texttt{ggplot2}:
 
@@ -10475,7 +10461,7 @@ The data need to be structured consistent with the requirements for a bar chart.
 \hypertarget{d-visuals}{%
 \subsection{3D Visuals}\label{d-visuals}}
 
-An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as \emph{always} and \emph{never}. However, an exception will be made for this section. 3D visualizations are \emph{never} appropriate. 3D visuals misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
+An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as \emph{always} and \emph{never}. However, an exception will be made for this section. 3D visualizations are \emph{never} appropriate. 3D visuals often misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
 
 Figure \ref{fig:3d-pie-chart} shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25\%) is considerably larger than New York (19\%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.
 
@@ -10541,7 +10527,7 @@ Figure \ref{fig:good-viz} is an example of an excellent data visualization that 
 
 }
 
-\caption{An archetype of elegance in data visualization}\label{fig:good-viz}
+\caption{An archetype of data visualization elegance}\label{fig:good-viz}
 \end{figure}
 
 \hypertarget{review-questions-13}{%
@@ -10607,7 +10593,7 @@ Several contextual questions are important to consider:
 
 Prior to documents or decks being circulated to the target audience, there are generally several revs to refine the content and storyline in partnership with internal analytics colleagues and other stakeholders. If working docs are shared prematurely, it can result in the analytics team needing to address unnecessary questions that may compromise the project scope and timeline. Stakeholders will naturally have questions and ideas for further exploration, and we should always value their engagement and enthusiasm for more insights. However, unless there is a critical business need to venture down another path, the analytics team must protect the project scope and cite in the presentation the need to prioritize the additional analyses as a next step.
 
-It is important to define a production status taxonomy to clarify content readiness. The framework below may prove useful:
+It is important to define a production status taxonomy to clarify content readiness. The framework below is one example:
 
 \begin{enumerate}
 \def\labelenumi{\arabic{enumi}.}
@@ -10640,7 +10626,7 @@ Here is an example of a TL;DR for an analysis intended to support a solution to 
 
 \emph{Based on our strategic workforce plan, we will exceed the capacity at our HQ facility within three years. Labor market analyses indicate that by expanding our remote workforce, we can source from a larger pool of talent with the skills we need to maintain our competitive position in the market, decrease our average time to fill positions, lower our average cost per employee, and solve for the impending capacity breach at our HQ facility. A shift to remote-first hiring is recommended over the next six months to proactively address both our strategic workforce needs and location capacity constraints.}
 
-This short TL;DR led with the problem statement, highlighted a solution and associated benefits based on the analysis, and finished with a recommended next step and timeline. While this short summary does not provide the intricate details of the analysis, in most cases it should be sufficient to communicate the high-level story to those with limited time. This short summary may also function to pique the interest of stakeholders who are unsure if the analysis warrants their time and attention.
+This short TL;DR led with the problem statement, highlighted a solution and associated benefits based on the analysis, and finished with a recommended next step and timeline. While this short summary does not provide the intricate details of the analysis, in most cases it should be sufficient to communicate the high-level story to those with limited time. This short summary may also function to pique the interest of stakeholders who are initially unsure if the analysis warrants their time and attention.
 
 \hypertarget{purpose}{%
 \subsection{Purpose}\label{purpose}}
@@ -10667,7 +10653,7 @@ The severity of the situation is far more palpable with the framing in Option 2 
 
 It is usually appropriate to provide a \emph{high-level} overview of the analysis approach. In doing this, it is important to know what level of information is appropriate for the target audience.
 
-It is easy to provide too much information in this section. For example, does the audience need to know that we built a multi-level regression model with quadratic terms on time variables? If the People team is the target audience, there is a good chance that this level of information is \emph{not} appropriate. Sharing that an analysis method was used that is well-suited for understanding drivers of the outcome being studied is likely sufficient, as the content and presentation should index more on the findings and recommended next steps than on methodological details.
+It is easy to provide too much information in this section. For example, does the audience need to know that we built a multilevel model with quadratic terms on time variables? If the People team is the target audience, there is a good chance that this level of information is \emph{not} appropriate. Sharing that an analysis method was used that is well-suited for understanding drivers of the outcome being studied is likely sufficient, as the content and presentation should index more on the findings and recommended next steps than on methodological details.
 
 Presenting results of analyses to a non-technical audience using technical nomenclature will at best be seen as hubris and create confusion; at worst, the important information you need to convey will be completely lost on the audience and the efforts to improve the employee experience will be a deplorable miss. In general, if information is included in the presentation, we should ask ourselves whether the audience \emph{really} needs to know it. If the key points are likely to land without the information, we should generally eliminate it. To paraphrase a quote attributed to Einstein: ``Everything should be made as simple as possible, but not simpler.''
 
@@ -10719,7 +10705,7 @@ Outlined below are some questions to consider in identifying limitations:
 \hypertarget{next-steps}{%
 \subsection{Next Steps}\label{next-steps}}
 
-The presentation is likely missing a clear call to action if the audience's only response is, ``That's interesting!'' Presentations should conclude with recommended next steps that are likely to generate a productive and action-oriented dialogue among the stakeholders. Leaving the audience with clear answers to the following questions will help drive accountability for action:
+Presentations should conclude with recommended next steps that are likely to generate a productive and action-oriented dialogue among the stakeholders. Assuming there was a firm commitment to action at the outset of the project (see Chapter \ref{getting-started}), there is a good chance the audience does not understand what was shared or is not sure what to do next if their only response following the presentation is, ``That's interesting!'' Leaving the audience with clear answers to the following questions will help drive accountability for action:
 
 \begin{itemize}
 \tightlist

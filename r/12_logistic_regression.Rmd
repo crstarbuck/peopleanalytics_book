@@ -2,7 +2,7 @@
 
   **Logistic regression** is a type of **generalized linear model**, which is a family of models for which key linear assumptions are relaxed. Logistic regression is an excellent tool for modeling relationships with outcomes that are not measured on a continuous scale (a key requirement for linear regression). Logistic regression is often leveraged to model the probability of observations belonging to different classes of a categorical outcome, and this type of modeling is known as **classification**. The context for classification can be binomial for two classes (e.g., active/inactive, promoted/not promoted), multinomial for multiple unordered classes (e.g., job family, location), or ordinal for multiple ordered classes (e.g., survey items measured on a Likert scale, performance level, education level). Regardless of the outcome variable's classes, logistic regression is in fact a type of *regression* analysis, which by definition returns a numeric outcome -- and probabilities are numeric! Logistic regression accomplishes this by using a link function to generalize the linear model for non-continuous outcomes.
 
-  You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-arch-prep). In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y > .5$ could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. 
+  You may be wondering why linear regression cannot be implemented when the categorical outcome is dummy coded as outlined in Chapter \@ref(data-prep). In a binary case, in which the categorical response has been coded as 1/0, least squares regression would produce an estimate for $\hat\beta X$ that represents the estimated probability of the outcome coded as 1 given $X$. For example, if attrition is the binary outcome and $Y = 1$ for employees who left and $Y = 0$ for employees who stayed, $\hat Y > .5$ could lend to a termination prediction assuming this is an appropriate probability threshold. Linear regression may produce estimates lower than 0 and higher than 1, however, which complicates the interpretation of estimates as probabilities. 
   
   This issue is not limited to binary categorical outcomes. Response variables with more than 2 categories cannot naturally be converted into quantitative values that are appropriate for linear regression. Instead of modeling the response directly as in linear regression, logistic regression models the probability of an outcome's class given values for one or more predictors. For example, we can leverage our `employees` dataset to model the probability of `active` given a value for `interview_rating`, which would be written as $Pr$(`active` = Yes | `interview_rating`) or simply, $p$(`inteview_rating`). A probability of `active` = Yes will be estimated for a given value of `interview_rating`, and the probability threshold for determining the predicted class needs to be defined based on the business context. If we want to minimize false positives (i.e., incorrectly flagging at-risk employees who do not actually leave), we may set the threshold to something north of .5 (e.g., .7) to gain more confidence that those classified into the termination class are highly likely to exit.
 
@@ -18,7 +18,7 @@
   
   Recall that in linear regression, the coefficient $\beta$ on a predictor is interpreted as the average change in $Y$ for a one-unit increase in the respective predictor's value. In logistic regression, the interpretation is similar but rather than $\beta$ representing the average change in $Y$, it represents the average unit change in the *log of the odds* for a one-unit increase in the predictor's value.
   
-  In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. Recall from Chapter \@ref(inf-stats) that discrete probability distributions can be leveraged to model different types of nominal variables, and that the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
+  In R, the `glm()` function is used in conjunction with the `family = binomial` argument to fit a logistic regression model. As we covered in Chapter \@ref(inf-stats), discrete probability distributions can be leveraged to model different types of nominal variables, and the binomial distribution is appropriate for a sequence of independent observations with only two outcomes -- such as our `active` variable featuring only *yes* and *no* values. Therefore, we need to pass the `family = binomial` argument into the `glm()` function. The formula passed into the function is structured consistent with the `lm()` function used for linear regression: `glm(y ~ x, data)`.
   
 ```{r glm-rating, out.width = "100%", echo = FALSE, fig.cap = 'Logistic regression of active status onto interview rating', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -39,7 +39,7 @@ summary(glm.fit)
   The output shown in Figure \@ref(fig:glm-rating) has some differences relative to the output of a linear regression model. 
   
   * `Estimate`: Average change in the log of odds for each one-unit increase in the value of the predictor
-  * `z value`: Ratio of Estimate / Standard Error. Assuming $\alpha$ = .05, a $z$-value of 2 is a good rule of thumb for achieving statistical significance ($p$ < .05) per the properties of the normal distribution.
+  * `z value`: Ratio of `Estimate` / `Standard Error`. Assuming $\alpha$ = .05, a $|z$-value$|$ >= 2 (2$s$ of the mean) is a good rule of thumb for achieving statistical significance per the properties of the normal distribution.
   * `Null deviance`: Measure of how well the response can be predicted by a model with only an intercept term; the lower the number, the better the fit.
   * `Residual deviance`: Measure of how well the response can be predicted by a model with $p$ predictors; the lower the number, the better the fit. The larger the delta between residual and null deviance, the better the model with $p$ predictors relative to the intercept-only model.
   
@@ -48,6 +48,9 @@ summary(glm.fit)
   To illustrate why the logistic function is necessary, let's demonstrate differences in applying linear and logistic regression models by regressing a binary outcome `active` onto `interview_rating`.
 
 ```{r lm-glm-compare, out.width = "100%", echo = FALSE, fig.cap = 'Linear (left) and logistic (right) functions applied to models regressing active status (1/0) onto median interviewer rating', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(ggplot2)
 
 # Fit a linear model to illustrate why this should not be done with a binary outcome
 lm.fit <- lm(active ~ interview_rating, data = employees)
@@ -156,7 +159,7 @@ employees$dept <- relevel(employees$dept, ref = "Human Resources")
 
 # Fit multinomial logistic regression model
 # An omitted group for categorical variables is defined by default
-multinom.fit <- multinom(dept ~ overtime + ed_field, data = employees)
+multinom.fit <- nnet::multinom(dept ~ overtime + ed_field, data = employees)
 
 # Summarize results from model object
 summary(multinom.fit)
@@ -172,7 +175,7 @@ summary(multinom.fit)
   
   $$ \ell = -\frac{n}{2}(1 + ln(2\pi) + ln(\frac{1}{n} \displaystyle\sum_{i=1}^{n}(y_i - \hat{y}_i)^2))  $$
   
-  Just as we compared $R^2$ across linear regression models in Chapter \@ref(lm), AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted $R^2$ statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will feature a lower AIC score. 
+  Just as we compared $R^2$ across linear regression models in Chapter \@ref(lm), AIC can be compared across models to determine which one is a better fit to the data; lower AIC values indicate better fit. Consistent with how the Adjusted $R^2$ statistic adjusts for variables that do not provide information, AIC penalizes models that use more parameters. Therefore, if two models explain the same amount of variance in the response, the model with fewer parameters will achieve a lower AIC score. 
   
   To determine whether the coefficients are statistically significant, we need to perform an additional step to compute $p$-values using $z$ scores:
   
@@ -191,29 +194,64 @@ data.frame(t(round(p_values, 3)))
   
   These $p$-values indicate that those who work overtime are not significantly more likely to work in either the Research & Development or Sales departments relative to the Human Resources department. In other words, a considerable portion of employees in all three departments work overtime, so this variable is not helpful in classifying employees into their correct departments. This is evident in Figure \@ref(fig:ot-dept).
 
-```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by overtime status', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r ot-dept, echo = FALSE, out.width = "100%", fig.cap = 'Overtime by department', fig.align = 'center', message = FALSE, warning = FALSE}
+
+# Load library
+library(dplyr)
+
+# Calculate departmental percent of total for overtime and non-overtime groups
+dept_ot <- employees %>%
+           dplyr::group_by(dept, overtime) %>%
+           dplyr::summarise(cnt = n()) %>%
+           dplyr::mutate(freq = round(cnt / sum(cnt) * 100, 0)) %>% 
+           dplyr::arrange(dept, overtime)
+
+# Order overtime factor for sorting
+dept_ot$overtime <- factor(dept_ot$overtime, levels = c('Yes', 
+                                                        'No'))
 
 # Visualize distribution of educational fields by department
-ggplot2::ggplot(employees, aes(x = overtime, fill = dept)) +
-ggplot2::labs(x = 'Overtime', y = 'Count') +
-ggplot2::guides(fill = guide_legend(title = "Department")) +
-ggplot2::geom_bar() +
-ggplot2::theme_bw()
+ggplot2::ggplot(dept_ot, aes(x = dept, y = freq, fill = overtime)) +
+ggplot2::guides(fill = guide_legend(title = "Overtime")) +
+ggplot2::geom_bar(position = "fill", stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::scale_y_continuous(labels = scales::percent) +
+ggplot2::scale_fill_manual(values = c("No" = "#BFBFBF",
+                                      "Yes" = "#0070C0")) +
+ggplot2::theme_bw() +
+ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+               axis.title.y = ggplot2::element_blank())
 
 ```  
   
-  The $p$-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \@ref(fig:ed-field-dept), which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental *purity* on the basis of `ed_field` alone. All employees who studied Marketing work in Sales and all employees who studied HR work in said department. However, those who work in R&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
+  The $p$-values indicate that educational background is a strong predictor of department. This is evidenced in Figure \@ref(fig:ed-field-dept), which shows that each educational field is generally dominated by a single department. This means that we can achieve strong departmental *purity* on the basis of `ed_field` alone. All employees who studied Marketing work in Sales and all employees who studied HR work in the HR department. However, those who work in R&D have a variety of educational backgrounds, so the signal is not as clear for these cases and additional variables would be needed to more accurately assign these employees to the correct departments.
   
 ```{r ed-field-dept, echo = FALSE, out.width = "100%", fig.cap = 'Department distribution by educational field', fig.align = 'center', message = FALSE, warning = FALSE}
 
+# Calculate departmental percent of total for overtime and non-overtime groups
+ed_dept <- employees %>%
+           dplyr::group_by(ed_field, dept) %>%
+           dplyr::summarise(cnt = n()) %>%
+           dplyr::mutate(freq = round(cnt / sum(cnt) * 100, 0)) %>% 
+           dplyr::arrange(ed_field, dept)
+
+# Order overtime factor for sorting
+ed_dept$dept <- factor(ed_dept$dept, levels = c('Human Resources',
+                                                'Research & Development',
+                                                'Sales'))
+
 # Visualize distribution of educational fields by department
-ggplot2::ggplot(employees, aes(x = ifelse(ed_field == 'Human Resources', 'HR', 
-                                          ifelse(ed_field == 'Life Sciences', 'Life Sci',
-                                          ifelse(ed_field == 'Technical Degree', 'Technical', ed_field))), fill = dept)) +
-ggplot2::labs(x = 'Education Field', y = 'Count') +
+ggplot2::ggplot(ed_dept, aes(x = ed_field, y = freq, fill = dept)) +
 ggplot2::guides(fill = guide_legend(title = "Department")) +
-ggplot2::geom_bar() +
-ggplot2::theme_bw()
+ggplot2::geom_bar(position = "fill", stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::scale_y_continuous(labels = scales::percent) +
+ggplot2::scale_fill_manual(values = c("Human Resources" = "#0070C0",
+                                      "Research & Development" = "#FFC000",
+                                      "Sales" = "#70AD47")) +
+ggplot2::theme_bw() +
+ggplot2::theme(axis.title.x = ggplot2::element_blank(),
+               axis.title.y = ggplot2::element_blank())
 
 ```  
 
@@ -264,7 +302,7 @@ library(MASS)
 library(brant)
 
 # Fit a ordinal logistic regression model
-ord.fit <- polr(engagement ~ org_tenure, data = employees, Hess = TRUE)
+ord.fit <- MASS::polr(engagement ~ org_tenure, data = employees, Hess = TRUE)
 
 # Test proportional odds assumption using the Brant test
 brant::brant(ord.fit)
@@ -273,8 +311,8 @@ brant::brant(ord.fit)
 
   Notice the line in the output for the omnibus test, which shows an identical $\chi^2$, $df$, and $p$-value to the line associated with `org_tenure`. **Omnibus tests** are statistical tests which test for the significance of several parameters in a model at once. For example, a one-way ANOVA evaluating differences in mean commute time across three locations is an omnibus test since it has more than two parameters. As we covered in Chapter \@ref(aod), the null hypothesis is rejected in the context of ANOVA if there is at least *one* difference in complex contrasts -- even if the mean commute time is not significantly different between *all* groups. Test statistics are identical for this ordinal logistic regression model because there is a single predictor, but Brant's omnibus test investigates equality of coefficients for all predictors jointly in the case of more than two parameters (Martin, 2022). The null and alternative hypotheses for Brant's omnibus test are:
   
-  $H_0$: The odds are proportional for all predictors in the model.
-  $H_A$: The odds are non-proportional for at least one predictor.
+  * $H_0$: The odds are proportional for all predictors in the model.
+  * $H_A$: The odds are non-proportional for at least one predictor.
   
   The results of Brant's test indicate that we fail to reject $H_0$ since $p$ = .82 for the omnibus test, so the proportional odds assumption holds for these data. If the model featured more than one predictor, we could also evaluate the statistics on individual predictors -- but only to determine for which predictor(s) the proportional odds assumption is violated *if* $p$ < .05 for the omnibus test. As the number of variables and tests increases, so too does our risk of incorrectly rejecting the proportional odds assumption; therefore, decisions regarding the proportional odds assumption should not be based on statistics for individual predictors alone. Even if the odds are truly proportional for each predictor independently, with 20 predictors we would expect to find one by chance for which $p$ < .05 since our tolerance for a Type I error is 1 in 20 with $\alpha = .05$.
   

@@ -6,7 +6,7 @@
   
   Consider a case in which a colleague uses verbose rhetoric to convey a simple message that could be effectively communicated with fewer words. The superfluous language is unnecessary and does not provide additional information or value. This is analogous to dimension reduction in that we are interested in identifying a limited set of meaningful attributes and discarding redundant and unimportant information that does not contribute to the analysis objectives.
   
-  Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a *subspace* of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture *some* information about distance. The limited information loss in moving from three to two dimensions is likely acceptable given the benefit of capturing the memory of the team in a photograph.
+  Dimensionality reduction techniques project data onto a lower-dimensional subspace that retains the majority of the variance in the data points. If we take a picture of a group of colleagues during a team outing, for example, we would lose some 3D information by encoding the information into a 2D image. This 2D representation is a *subspace* of the 3D coordinates. While we would not know how far one person is from another in the 2D representation, we would see that people in the back appear smaller than people in the front. Therefore, the perspective in the 2D image would still capture *some* information about distance. The limited information loss in moving from three to two dimensions is likely acceptable, assuming the objective is to capture the memory of the team in a photograph.
   
   Dimension reduction is particularly important in survey research because longer surveys are costly and may result in lower response rates due to the increased completion time requirements. Survey instrumentation with strong psychometric properties features highly correlated survey items for constructs that are relatively uncorrelated with survey items used to measure other independent constructs. Intuitively, we know that highly correlated variables do not capture unique information, as one is a sufficient proxy to capture the available signal in the larger number of features. As we have covered, models with highly correlated variables can create problems due to multicollinearity, and dimension reduction is an alternative approach to variable selection techniques such as the backward stepwise procedure covered in Chapter \@ref(lm).
   
@@ -16,7 +16,7 @@
 
   The development of survey instrumentation, whether a single item or a larger multidimensional scale, begins with a good theory. The theory provides conceptual support for the construct -- the particular dimensions that characterize the construct, the antecedent variables which theoretically influence it, and the outcomes it will likely drive. With a strong theoretical framework, the researcher can begin proposing ways of *operationalizing* the conceptual scheme into a measurement approach.
   
-  There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of latent constructs that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES). 
+  There are clear measurement approaches for business metrics such as leads generated, new business growth, cNPS, and net revenue but in the social sciences, we often need indicators of **latent constructs** that are difficult -- or impossible -- to directly measure. If we want to understand the extent to which employees are engaged in their work, we need a comprehensive measure that captures facets of the theoretical frame. For example, vigor, absorption, and dedication are dimensions of Schaufeli, Bakker, and Salanova's (2006) conception of work engagement which were operationalized in the Utrecht Work Engagement Scale (UWES). 
   
   Quantifying the energy levels one brings to work (vigor), the extent to which one feels time passes quickly while working (absorption), and the level of one's commitment to seeing tasks through to completion (dedication) is challenging since we cannot leverage transactional data or digital exhaust to directly quantify this as we can with operational business metrics. We need a comprehensive -- yet parsimonious -- set of survey items that function as indicators of the dimensions of the latent work engagement construct. Constructing a larger aggregate measure from the individual indicators, such as the average or sum of all survey items, enables us to reduce the number of variables and optimize the $n:p$ ratio in supervised learning settings.
 
@@ -89,7 +89,7 @@ psych::scree(survey_dat, pc = FALSE)
   
   You may notice the `pc = FALSE` argument in the `scree()` function call. This relates to **principal components analysis (PCA)**, which is an alternative method of dimension reduction. Principal components are new independent variables that represent linear transformations of scaled ($(x - \bar{x}) / s$) versions of the observed variables. While we will focus on factor analysis and PCA in this section, which are most common in the social sciences, there are additional dimension reduction techniques one could explore (e.g., **parallel analysis**).
   
-  While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like motivation or belonging, so we instead measure indicators of the latent variables using question sets on surveys.
+  While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like psychological safety or belonging.
   
   To illustrate how to extract principal components, we can use base R's `prcomp()` function:
   
@@ -113,9 +113,9 @@ ggplot2::theme_bw()
 
 ```
   
-  Note that while we can theoretically have as many factors as we have variables ($p$ = 12), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to obtain a smaller number of factors (or components) that capture the majority of the information in the data.
+  Note that while we can theoretically have as many factors as we have variables ($p$ = 12), this defeats the purpose of dimension reduction -- whether PCA or factor analysis. The objective of dimension reduction is to *reduce* the number of factors (or components) to a subset that captures the majority of the information in the data.
   
-  As shown in Figure \@ref(fig:pca-var-plot), principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the *elbow* to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer more meaningful variables.
+  As shown in Figure \@ref(fig:pca-var-plot), principal components are sorted in descending order according to the percent of total variance they explain. The first principal component alone explains nearly half of the total variance in the data. We are looking for the *elbow* to ascertain the inflection point at which explained variance plateaus. It is clear that the slope of the line begins to flatten beyond the third principal component, indicating that components 4-12 provide relatively little information. Put differently, we could extract only the first three components without sacrificing much information and gain the benefit of fewer, more meaningful variables.
   
   As an aside, in a supervised learning context we could insert these principal components as predictors in a regression model in lieu of a larger number of original variables. This is known as **principal components regression (PCR)**. However, given the importance of explaining models in a people analytics setting, PCR will not be covered since inserting index variables as predictors in the model compromises interpretability.
   
@@ -123,7 +123,7 @@ ggplot2::theme_bw()
     
   For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique -- rather than orthogonal -- rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).
 
-  The `fa()` (factor analysis) function from the `psych` package can be used for the implementation in R. Based on the scree on PCA plots, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and $n$-count.
+  The `fa()` (factor analysis) function from the `psych` package can be used for the implementation in R. Based on the scree plot, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and $n$-count.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -139,7 +139,7 @@ efa.fit$loadings
   
   By reviewing the factor loadings, we gain an understanding of which variables are part of each factor (i.e., highly correlated variables which cluster together). Factor loadings represent the correlation of each item with the respective factor. While there is not a consensus on thresholds, a general rule of thumb is that *absolute* factor loadings should be at least $.5$. Items with lower factor loadings should be removed from the measurement model.
   
-  For the first factor `MR1`, the three retention items cluster together with happiness and leadership (after rounding). This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization. 
+  For the first factor `MR1`, the three retention items cluster together with happiness and leadership. This indicates that happier employees who have more favorable perceptions of leadership are less likely to leave the organization. 
   
   Loadings for the second factor `MR2` indicate that the three engagement items cluster together with discretionary effort. This makes intuitive sense, as we would expect highly engaged employees to contribute higher levels of effort towards their work. 
   
@@ -157,11 +157,11 @@ psych::fa.diagram(efa.fit)
   
   **Confirmatory factor analysis (CFA)** is used to test how well data aligns with a theoretical factor structure.
   
-  We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also drive one's decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to *always* be associated with a commensurate change in retention.
+  We expect items associated with a given construct to be highly correlated with one another but relatively uncorrelated with items associated with independent constructs. Consider engagement and retention, which are two independent -- yet likely correlated -- constructs. If multiple items are needed to measure the theoretical dimensions of both engagement and retention, we would expect the engagement items to be more highly correlated with one another than with the retention items. Theory may suggest that retention likelihood increases as engagement increases, but there are many other factors which also influence one's decision to leave an organization beyond engagement, so we would not expect changes in engagement levels to *always* be associated with a commensurate change in retention.
 
   We can illustrate using our `survey_responses` data, which contains three items for both engagement and retention. Let's first evaluate pairwise relationships between the items: 
 
-```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Bivariate correlations and data distributions for engagement and retention survey items', fig.align = 'center'}
+```{r ggpairs-eng-ret, out.width = "100%", echo = FALSE, message = FALSE, warning = FALSE, fig.cap = 'Bivariate correlations and relationship visualizations for engagement and retention survey items', fig.align = 'center'}
 
 # Load library
 library(GGally)
@@ -179,7 +179,7 @@ GGally::ggpairs(subset(survey_dat, select = c("eng_1", "eng_2", "eng_3", "ret_1"
   2. Fit the model.
   3. Interpret the output.
   
-  **Step 1: Model Definition**
+  **Step 1: Define the model.**
   
   Step one is defining the model within a string per the syntax required by `lavaan`:
 
@@ -194,7 +194,7 @@ model <- paste('engagement =~ eng_1 + eng_2 + eng_3
 
 ```
 
-  **Step 2: Model Fitting**
+  **Step 2: Fit the model.**
   
   Step two is fitting the model to the data using the `cfa()` function from the `lavaan` package:  
 
@@ -219,9 +219,9 @@ lavaanPlot::lavaanPlot(model = cfa.fit, coefs = TRUE, stand = TRUE)
 
 ```
 
-  Factor loadings are shown for each indicator of the latent variable in Figure \@ref(fig:path-diagram). All are well above the *absolute* threshold of at least $.5$.
+  Factor loadings are shown for each indicator of the latent variable in Figure \@ref(fig:path-diagram). All are well above the *absolute* threshold of .5.
 
-  **Step 3: Model Interpretation**
+  **Step 3: Interpret the model.**
   
   Step three is interpreting the output of the fitted model:
 
@@ -243,7 +243,7 @@ summary(cfa.fit, fit.measures = TRUE)
   
   Given data sets are often small in people analytics, it is important to note that RMSEA often exceeds thresholds with small $df$ and $n$ -- even when the model is correctly specified (Kenny, Kaniskan, & McCoach, 2015). Therefore, it is important to index more on fit indices such as $CFI$ and $LTI$ in determining how well the data fit the measurement model.
 
-  The $\chi^2$ statistic is sometimes referred to a 'badness of fit' measure since rejecting the null hypothesis ($p$ < .05) indicates a lack of fit. Though $\chi^2$ is significant ($p$ < .001), both CFI ($.98$) and TLI ($.97$) are above the $.95$ threshold for good fit. In addition, $SRMR$ = .04 is beneath the threshold of $.08$ and $RMSEA$ = .09 is between the mediocre fit threshold range of $.08$ and $.10$. Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model. 
+  The $\chi^2$ statistic is sometimes referred to as a 'badness of fit' measure since rejecting the null hypothesis ($p$ < .05) indicates a lack of fit. Though $\chi^2$ is significant ($p$ < .001), both CFI ($.98$) and TLI ($.97$) are above the $.95$ threshold for good fit. In addition, $SRMR$ = .04 is beneath the threshold of $.08$ and $RMSEA$ = .09 is between the mediocre fit threshold range of $.08$ and $.10$. Therefore, the indicators (survey items) in these data adequately fit the two latent constructs defined by this measurement model. 
 
   For more extensive coverage of SEM, Kline (2005) is an excellent resource.
 
@@ -307,7 +307,7 @@ factoextra::fviz_nbclust(employees_trans, kmeans, method = "wss")
   
   There is a discernible elbow at three clusters in Figure \@ref(fig:kmeans-elbow-plot). Intuitively, fewer clusters promotes action taking in people analytics since clusters need to be defined, and this becomes increasingly challenging as the number of clusters increases. With a large number of clusters, it may be difficult to meaningfully tailor career development or retention strategies, for example, to the unique needs of employees assigned to each cluster as the distinction between each subgroup becomes more opaque.
   
-  We can now implement $K$-means clustering, with $K = 3$, using the `kmeans()` function in base R:
+  We can now implement $K$-means clustering with $K = 3$ using the `kmeans()` function in base R:
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -345,7 +345,7 @@ employees <- cbind(employees, km_cluster = km$cluster)
 
 ```
 
-  While $K$-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of $K$ is not always ideal. $K$-means clustering will create $K$ clusters -- even if they are nonsensical -- so caution must be exercised. Plotting WSS against cluster count as shown in Figure \@ref(fig:kmeans-elbow-plot) can be helpful in defining $K$, but alternative clustering algorithms exist that do not require $K$ to be manually defined.
+  While $K$-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of $K$ is not always ideal. $K$-means clustering will create $K$ clusters -- even if they are nonsensical -- so caution must be exercised. Plotting WSS against cluster count as shown in Figure \@ref(fig:kmeans-elbow-plot) can be helpful in defining $K$, but alternative clustering algorithms exist that do not require $K$ to be predefined.
 
 ### Hierarchical Clustering
 
@@ -369,7 +369,7 @@ employees <- cbind(employees, km_cluster = km$cluster)
 library(cluster)
 
 # Define linkage methods
-# Note: centroid is not available for forthcoming agnes() function
+# Note: centroid is not available for agnes() function
 methods <- c("complete", "single", "average", "ward")
 names(methods) <- c("complete", "single", "average", "ward")
 
@@ -384,7 +384,7 @@ sapply(methods, agg_coeff)
 
 ```  
   
-  Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, so we will implement hierarchical clustering using this linkage option.
+  Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward's distance measure performs best on these data, and we will implement hierarchical clustering using this linkage option.
   
 ```{r, message = FALSE, warning = FALSE}
 
@@ -395,7 +395,7 @@ hclust <- cluster::agnes(employees_trans, method = "ward")
 
   To produce a dendrogram, the `pltree()` function from the `cluster` library can be used in conjunction with the `hclust` object holding the clustering results:
 
-```{r hclust-dendrogram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Dendrogram for hierarchical clustering of employees using Ward linkage method', fig.align = 'center'}
+```{r hclust-dendrogram, out.width = "100%", message = FALSE, warning = FALSE, fig.cap = 'Dendrogram for hierarchical clustering of employees using Ward linkage', fig.align = 'center'}
 
 cluster::pltree(hclust, main = "Dendrogram")
 

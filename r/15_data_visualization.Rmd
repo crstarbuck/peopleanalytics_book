@@ -1,6 +1,6 @@
 # Data Visualization {#data-viz}
 
-  Unlike content in the preceding chapters, data visualization is more of an *art* than a *science*. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
+  Unlike content in the preceding chapters, data visualization is more an *art* than a *science*. Data visualization is heavily dependent on the type of data being presented, key messages that need to be conveyed, the unique characteristics of the audience to whom information needs to be communicated, and various contextual features germane to a proper interpretation and understanding of material.
   
   This chapter will provide general best practices as well as strategies specific to various types of data that will promote success when communicating data to technical and non-technical stakeholders alike. Since there is a considerable amount of code required to construct the plethora of graphics in this chapter, only the data prep code will be included. You can reference Chapter \@ref(appendix) for a curated set of fully reproducible code for each data visualization provided in this chapter.
   
@@ -121,7 +121,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   
   Grey is an important color in the implementation of preattentive attributes as it facilitates a move of less important data and design elements to the background to make room for more predominate colors to highlight the most important information. Figure \@ref(fig:pre-attr-1) illustrates the application of preattentive attributes to emphasize the key message in a sentence. This is accomplished by pushing the less important content to the background using grey text and using bold orange text to highlight the labor cost increase.
   
-```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of operating cost increases', fig.align = 'center', message = FALSE, warning = FALSE}
+```{r pre-attr-1, out.width = "75%", echo = FALSE, fig.cap = 'The application of preattentive attributes to highlight labor costs as a key driver of increased operating expenses', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/preattentive_attributes.png")
 
@@ -157,7 +157,7 @@ ggplot2::theme(panel.background = element_blank(),
 
   Software knows neither what we wish to highlight nor the audience to whom we intend to communicate the information. Therefore, regardless of the software, design defaults are rarely best. 
   
-  This section will implement data visualization best practices step-by-step beginning with the design defaults for the `ggplot2` library.
+  This section will implement data visualization best practices step-by-step to improve upon the design defaults for the `ggplot2` library.
 
 ### Step 1: Build Bar Chart with Defaults
 
@@ -389,7 +389,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Scatterplots** are useful for visualizing relationships between numeric variables.
   
-  A scatterplot will be used to visualize the relationship between `work_exp` and `ytd_sales`, with a goal of focusing the audience's attention on salespeople whose `ytd_sales` meet or exceed the full year sales quota of $150,000$ USD. Let's first subset `employees` data to active salespeople and append a flag to indicate sales quota attainment for use in shading data points in the scatterplot.
+  Let's build a scatterplot to visualize the relationship between `work_exp` and `ytd_sales`, with a goal of focusing the audience's attention on salespeople whose `ytd_sales` meet or exceed the full year sales quota of $150,000$ USD. Let's first subset `employees` data to active salespeople and append a flag to indicate sales quota attainment for use in shading data points in the scatterplot.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -468,7 +468,7 @@ ggpubr::ggarrange(viz_hire_trend, viz_cum_hire_trend, ncol = 2, nrow = 1)
   
   Figure \@ref(fig:cum-iphone-sales) shows a deceptive cumulative graph of iPhone sales. Superimposing a bar chart with non-cumulative quarterly sales atop an overall cumulative trend that occupies far more real estate and dominates the screen can lend to the audience drawing invalid conclusions from the data.
 
-```{r cum-iphone-sales, out.width = "75%", echo = FALSE, fig.cap = 'Deceiving cumulative sales trend', fig.align = 'center'}
+```{r cum-iphone-sales, out.width = "75%", echo = FALSE, fig.cap = 'Deceptive cumulative sales trend', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bad_viz-cumulative_trend.png")
 
@@ -554,7 +554,7 @@ prepost_scores <- data.frame(date = c(rep('Time 1', 2), rep('Time 2', 2)),
 
 ```  
 
-  In `ggplot2`, a slopegraph is simply a line graph with only two values on the $x$-axis and some additional formatting including annotations and $y$-axis removal. Figure \@ref(fig:slopegraph) is a slopegraph comparing the engagement score changes for treatment and control groups over the observation period, with preattentive attributes applied to focus attention on the treatment group.
+  In `ggplot2`, a slopegraph is simply a line graph with only two values on the $x$-axis and some additional formatting including annotations and $y$-axis removal. Figure \@ref(fig:slopegraph) is a slopegraph comparing the engagement score changes for treatment and control groups over an observation period, with preattentive attributes applied to focus attention on the treatment group.
 
 ```{r slopegraph, out.width = "100%", echo = FALSE, fig.cap = 'Slopegraph', fig.align = 'center', message = FALSE, warning = FALSE}
 
@@ -658,7 +658,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
   **Waterfall charts** are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics. 
   
-  Building a waterfall chart requires a bit more data prep relative to data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.
+  Building a waterfall chart requires a bit more data prep relative to the data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.
 
 ```{r, message = FALSE, warning = FALSE}
 
@@ -837,7 +837,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ```
   
-  There is no specific `geom()` function for building pie charts using `ggplot2`. Therefore, we need to create a bar chart and make it circular by adding a `coord_polar("y", start = 0)` transformation. The `coord_polar()` transformation complicates the positioning of labels, but we can add a `position = position_stack(vjust = 0.5))` argument within the `geom_text()` function to specify the alignment of gender representation metrics. We can also easily improve the aesthetics with the `theme_void()` function, which removes the default background, grid, and labels.
+  There is no specific `geom()` function for building pie charts using `ggplot2`. Therefore, we need to create a bar chart and make it circular by adding a `coord_polar("y", start = 0)` transformation. The `coord_polar()` transformation complicates the positioning of labels, but we can add a `position = position_stack(vjust = 0.5))` argument within the `geom_text()` function to easily achieve metric centering within the respective category. We can also easily improve the aesthetics with the `theme_void()` function, which removes the default background, grid, and labels.
   
   The data need to be structured consistent with the requirements for a bar chart. A basic data cube with descriptive statistics by gender category will simplify the construction of the pie chart in `ggplot2`:
 
@@ -861,7 +861,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### 3D Visuals
 
-  An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as *always* and *never*. However, an exception will be made for this section. 3D visualizations are *never* appropriate. 3D visuals misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
+  An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as *always* and *never*. However, an exception will be made for this section. 3D visualizations are *never* appropriate. 3D visuals often misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.
   
   Figure \@ref(fig:3d-pie-chart) shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.
 
@@ -901,7 +901,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
   * Creative use of a bar chart resembling an area chart to represent the weekly interval for jobless claims over the 20-year period
   * Two helpful reference points to provide perspective: (1) 20-year weekly average; and (2) cumulative jobless claims during the last significant U.S. recession in 2008
 
-```{r good-viz, out.width = "100%", echo = FALSE, fig.cap = 'An archetype of elegance in data visualization', fig.align = 'center'}
+```{r good-viz, out.width = "100%", echo = FALSE, fig.cap = 'An archetype of data visualization elegance', fig.align = 'center'}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/good_viz-job_loss.png")
 

@@ -24,7 +24,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-09-24" />
+<meta name="date" content="2022-09-25" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -325,7 +325,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="pred-mod.html#model-performance" id="toc-model-performance"><span class="toc-section-number">13.2</span> Model Performance</a></li>
 <li><a href="pred-mod.html#bias-variance-tradeoff" id="toc-bias-variance-tradeoff"><span class="toc-section-number">13.3</span> Bias-Variance Tradeoff</a></li>
 <li><a href="pred-mod.html#tree-based-algorithms" id="toc-tree-based-algorithms"><span class="toc-section-number">13.4</span> Tree-Based Algorithms</a></li>
-<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">13.5</span> Predictive Modeling</a></li>
+<li><a href="pred-mod.html#predictive-modeling" id="toc-predictive-modeling"><span class="toc-section-number">13.5</span> Predictive Modeling</a>
+<ul>
+<li><a href="pred-mod.html#classification" id="toc-classification"><span class="toc-section-number">13.5.1</span> Classification</a></li>
+<li><a href="pred-mod.html#forecasting" id="toc-forecasting"><span class="toc-section-number">13.5.2</span> Forecasting</a></li>
+</ul></li>
 <li><a href="pred-mod.html#review-questions-11" id="toc-review-questions-11"><span class="toc-section-number">13.6</span> Review Questions</a></li>
 </ul></li>
 <li><a href="unsup-lrn.html#unsup-lrn" id="toc-unsup-lrn"><span class="toc-section-number">14</span> Unsupervised Learning</a>
@@ -448,9 +452,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="pred-mod" class="section level1" number="13">
 <h1><span class="header-section-number">13</span> Predictive Modeling</h1>
-<p>In people analytics, inferential models like those covered in Chapters <a href="lm.html#lm">10</a> and <a href="lme.html#lme">11</a> are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or <em>predict</em> the most likely future values. This type of modeling is often referred to as <strong>predictive analytics</strong> and is the subject of this chapter.</p>
+<p>In people analytics, inferential models like those covered in Chapters <a href="lm.html#lm">10</a>, <a href="lme.html#lme">11</a>, and <a href="log.html#log">12</a> are generally warranted by the research objectives. However, there are times when we need to go beyond interpreting coefficients to understand relative influences of predictors on an outcome and leverage the models to estimate or <em>predict</em> the most likely future values. This type of modeling is often referred to as <strong>predictive analytics</strong> and is the subject of this chapter.</p>
 <p>A branch of <strong>Artificial Intelligence (AI)</strong> known as <strong>Machine Learning (ML)</strong> is often associated with predictive modeling. ML is a set of methods which aim to improve performance on a set of tasks by learning from data (Mitchell, 1997). ML applications can be found in medical diagnostics, autonomous vehicles, speech recognition, automated securities trading, lending decisions, marketing, and many other domains. The difference between statistics and ML is largely philosophical. Logistic regression, for example, is covered in both statistics and ML textbooks. While statistics focuses more on modeling, and ML is more algorithmic, both can be used for prediction. The broader field of <strong>data science</strong> often further confounds distinctions between these disciplines, though data science represents the entire end-to-end process – from data extraction and engineering to modeling and analysis.</p>
-<p>A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP’s start date need to be associated with the <em>current</em> – rather than former – VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers’ department, leader, and job attributes that can be used to assign current executives to past data such as historical termination events or month-end worker snapshots.</p>
+<p>A good use case for a predictive model in people analytics is data restatement to adjust for reorganizations over time. In this case, accuracy may be more important than the explainability of the model. A predictive model may be used to predict and assign a current functional executive to historical records to support leader-wise trending analyses. For example, consider a scenario in which the current VP of Product Marketing was hired six months ago to replace the former VP of Product Marketing who was in the role for the prior five-year period. If the new VP wants to see monthly termination counts for their organization over the past three years, term records prior to the VP’s start date need to be associated with the <em>current</em> – rather than <em>former</em> – VP of Product Marketing to accomplish this. A model can be trained to learn from patterns in the combinations of current workers’ department, leader, and job attributes that can be used to assign current executives to past data (e.g., historical termination events, month-end worker snapshots).</p>
 <p>It is important to note that while there are AI/ML applications for people analytics, feeding data to black box models without an understanding of how the underlying algorithms work is generally a bad idea. Despite the glamour predictive analytics has seen in recent years due to the allure of a magical elixir that can portend the future, more times than not inferential statistical approaches are more appropriate in a people analytics setting. Unfortunately, the hype has given rise to AI snake oil to justify a premium price point for modern HR tech solutions, which are often little more than the descriptive statistics covered in Chapter <a href="desc-stats.html#desc-stats">7</a>.</p>
 <p>It is both a blessing and a curse that a predictive model can be built with a single line of code in R, and it is dangerous to blindly make recommendations on the basis of the output. A simpler model that you can understand and explain is generally a better option than a more complex one that you cannot. There is a high probability that stakeholders will ask deeper questions about <em>why</em> a particular segment of the workforce is predicted to exit at higher rates, for example, and answering these questions requires a deeper understanding of the factors that led to them being classified as such.</p>
 <p>People data are messy, and understanding why people vary in attitudes, perceptions, and behaviors is an inherently difficult endeavor. Spoiler alert: There is no crystal ball that will soften this reality.</p>
@@ -463,8 +467,8 @@ Figure 13.1: Satirical illustration based on the viral meme of 2019 which depict
 <div id="cross-validation" class="section level2" number="13.1">
 <h2><span class="header-section-number">13.1</span> Cross-Validation</h2>
 <p>Predictive modeling involves training a model on a data set referred to as a <strong>training set</strong> and using the model to make predictions for observations on a separate data set known as the <strong>test set</strong> or <strong>validation set</strong> to evaluate model performance.</p>
-<p>A model is blind to data in the test set, since only data in the training set are used to <em>train</em> the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.</p>
-<p>This partitioning procedure is known as <strong>cross-validation (CV)</strong>. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature such patterning.</p>
+<p>A model is blind to data in the test set, since only the data in the training set are used to <em>train</em> the model. Therefore, the test set provides a convenient way to compare the actual known values to the predicted values and estimate how well the model will generalize to other data. Evaluating model performance on the basis of training data would be akin to having students take an exam after providing them the answers. Strong performance on the training data is almost a certainty, so the value of a model rests on its performance on data not used to build it.</p>
+<p>This partitioning procedure is known as <strong>cross-validation (CV)</strong>. While there are many methods of splitting data into training and test sets, a common feature among all is that the partitioning strategy is random. Without randomization, the model may learn patterns characteristic of the training set that result in inaccurate predictions for other data which do not feature consistent patterning.</p>
 <p>This section will explore a few of the most common CV methods.</p>
 <p><strong>Validation Set Approach</strong></p>
 <p>The <strong>validation set approach</strong> is the most basic form of CV. This approach involves defining proportions by which to partition data into training and test sets – usually 2/3 and 1/3, respectively. The model is trained on the training set and then differences between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values are calculated on the test set to evaluate model performance.</p>
@@ -475,12 +479,12 @@ Figure 13.1: Satirical illustration based on the viral meme of 2019 which depict
 </div>
 <div id="model-performance" class="section level2" number="13.2">
 <h2><span class="header-section-number">13.2</span> Model Performance</h2>
-<p>There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predicting modeling applications will be categorized as either <em>classification</em> or <em>forecasting</em> to reflect the families of use cases germane to people analytics.</p>
+<p>There are several methods of quantifying how well models perform on test data in order to assess the extent to which the model will generalize. Predictive modeling applications will be categorized as either <em>classification</em> or <em>forecasting</em> to reflect the families of use cases germane to people analytics.</p>
 <p><strong>Classification</strong></p>
 <p>In a classification setting, predictions are either right or wrong. Therefore, calculating the overall error rate across test data is straightforward:</p>
 <p><span class="math display">\[ \frac{1}{n} \displaystyle\sum_{i=1}^{n} I(y_i \ne \hat y_i), \]</span></p>
 <p>where <span class="math inline">\(I\)</span> is an indicator variable equal to <span class="math inline">\(1\)</span> if <span class="math inline">\(y_i \ne \hat y_i\)</span> and <span class="math inline">\(0\)</span> if <span class="math inline">\(y_i = \hat y_i\)</span>.</p>
-<p>A <strong>confusion matrix</strong> is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are outlined in Figure <a href="pred-mod.html#fig:confusion-mtx">13.2</a>:</p>
+<p>A <strong>confusion matrix</strong> is often used in classification to parse the overall model accuracy rate into component parts and understand whether the model performs at a level appropriate to a defined tolerance level per the research objective. In an attrition project, it may be more important to correctly predict high performers who leave than to correctly predict those who stay, as prediction errors for the former are likely far more costly. Several performance metrics are provided by the confusion matrix to aid in a more granular understanding of model performance, which are represented in Figure <a href="pred-mod.html#fig:confusion-mtx">13.2</a>:</p>
 <ul>
 <li><strong>True Positive</strong>: Number of correct true predictions</li>
 <li><strong>True Negative</strong>: Number of correct false predictions</li>
@@ -503,16 +507,16 @@ Figure 13.2: Confusion matrix
 <ul>
 <li>Mean absolute deviation (MAD): Average absolute difference between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values</li>
 </ul>
-<p><span class="math display">\[ \frac{\sum|y_i - \hat y_i|}{n} \]</span></p>
+<p><span class="math display">\[ MAD = \frac{\sum|y_i - \hat y_i|}{n} \]</span></p>
 <ul>
 <li>Mean square error (MSE): Average squared difference between actual <span class="math inline">\(y\)</span> and predicted <span class="math inline">\(\hat y\)</span> values</li>
 </ul>
-<p><span class="math display">\[ \frac{\sum(y_i - \hat y_i)^2}{n} \]</span></p>
-<p>Squaring differences accomplishes two key objectives: (1) converts negative differences to positive consistent with the MAD approach, and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., <span class="math inline">\(1^2 = 1\)</span>, <span class="math inline">\(2^2 = 4\)</span>, <span class="math inline">\(3^2 = 9\)</span>, <span class="math inline">\(4^2 = 16\)</span>). MSE is perhaps the most pervasive model performance measure in predictive modeling.</p>
+<p><span class="math display">\[ MSE = \frac{\sum(y_i - \hat y_i)^2}{n} \]</span></p>
+<p>Squaring differences accomplishes two key objectives: (1) converts negative differences to positive (consistent with the MAD approach), and (2) imposes a greater penalty on larger differences, which causes error rates to increase at an exponential rather than linear rate (e.g., <span class="math inline">\(2^2 = 4\)</span>, <span class="math inline">\(3^2 = 9\)</span>, <span class="math inline">\(4^2 = 16\)</span>). MSE is perhaps the most pervasive model performance measure in predictive modeling.</p>
 <ul>
 <li>Mean absolute percentage error (MAPE): Average absolute difference expressed as a percentage</li>
 </ul>
-<p><span class="math display">\[ (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| \]</span></p>
+<p><span class="math display">\[ MAPE = (\frac{100}{n})\sum|\frac{y_i - \hat y_i}{y_i}| \]</span></p>
 </div>
 <div id="bias-variance-tradeoff" class="section level2" number="13.3">
 <h2><span class="header-section-number">13.3</span> Bias-Variance Tradeoff</h2>
@@ -531,17 +535,17 @@ Figure 13.3: Bias-variance tradeoff. Dashed line represents optimal model perfor
 </div>
 <div id="tree-based-algorithms" class="section level2" number="13.4">
 <h2><span class="header-section-number">13.4</span> Tree-Based Algorithms</h2>
-<p>While there are many flexible ML algorithms, such as <strong>Extreme Gradient Boosting (XGBoost)</strong>, <strong>Artificial Neural Networks (ANN)</strong>, and <strong>Support Vector Machines (SVM)</strong>, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more <em>interpretable</em> tree-based algorithms that are more suitable for people analytics.</p>
+<p>While there are many flexible ML algorithms, such as <strong>Extreme Gradient Boosting (XGBoost)</strong>, <strong>Artificial Neural Networks (ANN)</strong>, and <strong>Support Vector Machines (SVM)</strong>, that tend to perform well across a range of prediction problems, these will not be covered as we will focus on more <em>interpretable</em> tree-based algorithms that have more applications to people analytics.</p>
 <p><strong>Decision Trees</strong></p>
 <p>In addition to the inferential models covered in previous chapters, <strong>decision trees</strong> are also excellent tools that lend to simple and effective narratives about factors influencing outcomes in either a regression or classification setting. As illustrated in Figure <a href="pred-mod.html#fig:decision-tree">13.4</a>, decision trees resemble a tree that depicts a set of decisions as well as consequences of those decisions. The top-level <code>Department</code> variable is known as a root node, and the remaining <code>Tenure</code>, <code>Performance Rating</code>, and <code>Remote</code> nodes are known as interior nodes. Decisions represented in <code>Active</code> and <code>Inactive</code> boxes are referred to as leaf, terminal, or end nodes.</p>
-<p>As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It’s important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node – though a more frequent class or range of values is expected. If leaf nodes for a classification problem, for example, are comprised of a single class, it may be evidence of overfitting (especially if the <span class="math inline">\(n\)</span>-count is small).</p>
+<p>As evidenced by the inactive status prediction in the leaf node, this decision tree shows that employees in the Engineering department are unlikely to stick around for two or more years. In addition, employees in other departments terminate if they are low performers or if they are high performers who do not work remotely. It’s important to note that in practice, it is rare to achieve complete purity in leaf nodes, as there is usually a mix of results in a given node – though a more frequent class or range of values is expected in the presence of meaningful variables. If leaf nodes for a classification problem are comprised of a single class, it may be evidence of overfitting, especially if the <span class="math inline">\(n\)</span>-count is small.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:decision-tree"></span>
 <img src="graphics/decision_tree.png" alt="Conceptual decision tree for employee attrition prediction" width="75%" />
 <p class="caption">
 Figure 13.4: Conceptual decision tree for employee attrition prediction
 </p>
 </div>
-<p>The accuracy of predictions based on a deep tree with an excessive number of partitions and few observations will likely be unacceptable beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement on random guessing (e.g., 50/50 chance in a binary classification setting).</p>
+<p>Predictions based on a deep tree with an excessive number of partitions and few observations will likely be highly inaccurate beyond the training data. The goal of decision trees is to arrive at a set of decisions that best delineate one class or range of values from others by identifying patterns and natural cutpoints among a reasonably large subset of the data at each level. There must be signal in the features used to partition the data such that predictions are an improvement over random guessing (e.g., 50/50 chance in a binary classification setting).</p>
 <p><strong>Random Forests</strong></p>
 <p>A <strong>random forest (RF)</strong> is a natural extension of the decision tree. As the name implies, a random forest is a large number (forest) of individual decision trees that operate as an ensemble. The process of fitting multiple models on different subsets of training data and then combining predictions across all models is referred to as <strong>bagging</strong>. This is a case of <em>wisdom of the crowd</em> decision-making in which a large number of uncorrelated trees (models) functioning as a committee should outperform individual trees.</p>
 <p>To understand the mechanics of a random forest, consider an investment strategy in which you diversify an investment portfolio by spreading investments across different assets. By investing in assets that are uncorrelated, there is a lower likelihood that the portfolio’s value will be negatively impacted by a negative event impacting a single holding. In the same way, a random forest constructs an ensemble of trees that are each based on different randomized subsets of data and combinations of features to amalgamate the information and arrive at more accurate predictions. The potential for poor performance from a single tree is mitigated by the many trees working in concert with one another.</p>
@@ -556,7 +560,8 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <li><strong>Step 3</strong>: Use models to make predictions on test data.</li>
 <li><strong>Step 4</strong>: Evaluate model performance.</li>
 </ul>
-<p><strong>Classification</strong></p>
+<div id="classification" class="section level3" number="13.5.1">
+<h3><span class="header-section-number">13.5.1</span> Classification</h3>
 <p>To demonstrate the prediction workflow steps for classification, we will leverage our <code>employees</code> data set:</p>
 <div class="sourceCode" id="cb411"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb411-1"><a href="pred-mod.html#cb411-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
 <span id="cb411-2"><a href="pred-mod.html#cb411-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
@@ -566,9 +571,7 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <span id="cb411-6"><a href="pred-mod.html#cb411-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb411-7"><a href="pred-mod.html#cb411-7" aria-hidden="true" tabindex="-1"></a><span class="co"># One-hot encode active outcome variable, setting inactives to 1 and actives to 0</span></span>
 <span id="cb411-8"><a href="pred-mod.html#cb411-8" aria-hidden="true" tabindex="-1"></a>prediction_dat<span class="sc">$</span>active <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(prediction_dat<span class="sc">$</span>active <span class="sc">==</span> <span class="st">&#39;No&#39;</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span></code></pre></div>
-<ul>
-<li><strong>Step 1</strong>: Partition data into training and test sets for cross-validation.</li>
-</ul>
+<p><strong>Step 1: Partition data into training and test sets for cross-validation.</strong></p>
 <p>For this example, we will implement the validation set approach for CV.</p>
 <div class="sourceCode" id="cb412"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb412-1"><a href="pred-mod.html#cb412-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducible training and test sets</span></span>
 <span id="cb412-2"><a href="pred-mod.html#cb412-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">9876</span>)</span>
@@ -585,9 +588,7 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <span id="cb412-13"><a href="pred-mod.html#cb412-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Return Boolean to validate that all observations are accounted for</span></span>
 <span id="cb412-14"><a href="pred-mod.html#cb412-14" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(training_dat) <span class="sc">+</span> <span class="fu">nrow</span>(test_dat) <span class="sc">==</span> <span class="fu">nrow</span>(prediction_dat)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<ul>
-<li><strong>Step 2</strong>: Build models using training data.</li>
-</ul>
+<p><strong>Step 2: Build models using training data.</strong></p>
 <p>Machine learning (ML) algorithms are sensitive to imbalanced classes. That is, when there is not an equal representation of each class we wish to predict in the data (e.g., employees who left and employees who did not), it can adversely impact our results. In the case of our <code>employees</code> data set, there are 1,233 observations for active employees but only 237 observations for inactive employees. Therefore, we will introduce a popular technique to address this known as <strong>Synthetic Minority Oversampling Technique (SMOTE)</strong>, which will be important for the RF model we will train. This technique takes random samples with replacement (i.e., each observation may be chosen more than once) from the minority class to augment the class’s representation in the dataset and achieve balanced classes.</p>
 <p>While functions exist for implementing SMOTE, such as the <code>SMOTE()</code> function from the <code>DMwR</code> library, in the spirit of demystifying black box ML approaches we will step through this procedure without the use of an available function:</p>
 <div class="sourceCode" id="cb414"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb414-1"><a href="pred-mod.html#cb414-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate class representation delta in training data</span></span>
@@ -680,9 +681,7 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <span id="cb418-7"><a href="pred-mod.html#cb418-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Train RF model using oversampled data</span></span>
 <span id="cb418-8"><a href="pred-mod.html#cb418-8" aria-hidden="true" tabindex="-1"></a>rf.os.fit <span class="ot">&lt;-</span> randomForest<span class="sc">::</span><span class="fu">randomForest</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl <span class="sc">+</span> engagement <span class="sc">+</span> interview_rating, <span class="at">data =</span> training_dat_os)</span></code></pre></div>
 <p>While RFs generally offer a significant lift in performance beyond a single decision tree, we could also apply <em>tuning wrappers</em> around the <code>randomForest()</code> function to tune the model’s hyperparameters. Experimenting with a range of values for parameters, such as <code>mtry</code> for the number of variables to randomly sample and <code>ntree</code> for the number of trees to grow, may further improve model performance. Hyperparameter tuning is beyond the scope of this book, but Kuhn and Johnson (2013) is an excellent resource for a more exhaustive treatment on ML models.</p>
-<ul>
-<li><strong>Step 3</strong>: Use models to make predictions on test data.</li>
-</ul>
+<p><strong>Step 3: Use models to make predictions on test data.</strong></p>
 <p>While there are packages in R which provide performance metrics for predictive models, we will create a function for greater visibility into how each metric is calculated:</p>
 <div class="sourceCode" id="cb419"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb419-1"><a href="pred-mod.html#cb419-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function that returns a data frame of classification model performance statistics</span></span>
 <span id="cb419-2"><a href="pred-mod.html#cb419-2" aria-hidden="true" tabindex="-1"></a>classifier.perf <span class="ot">&lt;-</span> <span class="cf">function</span>(actual, predicted){</span>
@@ -715,7 +714,7 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <span id="cb419-29"><a href="pred-mod.html#cb419-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">data.frame</span>(stat_nm, stat_vl))</span>
 <span id="cb419-30"><a href="pred-mod.html#cb419-30" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb419-31"><a href="pred-mod.html#cb419-31" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-<p>We can use the <code>predict()</code> function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into one class versus the other. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives).</p>
+<p>We can use the <code>predict()</code> function in conjunction with the object holding the trained model to predict class values for our test data. For classification, we need to define a probability threshold for classifying observations into classes. This is an important consideration since we want to avoid investing in retention strategies for employees who are not actually going to leave (minimizing false positives), while ensuring employees who are truly at risk are flagged as such (maximizing true positives).</p>
 <p>We will predict the class using both binomial logistic regression and RF models, trained on both balanced (SMOTE) and imbalanced class data, and store performance metrics in a single data frame for easy comparison:</p>
 <div class="sourceCode" id="cb420"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb420-1"><a href="pred-mod.html#cb420-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize empty data frame for model performance stats</span></span>
 <span id="cb420-2"><a href="pred-mod.html#cb420-2" aria-hidden="true" tabindex="-1"></a>class.perf.metrics <span class="ot">&lt;-</span> <span class="cn">NULL</span></span>
@@ -750,9 +749,7 @@ Figure 13.4: Conceptual decision tree for employee attrition prediction
 <span id="cb420-31"><a href="pred-mod.html#cb420-31" aria-hidden="true" tabindex="-1"></a>                      <span class="fu">classifier.perf</span>(</span>
 <span id="cb420-32"><a href="pred-mod.html#cb420-32" aria-hidden="true" tabindex="-1"></a>                      <span class="at">actual =</span> test_dat<span class="sc">$</span>active,</span>
 <span id="cb420-33"><a href="pred-mod.html#cb420-33" aria-hidden="true" tabindex="-1"></a>                      <span class="at">predicted =</span> <span class="fu">ifelse</span>(<span class="fu">predict</span>(rf.os.fit, test_dat, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>) <span class="sc">&gt;=</span> prob_threshold, <span class="dv">1</span>, <span class="dv">0</span>))))</span></code></pre></div>
-<ul>
-<li><strong>Step 4</strong>: Evaluate model performance.</li>
-</ul>
+<p><strong>Step 4: Evaluate model performance.</strong></p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:class-mdl-perf"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/class-mdl-perf-1.png" alt="Classification performance for binomial logistic regression and RF models using balanced (SMOTE) and imbalanced classes" width="100%" />
 <p class="caption">
@@ -769,8 +766,16 @@ Figure 13.6: Variable importance plot for Random Forest model
 </div>
 <p>Variable importance plots are based on the mean decrease in <strong>Gini importance</strong>. Gini importance measures the average gain of purity by splits of a given variable. In other words, if a variable is useful it tends to split mixed labeled nodes (nodes with both employees who separated and employees who stayed) into pure single class nodes. The most important variables are at the top of the variable importance plot, indicating that without these variables nodes will not be as pure and as a result, classification performance will not be as strong.</p>
 <p>Figure <a href="pred-mod.html#fig:var-imp-plot">13.6</a> shows that <code>interview_rating</code> is far more important than the second most important predictor, <code>overtime</code>. This is consistent with what we observed in the results of the binomial logistic regression models too.</p>
-<p>Let’s compare the information from the RF’s Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the <code>rpart()</code> and <code>rpart.plot()</code> functions. <code>rpart</code> is an acronym for <em>recursive partitioning and regression trees</em>:</p>
-<pre><code>## Warning: package &#39;rpart&#39; was built under R version 4.0.5</code></pre>
+<p>Let’s compare the information from the RF’s Variable Importance Plot to a single decision tree built on training data with balanced classes. We can build and visualize a decision tree in R using the <code>rpart()</code> and <code>rpart.plot()</code> functions from libraries by the same names. <code>rpart</code> is an acronym for <em>recursive partitioning and regression trees</em>:</p>
+<div class="sourceCode" id="cb421"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb421-1"><a href="pred-mod.html#cb421-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load libraries</span></span>
+<span id="cb421-2"><a href="pred-mod.html#cb421-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart)</span>
+<span id="cb421-3"><a href="pred-mod.html#cb421-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rpart.plot)</span>
+<span id="cb421-4"><a href="pred-mod.html#cb421-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-5"><a href="pred-mod.html#cb421-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct decision tree on balanced training data</span></span>
+<span id="cb421-6"><a href="pred-mod.html#cb421-6" aria-hidden="true" tabindex="-1"></a>tree <span class="ot">&lt;-</span> rpart<span class="sc">::</span><span class="fu">rpart</span>(active <span class="sc">~</span> overtime <span class="sc">+</span> job_lvl <span class="sc">+</span>  engagement <span class="sc">+</span> interview_rating, <span class="at">data =</span> training_dat_os, <span class="at">method =</span> <span class="st">&quot;class&quot;</span>)</span>
+<span id="cb421-7"><a href="pred-mod.html#cb421-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb421-8"><a href="pred-mod.html#cb421-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize decision tree</span></span>
+<span id="cb421-9"><a href="pred-mod.html#cb421-9" aria-hidden="true" tabindex="-1"></a>rpart.plot<span class="sc">::</span><span class="fu">rpart.plot</span>(tree)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:rpart-tree"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/rpart-tree-1.png" alt="Decision tree for employee attrition prediction using training data with balanced classes (SMOTE)" width="75%" />
 <p class="caption">
@@ -778,25 +783,23 @@ Figure 13.7: Decision tree for employee attrition prediction using training data
 </p>
 </div>
 <p>As shown in Figure <a href="pred-mod.html#fig:rpart-tree">13.7</a>, the most important predictor for splitting the data is <code>interview_rating</code> when using a single decision tree. At the root node, there is a 50 percent chance of leaving and staying, which is expected given we balanced the classes using SMOTE. A prediction that is no better than a fair coin toss is of course not helpful. Walking down to the leaf nodes, we can see that for the 50% of employees with <code>interview_rating &gt;= 3.5</code>, the algorithm predicts they will stay (<code>status = 0</code>); for the 50% of employees with <code>interview_rating &lt; 3.5</code>, the algorithm predicts they will leave (<code>status = 1</code>). Given what we observed in the results of the binomial logistic regression output, additional partitioning by <code>overtime</code> may further increase node purity on the test data since classes are mixed for those with interview ratings between <code>3.3</code> and <code>3.6</code>. However, given the strong performance splitting data only on <code>interview_rating</code>, further partitioning will likely result in modeling noise and overfitting.</p>
-<p><strong>Forecasting</strong></p>
+</div>
+<div id="forecasting" class="section level3" number="13.5.2">
+<h3><span class="header-section-number">13.5.2</span> Forecasting</h3>
 <p>To demonstrate the prediction workflow steps for forecasting, we will leverage our <code>turnover_trends</code> data set:</p>
 <div class="sourceCode" id="cb422"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb422-1"><a href="pred-mod.html#cb422-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
 <span id="cb422-2"><a href="pred-mod.html#cb422-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb422-3"><a href="pred-mod.html#cb422-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb422-4"><a href="pred-mod.html#cb422-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
 <span id="cb422-5"><a href="pred-mod.html#cb422-5" aria-hidden="true" tabindex="-1"></a>forecasting_dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/turnover_trends.csv&quot;</span>)</span></code></pre></div>
-<ul>
-<li><strong>Step 1</strong>: Partition data into training and test sets for cross-validation.</li>
-</ul>
-<p>Since we have 60 months of data for each combination of <code>job</code>, <code>level</code>, and <code>remote</code> in the data, we will select a combination for which <code>turnover_rate</code> can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.</p>
+<p><strong>Step 1: Partition data into training and test sets for cross-validation.</strong></p>
+<p>Since we have 60 months of data for each combination of values for the <code>job</code>, <code>level</code>, and <code>remote</code> variables, we will select a combination for which <code>turnover_rate</code> can be projected for future months. To simplify, we will train a model using data for the first 48 months and test using the final 12 months.</p>
 <div class="sourceCode" id="cb423"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb423-1"><a href="pred-mod.html#cb423-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create training data</span></span>
 <span id="cb423-2"><a href="pred-mod.html#cb423-2" aria-hidden="true" tabindex="-1"></a>train_dat <span class="ot">&lt;-</span> forecasting_dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(job <span class="sc">==</span> <span class="st">&#39;People Scientist&#39;</span> <span class="sc">&amp;</span> level <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> year <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>)</span>
 <span id="cb423-3"><a href="pred-mod.html#cb423-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb423-4"><a href="pred-mod.html#cb423-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create test data</span></span>
 <span id="cb423-5"><a href="pred-mod.html#cb423-5" aria-hidden="true" tabindex="-1"></a>test_dat <span class="ot">&lt;-</span> forecasting_dat <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">filter</span>(job <span class="sc">==</span> <span class="st">&#39;People Scientist&#39;</span> <span class="sc">&amp;</span> level <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> remote <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span> <span class="sc">&amp;</span> year <span class="sc">==</span> <span class="dv">5</span>)</span></code></pre></div>
-<ul>
-<li><strong>Step 2</strong>: Build models using training data.</li>
-</ul>
+<p><strong>Step 2: Build models using training data.</strong></p>
 <p>Given the significant quadratic and cubic terms identified in Chapter <a href="lme.html#lme">11</a>, we will fit a cubic regression model on the training data.</p>
 <div class="sourceCode" id="cb424"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb424-1"><a href="pred-mod.html#cb424-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit cubic model</span></span>
 <span id="cb424-2"><a href="pred-mod.html#cb424-2" aria-hidden="true" tabindex="-1"></a>train.cube.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(turnover_rate <span class="sc">~</span> year <span class="sc">+</span> month <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">2</span>) <span class="sc">+</span> <span class="fu">I</span>(month<span class="sc">^</span><span class="dv">3</span>) <span class="sc">+</span> remote, <span class="at">data =</span> train_dat)</span>
@@ -827,9 +830,7 @@ Figure 13.7: Decision tree for employee attrition prediction using training data
 ## Multiple R-squared:  0.9499, Adjusted R-squared:  0.9471 
 ## F-statistic: 341.4 on 5 and 90 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>All linear, quadratic, and cubic terms on <code>month</code> are statistically significant at the <span class="math inline">\(p\)</span> &lt; .001 level.</p>
-<ul>
-<li><strong>Step 3</strong>: Use models to make predictions on test data.</li>
-</ul>
+<p><strong>Step 3: Use models to make predictions on test data.</strong></p>
 <p>We will again build a function to evaluate the performance of the fitted models applied to test data rather than using delivered functions. The following function will return <em>mean absolute deviation (MAD)</em>, <em>mean squared error (MSE)</em>, and <em>mean absolute percentage error (MAPE)</em>:</p>
 <div class="sourceCode" id="cb426"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb426-1"><a href="pred-mod.html#cb426-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Develop function that returns a data frame of forecasting model performance statistics</span></span>
 <span id="cb426-2"><a href="pred-mod.html#cb426-2" aria-hidden="true" tabindex="-1"></a>forecast.perf <span class="ot">&lt;-</span> <span class="cf">function</span>(actual, predicted){</span>
@@ -861,9 +862,7 @@ Figure 13.7: Decision tree for employee attrition prediction using training data
 <span id="cb427-9"><a href="pred-mod.html#cb427-9" aria-hidden="true" tabindex="-1"></a>                          <span class="at">predicted =</span> <span class="fu">predict</span>(train.cube.fit, test_dat, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>),</span>
 <span id="cb427-10"><a href="pred-mod.html#cb427-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">lwr_bound =</span> <span class="fu">as.data.frame</span>(<span class="fu">predict</span>(train.cube.fit, test_dat, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;predict&quot;</span>))<span class="sc">$</span>lwr,</span>
 <span id="cb427-11"><a href="pred-mod.html#cb427-11" aria-hidden="true" tabindex="-1"></a>                          <span class="at">upr_bound =</span> <span class="fu">as.data.frame</span>(<span class="fu">predict</span>(train.cube.fit, test_dat, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>, <span class="at">interval =</span> <span class="st">&quot;predict&quot;</span>))<span class="sc">$</span>upr))</span></code></pre></div>
-<ul>
-<li><strong>Step 4</strong>: Evaluate model performance.</li>
-</ul>
+<p><strong>Step 4: Evaluate model performance.</strong></p>
 <p>Next, we can pass a vector of actual and corresponding predicted values into the <code>forecast.perf()</code> function to return MAD, MSE, and MAPE performance metrics for the fitted model applied to year 5 data.</p>
 <div class="sourceCode" id="cb428"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb428-1"><a href="pred-mod.html#cb428-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate error rates for year 5 forecast</span></span>
 <span id="cb428-2"><a href="pred-mod.html#cb428-2" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast.perf</span>(<span class="at">actual =</span> forecast.metrics<span class="sc">$</span>actual, <span class="at">predicted =</span> forecast.metrics<span class="sc">$</span>predicted)</span></code></pre></div>
@@ -903,6 +902,7 @@ Figure 13.8: Left: Fitted model (red dashed line) with good fit to year 4 traini
 </p>
 </div>
 <p>This is an important lesson that highlights the centrality of cross-validation in evaluating whether predictive models will generalize beyond the available data. We can easily fit a model that performs well on training data and claim that the model has exceptional accuracy. However, what matters in predictive modeling is how well the model performs on data it has not seen as part of the training process.</p>
+</div>
 </div>
 <div id="review-questions-11" class="section level2" number="13.6">
 <h2><span class="header-section-number">13.6</span> Review Questions</h2>
