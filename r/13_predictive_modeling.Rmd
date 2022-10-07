@@ -168,10 +168,10 @@ set.seed(9876)
 training_ids <- sample(prediction_dat$employee_id, size = nrow(prediction_dat) * 2/3, replace = FALSE)
 
 # Create training data
-training_dat <- prediction_dat %>% dplyr::filter(employee_id %in% training_ids)
+training_dat <- prediction_dat |> dplyr::filter(employee_id %in% training_ids)
 
 # Create test data using remaining 1/3 of observations
-test_dat <- prediction_dat %>% dplyr::filter(!employee_id %in% training_ids)
+test_dat <- prediction_dat |> dplyr::filter(!employee_id %in% training_ids)
 
 # Return Boolean to validate that all observations are accounted for
 nrow(training_dat) + nrow(test_dat) == nrow(prediction_dat)
@@ -187,7 +187,7 @@ nrow(training_dat) + nrow(test_dat) == nrow(prediction_dat)
 ```{r, message = FALSE, warning = FALSE}
 
 # Calculate class representation delta in training data
-training_class_delta <- nrow(training_dat %>% dplyr::filter(active == 0)) - nrow(training_dat %>% dplyr::filter(active == 1))
+training_class_delta <- nrow(training_dat |> dplyr::filter(active == 0)) - nrow(training_dat |> dplyr::filter(active == 1))
 
 # Copy training data to separate data frame for oversampling
 training_dat_os <- training_dat
@@ -203,14 +203,14 @@ for (i in 1:training_class_delta){
   oversampled_id <- sample(training_dat_os[training_dat_os$active == 1, 'employee_id'], size = 1, replace = TRUE)
   
   # Store observation for sampled employee id
-  new_obs <- unique(training_dat_os %>% dplyr::filter(employee_id == oversampled_id))
+  new_obs <- unique(training_dat_os |> dplyr::filter(employee_id == oversampled_id))
   
   # Append sampled observation to training data frame
   training_dat_os <- rbind(training_dat_os, new_obs)
 }
 
 # Return Boolean to validate that classes are equal in the training data
-nrow(training_dat_os %>% dplyr::filter(active == 0)) == nrow(training_dat_os %>% dplyr::filter(active == 1))
+nrow(training_dat_os |> dplyr::filter(active == 0)) == nrow(training_dat_os |> dplyr::filter(active == 1))
 
 ```
 
@@ -412,10 +412,10 @@ forecasting_dat <- read.csv("https://raw.githubusercontent.com/crstarbuck/people
 ```{r, message = FALSE, warning = FALSE}
 
 # Create training data
-train_dat <- forecasting_dat %>% dplyr::filter(job == 'People Scientist' & level == 1 & year %in% 1:4)
+train_dat <- forecasting_dat |> dplyr::filter(job == 'People Scientist' & level == 1 & year %in% 1:4)
 
 # Create test data
-test_dat <- forecasting_dat %>% dplyr::filter(job == 'People Scientist' & level == 1 & remote == 'Yes' & year == 5)
+test_dat <- forecasting_dat |> dplyr::filter(job == 'People Scientist' & level == 1 & remote == 'Yes' & year == 5)
 
 ```
   
@@ -498,11 +498,11 @@ forecast.perf(actual = forecast.metrics$actual, predicted = forecast.metrics$pre
 ```{r, message = FALSE, warning = FALSE}
 
 # Calculate year-wise turnover rate mean
-yr1_avg <- train_dat %>% dplyr::filter(remote == 'Yes' & year == 1) %>% dplyr::summarize(Mean = mean(turnover_rate))
-yr2_avg <- train_dat %>% dplyr::filter(remote == 'Yes' & year == 2) %>% dplyr::summarize(Mean = mean(turnover_rate))
-yr3_avg <- train_dat %>% dplyr::filter(remote == 'Yes' & year == 3) %>% dplyr::summarize(Mean = mean(turnover_rate))
-yr4_avg <- train_dat %>% dplyr::filter(remote == 'Yes' & year == 4) %>% dplyr::summarize(Mean = mean(turnover_rate))
-yr5_avg <- test_dat %>% dplyr::summarize(Mean = mean(turnover_rate))
+yr1_avg <- train_dat |> dplyr::filter(remote == 'Yes' & year == 1) |> dplyr::summarize(Mean = mean(turnover_rate))
+yr2_avg <- train_dat |> dplyr::filter(remote == 'Yes' & year == 2) |> dplyr::summarize(Mean = mean(turnover_rate))
+yr3_avg <- train_dat |> dplyr::filter(remote == 'Yes' & year == 3) |> dplyr::summarize(Mean = mean(turnover_rate))
+yr4_avg <- train_dat |> dplyr::filter(remote == 'Yes' & year == 4) |> dplyr::summarize(Mean = mean(turnover_rate))
+yr5_avg <- test_dat |> dplyr::summarize(Mean = mean(turnover_rate))
 
 # Display year-wise turnover rate mean
 print(c(yr1_avg, yr2_avg, yr3_avg, yr4_avg, yr5_avg))

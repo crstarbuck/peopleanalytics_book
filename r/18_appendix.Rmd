@@ -169,8 +169,8 @@ library(ggplot2)
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
 
 # Create data cube for active employees
-smmry_ed_field <- employees %>%
-                  dplyr::filter(active == 'Yes') %>%
+smmry_ed_field <- employees |>
+                  dplyr::filter(active == 'Yes') |>
                   dplyr::count(ed_field)
 
 # Step 1: Build Bar Chart with Defaults
@@ -359,16 +359,16 @@ employees$tenure_band <- dplyr::case_when(
 )
 
 # Store aggregate measures to cube
-dept_tenure <- employees %>%
-               dplyr::filter(active == 'Yes') %>%
-               dplyr::group_by(dept, tenure_band) %>%
+dept_tenure <- employees |>
+               dplyr::filter(active == 'Yes') |>
+               dplyr::group_by(dept, tenure_band) |>
                dplyr::summarise(cnt = dplyr::n())
 
 # Specify ordered factor
 dept_tenure$tenure_band <- ordered(dept_tenure$tenure_band, levels = c("Under 1 Year", "1-2 Years", "3-5 Years", "6-10 Years", "Over 10 Years"))
 
 # Assign proper case field names
-dept_tenure_proper <- dept_tenure %>%
+dept_tenure_proper <- dept_tenure |>
                       rename('Department' = dept,
                              'Tenure' = tenure_band,
                              'Count' = cnt)
@@ -406,9 +406,9 @@ employees$tenure_band <- dplyr::case_when(
 )
 
 # Store aggregate measures to cube
-dept_tenure <- employees %>%
-               dplyr::filter(active == 'Yes') %>%
-               dplyr::group_by(dept, tenure_band) %>%
+dept_tenure <- employees |>
+               dplyr::filter(active == 'Yes') |>
+               dplyr::group_by(dept, tenure_band) |>
                dplyr::summarise(cnt = dplyr::n())
 
 # Specify ordered factor
@@ -672,10 +672,10 @@ engagement_scores <- data.frame(dept = rep(c('Engineering', 'Finance', 'Legal', 
                                 pct = scores)
 
 # Rank departments by top box score to support sorting
-dept_rank <- engagement_scores %>%
-             dplyr::filter(favorability == 'Favorable') %>% 
-             dplyr::arrange(desc(pct)) %>% 
-             dplyr::mutate(rank = dense_rank(desc(pct))) %>%
+dept_rank <- engagement_scores |>
+             dplyr::filter(favorability == 'Favorable') |> 
+             dplyr::arrange(desc(pct)) |> 
+             dplyr::mutate(rank = dense_rank(desc(pct))) |>
              dplyr::select(dept, rank)
 
 # Flag top department records in df to support conditional coloring
@@ -685,7 +685,7 @@ engagement_scores$top_score = ifelse(engagement_scores$dept == dept_rank[1, 'dep
 engagement_scores <- left_join(engagement_scores, dept_rank, by = "dept")
 
 ```  
-  
+
 ```{r, eval = FALSE}
 
 ### Vertical Bar Charts ###

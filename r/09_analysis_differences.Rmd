@@ -193,8 +193,8 @@ for (n in n_counts){
     ab <- rbind(a, b)
 
     # Store mean values in df
-    mean_df <- ab %>%
-               dplyr::group_by(group) %>%
+    mean_df <- ab |>
+               dplyr::group_by(group) |>
                dplyr::summarize(mean = mean(x))
 
     # Calculate absolute mean difference
@@ -387,15 +387,15 @@ treat_ids <- sample(unlist(subset(employees, business_travel == 'Travel_Frequent
 ctrl_ids <- unlist(subset(employees, business_travel == 'Travel_Frequently' & !employee_id %in% treat_ids, select = employee_id))
 
 # Initialize dfs for pre/post metrics
-treat_metrics = data.frame(pre_ind = numeric(length(treat_ids)),
+treat_metrics = data.frame(pre_ind = length(treat_ids),
                            rand_num = rnorm(length(treat_ids), mean = 15, sd = 5) * .001,
-                           post_ind = numeric(length(treat_ids)), 
-                           diff = numeric(length(treat_ids)))
+                           post_ind = length(treat_ids), 
+                           diff = length(treat_ids))
 
-ctrl_metrics = data.frame(pre_ind = numeric(length(ctrl_ids)), 
+ctrl_metrics = data.frame(pre_ind = length(ctrl_ids), 
                           rand_num = rnorm(length(ctrl_ids), mean = 0, sd = 1) * .001, 
-                          post_ind = numeric(length(ctrl_ids)),
-                          diff = numeric(length(ctrl_ids)))
+                          post_ind = length(ctrl_ids),
+                          diff = length(ctrl_ids))
 
 # Store happiness indices for treatment and control groups
 treat_metrics$pre_ind <- unlist(subset(employees, employee_id %in% treat_ids, select = happiness_ind))
@@ -404,10 +404,6 @@ ctrl_metrics$pre_ind <- unlist(subset(employees, employee_id %in% ctrl_ids, sele
 # Create vectors with artificially inflated post-intervention happiness indices
 treat_metrics$post_ind <- treat_metrics$pre_ind + treat_metrics$rand_num
 ctrl_metrics$post_ind <- ctrl_metrics$pre_ind + ctrl_metrics$rand_num
-
-# Force an upper bound of 4 to adjusted index scores (variables were measured using a 4-point Likert scale)
-treat_metrics$post_ind <- if(treat_metrics$post_ind > 4) {4} else {treat_metrics$post_ind}
-ctrl_metrics$post_ind <- if(ctrl_metrics$post_ind > 4) {4} else {ctrl_metrics$post_ind}
 
 ```    
 

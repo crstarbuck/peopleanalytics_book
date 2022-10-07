@@ -128,7 +128,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-10-04}
+\date{2022-10-06}
 
 \begin{document}
 \maketitle
@@ -458,7 +458,7 @@ This book will utilize libraries from many R packages. The line of code below ca
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"ggdist"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"networkD3"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{, }\StringTok{"factoextra"}\NormalTok{, }\StringTok{"cluster"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
+\FunctionTok{install.packages}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"tidyverse"}\NormalTok{, }\StringTok{"corrplot"}\NormalTok{, }\StringTok{"psych"}\NormalTok{, }\StringTok{"moments"}\NormalTok{, }\StringTok{"ggpubr"}\NormalTok{, }\StringTok{"ggdist"}\NormalTok{, }\StringTok{"GGally"}\NormalTok{, }\StringTok{"networkD3"}\NormalTok{, }\StringTok{"sqldf"}\NormalTok{, }\StringTok{"caret"}\NormalTok{, }\StringTok{"car"}\NormalTok{, }\StringTok{"reshape2"}\NormalTok{, }\StringTok{"effsize"}\NormalTok{, }\StringTok{"lmtest"}\NormalTok{, }\StringTok{"equatiomatic"}\NormalTok{, }\StringTok{"pwr"}\NormalTok{, }\StringTok{"nnet"}\NormalTok{, }\StringTok{"MASS"}\NormalTok{, }\StringTok{"brant"}\NormalTok{, }\StringTok{"lme4"}\NormalTok{, }\StringTok{"lmerTest"}\NormalTok{, }\StringTok{"rpart"}\NormalTok{, }\StringTok{"rpart.plot"}\NormalTok{, }\StringTok{"lavaan"}\NormalTok{, }\StringTok{"lavaanPlot"}\NormalTok{, }\StringTok{"factoextra"}\NormalTok{, }\StringTok{"cluster"}\NormalTok{), }\AttributeTok{dependencies =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{repos =} \StringTok{"http://cran.us.r{-}project.org"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1776,7 +1776,7 @@ If it were possible for all employee ids to exist in \texttt{demographics} but n
 
 In this case, if demographics is the base data set which contains all employee ids (i.e., the `LEFT' data set), it is important for \texttt{tenure} and \texttt{job} to be joined to it. Joining \texttt{job} to \texttt{tenure} may result in information loss if an employee id exists in \texttt{demographics} and \texttt{job} but not in the intermediate \texttt{tenure} data set.
 
-When integrating data within R, the \texttt{tidyverse} provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the package-specific \texttt{\%\textgreater{}\%} operator. The example below joins nine data sets into a single \texttt{employees} data frame using a left join on the \texttt{employee\_id} column:
+When integrating data within R, the \texttt{tidyverse} provides a more efficient and parsimonious method of joining many data sets using various join types. Within this framework, components are chained together via the \texttt{\textbar{}\textgreater{}} operator. Note that an older alternative, albeit slightly less efficient, \texttt{\%\textgreater{}\%} operator could instead be used. The example below joins nine data sets into a single \texttt{employees} data frame using a left join on the \texttt{employee\_id} column:
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1791,7 +1791,7 @@ When integrating data within R, the \texttt{tidyverse} provides a more efficient
 \NormalTok{                  performance,}
 \NormalTok{                  prior\_employment,}
 \NormalTok{                  sentiment,}
-\NormalTok{                  tenure) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{                  tenure) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                  purrr}\SpecialCharTok{::}\FunctionTok{reduce}\NormalTok{(left\_join, }\AttributeTok{by =} \StringTok{"employee\_id"}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
@@ -2453,13 +2453,13 @@ While sampling \emph{with} replacement would not make sense for applications suc
 
 To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30\% of all employees are in the Engineering department, the researcher could \emph{randomly} select a calculated number of employees from the Engineering department such that 30\% of employees in the sample come from this department.
 
-Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each department. First, we can review counts of employees for each department using the \texttt{group\_by()} and \texttt{summarise()} functions from the \texttt{dplyr} library. Note that \texttt{dplyr} functions are chained together using a \texttt{\%\textgreater{}\%} operator:
+Let's demonstrate stratified random sampling in R by sampling \(\frac{1}{2}\) of employees within each department. First, we can review counts of employees for each department using the \texttt{group\_by()} and \texttt{summarise()} functions from the \texttt{dplyr} library.
 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Return employee counts by department}
-\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
@@ -2478,13 +2478,13 @@ Next, we will randomly select \(\frac{1}{2}\) of employees within each departmen
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Obtain and store stratified random sample}
-\NormalTok{strat\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{strat\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{sample\_frac}\NormalTok{(}\AttributeTok{size =}\NormalTok{ .}\DecValTok{5}\NormalTok{)}
 
 \CommentTok{\# Return sample counts by department}
-\NormalTok{strat\_sample }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{strat\_sample }\SpecialCharTok{|\textgreater{}}
+\NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{n =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{())}
 \end{Highlighting}
 \end{Shaded}
@@ -2515,7 +2515,7 @@ Let's demonstrate how to implement cluster sampling in R:
 \NormalTok{clusters }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\FunctionTok{unique}\NormalTok{(employees}\SpecialCharTok{$}\NormalTok{cluster), }\AttributeTok{size =} \DecValTok{5}\NormalTok{, }\AttributeTok{replace =}\NormalTok{ F)}
 
 \CommentTok{\# Store cluster sample}
-\NormalTok{clust\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{clust\_sample }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(cluster }\SpecialCharTok{\%in\%}\NormalTok{ clusters)}
 
 \CommentTok{\# Display dimensions of the cluster sample object}
@@ -3132,7 +3132,7 @@ For variables with more than 2 unordered categories, we can leverage the \texttt
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Return counts by department}
-\NormalTok{employees }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
+\NormalTok{employees }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(dept, }\AttributeTok{sort =} \ConstantTok{TRUE}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -4633,13 +4633,13 @@ As expected, these randomly generated data are uniformly distributed. Next, we w
 \NormalTok{\}}
 
 \CommentTok{\# Produce histograms to visualize distributions of sample means, grouped by n{-}count}
-\NormalTok{sample\_means }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+} 
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_bar, }\AttributeTok{fill =}\NormalTok{ n) }\SpecialCharTok{+} 
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"x{-}bar"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Density"}\NormalTok{) }\SpecialCharTok{+} 
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ ..density..), }\AttributeTok{fill =} \StringTok{"\#414141"}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{fill =} \StringTok{"\#ADD8E6"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
-\NormalTok{                 ggplot2}\SpecialCharTok{::}\FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{n)}
+\NormalTok{sample\_means }\SpecialCharTok{|\textgreater{}}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{() }\SpecialCharTok{+} 
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ x\_bar, }\AttributeTok{fill =}\NormalTok{ n) }\SpecialCharTok{+} 
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{x =} \StringTok{"x{-}bar"}\NormalTok{, }\AttributeTok{y =} \StringTok{"Density"}\NormalTok{) }\SpecialCharTok{+} 
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_histogram}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{y =}\NormalTok{ ..density..), }\AttributeTok{fill =} \StringTok{"\#414141"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_density}\NormalTok{(}\AttributeTok{fill =} \StringTok{"\#ADD8E6"}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{theme\_bw}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{                ggplot2}\SpecialCharTok{::}\FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{n)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -5547,15 +5547,15 @@ Let's prepare the data for this experiment. Since \texttt{employees} is a cross-
 \NormalTok{ctrl\_ids }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, business\_travel }\SpecialCharTok{==} \StringTok{\textquotesingle{}Travel\_Frequently\textquotesingle{}} \SpecialCharTok{\&} \SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ treat\_ids, }\AttributeTok{select =}\NormalTok{ employee\_id))}
 
 \CommentTok{\# Initialize dfs for pre/post metrics}
-\NormalTok{treat\_metrics }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pre\_ind =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(treat\_ids)),}
+\NormalTok{treat\_metrics }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pre\_ind =} \FunctionTok{length}\NormalTok{(treat\_ids),}
                            \AttributeTok{rand\_num =} \FunctionTok{rnorm}\NormalTok{(}\FunctionTok{length}\NormalTok{(treat\_ids), }\AttributeTok{mean =} \DecValTok{15}\NormalTok{, }\AttributeTok{sd =} \DecValTok{5}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ .}\DecValTok{001}\NormalTok{,}
-                           \AttributeTok{post\_ind =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(treat\_ids)), }
-                           \AttributeTok{diff =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(treat\_ids)))}
+                           \AttributeTok{post\_ind =} \FunctionTok{length}\NormalTok{(treat\_ids), }
+                           \AttributeTok{diff =} \FunctionTok{length}\NormalTok{(treat\_ids))}
 
-\NormalTok{ctrl\_metrics }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pre\_ind =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(ctrl\_ids)), }
+\NormalTok{ctrl\_metrics }\OtherTok{=} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{pre\_ind =} \FunctionTok{length}\NormalTok{(ctrl\_ids), }
                           \AttributeTok{rand\_num =} \FunctionTok{rnorm}\NormalTok{(}\FunctionTok{length}\NormalTok{(ctrl\_ids), }\AttributeTok{mean =} \DecValTok{0}\NormalTok{, }\AttributeTok{sd =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ .}\DecValTok{001}\NormalTok{, }
-                          \AttributeTok{post\_ind =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(ctrl\_ids)),}
-                          \AttributeTok{diff =} \FunctionTok{numeric}\NormalTok{(}\FunctionTok{length}\NormalTok{(ctrl\_ids)))}
+                          \AttributeTok{post\_ind =} \FunctionTok{length}\NormalTok{(ctrl\_ids),}
+                          \AttributeTok{diff =} \FunctionTok{length}\NormalTok{(ctrl\_ids))}
 
 \CommentTok{\# Store happiness indices for treatment and control groups}
 \NormalTok{treat\_metrics}\SpecialCharTok{$}\NormalTok{pre\_ind }\OtherTok{\textless{}{-}} \FunctionTok{unlist}\NormalTok{(}\FunctionTok{subset}\NormalTok{(employees, employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ treat\_ids, }\AttributeTok{select =}\NormalTok{ happiness\_ind))}
@@ -5564,10 +5564,6 @@ Let's prepare the data for this experiment. Since \texttt{employees} is a cross-
 \CommentTok{\# Create vectors with artificially inflated post{-}intervention happiness indices}
 \NormalTok{treat\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\OtherTok{\textless{}{-}}\NormalTok{ treat\_metrics}\SpecialCharTok{$}\NormalTok{pre\_ind }\SpecialCharTok{+}\NormalTok{ treat\_metrics}\SpecialCharTok{$}\NormalTok{rand\_num}
 \NormalTok{ctrl\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\OtherTok{\textless{}{-}}\NormalTok{ ctrl\_metrics}\SpecialCharTok{$}\NormalTok{pre\_ind }\SpecialCharTok{+}\NormalTok{ ctrl\_metrics}\SpecialCharTok{$}\NormalTok{rand\_num}
-
-\CommentTok{\# Force an upper bound of 4 to adjusted index scores (variables were measured using a 4{-}point Likert scale)}
-\NormalTok{treat\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{(treat\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\SpecialCharTok{\textgreater{}} \DecValTok{4}\NormalTok{) \{}\DecValTok{4}\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{treat\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind\}}
-\NormalTok{ctrl\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\OtherTok{\textless{}{-}} \ControlFlowTok{if}\NormalTok{(ctrl\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind }\SpecialCharTok{\textgreater{}} \DecValTok{4}\NormalTok{) \{}\DecValTok{4}\NormalTok{\} }\ControlFlowTok{else}\NormalTok{ \{ctrl\_metrics}\SpecialCharTok{$}\NormalTok{post\_ind\}}
 \end{Highlighting}
 \end{Shaded}
 
@@ -5666,12 +5662,12 @@ We can run a paired samples \(t\)-test in R by passing \texttt{paired\ =\ TRUE} 
 ## 
 ## data:  treat_metrics$post_ind and treat_metrics$pre_ind
 ## t = 35.906, df = 137, p-value < 2.2e-16
-## alternative hypothesis: true difference in means is greater than 0
+## alternative hypothesis: true mean difference is greater than 0
 ## 95 percent confidence interval:
 ##  0.01490482        Inf
 ## sample estimates:
-## mean of the differences 
-##              0.01562551
+## mean difference 
+##      0.01562551
 \end{verbatim}
 
 These results indicate that the post-intervention happiness index is significantly larger than the pre-intervention happiness index. This is encouraging with respect to the potential efficacy of the flexible work pilot, but the question about whether the control group experienced a commensurate improvement over the observation period remains unanswered.
@@ -5691,12 +5687,12 @@ Let's run the same paired samples \(t\)-test using the control group indices:
 ## 
 ## data:  ctrl_metrics$post_ind and ctrl_metrics$pre_ind
 ## t = 0.59995, df = 138, p-value = 0.2748
-## alternative hypothesis: true difference in means is greater than 0
+## alternative hypothesis: true mean difference is greater than 0
 ## 95 percent confidence interval:
 ##  -8.719262e-05           Inf
 ## sample estimates:
-## mean of the differences 
-##            4.953658e-05
+## mean difference 
+##    4.953658e-05
 \end{verbatim}
 
 Since \(p\) \textgreater= .05, we can conclude that there was not a significant increase in happiness indices for the control group, which provides additional -- but not conclusive -- support for the effectiveness of the flexible work benefit.
@@ -8277,10 +8273,10 @@ For this example, we will implement the validation set approach for CV.
 \NormalTok{training\_ids }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(prediction\_dat}\SpecialCharTok{$}\NormalTok{employee\_id, }\AttributeTok{size =} \FunctionTok{nrow}\NormalTok{(prediction\_dat) }\SpecialCharTok{*} \DecValTok{2}\SpecialCharTok{/}\DecValTok{3}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{FALSE}\NormalTok{)}
 
 \CommentTok{\# Create training data}
-\NormalTok{training\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
+\NormalTok{training\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
 \CommentTok{\# Create test data using remaining 1/3 of observations}
-\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
+\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ prediction\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\NormalTok{employee\_id }\SpecialCharTok{\%in\%}\NormalTok{ training\_ids)}
 
 \CommentTok{\# Return Boolean to validate that all observations are accounted for}
 \FunctionTok{nrow}\NormalTok{(training\_dat) }\SpecialCharTok{+} \FunctionTok{nrow}\NormalTok{(test\_dat) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(prediction\_dat)}
@@ -8300,7 +8296,7 @@ While functions exist for implementing SMOTE, such as the \texttt{SMOTE()} funct
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Calculate class representation delta in training data}
-\NormalTok{training\_class\_delta }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\NormalTok{training\_class\_delta }\OtherTok{\textless{}{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{{-}} \FunctionTok{nrow}\NormalTok{(training\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
 
 \CommentTok{\# Copy training data to separate data frame for oversampling}
 \NormalTok{training\_dat\_os }\OtherTok{\textless{}{-}}\NormalTok{ training\_dat}
@@ -8316,14 +8312,14 @@ While functions exist for implementing SMOTE, such as the \texttt{SMOTE()} funct
 \NormalTok{  oversampled\_id }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(training\_dat\_os[training\_dat\_os}\SpecialCharTok{$}\NormalTok{active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{, }\StringTok{\textquotesingle{}employee\_id\textquotesingle{}}\NormalTok{], }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{)}
   
   \CommentTok{\# Store observation for sampled employee id}
-\NormalTok{  new\_obs }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{==}\NormalTok{ oversampled\_id))}
+\NormalTok{  new\_obs }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(training\_dat\_os }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(employee\_id }\SpecialCharTok{==}\NormalTok{ oversampled\_id))}
   
   \CommentTok{\# Append sampled observation to training data frame}
 \NormalTok{  training\_dat\_os }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(training\_dat\_os, new\_obs)}
 \NormalTok{\}}
 
 \CommentTok{\# Return Boolean to validate that classes are equal in the training data}
-\FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
+\FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{0}\NormalTok{)) }\SpecialCharTok{==} \FunctionTok{nrow}\NormalTok{(training\_dat\_os }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \DecValTok{1}\NormalTok{))}
 \end{Highlighting}
 \end{Shaded}
 
@@ -8569,10 +8565,10 @@ Since we have 60 months of data for each combination of values for the \texttt{j
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Create training data}
-\NormalTok{train\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)}
+\NormalTok{train\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{\%in\%} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{)}
 
 \CommentTok{\# Create test data}
-\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{5}\NormalTok{)}
+\NormalTok{test\_dat }\OtherTok{\textless{}{-}}\NormalTok{ forecasting\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(job }\SpecialCharTok{==} \StringTok{\textquotesingle{}People Scientist\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ level }\SpecialCharTok{==} \DecValTok{1} \SpecialCharTok{\&}\NormalTok{ remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{5}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -8687,11 +8683,11 @@ Evaluating the average turnover rate by year will help in reconciling the high \
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Calculate year{-}wise turnover rate mean}
-\NormalTok{yr1\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr2\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr3\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr4\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{4}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
-\NormalTok{yr5\_avg }\OtherTok{\textless{}{-}}\NormalTok{ test\_dat }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr1\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr2\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{2}\NormalTok{) }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr3\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{3}\NormalTok{) }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr4\_avg }\OtherTok{\textless{}{-}}\NormalTok{ train\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(remote }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ year }\SpecialCharTok{==} \DecValTok{4}\NormalTok{) }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
+\NormalTok{yr5\_avg }\OtherTok{\textless{}{-}}\NormalTok{ test\_dat }\SpecialCharTok{|\textgreater{}}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{summarize}\NormalTok{(}\AttributeTok{Mean =} \FunctionTok{mean}\NormalTok{(turnover\_rate))}
 
 \CommentTok{\# Display year{-}wise turnover rate mean}
 \FunctionTok{print}\NormalTok{(}\FunctionTok{c}\NormalTok{(yr1\_avg, yr2\_avg, yr3\_avg, yr4\_avg, yr5\_avg))}
@@ -9089,14 +9085,14 @@ Step three is interpreting the output of the fitted model:
 \end{Shaded}
 
 \begin{verbatim}
-## lavaan 0.6-7 ended normally after 25 iterations
+## lavaan 0.6-12 ended normally after 25 iterations
 ## 
 ##   Estimator                                         ML
 ##   Optimization method                           NLMINB
-##   Number of free parameters                         13
-##                                                       
+##   Number of model parameters                        13
+## 
 ##   Number of observations                           400
-##                                                       
+## 
 ## Model Test User Model:
 ##                                                       
 ##   Test statistic                                35.477
@@ -9631,8 +9627,8 @@ We will begin by building a bar chart that shows the distribution of active empl
 \NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics\_book/master/data/employees.csv"}\NormalTok{)}
 
 \CommentTok{\# Create data cube for active employees}
-\NormalTok{smmry\_ed\_field }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{smmry\_ed\_field }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(ed\_field)}
 \end{Highlighting}
 \end{Shaded}
@@ -9849,9 +9845,9 @@ A simple cube containing employee counts by department and tenure band will be c
 \NormalTok{)}
 
 \CommentTok{\# Store aggregate measures to cube}
-\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{())}
 
 \CommentTok{\# Specify ordered factor}
@@ -9894,7 +9890,7 @@ While these data could easily be copied and pasted into presentation software fo
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Assign proper case field names}
-\NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{|\textgreater{}}
                       \FunctionTok{rename}\NormalTok{(}\StringTok{\textquotesingle{}Department\textquotesingle{}} \OtherTok{=}\NormalTok{ dept,}
                              \StringTok{\textquotesingle{}Tenure\textquotesingle{}} \OtherTok{=}\NormalTok{ tenure\_band,}
                              \StringTok{\textquotesingle{}Count\textquotesingle{}} \OtherTok{=}\NormalTok{ cnt)}
@@ -10149,10 +10145,10 @@ To demonstrate how to build bar charts, departmental engagement data will be sim
                                 \AttributeTok{pct =}\NormalTok{ scores)}
 
 \CommentTok{\# Rank departments by top box score to support sorting}
-\NormalTok{dept\_rank }\OtherTok{\textless{}{-}}\NormalTok{ engagement\_scores }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct)) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{rank =} \FunctionTok{dense\_rank}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_rank }\OtherTok{\textless{}{-}}\NormalTok{ engagement\_scores }\SpecialCharTok{|\textgreater{}}
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct)) }\SpecialCharTok{|\textgreater{}} 
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{rank =} \FunctionTok{dense\_rank}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(dept, rank)}
 
 \CommentTok{\# Flag top department records in df to support conditional coloring}
@@ -10442,11 +10438,11 @@ The data need to be structured consistent with the requirements for a bar chart.
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Create data cube for gender representation among active employees}
-\NormalTok{smmry\_gender }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(gender) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(cnt }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(cnt) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{smmry\_gender }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(gender) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{()) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{pct =} \FunctionTok{round}\NormalTok{(cnt }\SpecialCharTok{/} \FunctionTok{sum}\NormalTok{(cnt) }\SpecialCharTok{*} \DecValTok{100}\NormalTok{, }\DecValTok{1}\NormalTok{)) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))}
 \end{Highlighting}
 \end{Shaded}
@@ -11101,8 +11097,8 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics\_book/master/data/employees.csv"}\NormalTok{)}
 
 \CommentTok{\# Create data cube for active employees}
-\NormalTok{smmry\_ed\_field }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{smmry\_ed\_field }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{                  dplyr}\SpecialCharTok{::}\FunctionTok{count}\NormalTok{(ed\_field)}
 
 \CommentTok{\# Step 1: Build Bar Chart with Defaults}
@@ -11292,16 +11288,16 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \NormalTok{)}
 
 \CommentTok{\# Store aggregate measures to cube}
-\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{())}
 
 \CommentTok{\# Specify ordered factor}
 \NormalTok{dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band }\OtherTok{\textless{}{-}} \FunctionTok{ordered}\NormalTok{(dept\_tenure}\SpecialCharTok{$}\NormalTok{tenure\_band, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Under 1 Year"}\NormalTok{, }\StringTok{"1{-}2 Years"}\NormalTok{, }\StringTok{"3{-}5 Years"}\NormalTok{, }\StringTok{"6{-}10 Years"}\NormalTok{, }\StringTok{"Over 10 Years"}\NormalTok{))}
 
 \CommentTok{\# Assign proper case field names}
-\NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_tenure\_proper }\OtherTok{\textless{}{-}}\NormalTok{ dept\_tenure }\SpecialCharTok{|\textgreater{}}
                       \FunctionTok{rename}\NormalTok{(}\StringTok{\textquotesingle{}Department\textquotesingle{}} \OtherTok{=}\NormalTok{ dept,}
                              \StringTok{\textquotesingle{}Tenure\textquotesingle{}} \OtherTok{=}\NormalTok{ tenure\_band,}
                              \StringTok{\textquotesingle{}Count\textquotesingle{}} \OtherTok{=}\NormalTok{ cnt)}
@@ -11340,9 +11336,9 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \NormalTok{)}
 
 \CommentTok{\# Store aggregate measures to cube}
-\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_tenure }\OtherTok{\textless{}{-}}\NormalTok{ employees }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}}
+\NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{group\_by}\NormalTok{(dept, tenure\_band) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{               dplyr}\SpecialCharTok{::}\FunctionTok{summarise}\NormalTok{(}\AttributeTok{cnt =}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{n}\NormalTok{())}
 
 \CommentTok{\# Specify ordered factor}
@@ -11610,10 +11606,10 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
                                 \AttributeTok{pct =}\NormalTok{ scores)}
 
 \CommentTok{\# Rank departments by top box score to support sorting}
-\NormalTok{dept\_rank }\OtherTok{\textless{}{-}}\NormalTok{ engagement\_scores }\SpecialCharTok{\%\textgreater{}\%}
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct)) }\SpecialCharTok{\%\textgreater{}\%} 
-\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{rank =} \FunctionTok{dense\_rank}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{dept\_rank }\OtherTok{\textless{}{-}}\NormalTok{ engagement\_scores }\SpecialCharTok{|\textgreater{}}
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{filter}\NormalTok{(favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{) }\SpecialCharTok{|\textgreater{}} 
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{arrange}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct)) }\SpecialCharTok{|\textgreater{}} 
+\NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{mutate}\NormalTok{(}\AttributeTok{rank =} \FunctionTok{dense\_rank}\NormalTok{(}\FunctionTok{desc}\NormalTok{(pct))) }\SpecialCharTok{|\textgreater{}}
 \NormalTok{             dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(dept, rank)}
 
 \CommentTok{\# Flag top department records in df to support conditional coloring}

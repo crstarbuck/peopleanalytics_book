@@ -155,13 +155,13 @@ sample(employees$employee_id, n, replace = F)
   
   To ensure samples do not comprise a larger proportion of employees from a particular department, education level, tenure band, generational cohort, or other variable deemed useful in explaining differences in response scores, researchers can randomly select members for each stratum based on the proportion in the respective stratum in the larger population. For example, if 30% of all employees are in the Engineering department, the researcher could *randomly* select a calculated number of employees from the Engineering department such that 30% of employees in the sample come from this department.
 
-  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each department. First, we can review counts of employees for each department using the `group_by()` and `summarise()` functions from the `dplyr` library. Note that `dplyr` functions are chained together using a `%>%` operator:
+  Let's demonstrate stratified random sampling in R by sampling $\frac{1}{2}$ of employees within each department. First, we can review counts of employees for each department using the `group_by()` and `summarise()` functions from the `dplyr` library.
 
 ```{r, warning = FALSE, message = FALSE}
 
 # Return employee counts by department
-employees %>%
-dplyr::group_by(dept) %>%
+employees |>
+dplyr::group_by(dept) |>
 dplyr::summarise(n = dplyr::n())
 
 ```
@@ -171,13 +171,13 @@ dplyr::summarise(n = dplyr::n())
 ```{r, warning = FALSE, message = FALSE}
 
 # Obtain and store stratified random sample
-strat_sample <- employees %>%
-                dplyr::group_by(dept) %>%
+strat_sample <- employees |>
+                dplyr::group_by(dept) |>
                 dplyr::sample_frac(size = .5)
 
 # Return sample counts by department
-strat_sample %>%
-dplyr::group_by(dept) %>%
+strat_sample |>
+dplyr::group_by(dept) |>
 dplyr::summarise(n = dplyr::n())
 
 ```
@@ -199,7 +199,7 @@ employees$cluster <- sample(1:10, size = nrow(employees), replace = T)
 clusters <- sample(unique(employees$cluster), size = 5, replace = F)
 
 # Store cluster sample
-clust_sample <- employees %>%
+clust_sample <- employees |>
                 dplyr::filter(cluster %in% clusters)
 
 # Display dimensions of the cluster sample object

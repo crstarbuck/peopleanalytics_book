@@ -172,8 +172,8 @@ library(dplyr)
 employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
 
 # Create data cube for active employees
-smmry_ed_field <- employees %>%
-                  dplyr::filter(active == 'Yes') %>%
+smmry_ed_field <- employees |>
+                  dplyr::filter(active == 'Yes') |>
                   dplyr::count(ed_field)
 
 ```
@@ -334,9 +334,9 @@ employees$tenure_band <- dplyr::case_when(
 )
 
 # Store aggregate measures to cube
-dept_tenure <- employees %>%
-               dplyr::filter(active == 'Yes') %>%
-               dplyr::group_by(dept, tenure_band) %>%
+dept_tenure <- employees |>
+               dplyr::filter(active == 'Yes') |>
+               dplyr::group_by(dept, tenure_band) |>
                dplyr::summarise(cnt = dplyr::n())
 
 # Specify ordered factor
@@ -358,7 +358,7 @@ dept_tenure
 ```{r, warning = FALSE, message = FALSE}
 
 # Assign proper case field names
-dept_tenure_proper <- dept_tenure %>%
+dept_tenure_proper <- dept_tenure |>
                       rename('Department' = dept,
                              'Tenure' = tenure_band,
                              'Count' = cnt)
@@ -594,10 +594,10 @@ engagement_scores <- data.frame(dept = rep(c('Engineering', 'Finance', 'Legal', 
                                 pct = scores)
 
 # Rank departments by top box score to support sorting
-dept_rank <- engagement_scores %>%
-             dplyr::filter(favorability == 'Favorable') %>% 
-             dplyr::arrange(desc(pct)) %>% 
-             dplyr::mutate(rank = dense_rank(desc(pct))) %>%
+dept_rank <- engagement_scores |>
+             dplyr::filter(favorability == 'Favorable') |> 
+             dplyr::arrange(desc(pct)) |> 
+             dplyr::mutate(rank = dense_rank(desc(pct))) |>
              dplyr::select(dept, rank)
 
 # Flag top department records in df to support conditional coloring
@@ -844,11 +844,11 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r, message = FALSE, warning = FALSE}
 
 # Create data cube for gender representation among active employees
-smmry_gender <- employees %>%
-                dplyr::filter(active == 'Yes') %>%
-                dplyr::group_by(gender) %>%
-                dplyr::summarise(cnt = dplyr::n()) %>%
-                dplyr::mutate(pct = round(cnt / sum(cnt) * 100, 1)) %>%
+smmry_gender <- employees |>
+                dplyr::filter(active == 'Yes') |>
+                dplyr::group_by(gender) |>
+                dplyr::summarise(cnt = dplyr::n()) |>
+                dplyr::mutate(pct = round(cnt / sum(cnt) * 100, 1)) |>
                 dplyr::arrange(desc(pct))
 
 ```
