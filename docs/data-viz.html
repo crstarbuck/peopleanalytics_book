@@ -23,7 +23,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-10-16" />
+<meta name="date" content="2022-10-20" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -863,7 +863,7 @@ Figure 15.26: Slopegraph
 </div>
 <div id="bar-charts" class="section level3 hasAnchor" number="15.3.6">
 <h3><span class="header-section-number">15.3.6</span> Bar Charts<a href="data-viz.html#bar-charts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><strong>Bar charts</strong> are used to display categorical data. The three main types of bar charts are <em>vertical</em>, <em>horizontal</em>, and <em>stacked</em>.</p>
+<p><strong>Bar charts</strong> are used to display categorical data. Four common types of bar charts are <em>vertical</em>, <em>horizontal</em>, <em>stacked</em>, and <em>bidirectional</em>.</p>
 <p><strong>Vertical</strong></p>
 <p>A <strong>vertical bar chart</strong> is the most basic and pervasive method of visualizing categorical data. Like line charts, bar charts can be single series, two series, or multiple series based on the data that need to be displayed.</p>
 <p>To demonstrate how to build bar charts, departmental engagement data will be simulated with some rank variables to support preattentive attributes.</p>
@@ -923,16 +923,36 @@ Figure 15.28: Horizontal bar chart
 Figure 15.29: 100 percent stacked bar chart
 </p>
 </div>
+<p><strong>Bidirectional</strong></p>
+<p>The <strong>bidirectional bar cart</strong> is an effective visual for comparing two metrics side-by-side across values of a categorical variable. The bidirectional bar chart is sometimes referred to as a <strong>divergent bar chart</strong>, <strong>back-to-back bar chart</strong>, or <strong>mirror bar chart</strong>.</p>
+<p>Let’s illustrate two levers of departmental headcount change – hires and terminations – using a bidirectional bar chart. While the visualization code is consistent with that of horizontal bar charts, the data need to be transformed such that losses (terms) are negative numbers and gains (hires) are positive numbers.</p>
+<div class="sourceCode" id="cb473"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb473-1"><a href="data-viz.html#cb473-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb473-2"><a href="data-viz.html#cb473-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb473-3"><a href="data-viz.html#cb473-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb473-4"><a href="data-viz.html#cb473-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build data frame with hire and term metrics by department</span></span>
+<span id="cb473-5"><a href="data-viz.html#cb473-5" aria-hidden="true" tabindex="-1"></a>hires_terms <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">dept =</span> <span class="fu">c</span>(<span class="st">&#39;Engineering&#39;</span>, <span class="st">&#39;Finance&#39;</span>, <span class="st">&#39;Legal&#39;</span>, <span class="st">&#39;Marketing&#39;</span>, <span class="st">&#39;People&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Sales&#39;</span>),</span>
+<span id="cb473-6"><a href="data-viz.html#cb473-6" aria-hidden="true" tabindex="-1"></a>                          <span class="at">metric =</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">&#39;Hires&#39;</span>, <span class="st">&#39;Terms&#39;</span>), <span class="dv">7</span>),</span>
+<span id="cb473-7"><a href="data-viz.html#cb473-7" aria-hidden="true" tabindex="-1"></a>                          <span class="at">cnt =</span> <span class="fu">round</span>(<span class="fu">runif</span>(<span class="dv">14</span>, <span class="dv">5</span>, <span class="dv">150</span>), <span class="dv">0</span>))</span>
+<span id="cb473-8"><a href="data-viz.html#cb473-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb473-9"><a href="data-viz.html#cb473-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Append transformed count column to support bidirectional bar charts</span></span>
+<span id="cb473-10"><a href="data-viz.html#cb473-10" aria-hidden="true" tabindex="-1"></a>hires_terms<span class="sc">$</span>cnt_trans <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(hires_terms<span class="sc">$</span>metric <span class="sc">==</span> <span class="st">&#39;Terms&#39;</span>, <span class="dv">0</span> <span class="sc">-</span> hires_terms<span class="sc">$</span>cnt, hires_terms<span class="sc">$</span>cnt)</span></code></pre></div>
+<p>Using the <code>cnt_trans</code> field containing both negative and positive integers, we can visualize net changes in departmental headcount.</p>
+<div class="figure" style="text-align: center"><span style="display:block;" id="fig:bbar-chart"></span>
+<img src="graphics/bidirectional_bar_chart.png" alt="Bidirectional bar chart" width="100%" />
+<p class="caption">
+Figure 15.30: Bidirectional bar chart
+</p>
+</div>
 </div>
 <div id="combination-charts" class="section level3 hasAnchor" number="15.3.7">
 <h3><span class="header-section-number">15.3.7</span> Combination Charts<a href="data-viz.html#combination-charts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Combination charts</strong> display data using different types of visualizations within the same chart.</p>
 <p>In a people analytics context, we may wish to highlight differences between regrettable (bad) and non-regrettable (good) turnover trends relative to total voluntary turnover rates. It is usually more difficult to compare the magnitude of regrettable and non-regrettable rates across time using a stacked bar chart, and a combination chart is often a more intuitive method of presenting this information.</p>
-<p>As illustrated in Figure <a href="data-viz.html#fig:combo-chart">15.30</a>, we can leverage a two-series line chart for monthly regrettable and non-regrettable rates relative to the total voluntary turnover rate visualized with a light grey vertical bar chart in the background.</p>
+<p>As illustrated in Figure <a href="data-viz.html#fig:combo-chart">15.31</a>, we can leverage a two-series line chart for monthly regrettable and non-regrettable rates relative to the total voluntary turnover rate visualized with a light grey vertical bar chart in the background.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:combo-chart"></span>
 <img src="graphics/combo_chart.png" alt="Combination chart" width="100%" />
 <p class="caption">
-Figure 15.30: Combination chart
+Figure 15.31: Combination chart
 </p>
 </div>
 </div>
@@ -940,27 +960,27 @@ Figure 15.30: Combination chart
 <h3><span class="header-section-number">15.3.8</span> Waterfall Charts<a href="data-viz.html#waterfall-charts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Waterfall charts</strong> are alternatives to stacked bar charts that aid in understanding events between two points in time that explain a change in a starting and ending period value. Explaining drivers of headcount changes over time is a common use case for waterfall charts in people analytics.</p>
 <p>Building a waterfall chart requires a bit more data prep relative to the data structure requirements for a stacked bar chart. Unlike a bar chart, a waterfall chart needs a start and end value for each event type so that each bar beyond the first begins where the previous bar ends.</p>
-<div class="sourceCode" id="cb473"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb473-1"><a href="data-viz.html#cb473-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate headcount data with id field to define bar order</span></span>
-<span id="cb473-2"><a href="data-viz.html#cb473-2" aria-hidden="true" tabindex="-1"></a>hc_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
-<span id="cb473-3"><a href="data-viz.html#cb473-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">event =</span> <span class="fu">c</span>(<span class="st">&quot;Starting HC&quot;</span>, <span class="st">&quot;Hires&quot;</span>, <span class="st">&quot;Transfers In&quot;</span>, <span class="st">&quot;Transfers Out&quot;</span>, <span class="st">&quot;Exits&quot;</span>, <span class="st">&quot;Ending HC&quot;</span>),</span>
-<span id="cb473-4"><a href="data-viz.html#cb473-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;Headcount&quot;</span>, <span class="st">&quot;Growth&quot;</span>, <span class="st">&quot;Growth&quot;</span>, <span class="st">&quot;Loss&quot;</span>, <span class="st">&quot;Loss&quot;</span>, <span class="st">&quot;Headcount&quot;</span>),</span>
-<span id="cb473-5"><a href="data-viz.html#cb473-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">count =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">50</span>, <span class="dv">10</span>, <span class="sc">-</span><span class="dv">10</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">130</span>),</span>
-<span id="cb473-6"><a href="data-viz.html#cb473-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">start =</span> <span class="cn">NA</span>,</span>
-<span id="cb473-7"><a href="data-viz.html#cb473-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">end =</span> <span class="cn">NA</span>)</span>
-<span id="cb473-8"><a href="data-viz.html#cb473-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb473-9"><a href="data-viz.html#cb473-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define start and end values to support waterfall chart</span></span>
-<span id="cb473-10"><a href="data-viz.html#cb473-10" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>end <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(hc_dat<span class="sc">$</span>count)</span>
-<span id="cb473-11"><a href="data-viz.html#cb473-11" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>end <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">head</span>(hc_dat<span class="sc">$</span>end, <span class="sc">-</span><span class="dv">1</span>), <span class="dv">0</span>)</span>
-<span id="cb473-12"><a href="data-viz.html#cb473-12" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">head</span>(hc_dat<span class="sc">$</span>end, <span class="sc">-</span><span class="dv">1</span>))</span>
-<span id="cb473-13"><a href="data-viz.html#cb473-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb473-14"><a href="data-viz.html#cb473-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Swap start/end values for last record (Ending HC)</span></span>
-<span id="cb473-15"><a href="data-viz.html#cb473-15" aria-hidden="true" tabindex="-1"></a>hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;end&quot;</span>] <span class="ot">&lt;-</span> hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;start&quot;</span>]</span>
-<span id="cb473-16"><a href="data-viz.html#cb473-16" aria-hidden="true" tabindex="-1"></a>hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;start&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
+<div class="sourceCode" id="cb474"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb474-1"><a href="data-viz.html#cb474-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate headcount data with id field to define bar order</span></span>
+<span id="cb474-2"><a href="data-viz.html#cb474-2" aria-hidden="true" tabindex="-1"></a>hc_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
+<span id="cb474-3"><a href="data-viz.html#cb474-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">event =</span> <span class="fu">c</span>(<span class="st">&quot;Starting HC&quot;</span>, <span class="st">&quot;Hires&quot;</span>, <span class="st">&quot;Transfers In&quot;</span>, <span class="st">&quot;Transfers Out&quot;</span>, <span class="st">&quot;Exits&quot;</span>, <span class="st">&quot;Ending HC&quot;</span>),</span>
+<span id="cb474-4"><a href="data-viz.html#cb474-4" aria-hidden="true" tabindex="-1"></a>                     <span class="at">type =</span> <span class="fu">c</span>(<span class="st">&quot;Headcount&quot;</span>, <span class="st">&quot;Growth&quot;</span>, <span class="st">&quot;Growth&quot;</span>, <span class="st">&quot;Loss&quot;</span>, <span class="st">&quot;Loss&quot;</span>, <span class="st">&quot;Headcount&quot;</span>),</span>
+<span id="cb474-5"><a href="data-viz.html#cb474-5" aria-hidden="true" tabindex="-1"></a>                     <span class="at">count =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">50</span>, <span class="dv">10</span>, <span class="sc">-</span><span class="dv">10</span>, <span class="sc">-</span><span class="dv">20</span>, <span class="dv">130</span>),</span>
+<span id="cb474-6"><a href="data-viz.html#cb474-6" aria-hidden="true" tabindex="-1"></a>                     <span class="at">start =</span> <span class="cn">NA</span>,</span>
+<span id="cb474-7"><a href="data-viz.html#cb474-7" aria-hidden="true" tabindex="-1"></a>                     <span class="at">end =</span> <span class="cn">NA</span>)</span>
+<span id="cb474-8"><a href="data-viz.html#cb474-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb474-9"><a href="data-viz.html#cb474-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Define start and end values to support waterfall chart</span></span>
+<span id="cb474-10"><a href="data-viz.html#cb474-10" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>end <span class="ot">&lt;-</span> <span class="fu">cumsum</span>(hc_dat<span class="sc">$</span>count)</span>
+<span id="cb474-11"><a href="data-viz.html#cb474-11" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>end <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">head</span>(hc_dat<span class="sc">$</span>end, <span class="sc">-</span><span class="dv">1</span>), <span class="dv">0</span>)</span>
+<span id="cb474-12"><a href="data-viz.html#cb474-12" aria-hidden="true" tabindex="-1"></a>hc_dat<span class="sc">$</span>start <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">head</span>(hc_dat<span class="sc">$</span>end, <span class="sc">-</span><span class="dv">1</span>))</span>
+<span id="cb474-13"><a href="data-viz.html#cb474-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb474-14"><a href="data-viz.html#cb474-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Swap start/end values for last record (Ending HC)</span></span>
+<span id="cb474-15"><a href="data-viz.html#cb474-15" aria-hidden="true" tabindex="-1"></a>hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;end&quot;</span>] <span class="ot">&lt;-</span> hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;start&quot;</span>]</span>
+<span id="cb474-16"><a href="data-viz.html#cb474-16" aria-hidden="true" tabindex="-1"></a>hc_dat[<span class="fu">nrow</span>(hc_dat), <span class="st">&quot;start&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span></code></pre></div>
 <p>With data properly structured, we can use the <code>geom_rect()</code> function to build the waterfall chart. Strategies such as labeling only the Beginning HC and Ending HC reduces clutter and lends to a cleaner design aesthetic.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:waterfl-chart"></span>
 <img src="graphics/waterfall_chart.png" alt="Waterfall chart" width="100%" />
 <p class="caption">
-Figure 15.31: Waterfall chart
+Figure 15.32: Waterfall chart
 </p>
 </div>
 </div>
@@ -969,28 +989,28 @@ Figure 15.31: Waterfall chart
 <p><strong>Waffle charts</strong>, also known as <strong>square area charts</strong>, are well-suited for illustrating parts of a whole.</p>
 <p>A common application in people analytics is illustrating candidate movement through the recruiting funnel. It is often helpful to visualize a normalized applicant pool (e.g., per 100 applicants) to identify where bottlenecks exist across funnel stages and how pass-through rates compare across business areas.</p>
 <p>Waffle charts require some data prep to visualize:</p>
-<div class="sourceCode" id="cb474"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb474-1"><a href="data-viz.html#cb474-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create df with TA funnel metrics</span></span>
-<span id="cb474-2"><a href="data-viz.html#cb474-2" aria-hidden="true" tabindex="-1"></a>ta_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">stage =</span> <span class="fu">c</span>(<span class="st">&quot;Apply&quot;</span>, <span class="st">&quot;Phone Screen&quot;</span>, <span class="st">&quot;Interview&quot;</span>, <span class="st">&quot;Offer Extend&quot;</span>, <span class="st">&quot;Offer Accept&quot;</span>),</span>
-<span id="cb474-3"><a href="data-viz.html#cb474-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cnt =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">4</span>))</span>
-<span id="cb474-4"><a href="data-viz.html#cb474-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb474-5"><a href="data-viz.html#cb474-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set depth of waffle chart (# of y-axis rows)</span></span>
-<span id="cb474-6"><a href="data-viz.html#cb474-6" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> <span class="dv">10</span></span>
-<span id="cb474-7"><a href="data-viz.html#cb474-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb474-8"><a href="data-viz.html#cb474-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Each observation needs an x and y coordinate, and y needs to be specified first for a waffle chart with horizontal accumulation</span></span>
-<span id="cb474-9"><a href="data-viz.html#cb474-9" aria-hidden="true" tabindex="-1"></a>waffle_dat <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">y =</span> <span class="dv">1</span><span class="sc">:</span>depth,</span>
-<span id="cb474-10"><a href="data-viz.html#cb474-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">x =</span> <span class="fu">seq_len</span>(<span class="fu">ceiling</span>(<span class="fu">sum</span>(ta_dat<span class="sc">$</span>cnt) <span class="sc">/</span> depth)))</span>
-<span id="cb474-11"><a href="data-viz.html#cb474-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb474-12"><a href="data-viz.html#cb474-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Expand the applicant counts into a vector of stage labels</span></span>
-<span id="cb474-13"><a href="data-viz.html#cb474-13" aria-hidden="true" tabindex="-1"></a>stages <span class="ot">&lt;-</span> <span class="fu">rep</span>(ta_dat<span class="sc">$</span>stage, ta_dat<span class="sc">$</span>cnt)</span>
-<span id="cb474-14"><a href="data-viz.html#cb474-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb474-15"><a href="data-viz.html#cb474-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Integrate stages and fill any extra tiles with NA</span></span>
-<span id="cb474-16"><a href="data-viz.html#cb474-16" aria-hidden="true" tabindex="-1"></a>waffle_dat<span class="sc">$</span>stage <span class="ot">&lt;-</span> <span class="fu">c</span>(stages, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(waffle_dat) <span class="sc">-</span> <span class="fu">length</span>(stages)))</span></code></pre></div>
+<div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="data-viz.html#cb475-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create df with TA funnel metrics</span></span>
+<span id="cb475-2"><a href="data-viz.html#cb475-2" aria-hidden="true" tabindex="-1"></a>ta_dat <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">stage =</span> <span class="fu">c</span>(<span class="st">&quot;Apply&quot;</span>, <span class="st">&quot;Phone Screen&quot;</span>, <span class="st">&quot;Interview&quot;</span>, <span class="st">&quot;Offer Extend&quot;</span>, <span class="st">&quot;Offer Accept&quot;</span>),</span>
+<span id="cb475-3"><a href="data-viz.html#cb475-3" aria-hidden="true" tabindex="-1"></a>                     <span class="at">cnt =</span> <span class="fu">c</span>(<span class="dv">60</span>, <span class="dv">20</span>, <span class="dv">10</span>, <span class="dv">6</span>, <span class="dv">4</span>))</span>
+<span id="cb475-4"><a href="data-viz.html#cb475-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb475-5"><a href="data-viz.html#cb475-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Set depth of waffle chart (# of y-axis rows)</span></span>
+<span id="cb475-6"><a href="data-viz.html#cb475-6" aria-hidden="true" tabindex="-1"></a>depth <span class="ot">&lt;-</span> <span class="dv">10</span></span>
+<span id="cb475-7"><a href="data-viz.html#cb475-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb475-8"><a href="data-viz.html#cb475-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Each observation needs an x and y coordinate, and y needs to be specified first for a waffle chart with horizontal accumulation</span></span>
+<span id="cb475-9"><a href="data-viz.html#cb475-9" aria-hidden="true" tabindex="-1"></a>waffle_dat <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">y =</span> <span class="dv">1</span><span class="sc">:</span>depth,</span>
+<span id="cb475-10"><a href="data-viz.html#cb475-10" aria-hidden="true" tabindex="-1"></a>                          <span class="at">x =</span> <span class="fu">seq_len</span>(<span class="fu">ceiling</span>(<span class="fu">sum</span>(ta_dat<span class="sc">$</span>cnt) <span class="sc">/</span> depth)))</span>
+<span id="cb475-11"><a href="data-viz.html#cb475-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb475-12"><a href="data-viz.html#cb475-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Expand the applicant counts into a vector of stage labels</span></span>
+<span id="cb475-13"><a href="data-viz.html#cb475-13" aria-hidden="true" tabindex="-1"></a>stages <span class="ot">&lt;-</span> <span class="fu">rep</span>(ta_dat<span class="sc">$</span>stage, ta_dat<span class="sc">$</span>cnt)</span>
+<span id="cb475-14"><a href="data-viz.html#cb475-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb475-15"><a href="data-viz.html#cb475-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Integrate stages and fill any extra tiles with NA</span></span>
+<span id="cb475-16"><a href="data-viz.html#cb475-16" aria-hidden="true" tabindex="-1"></a>waffle_dat<span class="sc">$</span>stage <span class="ot">&lt;-</span> <span class="fu">c</span>(stages, <span class="fu">rep</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(waffle_dat) <span class="sc">-</span> <span class="fu">length</span>(stages)))</span></code></pre></div>
 <p>With this data structure, a waffle chart can be produced using the <code>geom_tile()</code> function from <code>ggplot2</code>.</p>
-<p>The waffle chart in Figure <a href="data-viz.html#fig:waffle-chart">15.32</a> illustrates how candidates for a set of filled requisitions move from application through the phone screen, interview, offer extend, and offer acceptance stages of the recruiting lifecycle. Based on this chart, 60% of applicants are rejected without a conversation, 40% receive a phone screen, 20% land an interview, 10% receive an offer, and 4% accept an offer.</p>
+<p>The waffle chart in Figure <a href="data-viz.html#fig:waffle-chart">15.33</a> illustrates how candidates for a set of filled requisitions move from application through the phone screen, interview, offer extend, and offer acceptance stages of the recruiting lifecycle. Based on this chart, 60% of applicants are rejected without a conversation, 40% receive a phone screen, 20% land an interview, 10% receive an offer, and 4% accept an offer.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:waffle-chart"></span>
 <img src="graphics/waffle_chart.png" alt="Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants" width="100%" />
 <p class="caption">
-Figure 15.32: Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants
+Figure 15.33: Waffle chart visualizing pass-through rates across recruitment stages per 100 job applicants
 </p>
 </div>
 </div>
@@ -1003,116 +1023,116 @@ To demonstrate how to implement a sankey diagram, let’s use the <code>sankeyNe
 <li><strong>nodes</strong>: Defines the source and destination node names (i.e., the departments employees transfer into and out of)</li>
 <li><strong>links</strong>: Connections between pairs of source and destination nodes using an index beginning at 0 to represent the corresponding node from the nodes data frame</li>
 </ul>
-<div class="sourceCode" id="cb475"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb475-1"><a href="data-viz.html#cb475-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
-<span id="cb475-2"><a href="data-viz.html#cb475-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb475-3"><a href="data-viz.html#cb475-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb475-4"><a href="data-viz.html#cb475-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create nodes df</span></span>
-<span id="cb475-5"><a href="data-viz.html#cb475-5" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">name =</span> <span class="fu">c</span>(<span class="st">&#39;Engineering&#39;</span>, <span class="st">&#39;Finance&#39;</span>, <span class="st">&#39;Legal&#39;</span>, <span class="st">&#39;Marketing&#39;</span>, <span class="st">&#39;People&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Sales&#39;</span>, <span class="co"># source</span></span>
-<span id="cb475-6"><a href="data-viz.html#cb475-6" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&#39;Engineering&#39;</span>, <span class="st">&#39;Finance&#39;</span>, <span class="st">&#39;Legal&#39;</span>, <span class="st">&#39;Marketing&#39;</span>, <span class="st">&#39;People&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Sales&#39;</span>)) <span class="co"># destination</span></span>
-<span id="cb475-7"><a href="data-viz.html#cb475-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb475-8"><a href="data-viz.html#cb475-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create links df</span></span>
-<span id="cb475-9"><a href="data-viz.html#cb475-9" aria-hidden="true" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">source =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">target =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">13</span>)</span>
-<span id="cb475-10"><a href="data-viz.html#cb475-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb475-11"><a href="data-viz.html#cb475-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Append employee transfer counts per department pair to links df</span></span>
-<span id="cb475-12"><a href="data-viz.html#cb475-12" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(links<span class="sc">$</span>source <span class="sc">==</span> links<span class="sc">$</span>target<span class="dv">-7</span>, <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">150</span>, <span class="dv">50</span>), <span class="dv">0</span>), <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">30</span>, <span class="dv">5</span>), <span class="dv">0</span>))</span></code></pre></div>
-<p>With data properly structured within the <code>nodes</code> and <code>links</code> data frames, these data can be passed into the <code>sankeyNetwork()</code> function to construct the sankey diagram. As illustrated in Figure <a href="data-viz.html#fig:sankey-1">15.33</a>, hovering over a connection displays the count of employee transfers between the corresponding departments (<span class="math inline">\(n\)</span> = 222 moves within Product).</p>
+<div class="sourceCode" id="cb476"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb476-1"><a href="data-viz.html#cb476-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducibility</span></span>
+<span id="cb476-2"><a href="data-viz.html#cb476-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb476-3"><a href="data-viz.html#cb476-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb476-4"><a href="data-viz.html#cb476-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create nodes df</span></span>
+<span id="cb476-5"><a href="data-viz.html#cb476-5" aria-hidden="true" tabindex="-1"></a>nodes <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">name =</span> <span class="fu">c</span>(<span class="st">&#39;Engineering&#39;</span>, <span class="st">&#39;Finance&#39;</span>, <span class="st">&#39;Legal&#39;</span>, <span class="st">&#39;Marketing&#39;</span>, <span class="st">&#39;People&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Sales&#39;</span>, <span class="co"># source</span></span>
+<span id="cb476-6"><a href="data-viz.html#cb476-6" aria-hidden="true" tabindex="-1"></a>                             <span class="st">&#39;Engineering&#39;</span>, <span class="st">&#39;Finance&#39;</span>, <span class="st">&#39;Legal&#39;</span>, <span class="st">&#39;Marketing&#39;</span>, <span class="st">&#39;People&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Sales&#39;</span>)) <span class="co"># destination</span></span>
+<span id="cb476-7"><a href="data-viz.html#cb476-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb476-8"><a href="data-viz.html#cb476-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Create links df</span></span>
+<span id="cb476-9"><a href="data-viz.html#cb476-9" aria-hidden="true" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="fu">expand.grid</span>(<span class="at">source =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">6</span>, <span class="at">target =</span> <span class="dv">7</span><span class="sc">:</span><span class="dv">13</span>)</span>
+<span id="cb476-10"><a href="data-viz.html#cb476-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb476-11"><a href="data-viz.html#cb476-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Append employee transfer counts per department pair to links df</span></span>
+<span id="cb476-12"><a href="data-viz.html#cb476-12" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>value <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(links<span class="sc">$</span>source <span class="sc">==</span> links<span class="sc">$</span>target<span class="dv">-7</span>, <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">150</span>, <span class="dv">50</span>), <span class="dv">0</span>), <span class="fu">round</span>(<span class="fu">rnorm</span>(<span class="dv">1000</span>, <span class="dv">30</span>, <span class="dv">5</span>), <span class="dv">0</span>))</span></code></pre></div>
+<p>With data properly structured within the <code>nodes</code> and <code>links</code> data frames, these data can be passed into the <code>sankeyNetwork()</code> function to construct the sankey diagram. As illustrated in Figure <a href="data-viz.html#fig:sankey-1">15.34</a>, hovering over a connection displays the count of employee transfers between the corresponding departments (<span class="math inline">\(n\)</span> = 222 moves within Product).</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:sankey-1"></span>
 <img src="graphics/sankey_1.png" alt="Sankey diagram showing employee transfers between departments with default colors" width="100%" />
 <p class="caption">
-Figure 15.33: Sankey diagram showing employee transfers between departments with default colors
+Figure 15.34: Sankey diagram showing employee transfers between departments with default colors
 </p>
 </div>
 <p>Though it can quickly become noisy as the number of nodes increases, coloring connections based on the source departments from which each group flows can be helpful in tracing the employee flow to the various destination departments.</p>
 <p>A department variable needs to be defined and added to the <code>links</code> data frame in order to color connections based on the source department (transfers out). The <code>NodeGroup</code> and <code>LinkGroup</code> parameters in the call to the <code>sankeyNetwork()</code> function define the column in the <code>nodes</code> and <code>links</code> data frames, respectively, that specify the group values by which the nodes and links should be colored.</p>
-<div class="sourceCode" id="cb476"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb476-1"><a href="data-viz.html#cb476-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append source department variable for colored connections</span></span>
-<span id="cb476-2"><a href="data-viz.html#cb476-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>dept <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb476-3"><a href="data-viz.html#cb476-3" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">&quot;Engineering&quot;</span>,</span>
-<span id="cb476-4"><a href="data-viz.html#cb476-4" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Finance&quot;</span>,</span>
-<span id="cb476-5"><a href="data-viz.html#cb476-5" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Legal&quot;</span>,</span>
-<span id="cb476-6"><a href="data-viz.html#cb476-6" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;Marketing&quot;</span>,</span>
-<span id="cb476-7"><a href="data-viz.html#cb476-7" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;People&quot;</span>,</span>
-<span id="cb476-8"><a href="data-viz.html#cb476-8" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Product&quot;</span>,</span>
-<span id="cb476-9"><a href="data-viz.html#cb476-9" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">6</span> <span class="sc">~</span> <span class="st">&quot;Sales&quot;</span>,</span>
-<span id="cb476-10"><a href="data-viz.html#cb476-10" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;NA&quot;</span></span>
-<span id="cb476-11"><a href="data-viz.html#cb476-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="data-viz.html#cb477-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append source department variable for colored connections</span></span>
+<span id="cb477-2"><a href="data-viz.html#cb477-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>dept <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb477-3"><a href="data-viz.html#cb477-3" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">0</span> <span class="sc">~</span> <span class="st">&quot;Engineering&quot;</span>,</span>
+<span id="cb477-4"><a href="data-viz.html#cb477-4" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">&quot;Finance&quot;</span>,</span>
+<span id="cb477-5"><a href="data-viz.html#cb477-5" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="st">&quot;Legal&quot;</span>,</span>
+<span id="cb477-6"><a href="data-viz.html#cb477-6" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">3</span> <span class="sc">~</span> <span class="st">&quot;Marketing&quot;</span>,</span>
+<span id="cb477-7"><a href="data-viz.html#cb477-7" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">4</span> <span class="sc">~</span> <span class="st">&quot;People&quot;</span>,</span>
+<span id="cb477-8"><a href="data-viz.html#cb477-8" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">5</span> <span class="sc">~</span> <span class="st">&quot;Product&quot;</span>,</span>
+<span id="cb477-9"><a href="data-viz.html#cb477-9" aria-hidden="true" tabindex="-1"></a>  links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">6</span> <span class="sc">~</span> <span class="st">&quot;Sales&quot;</span>,</span>
+<span id="cb477-10"><a href="data-viz.html#cb477-10" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;NA&quot;</span></span>
+<span id="cb477-11"><a href="data-viz.html#cb477-11" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:sankey-2"></span>
 <img src="graphics/sankey_2.png" alt="Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme" width="100%" />
 <p class="caption">
-Figure 15.34: Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme
+Figure 15.35: Sankey diagram showing employee transfers between departments with connections shaded based on a source department color scheme
 </p>
 </div>
 <p>We can add another grouping variable to support coloring intradepartmental (within) moves differently from interdepartmental (outside) moves.</p>
-<div class="sourceCode" id="cb477"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb477-1"><a href="data-viz.html#cb477-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append within/outside department transfer variable for colored connections</span></span>
-<span id="cb477-2"><a href="data-viz.html#cb477-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>wiout_dept <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
-<span id="cb477-3"><a href="data-viz.html#cb477-3" aria-hidden="true" tabindex="-1"></a>  (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">7</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">8</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">9</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">10</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">4</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">5</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">12</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">6</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">13</span>) <span class="sc">~</span> <span class="st">&quot;Within&quot;</span>,</span>
-<span id="cb477-4"><a href="data-viz.html#cb477-4" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Outside&quot;</span></span>
-<span id="cb477-5"><a href="data-viz.html#cb477-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb478"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb478-1"><a href="data-viz.html#cb478-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append within/outside department transfer variable for colored connections</span></span>
+<span id="cb478-2"><a href="data-viz.html#cb478-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>wiout_dept <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">case_when</span>(</span>
+<span id="cb478-3"><a href="data-viz.html#cb478-3" aria-hidden="true" tabindex="-1"></a>  (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">7</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">8</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">2</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">9</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">3</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">10</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">4</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">11</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">5</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">12</span>) <span class="sc">|</span> (links<span class="sc">$</span>source <span class="sc">==</span> <span class="dv">6</span> <span class="sc">&amp;</span> links<span class="sc">$</span>target <span class="sc">==</span> <span class="dv">13</span>) <span class="sc">~</span> <span class="st">&quot;Within&quot;</span>,</span>
+<span id="cb478-4"><a href="data-viz.html#cb478-4" aria-hidden="true" tabindex="-1"></a>  <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">&quot;Outside&quot;</span></span>
+<span id="cb478-5"><a href="data-viz.html#cb478-5" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:sankey-3"></span>
 <img src="graphics/sankey_3.png" alt="Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme" width="100%" />
 <p class="caption">
-Figure 15.35: Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme
+Figure 15.36: Sankey diagram showing employee transfers between departments with connections shaded based on an intradepartmental vs. interdepartmental color scheme
 </p>
 </div>
 <p>If the focus is on a single department’s transfers, preattentive attributes can be applied to help focus the audience’s attention and move the less important information to the background to reduce clutter.</p>
 <p>To facilitate this, a grouping variable can be defined to differentiate a single department, such as Product, from remaining departments. The color of each group can then be specified using valid D3 code: <code>d3.scaleOrdinal(["group_1_color", "group_2_color"])</code>:</p>
-<div class="sourceCode" id="cb478"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb478-1"><a href="data-viz.html#cb478-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append dichotomous product/other indicator to links and nodes data frames</span></span>
-<span id="cb478-2"><a href="data-viz.html#cb478-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>prod <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(links<span class="sc">$</span>dept <span class="sc">==</span> <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Other&#39;</span>)</span>
-<span id="cb478-3"><a href="data-viz.html#cb478-3" aria-hidden="true" tabindex="-1"></a>nodes<span class="sc">$</span>prod <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nodes<span class="sc">$</span>name <span class="sc">==</span> <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Other&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="data-viz.html#cb479-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Append dichotomous product/other indicator to links and nodes data frames</span></span>
+<span id="cb479-2"><a href="data-viz.html#cb479-2" aria-hidden="true" tabindex="-1"></a>links<span class="sc">$</span>prod <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(links<span class="sc">$</span>dept <span class="sc">==</span> <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Other&#39;</span>)</span>
+<span id="cb479-3"><a href="data-viz.html#cb479-3" aria-hidden="true" tabindex="-1"></a>nodes<span class="sc">$</span>prod <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(nodes<span class="sc">$</span>name <span class="sc">==</span> <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Product&#39;</span>, <span class="st">&#39;Other&#39;</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:sankey-4"></span>
 <img src="graphics/sankey_4.png" alt="Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department" width="100%" />
 <p class="caption">
-Figure 15.36: Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department
+Figure 15.37: Sankey diagram with preattentive attributes to highlight employee transfers out of the Product department
 </p>
 </div>
 </div>
 <div id="pie-charts" class="section level3 hasAnchor" number="15.3.11">
 <h3><span class="header-section-number">15.3.11</span> Pie Charts<a href="data-viz.html#pie-charts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p><strong>Pie charts</strong> are rarely an effective way to visualize data, and this book does not generally endorse them. Pie charts can be appropriate in cases where there are two or three mutually exclusive and collectively exhaustive groups and we need to visualize the relative contribution of each to the whole. However, it quickly becomes difficult to ascertain relative size beyond a few groups with a pie chart, and labeling many slices adds a lot of clutter and noise. Proportions should always sum to 1 so if data are not mutually exclusive parts of a whole, a pie chart is not appropriate.</p>
-<p>Figure <a href="data-viz.html#fig:bad-donut-chart">15.37</a> shows a donut chart – which is simply a pie chart with the center cut out – that is intended to show Kane Williamson’s outsized contribution to New Zealand’s cricket runs. However, top scorers from other countries are also included in this visual, so the metrics do not sum to 100%. Pie and donut charts are not appropriate for these data.</p>
+<p>Figure <a href="data-viz.html#fig:bad-donut-chart">15.38</a> shows a donut chart – which is simply a pie chart with the center cut out – that is intended to show Kane Williamson’s outsized contribution to New Zealand’s cricket runs. However, top scorers from other countries are also included in this visual, so the metrics do not sum to 100%. Pie and donut charts are not appropriate for these data.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:bad-donut-chart"></span>
 <img src="graphics/bad_viz-pie_chart.png" alt="Improper use of a donut chart" width="75%" />
 <p class="caption">
-Figure 15.37: Improper use of a donut chart
+Figure 15.38: Improper use of a donut chart
 </p>
 </div>
 <p>There is no specific <code>geom()</code> function for building pie charts using <code>ggplot2</code>. Therefore, we need to create a bar chart and make it circular by adding a <code>coord_polar("y", start = 0)</code> transformation. The <code>coord_polar()</code> transformation complicates the positioning of labels, but we can add a <code>position = position_stack(vjust = 0.5))</code> argument within the <code>geom_text()</code> function to easily achieve metric centering within the respective category. We can also easily improve the aesthetics with the <code>theme_void()</code> function, which removes the default background, grid, and labels.</p>
 <p>The data need to be structured consistent with the requirements for a bar chart. A basic data cube with descriptive statistics by gender category will simplify the construction of the pie chart in <code>ggplot2</code>:</p>
-<div class="sourceCode" id="cb479"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb479-1"><a href="data-viz.html#cb479-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data cube for gender representation among active employees</span></span>
-<span id="cb479-2"><a href="data-viz.html#cb479-2" aria-hidden="true" tabindex="-1"></a>smmry_gender <span class="ot">&lt;-</span> employees <span class="sc">|&gt;</span></span>
-<span id="cb479-3"><a href="data-viz.html#cb479-3" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">filter</span>(active <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb479-4"><a href="data-viz.html#cb479-4" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">group_by</span>(gender) <span class="sc">|&gt;</span></span>
-<span id="cb479-5"><a href="data-viz.html#cb479-5" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">cnt =</span> dplyr<span class="sc">::</span><span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
-<span id="cb479-6"><a href="data-viz.html#cb479-6" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct =</span> <span class="fu">round</span>(cnt <span class="sc">/</span> <span class="fu">sum</span>(cnt) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb479-7"><a href="data-viz.html#cb479-7" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(pct))</span></code></pre></div>
+<div class="sourceCode" id="cb480"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb480-1"><a href="data-viz.html#cb480-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create data cube for gender representation among active employees</span></span>
+<span id="cb480-2"><a href="data-viz.html#cb480-2" aria-hidden="true" tabindex="-1"></a>smmry_gender <span class="ot">&lt;-</span> employees <span class="sc">|&gt;</span></span>
+<span id="cb480-3"><a href="data-viz.html#cb480-3" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">filter</span>(active <span class="sc">==</span> <span class="st">&#39;Yes&#39;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb480-4"><a href="data-viz.html#cb480-4" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">group_by</span>(gender) <span class="sc">|&gt;</span></span>
+<span id="cb480-5"><a href="data-viz.html#cb480-5" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="at">cnt =</span> dplyr<span class="sc">::</span><span class="fu">n</span>()) <span class="sc">|&gt;</span></span>
+<span id="cb480-6"><a href="data-viz.html#cb480-6" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">pct =</span> <span class="fu">round</span>(cnt <span class="sc">/</span> <span class="fu">sum</span>(cnt) <span class="sc">*</span> <span class="dv">100</span>, <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb480-7"><a href="data-viz.html#cb480-7" aria-hidden="true" tabindex="-1"></a>                dplyr<span class="sc">::</span><span class="fu">arrange</span>(<span class="fu">desc</span>(pct))</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pie-chart"></span>
 <img src="graphics/pie_chart.png" alt="Pie chart showing gender representation for active employees" width="100%" />
 <p class="caption">
-Figure 15.38: Pie chart showing gender representation for active employees
+Figure 15.39: Pie chart showing gender representation for active employees
 </p>
 </div>
 </div>
 <div id="d-visuals" class="section level3 hasAnchor" number="15.3.12">
 <h3><span class="header-section-number">15.3.12</span> 3D Visuals<a href="data-viz.html#d-visuals" class="anchor-section" aria-label="Anchor link to header"></a></h3>
 <p>An element of uncertainty is inherent in analytics, which is why this book avoids the use of categorical terms such as <em>always</em> and <em>never</em>. However, an exception will be made for this section. 3D visualizations are <em>never</em> appropriate. 3D visuals often misrepresent the data they are intended to visualize and are unnecessarily difficult to interpret.</p>
-<p>Figure <a href="data-viz.html#fig:3d-pie-chart">15.39</a> shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.</p>
+<p>Figure <a href="data-viz.html#fig:3d-pie-chart">15.40</a> shows the distribution of headcount across locations using a 3D pie chart. Based on this visual, it may not be apparent that Los Angeles (25%) is considerably larger than New York (19%). The misleading perspective of this tilted visual causes locations on the back side of the pie chart to appear smaller relative to locations on the front side.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:3d-pie-chart"></span>
 <img src="graphics/3d_pie_chart.png" alt="Headcount by location misrepresented with a 3D pie chart" width="75%" />
 <p class="caption">
-Figure 15.39: Headcount by location misrepresented with a 3D pie chart
+Figure 15.40: Headcount by location misrepresented with a 3D pie chart
 </p>
 </div>
-<p>A 3D bar chart is not an improvement over a 3D pie chart. As illustrated in Figure <a href="data-viz.html#fig:3d-bar-chart">15.40</a>, bars do not appear to align with the actual corresponding values (e.g., Los Angeles = 25%). This is because software determines the height of bars in a 3D bar chart using an invisible tangent plane to intersect the bars at the correct y-axis location.</p>
+<p>A 3D bar chart is not an improvement over a 3D pie chart. As illustrated in Figure <a href="data-viz.html#fig:3d-bar-chart">15.41</a>, bars do not appear to align with the actual corresponding values (e.g., Los Angeles = 25%). This is because software determines the height of bars in a 3D bar chart using an invisible tangent plane to intersect the bars at the correct y-axis location.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:3d-bar-chart"></span>
 <img src="graphics/3d_bar_chart.png" alt="Headcount by location visualized with a misleading 3D bar chart" width="75%" />
 <p class="caption">
-Figure 15.40: Headcount by location visualized with a misleading 3D bar chart
+Figure 15.41: Headcount by location visualized with a misleading 3D bar chart
 </p>
 </div>
 <p>As shown in Figure @ref(fig:3d-bar-chart_conv), by leveraging a horizontal bar chart with labeled bars and preattentive attributes, it becomes easy to understand relative headcount across locations.</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:3d-bar-chart-conv"></span>
 <img src="graphics/horizontal_bar_chart_2.png" alt="Headcount by location properly visualized with a horizontal bar chart" width="75%" />
 <p class="caption">
-Figure 15.41: Headcount by location properly visualized with a horizontal bar chart
+Figure 15.42: Headcount by location properly visualized with a horizontal bar chart
 </p>
 </div>
 </div>
@@ -1120,7 +1140,7 @@ Figure 15.41: Headcount by location properly visualized with a horizontal bar ch
 <div id="elegant-data-visualization" class="section level2 hasAnchor" number="15.4">
 <h2><span class="header-section-number">15.4</span> Elegant Data Visualization<a href="data-viz.html#elegant-data-visualization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This chapter has covered the fundamentals of effective data visualization. Applying these best practices will elevate impact when presenting results of analyses to stakeholders.</p>
-<p>Figure <a href="data-viz.html#fig:good-viz">15.42</a> is an example of an excellent data visualization that brings together many of the design elements promoted in this chapter. This visual shows seasonally adjusted jobless claims over a period of two decades to highlight the significance of the Coronavirus’s impact on the labor market using the following design elements:</p>
+<p>Figure <a href="data-viz.html#fig:good-viz">15.43</a> is an example of an excellent data visualization that brings together many of the design elements promoted in this chapter. This visual shows seasonally adjusted jobless claims over a period of two decades to highlight the significance of the Coronavirus’s impact on the labor market using the following design elements:</p>
 <ul>
 <li>Larger and darker text for the headline</li>
 <li>Smaller and lighter text for the commentary</li>
@@ -1133,7 +1153,7 @@ Figure 15.41: Headcount by location properly visualized with a horizontal bar ch
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:good-viz"></span>
 <img src="graphics/good_viz-job_loss.png" alt="An archetype of data visualization elegance" width="100%" />
 <p class="caption">
-Figure 15.42: An archetype of data visualization elegance
+Figure 15.43: An archetype of data visualization elegance
 </p>
 </div>
 </div>

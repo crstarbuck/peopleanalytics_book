@@ -443,6 +443,12 @@ ggplot2::theme(panel.background = ggplot2::element_blank(),
 
 ### Data Prep ###
 
+# Load library
+library(dplyr)
+
+# Read employee data
+employees <- read.csv("https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv")
+
 # Subset df to active sales employees
 sales <- subset(employees, dept == 'Sales' & active == 'Yes')
 
@@ -654,6 +660,9 @@ ggplot2::theme(panel.background = ggplot2::element_blank(),
 
 ### Data Prep ###
 
+# Load library
+library(dplyr)
+
 # Set seed for reproducibility
 set.seed(1234)
 
@@ -690,6 +699,9 @@ engagement_scores <- left_join(engagement_scores, dept_rank, by = "dept")
 
 ### Vertical Bar Charts ###
 
+# Load library
+library(ggplot2)
+
 ggplot2::ggplot(subset(engagement_scores, favorability == 'Favorable'), aes(x = reorder(dept, -pct), y = pct, fill = as.factor(top_score))) +
 ggplot2::labs(title = 'The People team is leading in department-level engagement.', x = 'Department', y = 'Engagement Score') +
 ggplot2::geom_bar(stat = "identity") +
@@ -710,6 +722,9 @@ ggplot2::theme(legend.position = "none",
 ```{r, eval = FALSE}
 
 ### Horizontal Bar Charts ###
+
+# Load library
+library(ggplot2)
 
 ggplot2::ggplot(subset(engagement_scores, favorability == 'Favorable'), aes(x = reorder(dept, pct), y = pct, fill = as.factor(top_score))) +
 ggplot2::labs(title = 'The People team is leading in department-level engagement.', x = 'Department', y = 'Engagement Score') +
@@ -733,6 +748,9 @@ ggplot2::theme(legend.position = "none",
 
 ### Stacked Bar Charts ###
 
+# Load library
+library(ggplot2)
+
 ggplot2::ggplot(engagement_scores, aes(x = reorder(dept, -rank), y = pct, fill = factor(favorability, levels = c("Unfavorable", "Neutral", "Favorable")))) +
 ggplot2::labs(title = 'Half of Engineering respondents report unfavorable engagement.', x = 'Department', y = 'Engagement Score') +
 ggplot2::guides(fill = guide_legend(title = "Favorability")) +
@@ -742,6 +760,46 @@ ggplot2::scale_fill_manual(values = c("Favorable" = "#0070C0",
                                       "Neutral" = "#D9D9D9",
                                       "Unfavorable" = "#ED7D31")) +
 ggplot2::scale_y_continuous(labels = scales::percent) +
+ggplot2::theme(panel.background = ggplot2::element_blank(),
+               axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
+               axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),
+               plot.title = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 0, b = 20, l = 0), colour = "#404040"),
+               axis.ticks.x = ggplot2::element_blank(),
+               axis.ticks.y = ggplot2::element_blank())
+
+```
+
+```{r, eval = FALSE}
+
+### Bidirectional Bar Chart Data Prep ###
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Build data frame with hire and term metrics by department
+hires_terms <- data.frame(dept = c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales'),
+                          metric = rep(c('Hires', 'Terms'), 7),
+                          cnt = round(runif(14, 5, 150), 0))
+
+# Append transformed count column to support bidirectional bar charts
+hires_terms$cnt_trans <- ifelse(hires_terms$metric == 'Terms', 0 - hires_terms$cnt, hires_terms$cnt)
+
+```  
+
+```{r, eval = FALSE}
+
+### Bidirectional Bar Charts ###
+
+# Load library
+library(ggplot2)
+
+ggplot2::ggplot(hires_terms, aes(x = reorder(dept, -cnt_trans), y = cnt_trans, fill = as.factor(metric))) +
+ggplot2::labs(title = 'Terms have eclipsed hires in Sales, Product, and Engineering \nover the trailing 12-month period.', x = 'Department', y = 'Headcount Changes') +
+ggplot2::guides(fill = guide_legend(title = "Metric")) +
+ggplot2::geom_bar(stat = "identity") +
+ggplot2::coord_flip() +
+ggplot2::scale_fill_manual(values = c("Terms" = "#ED7D31",
+                                      "Hires" = "#0070C0")) +
 ggplot2::theme(panel.background = ggplot2::element_blank(),
                axis.title.x = ggplot2::element_text(margin = ggplot2::margin(t = 10, r = 0, b = 0, l = 0), colour = "#404040"),
                axis.title.y = ggplot2::element_text(margin = ggplot2::margin(t = 0, r = 10, b = 0, l = 0), colour = "#404040"),

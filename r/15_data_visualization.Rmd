@@ -564,7 +564,7 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 
 ### Bar Charts
 
-  **Bar charts** are used to display categorical data. The three main types of bar charts are *vertical*, *horizontal*, and *stacked*.
+  **Bar charts** are used to display categorical data. Four common types of bar charts are *vertical*, *horizontal*, *stacked*, and *bidirectional*.
 
   **Vertical**
   
@@ -637,6 +637,35 @@ knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~appl
 ```{r sbar-chart, out.width = "100%", echo = FALSE, fig.cap = '100 percent stacked bar chart', fig.align = 'center', message = FALSE, warning = FALSE}
 
 knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/stacked_bar_chart.png")
+
+```
+  
+  **Bidirectional**
+  
+  The **bidirectional bar cart** is an effective visual for comparing two metrics side-by-side across values of a categorical variable. The bidirectional bar chart is sometimes referred to as a **divergent bar chart**, **back-to-back bar chart**, or **mirror bar chart**.
+  
+  Let's illustrate two levers of departmental headcount change -- hires and terminations -- using a bidirectional bar chart. While the visualization code is consistent with that of horizontal bar charts, the data need to be transformed such that losses (terms) are negative numbers and gains (hires) are positive numbers.
+  
+```{r, warning = FALSE, message = FALSE}
+
+# Set seed for reproducibility
+set.seed(1234)
+
+# Build data frame with hire and term metrics by department
+hires_terms <- data.frame(dept = c('Engineering', 'Finance', 'Legal', 'Marketing', 'People', 'Product', 'Sales'),
+                          metric = rep(c('Hires', 'Terms'), 7),
+                          cnt = round(runif(14, 5, 150), 0))
+
+# Append transformed count column to support bidirectional bar charts
+hires_terms$cnt_trans <- ifelse(hires_terms$metric == 'Terms', 0 - hires_terms$cnt, hires_terms$cnt)
+
+```  
+
+  Using the `cnt_trans` field containing both negative and positive integers, we can visualize net changes in departmental headcount.
+
+```{r bbar-chart, out.width = "100%", echo = FALSE, fig.cap = 'Bidirectional bar chart', fig.align = 'center', message = FALSE, warning = FALSE}
+
+knitr::include_graphics("/Users/craig.starbuck/Library/Mobile Documents/com~apple~CloudDocs/Documents/People Analytics Book/GitHub/peopleanalytics_book/graphics/bidirectional_bar_chart.png")
 
 ```
   

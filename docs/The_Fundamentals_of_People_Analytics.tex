@@ -128,7 +128,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-10-16}
+\date{2022-10-20}
 
 \begin{document}
 \maketitle
@@ -10115,7 +10115,7 @@ In \texttt{ggplot2}, a slopegraph is simply a line graph with only two values on
 \hypertarget{bar-charts}{%
 \subsection{Bar Charts}\label{bar-charts}}
 
-\textbf{Bar charts} are used to display categorical data. The three main types of bar charts are \emph{vertical}, \emph{horizontal}, and \emph{stacked}.
+\textbf{Bar charts} are used to display categorical data. Four common types of bar charts are \emph{vertical}, \emph{horizontal}, \emph{stacked}, and \emph{bidirectional}.
 
 \textbf{Vertical}
 
@@ -10198,6 +10198,38 @@ The only adjustment needed to build a stacked area chart is to specify the varia
 }
 
 \caption{100 percent stacked bar chart}\label{fig:sbar-chart}
+\end{figure}
+
+\textbf{Bidirectional}
+
+The \textbf{bidirectional bar cart} is an effective visual for comparing two metrics side-by-side across values of a categorical variable. The bidirectional bar chart is sometimes referred to as a \textbf{divergent bar chart}, \textbf{back-to-back bar chart}, or \textbf{mirror bar chart}.
+
+Let's illustrate two levers of departmental headcount change -- hires and terminations -- using a bidirectional bar chart. While the visualization code is consistent with that of horizontal bar charts, the data need to be transformed such that losses (terms) are negative numbers and gains (hires) are positive numbers.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Set seed for reproducibility}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{\# Build data frame with hire and term metrics by department}
+\NormalTok{hires\_terms }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dept =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Finance\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Legal\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Marketing\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}People\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Sales\textquotesingle{}}\NormalTok{),}
+                          \AttributeTok{metric =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Hires\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Terms\textquotesingle{}}\NormalTok{), }\DecValTok{7}\NormalTok{),}
+                          \AttributeTok{cnt =} \FunctionTok{round}\NormalTok{(}\FunctionTok{runif}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{150}\NormalTok{), }\DecValTok{0}\NormalTok{))}
+
+\CommentTok{\# Append transformed count column to support bidirectional bar charts}
+\NormalTok{hires\_terms}\SpecialCharTok{$}\NormalTok{cnt\_trans }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(hires\_terms}\SpecialCharTok{$}\NormalTok{metric }\SpecialCharTok{==} \StringTok{\textquotesingle{}Terms\textquotesingle{}}\NormalTok{, }\DecValTok{0} \SpecialCharTok{{-}}\NormalTok{ hires\_terms}\SpecialCharTok{$}\NormalTok{cnt, hires\_terms}\SpecialCharTok{$}\NormalTok{cnt)}
+\end{Highlighting}
+\end{Shaded}
+
+Using the \texttt{cnt\_trans} field containing both negative and positive integers, we can visualize net changes in departmental headcount.
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\linewidth]{graphics/bidirectional_bar_chart} 
+
+}
+
+\caption{Bidirectional bar chart}\label{fig:bbar-chart}
 \end{figure}
 
 \hypertarget{combination-charts}{%
@@ -11374,6 +11406,12 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
 
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+
+\CommentTok{\# Read employee data}
+\NormalTok{employees }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"https://raw.githubusercontent.com/crstarbuck/peopleanalytics\_book/master/data/employees.csv"}\NormalTok{)}
+
 \CommentTok{\# Subset df to active sales employees}
 \NormalTok{sales }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(employees, dept }\SpecialCharTok{==} \StringTok{\textquotesingle{}Sales\textquotesingle{}} \SpecialCharTok{\&}\NormalTok{ active }\SpecialCharTok{==} \StringTok{\textquotesingle{}Yes\textquotesingle{}}\NormalTok{)}
 
@@ -11588,6 +11626,9 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Data Prep }\AlertTok{\#\#\#}
 
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(dplyr)}
+
 \CommentTok{\# Set seed for reproducibility}
 \FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
 
@@ -11624,6 +11665,9 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Vertical Bar Charts }\AlertTok{\#\#\#}
 
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(engagement\_scores, favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(dept, }\SpecialCharTok{{-}}\NormalTok{pct), }\AttributeTok{y =}\NormalTok{ pct, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(top\_score))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The People team is leading in department{-}level engagement.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Engagement Score\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
@@ -11644,6 +11688,9 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \begin{Shaded}
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Horizontal Bar Charts }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
 
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(}\FunctionTok{subset}\NormalTok{(engagement\_scores, favorability }\SpecialCharTok{==} \StringTok{\textquotesingle{}Favorable\textquotesingle{}}\NormalTok{), }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(dept, pct), }\AttributeTok{y =}\NormalTok{ pct, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(top\_score))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}The People team is leading in department{-}level engagement.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Engagement Score\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
@@ -11667,6 +11714,9 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
 \begin{Highlighting}[]
 \DocumentationTok{\#\#\# Stacked Bar Charts }\AlertTok{\#\#\#}
 
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(engagement\_scores, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(dept, }\SpecialCharTok{{-}}\NormalTok{rank), }\AttributeTok{y =}\NormalTok{ pct, }\AttributeTok{fill =} \FunctionTok{factor}\NormalTok{(favorability, }\AttributeTok{levels =} \FunctionTok{c}\NormalTok{(}\StringTok{"Unfavorable"}\NormalTok{, }\StringTok{"Neutral"}\NormalTok{, }\StringTok{"Favorable"}\NormalTok{)))) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Half of Engineering respondents report unfavorable engagement.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Engagement Score\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{guides}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{title =} \StringTok{"Favorability"}\NormalTok{)) }\SpecialCharTok{+}
@@ -11676,6 +11726,46 @@ This section provides the code needed to reproduce visuals in Chapter \ref{data-
                                       \StringTok{"Neutral"} \OtherTok{=} \StringTok{"\#D9D9D9"}\NormalTok{,}
                                       \StringTok{"Unfavorable"} \OtherTok{=} \StringTok{"\#ED7D31"}\NormalTok{)) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{labels =}\NormalTok{ scales}\SpecialCharTok{::}\NormalTok{percent) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.title.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.title.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{plot.title =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{20}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
+               \AttributeTok{axis.ticks.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
+               \AttributeTok{axis.ticks.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Bidirectional Bar Chart Data Prep }\AlertTok{\#\#\#}
+
+\CommentTok{\# Set seed for reproducibility}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{1234}\NormalTok{)}
+
+\CommentTok{\# Build data frame with hire and term metrics by department}
+\NormalTok{hires\_terms }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{dept =} \FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Engineering\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Finance\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Legal\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Marketing\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}People\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Product\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Sales\textquotesingle{}}\NormalTok{),}
+                          \AttributeTok{metric =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textquotesingle{}Hires\textquotesingle{}}\NormalTok{, }\StringTok{\textquotesingle{}Terms\textquotesingle{}}\NormalTok{), }\DecValTok{7}\NormalTok{),}
+                          \AttributeTok{cnt =} \FunctionTok{round}\NormalTok{(}\FunctionTok{runif}\NormalTok{(}\DecValTok{14}\NormalTok{, }\DecValTok{5}\NormalTok{, }\DecValTok{150}\NormalTok{), }\DecValTok{0}\NormalTok{))}
+
+\CommentTok{\# Append transformed count column to support bidirectional bar charts}
+\NormalTok{hires\_terms}\SpecialCharTok{$}\NormalTok{cnt\_trans }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(hires\_terms}\SpecialCharTok{$}\NormalTok{metric }\SpecialCharTok{==} \StringTok{\textquotesingle{}Terms\textquotesingle{}}\NormalTok{, }\DecValTok{0} \SpecialCharTok{{-}}\NormalTok{ hires\_terms}\SpecialCharTok{$}\NormalTok{cnt, hires\_terms}\SpecialCharTok{$}\NormalTok{cnt)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\# Bidirectional Bar Charts }\AlertTok{\#\#\#}
+
+\CommentTok{\# Load library}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{ggplot}\NormalTok{(hires\_terms, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \FunctionTok{reorder}\NormalTok{(dept, }\SpecialCharTok{{-}}\NormalTok{cnt\_trans), }\AttributeTok{y =}\NormalTok{ cnt\_trans, }\AttributeTok{fill =} \FunctionTok{as.factor}\NormalTok{(metric))) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{\textquotesingle{}Terms have eclipsed hires in Sales, Product, and Engineering }\SpecialCharTok{\textbackslash{}n}\StringTok{over the trailing 12{-}month period.\textquotesingle{}}\NormalTok{, }\AttributeTok{x =} \StringTok{\textquotesingle{}Department\textquotesingle{}}\NormalTok{, }\AttributeTok{y =} \StringTok{\textquotesingle{}Headcount Changes\textquotesingle{}}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{guides}\NormalTok{(}\AttributeTok{fill =} \FunctionTok{guide\_legend}\NormalTok{(}\AttributeTok{title =} \StringTok{"Metric"}\NormalTok{)) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{stat =} \StringTok{"identity"}\NormalTok{) }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{coord\_flip}\NormalTok{() }\SpecialCharTok{+}
+\NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Terms"} \OtherTok{=} \StringTok{"\#ED7D31"}\NormalTok{,}
+                                      \StringTok{"Hires"} \OtherTok{=} \StringTok{"\#0070C0"}\NormalTok{)) }\SpecialCharTok{+}
 \NormalTok{ggplot2}\SpecialCharTok{::}\FunctionTok{theme}\NormalTok{(}\AttributeTok{panel.background =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_blank}\NormalTok{(),}
                \AttributeTok{axis.title.x =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{10}\NormalTok{, }\AttributeTok{r =} \DecValTok{0}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
                \AttributeTok{axis.title.y =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{element\_text}\NormalTok{(}\AttributeTok{margin =}\NormalTok{ ggplot2}\SpecialCharTok{::}\FunctionTok{margin}\NormalTok{(}\AttributeTok{t =} \DecValTok{0}\NormalTok{, }\AttributeTok{r =} \DecValTok{10}\NormalTok{, }\AttributeTok{b =} \DecValTok{0}\NormalTok{, }\AttributeTok{l =} \DecValTok{0}\NormalTok{), }\AttributeTok{colour =} \StringTok{"\#404040"}\NormalTok{),}
