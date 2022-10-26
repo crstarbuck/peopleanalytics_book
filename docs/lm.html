@@ -23,7 +23,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-10-20" />
+<meta name="date" content="2022-10-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -167,11 +167,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.1" data-path="r-intro.html"><a href="r-intro.html#installing-r"><i class="fa fa-check"></i><b>2.1.1</b> Installing R</a></li>
 <li class="chapter" data-level="2.1.2" data-path="r-intro.html"><a href="r-intro.html#installing-r-studio"><i class="fa fa-check"></i><b>2.1.2</b> Installing R Studio</a></li>
 <li class="chapter" data-level="2.1.3" data-path="r-intro.html"><a href="r-intro.html#installing-packages"><i class="fa fa-check"></i><b>2.1.3</b> Installing Packages</a></li>
-<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.4</b> Case Sensitivity</a></li>
-<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.5</b> Help</a></li>
-<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.6</b> Objects</a></li>
-<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.7</b> Comments</a></li>
-<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.8</b> Testing Early and Often</a></li>
+<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#loading-data"><i class="fa fa-check"></i><b>2.1.4</b> Loading data</a></li>
+<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.5</b> Case Sensitivity</a></li>
+<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.6</b> Help</a></li>
+<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.7</b> Objects</a></li>
+<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.8</b> Comments</a></li>
+<li class="chapter" data-level="2.1.9" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.9</b> Testing Early and Often</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="r-intro.html"><a href="r-intro.html#vectors"><i class="fa fa-check"></i><b>2.2</b> Vectors</a></li>
 <li class="chapter" data-level="2.3" data-path="r-intro.html"><a href="r-intro.html#matrices"><i class="fa fa-check"></i><b>2.3</b> Matrices</a></li>
@@ -511,17 +512,17 @@ Figure 10.2: Left: Least squares regression model fit to n = 2 observations. Rig
 </p>
 </div>
 <p>In R, we can build (or <em>fit</em>) a simple linear regression model using the <code>lm()</code> function. The syntax is <code>lm(Y ~ X, dataset)</code>:</p>
-<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="lm.html#cb337-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb337-2"><a href="lm.html#cb337-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb337-3"><a href="lm.html#cb337-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb337-4"><a href="lm.html#cb337-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb337-5"><a href="lm.html#cb337-5" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
-<span id="cb337-6"><a href="lm.html#cb337-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb337-7"><a href="lm.html#cb337-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
-<span id="cb337-8"><a href="lm.html#cb337-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
-<span id="cb337-9"><a href="lm.html#cb337-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb337-10"><a href="lm.html#cb337-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD leads on engagement</span></span>
-<span id="cb337-11"><a href="lm.html#cb337-11" aria-hidden="true" tabindex="-1"></a>slm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_leads <span class="sc">~</span> engagement, data)</span></code></pre></div>
+<div class="sourceCode" id="cb339"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb339-1"><a href="lm.html#cb339-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb339-2"><a href="lm.html#cb339-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(peopleanalytics)</span>
+<span id="cb339-3"><a href="lm.html#cb339-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb339-4"><a href="lm.html#cb339-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb339-5"><a href="lm.html#cb339-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;employees&quot;</span>)</span>
+<span id="cb339-6"><a href="lm.html#cb339-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb339-7"><a href="lm.html#cb339-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset employees data frame; leads are only applicable for those in sales positions</span></span>
+<span id="cb339-8"><a href="lm.html#cb339-8" aria-hidden="true" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, job_title <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&#39;Sales Executive&#39;</span>, <span class="st">&#39;Sales Representative&#39;</span>))</span>
+<span id="cb339-9"><a href="lm.html#cb339-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb339-10"><a href="lm.html#cb339-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD leads on engagement</span></span>
+<span id="cb339-11"><a href="lm.html#cb339-11" aria-hidden="true" tabindex="-1"></a>slm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_leads <span class="sc">~</span> engagement, data)</span></code></pre></div>
 <p>In practice, linear assumptions are rarely – if ever – perfectly met, but there must be evidence that the assumptions are <em>generally</em> satisfied.</p>
 <p>Before performing model diagnostics, it is important to note the following:</p>
 <ol style="list-style-type: decimal">
@@ -550,8 +551,8 @@ Figure 10.4: Simple linear regression model diagnostics.
 <p>The <em>Residuals vs Fitted</em> and <em>Scale-Location</em> plots help evaluate assumptions of homoscedasticity, linearity, and normality – which are intricately linked. Data are heteroscedastic if there is flarring or funnel patterning about the residuals across the range of fitted values. That is, there must be constant variance with respect to the residual errors in order for the assumption of homoscedasticity to be met. This occurs when there is a linear relationship between <span class="math inline">\(X\)</span> and <span class="math inline">\(Y\)</span>, in which case residuals will be normally distributed around a mean of 0. While the spread of residuals is greater for larger fitted values in this model, resulting in the lower standardized residual error for smaller fitted values indicated in the <em>Scale-Location</em> plot, the slope of the line in the <em>Residuals vs Fitted</em> plot is effectively flat which indicates that the model does not perform significantly better for certain fitted values relative to others.</p>
 <p><strong>Cook’s distance</strong>, shown in the <em>Residuals vs Leverage</em> plot, provides a measure of how much our model estimates for all observations change if high leverage observations are removed from the data. Higher numbers indicate stronger influence. R conveniently labels the three observations with the highest leverage, though the degree of leverage is only problematic for observations beyond the dashed Cook’s distance line. In this case, there are no observations with enough leverage for the dashed Cook’s distance line to show on the plot, so no action is warranted.</p>
 <p>In addition to the visual inspection, we can perform the <strong>Breusch-Pagan test</strong> using the <code>bptest()</code> function from the <code>lmtest</code> library to test the null hypothesis that the data are homoscedastic. If <span class="math inline">\(p\)</span> &lt; .05 for the test statistic, we reject the null hypothesis and conclude that there is evidence of heteroscedasticity in the data.</p>
-<div class="sourceCode" id="cb338"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb338-1"><a href="lm.html#cb338-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
-<span id="cb338-2"><a href="lm.html#cb338-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="lm.html#cb340-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
+<span id="cb340-2"><a href="lm.html#cb340-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(slm.fit)</span></code></pre></div>
 <pre><code>## 
 ##  studentized Breusch-Pagan test
 ## 
@@ -559,20 +560,20 @@ Figure 10.4: Simple linear regression model diagnostics.
 ## BP = 0.07603, df = 1, p-value = 0.7828</code></pre>
 <p>Since <span class="math inline">\(p\)</span> &gt;= .05, we fail to reject the null hypothesis of homoscedasticity; therefore, this assumption is satisified. If this was not the case, a common approach to addressing heteroscedasticity is transforming the response variable by taking the natural logarithm (<code>log()</code>) or square root (<code>sqrt()</code>) of <span class="math inline">\(Y\)</span>. While transformations may correct for violations of linear model assumptions, they also result in a less intuitive interpretation of model output relative to the raw untransformed data.</p>
 <p>Let’s illustrate how to transform the response variable:</p>
-<div class="sourceCode" id="cb340"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb340-1"><a href="lm.html#cb340-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Square root transformation of YTD leads</span></span>
-<span id="cb340-2"><a href="lm.html#cb340-2" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span>
-<span id="cb340-3"><a href="lm.html#cb340-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb340-4"><a href="lm.html#cb340-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Natural logarithmic transformation of YTD leads</span></span>
-<span id="cb340-5"><a href="lm.html#cb340-5" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span></code></pre></div>
+<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="lm.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Square root transformation of YTD leads</span></span>
+<span id="cb342-2"><a href="lm.html#cb342-2" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span>
+<span id="cb342-3"><a href="lm.html#cb342-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb342-4"><a href="lm.html#cb342-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Natural logarithmic transformation of YTD leads</span></span>
+<span id="cb342-5"><a href="lm.html#cb342-5" aria-hidden="true" tabindex="-1"></a>slm.fit.trans <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(ytd_leads) <span class="sc">~</span> engagement, data)</span></code></pre></div>
 <p>The <em>Normal Q-Q Plot</em> in Figure <a href="lm.html#fig:slm-diagnostics">10.4</a> is used to test the assumption of normally distributed model residuals. A perfectly normal distribution of residuals will result in data lying along the line situated at 45-degrees from the <span class="math inline">\(x\)</span>-axis. Based on a visual inspection, our residuals appear to be normally distributed, as there are only a small number of minor departures in the upper and lower ends of the quantile range.</p>
 <p>We can also visualize the distribution of model residuals using a histogram. In the majority of cases, the residual should be 0; this indicates the model correctly estimates YTD leads, resulting in no difference between estimated and observed values (<span class="math inline">\(\hat{y}\)</span> - <span class="math inline">\(y\)</span> = 0).</p>
-<div class="sourceCode" id="cb341"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb341-1"><a href="lm.html#cb341-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
-<span id="cb341-2"><a href="lm.html#cb341-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb341-3"><a href="lm.html#cb341-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(slm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
-<span id="cb341-4"><a href="lm.html#cb341-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb341-5"><a href="lm.html#cb341-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb341-6"><a href="lm.html#cb341-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb341-7"><a href="lm.html#cb341-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb343"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb343-1"><a href="lm.html#cb343-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
+<span id="cb343-2"><a href="lm.html#cb343-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb343-3"><a href="lm.html#cb343-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(slm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
+<span id="cb343-4"><a href="lm.html#cb343-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb343-5"><a href="lm.html#cb343-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb343-6"><a href="lm.html#cb343-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb343-7"><a href="lm.html#cb343-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:slm-residuals"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/slm-residuals-1.png" alt="Distribution of model residuals." width="672" />
 <p class="caption">
@@ -580,16 +581,16 @@ Figure 10.5: Distribution of model residuals.
 </p>
 </div>
 <p>Based on both the Normal Q-Q Plot and histogram, the residuals conform to the assumption of normality. We can confirm using the Shapiro-Wilk test, in which a non-significant test statistic (<span class="math inline">\(p\)</span> &gt;= .05) is sufficient evidence of normality:</p>
-<div class="sourceCode" id="cb342"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb342-1"><a href="lm.html#cb342-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb342-2"><a href="lm.html#cb342-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(slm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="lm.html#cb344-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb344-2"><a href="lm.html#cb344-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(slm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  slm.fit$residuals
 ## W = 0.99339, p-value = 0.07029</code></pre>
 <p>Next, let’s display our simple linear model results:</p>
-<div class="sourceCode" id="cb344"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb344-1"><a href="lm.html#cb344-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
-<span id="cb344-2"><a href="lm.html#cb344-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="lm.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce model summary</span></span>
+<span id="cb346-2"><a href="lm.html#cb346-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(slm.fit)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = ytd_leads ~ engagement, data = data)
@@ -634,11 +635,11 @@ Figure 10.6: Simple linear model fit line for y = 20.1x + 1.6
 </p>
 </div>
 <p>We can use the <code>extract_eq()</code> function from the <code>equatiomatic</code> library to easily build a properly formatted LaTex regression equation from the model object:</p>
-<div class="sourceCode" id="cb346"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb346-1"><a href="lm.html#cb346-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb346-2"><a href="lm.html#cb346-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(equatiomatic)</span>
-<span id="cb346-3"><a href="lm.html#cb346-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb346-4"><a href="lm.html#cb346-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
-<span id="cb346-5"><a href="lm.html#cb346-5" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(slm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="lm.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb348-2"><a href="lm.html#cb348-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(equatiomatic)</span>
+<span id="cb348-3"><a href="lm.html#cb348-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb348-4"><a href="lm.html#cb348-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
+<span id="cb348-5"><a href="lm.html#cb348-5" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(slm.fit)</span></code></pre></div>
 <p><span class="math display">\[
 \operatorname{ytd\_leads} = \alpha + \beta_{1}(\operatorname{engagement}) + \epsilon
 \]</span></p>
@@ -669,17 +670,17 @@ Figure 10.7: GGpairs bivariate correlations and data distributions
 </div>
 <p>Based on the correlations, <code>org_tenure</code> is highly correlated with <code>job_tenure</code>, <code>mgr_tenure</code> and <code>work_exp</code>. These relationships indicate that job and manager changes for those in sales roles have been infrequent since joining the organization, and that a large portion of their work experience has been with this organization. Since <code>org_tenure</code> has the strongest relationship with our response, <code>ytd_sales</code>, we will drop <code>job_tenure</code>, <code>mgr_tenure</code>, and <code>work_exp</code>.</p>
 <p>Since <span class="math inline">\(|r|\)</span> &lt; .7 for all pairwise relationships, let’s fit the more parsimonious multiple regression model using the resulting subset of predictors. We can chain together multiple predictors in the model using the <code>+</code> symbol in the <code>lm()</code> function:</p>
-<div class="sourceCode" id="cb347"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb347-1"><a href="lm.html#cb347-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
-<span id="cb347-2"><a href="lm.html#cb347-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_sales <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
+<div class="sourceCode" id="cb349"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb349-1"><a href="lm.html#cb349-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
+<span id="cb349-2"><a href="lm.html#cb349-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(ytd_sales <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
 <p>While Kuhn and Johnson’s procedure is a good first step, this may not eliminate what is known as <strong>multicollinearity</strong>, which is collinearity among three or more predictors. It is possible for collinearity to exist between three or more variables, even in the absence of a strong correlation for a pair of variables. We can evaluate the <strong>Variance Inflation Factor (VIF)</strong> for the predictors that remain following the bivariate correlation review to ensure multicollinearity is not present. <span class="math inline">\(VIF\)</span> is defined by:</p>
 <p><span class="math display">\[ VIF(\hat{\beta_j}) = \frac{1}{1 - R^2_{X_j|X_{-j}}}, \]</span></p>
 <p>where the denominator, <span class="math inline">\(R^2_{X_j|X_{-j}}\)</span>, is the <span class="math inline">\(R^2\)</span> from regressing <span class="math inline">\(X_j\)</span> onto all other predictors. The smallest value of <span class="math inline">\(VIF\)</span> is 1, which indicates a complete absence of collinearity. Problematic collinearity exists if <span class="math inline">\(VIF\)</span> for any variable exceeds 5.</p>
 <p>We can produce <span class="math inline">\(VIF\)</span> for each variable using the <code>vif()</code> function from the <code>car</code> library:</p>
-<div class="sourceCode" id="cb348"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb348-1"><a href="lm.html#cb348-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb348-2"><a href="lm.html#cb348-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
-<span id="cb348-3"><a href="lm.html#cb348-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb348-4"><a href="lm.html#cb348-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each predictor</span></span>
-<span id="cb348-5"><a href="lm.html#cb348-5" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="lm.html#cb350-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb350-2"><a href="lm.html#cb350-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(car)</span>
+<span id="cb350-3"><a href="lm.html#cb350-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb350-4"><a href="lm.html#cb350-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each predictor</span></span>
+<span id="cb350-5"><a href="lm.html#cb350-5" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit)</span></code></pre></div>
 <pre><code>##    engagement       job_lvl stock_opt_lvl    org_tenure 
 ##      1.001459      1.407192      1.009435      1.395797</code></pre>
 <p>Based on the output, <span class="math inline">\(VIF\)</span> &lt; 5 for each predictor, which indicates that multicollinearity is not an issue.</p>
@@ -692,12 +693,12 @@ Figure 10.8: Multiple linear regression model diagnostics
 </div>
 <p>Based on these visuals, there are obvious violations of linear model assumptions that need to first be addressed.</p>
 <p>First, given the long right tail for the <code>ytd_sales</code> distribution shown in Figure <a href="lm.html#fig:pre-mlm-diagnostics">10.8</a>, let’s apply a square root transformation to the response variable:</p>
-<div class="sourceCode" id="cb350"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb350-1"><a href="lm.html#cb350-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
-<span id="cb350-2"><a href="lm.html#cb350-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
+<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="lm.html#cb352-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Regress YTD sales on a combination of predictors</span></span>
+<span id="cb352-2"><a href="lm.html#cb352-2" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(ytd_sales) <span class="sc">~</span> engagement <span class="sc">+</span> job_lvl <span class="sc">+</span> stock_opt_lvl <span class="sc">+</span> org_tenure, data)</span></code></pre></div>
 <p>Additionally, the diagnostic plots indicate that there are data points with high leverage on the fit. Let’s address using Cook’s distance as the criterion:</p>
-<div class="sourceCode" id="cb351"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb351-1"><a href="lm.html#cb351-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove high leverage observations per Cook&#39;s distance</span></span>
-<span id="cb351-2"><a href="lm.html#cb351-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rstudent</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(<span class="fu">cooks.distance</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">4</span><span class="sc">/</span><span class="fu">nrow</span>(mlm.fit<span class="sc">$</span>model)</span>
-<span id="cb351-3"><a href="lm.html#cb351-3" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">update</span>(mlm.fit, <span class="at">weights =</span> <span class="fu">as.numeric</span>(w))</span></code></pre></div>
+<div class="sourceCode" id="cb353"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb353-1"><a href="lm.html#cb353-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Remove high leverage observations per Cook&#39;s distance</span></span>
+<span id="cb353-2"><a href="lm.html#cb353-2" aria-hidden="true" tabindex="-1"></a>w <span class="ot">&lt;-</span> <span class="fu">abs</span>(<span class="fu">rstudent</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">3</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(<span class="fu">cooks.distance</span>(mlm.fit)) <span class="sc">&lt;</span> <span class="dv">4</span><span class="sc">/</span><span class="fu">nrow</span>(mlm.fit<span class="sc">$</span>model)</span>
+<span id="cb353-3"><a href="lm.html#cb353-3" aria-hidden="true" tabindex="-1"></a>mlm.fit <span class="ot">&lt;-</span> <span class="fu">update</span>(mlm.fit, <span class="at">weights =</span> <span class="fu">as.numeric</span>(w))</span></code></pre></div>
 <p>Now we can produce a refreshed set of diagnostic plots to evaluate the impact of transforming the response variable and removing high leverage observations:</p>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:post-mlm-diagnostics"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/post-mlm-diagnostics-1.png" alt="Multiple linear regression model diagnostics (post-transformation)" width="100%" />
@@ -707,29 +708,29 @@ Figure 10.9: Multiple linear regression model diagnostics (post-transformation)
 </div>
 <p>There is a clear improvement towards satisifying linear model assumptions.</p>
 <p>Let’s perform the Breusch-Pagan test to validate that the assumption of homoscedasticity is met:</p>
-<div class="sourceCode" id="cb352"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb352-1"><a href="lm.html#cb352-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
-<span id="cb352-2"><a href="lm.html#cb352-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="lm.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the Breusch-Pagan test for evaluate homoscedasticity</span></span>
+<span id="cb354-2"><a href="lm.html#cb354-2" aria-hidden="true" tabindex="-1"></a>lmtest<span class="sc">::</span><span class="fu">bptest</span>(mlm.fit)</span></code></pre></div>
 <pre><code>## 
 ##  studentized Breusch-Pagan test
 ## 
 ## data:  mlm.fit
 ## BP = 2.2111, df = 4, p-value = 0.697</code></pre>
 <p>Next, let’s ensure residuals are normally distributed around 0:</p>
-<div class="sourceCode" id="cb354"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb354-1"><a href="lm.html#cb354-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
-<span id="cb354-2"><a href="lm.html#cb354-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb354-3"><a href="lm.html#cb354-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(mlm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
-<span id="cb354-4"><a href="lm.html#cb354-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb354-5"><a href="lm.html#cb354-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb354-6"><a href="lm.html#cb354-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
-<span id="cb354-7"><a href="lm.html#cb354-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb356"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb356-1"><a href="lm.html#cb356-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce histogram to visualize distribution of model residuals</span></span>
+<span id="cb356-2"><a href="lm.html#cb356-2" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb356-3"><a href="lm.html#cb356-3" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">aes</span>(mlm.fit<span class="sc">$</span>residuals) <span class="sc">+</span> </span>
+<span id="cb356-4"><a href="lm.html#cb356-4" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;YTD Leads Residuals&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb356-5"><a href="lm.html#cb356-5" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">y =</span> ..density..), <span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb356-6"><a href="lm.html#cb356-6" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_density</span>(<span class="at">fill =</span> <span class="st">&quot;#ADD8E6&quot;</span>, <span class="at">alpha =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb356-7"><a href="lm.html#cb356-7" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:mlm-residuals"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/mlm-residuals-1.png" alt="Distribution of model residuals" width="672" />
 <p class="caption">
 Figure 10.10: Distribution of model residuals
 </p>
 </div>
-<div class="sourceCode" id="cb355"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb355-1"><a href="lm.html#cb355-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb355-2"><a href="lm.html#cb355-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mlm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb357"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb357-1"><a href="lm.html#cb357-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb357-2"><a href="lm.html#cb357-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(mlm.fit<span class="sc">$</span>residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -767,8 +768,8 @@ Figure 10.10: Distribution of model residuals
 ## Multiple R-squared:  0.7783, Adjusted R-squared:  0.7759 
 ## F-statistic: 329.1 on 4 and 375 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>We can view the multiple regression equation for estimating <code>sqrt(ytd_sales)</code> with these four predictors using the <code>extract_eq</code> function:</p>
-<div class="sourceCode" id="cb358"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb358-1"><a href="lm.html#cb358-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
-<span id="cb358-2"><a href="lm.html#cb358-2" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(mlm.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb360"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb360-1"><a href="lm.html#cb360-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert model to LaTex regression equation</span></span>
+<span id="cb360-2"><a href="lm.html#cb360-2" aria-hidden="true" tabindex="-1"></a>equatiomatic<span class="sc">::</span><span class="fu">extract_eq</span>(mlm.fit)</span></code></pre></div>
 <p><span class="math display">\[
 \operatorname{sqrt(ytd\_sales)} = \alpha + \beta_{1}(\operatorname{engagement}) + \beta_{2}(\operatorname{job\_lvl}) + \beta_{3}(\operatorname{stock\_opt\_lvl}) + \beta_{4}(\operatorname{org\_tenure}) + \epsilon
 \]</span></p>
@@ -827,8 +828,8 @@ Figure 10.10: Distribution of model residuals
 ## F-statistic: 386.6 on 3 and 405 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>The results show that both the main and interaction effects are statistically significant (<span class="math inline">\(p\)</span> &lt; .001).</p>
 <p>Since interaction terms can be highly correlated with independent predictors, it is good to check for collinearity:</p>
-<div class="sourceCode" id="cb361"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb361-1"><a href="lm.html#cb361-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each model term</span></span>
-<span id="cb361-2"><a href="lm.html#cb361-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
+<div class="sourceCode" id="cb363"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb363-1"><a href="lm.html#cb363-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for each model term</span></span>
+<span id="cb363-2"><a href="lm.html#cb363-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
 <pre><code>##            job_lvl         org_tenure job_lvl:org_tenure 
 ##           2.189565           9.246489          12.308142</code></pre>
 <p><span class="math inline">\(VIF\)</span> is greater than 5 for both <code>org_tenure</code> and the interaction term; therefore, there is a problematic level of collinearity between these variables.</p>
@@ -854,8 +855,8 @@ Figure 10.10: Distribution of model residuals
 ## Residual standard error: 29.4 on 405 degrees of freedom
 ## Multiple R-squared:  0.7412, Adjusted R-squared:  0.7393 
 ## F-statistic: 386.6 on 3 and 405 DF,  p-value: &lt; 2.2e-16</code></pre>
-<div class="sourceCode" id="cb364"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb364-1"><a href="lm.html#cb364-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for centered variables</span></span>
-<span id="cb364-2"><a href="lm.html#cb364-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
+<div class="sourceCode" id="cb366"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb366-1"><a href="lm.html#cb366-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce VIF for centered variables</span></span>
+<span id="cb366-2"><a href="lm.html#cb366-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">vif</span>(mlm.fit.int)</span></code></pre></div>
 <pre><code>##                  job_lvl_cntrd               org_tenure_cntrd 
 ##                       1.397803                       1.773279 
 ## job_lvl_cntrd:org_tenure_cntrd 

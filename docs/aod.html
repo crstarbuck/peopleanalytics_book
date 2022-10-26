@@ -23,7 +23,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-10-20" />
+<meta name="date" content="2022-10-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -167,11 +167,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.1" data-path="r-intro.html"><a href="r-intro.html#installing-r"><i class="fa fa-check"></i><b>2.1.1</b> Installing R</a></li>
 <li class="chapter" data-level="2.1.2" data-path="r-intro.html"><a href="r-intro.html#installing-r-studio"><i class="fa fa-check"></i><b>2.1.2</b> Installing R Studio</a></li>
 <li class="chapter" data-level="2.1.3" data-path="r-intro.html"><a href="r-intro.html#installing-packages"><i class="fa fa-check"></i><b>2.1.3</b> Installing Packages</a></li>
-<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.4</b> Case Sensitivity</a></li>
-<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.5</b> Help</a></li>
-<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.6</b> Objects</a></li>
-<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.7</b> Comments</a></li>
-<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.8</b> Testing Early and Often</a></li>
+<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#loading-data"><i class="fa fa-check"></i><b>2.1.4</b> Loading data</a></li>
+<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.5</b> Case Sensitivity</a></li>
+<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.6</b> Help</a></li>
+<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.7</b> Objects</a></li>
+<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.8</b> Comments</a></li>
+<li class="chapter" data-level="2.1.9" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.9</b> Testing Early and Often</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="r-intro.html"><a href="r-intro.html#vectors"><i class="fa fa-check"></i><b>2.2</b> Vectors</a></li>
 <li class="chapter" data-level="2.3" data-path="r-intro.html"><a href="r-intro.html#matrices"><i class="fa fa-check"></i><b>2.3</b> Matrices</a></li>
@@ -487,13 +488,16 @@ Figure 9.2: Chi-square distributions by degrees of freedom (df)
 </p>
 </div>
 <p>We will demonstrate how to perform a chi-square test of independence by evaluating whether exit rates are independent of whether an employee works overtime. Let’s first construct a 2x2 contingency table using the <code>table()</code> function:</p>
-<div class="sourceCode" id="cb266"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb266-1"><a href="aod.html#cb266-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb266-2"><a href="aod.html#cb266-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
-<span id="cb266-3"><a href="aod.html#cb266-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb266-4"><a href="aod.html#cb266-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create contingency table</span></span>
-<span id="cb266-5"><a href="aod.html#cb266-5" aria-hidden="true" tabindex="-1"></a>cont_tbl <span class="ot">&lt;-</span> <span class="fu">table</span>(employees<span class="sc">$</span>active, employees<span class="sc">$</span>overtime)</span>
-<span id="cb266-6"><a href="aod.html#cb266-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb266-7"><a href="aod.html#cb266-7" aria-hidden="true" tabindex="-1"></a>cont_tbl</span></code></pre></div>
+<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="aod.html#cb268-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb268-2"><a href="aod.html#cb268-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(peopleanalytics)</span>
+<span id="cb268-3"><a href="aod.html#cb268-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-4"><a href="aod.html#cb268-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb268-5"><a href="aod.html#cb268-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;employees&quot;</span>)</span>
+<span id="cb268-6"><a href="aod.html#cb268-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-7"><a href="aod.html#cb268-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Create contingency table</span></span>
+<span id="cb268-8"><a href="aod.html#cb268-8" aria-hidden="true" tabindex="-1"></a>cont_tbl <span class="ot">&lt;-</span> <span class="fu">table</span>(employees<span class="sc">$</span>active, employees<span class="sc">$</span>overtime)</span>
+<span id="cb268-9"><a href="aod.html#cb268-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb268-10"><a href="aod.html#cb268-10" aria-hidden="true" tabindex="-1"></a>cont_tbl</span></code></pre></div>
 <pre><code>##      
 ##        No Yes
 ##   No  110 127
@@ -507,8 +511,8 @@ Figure 9.3: Mosaic plot of residuals for overtime x active status
 </div>
 <p>In Figure <a href="aod.html#fig:mosaic-plot">9.3</a>, blue indicates that the observed value is higher than the expected value, while red indicates that the observed value is lower than the expected value. Based on this plot, there appears to be some meaningful patterns and departures from expected values in both the high and low directions. There are more inactive employees than expected in the <em>overtime</em> group, and more active employees than expected in the <em>no overtime</em> group. These large standardized residuals are indicative of meaningful relationships between the two categorical variables.</p>
 <p>Let’s run the chi-square test of independence to determine whether these residuals are statistically significant. This test can be performed in R by passing the contingency table into the <code>chisq.test()</code> function:</p>
-<div class="sourceCode" id="cb268"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb268-1"><a href="aod.html#cb268-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform chi-square test of independence</span></span>
-<span id="cb268-2"><a href="aod.html#cb268-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(cont_tbl)</span></code></pre></div>
+<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="aod.html#cb270-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform chi-square test of independence</span></span>
+<span id="cb270-2"><a href="aod.html#cb270-2" aria-hidden="true" tabindex="-1"></a><span class="fu">chisq.test</span>(cont_tbl)</span></code></pre></div>
 <pre><code>## 
 ##  Pearson&#39;s Chi-squared test with Yates&#39; continuity correction
 ## 
@@ -518,8 +522,8 @@ Figure 9.3: Mosaic plot of residuals for overtime x active status
 <p><strong>Fisher’s Exact Test</strong></p>
 <p>When the sample size is small, <strong>Fisher’s Exact Test</strong> can be used to calculate the <em>exact</em> <span class="math inline">\(p\)</span>-value rather than the approximation characteristic of many statistical tests such as the chi-square test.</p>
 <p><span class="math inline">\(H_0\)</span> for Fisher’s exact test is the same as <span class="math inline">\(H_0\)</span> for the chi-square test of independence: There is no relationship between the two categorical variables (i.e., they are independent). We can perform Fisher’s exact test using the <code>fisher.test()</code> function in R:</p>
-<div class="sourceCode" id="cb270"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb270-1"><a href="aod.html#cb270-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Fisher&#39;s exact test</span></span>
-<span id="cb270-2"><a href="aod.html#cb270-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(cont_tbl)</span></code></pre></div>
+<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="aod.html#cb272-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Fisher&#39;s exact test</span></span>
+<span id="cb272-2"><a href="aod.html#cb272-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(cont_tbl)</span></code></pre></div>
 <pre><code>## 
 ##  Fisher&#39;s Exact Test for Count Data
 ## 
@@ -542,8 +546,8 @@ Figure 9.4: 2x2 contingency table of overtime for active and inactive workers
 </div>
 <p>Since the 95% <span class="math inline">\(CI\)</span> for the odds ratio does not include 1, we reject the null hypothesis and conclude that exit rates are related to working overtime; this is consistent with results from the chi-square test of independence. Since overtime was indicated far more often for inactive workers than for active workers, it is no surprise that the denominator of our ratio is larger than the numerator (i.e., <span class="math inline">\(OR\)</span> &lt; 1).</p>
 <p>As discussed in Chapter <a href="desc-stats.html#desc-stats">7</a>, we can produce a <span class="math inline">\(\phi\)</span> coefficient to understand the strength of the association by passing the contingency table into the <code>phi</code> function from the <code>psych</code> library:</p>
-<div class="sourceCode" id="cb272"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb272-1"><a href="aod.html#cb272-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the Phi Coefficient</span></span>
-<span id="cb272-2"><a href="aod.html#cb272-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">phi</span>(cont_tbl)</span></code></pre></div>
+<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="aod.html#cb274-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate the Phi Coefficient</span></span>
+<span id="cb274-2"><a href="aod.html#cb274-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">phi</span>(cont_tbl)</span></code></pre></div>
 <pre><code>## [1] -0.25</code></pre>
 <p>The relationship between active status and overtime is negative, and the strength of the relationship is weak (<span class="math inline">\(\phi\)</span> = -.25).</p>
 <p>Another common method of measuring the strength of the association between two categorical variables is <strong>Cramer’s V</strong>, which ranges from 0 (no association) to 1 (strong association). In the interest of not muddying the waters with an exhaustive set of alternative methods, the implementation won’t be covered.</p>
@@ -577,14 +581,14 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 <p>While the median – rather than the mean which is being evaluated with Welch’s <span class="math inline">\(t\)</span>-test – is shown in these box plots, this is a great way to visually inspect whether there are meaningful differences in the distribution of data between groups (in addition to identifying outliers). We could of course use density plots or histograms as an alternative. As we can see, annual compensation for employees with a Manager job title tends to be slightly higher than for those with a Research Scientist job title, and the variance in annual compensation appears to be fairly consistent between the groups.</p>
 <p>There are several alternatives to a visual inspection of normality, such as the <span class="math inline">\({\chi}^2\)</span> <strong>Goodness-of-Fit test</strong> (Snedecor &amp; Cochran, 1980), <strong>Kolmogorov-Smirnov (K-S) test</strong> (Chakravarti, Laha, &amp; Roy, 1967), or <strong>Shapiro-Wilk test</strong> (Shapiro &amp; Wilk, 1965). The general idea is consistent for each of these tests: compare observed data to what would be expected if data are sampled from a normally distributed population. The <span class="math inline">\({\chi}^2\)</span> Goodness-of-Fit test compares the <em>count</em> of data points across the range of values relative to what would be expected in each for a sample with the same dimensions taken from a normal distribution. For example, if data are sampled from a normally distributed population, it follows that roughly half the values should exist below the mean and half above the mean. The K-S test evaluates how the observed <em>cumulative</em> distribution compares to the properties of a normal <em>cumulative</em> distribution. The Shapiro-Wilk test is based on <em>correlations</em> between observed and expected data.</p>
 <p>We will test for normality using the Shapiro-Wilk test. The null hypothesis for the Shapiro-Wilk test is that the data are normally distributed, so a high <span class="math inline">\(p\)</span>-value indicates that the assumption of normality is satisfied (i.e., failure to reject the null hypothesis of normally distributed data). We can use the <code>with()</code> function together with the <code>shapiro.test()</code> function to run this test in R:</p>
-<div class="sourceCode" id="cb274"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb274-1"><a href="aod.html#cb274-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality for each group</span></span>
-<span id="cb274-2"><a href="aod.html#cb274-2" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(employees, <span class="fu">shapiro.test</span>(annual_comp[job_title <span class="sc">==</span> <span class="st">&#39;Manager&#39;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="aod.html#cb276-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality for each group</span></span>
+<span id="cb276-2"><a href="aod.html#cb276-2" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(employees, <span class="fu">shapiro.test</span>(annual_comp[job_title <span class="sc">==</span> <span class="st">&#39;Manager&#39;</span>]))</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  annual_comp[job_title == &quot;Manager&quot;]
 ## W = 0.93546, p-value = 0.000103</code></pre>
-<div class="sourceCode" id="cb276"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb276-1"><a href="aod.html#cb276-1" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(employees, <span class="fu">shapiro.test</span>(annual_comp[job_title <span class="sc">==</span> <span class="st">&#39;Research Scientist&#39;</span>]))</span></code></pre></div>
+<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="aod.html#cb278-1" aria-hidden="true" tabindex="-1"></a><span class="fu">with</span>(employees, <span class="fu">shapiro.test</span>(annual_comp[job_title <span class="sc">==</span> <span class="st">&#39;Research Scientist&#39;</span>]))</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -592,12 +596,12 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 ## W = 0.96002, p-value = 3.427e-07</code></pre>
 <p>Based on these tests, distributions of annual compensation for Managers and Research Scientists are non-normal (<span class="math inline">\(p\)</span> &lt; .05).</p>
 <p>While we should not proceed with performing Welch’s <span class="math inline">\(t\)</span>-test due to unequal variances, let’s do so merely to illustrate how the test is implemented in R. To perform Welch’s <span class="math inline">\(t\)</span>-test in R, we can simply pass into the <code>t.test()</code> function a numeric vector for each of the two groups.</p>
-<div class="sourceCode" id="cb278"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb278-1"><a href="aod.html#cb278-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create compensation vectors for two jobs</span></span>
-<span id="cb278-2"><a href="aod.html#cb278-2" aria-hidden="true" tabindex="-1"></a>comp_mgr <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Manager&#39;</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb278-3"><a href="aod.html#cb278-3" aria-hidden="true" tabindex="-1"></a>comp_rsci <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Research Scientist&#39;</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb278-4"><a href="aod.html#cb278-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb278-5"><a href="aod.html#cb278-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Welch&#39;s t-test</span></span>
-<span id="cb278-6"><a href="aod.html#cb278-6" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(comp_mgr, comp_rsci)</span></code></pre></div>
+<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="aod.html#cb280-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create compensation vectors for two jobs</span></span>
+<span id="cb280-2"><a href="aod.html#cb280-2" aria-hidden="true" tabindex="-1"></a>comp_mgr <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Manager&#39;</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb280-3"><a href="aod.html#cb280-3" aria-hidden="true" tabindex="-1"></a>comp_rsci <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_title <span class="sc">==</span> <span class="st">&#39;Research Scientist&#39;</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb280-4"><a href="aod.html#cb280-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb280-5"><a href="aod.html#cb280-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Welch&#39;s t-test</span></span>
+<span id="cb280-6"><a href="aod.html#cb280-6" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(comp_mgr, comp_rsci)</span></code></pre></div>
 <pre><code>## 
 ##  Welch Two Sample t-test
 ## 
@@ -611,32 +615,32 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 ##  139900.8  138754.5</code></pre>
 <p>If the data adhered to the assumptions of Welch’s <span class="math inline">\(t\)</span>-test, we would conclude that the mean difference between annual compensation for Managers (<span class="math inline">\(\bar{x}\)</span> = 139,901) and Research Scientists (<span class="math inline">\(\bar{x}\)</span> = 138,755) is not significant (<span class="math inline">\(t(159.55)\)</span> = .23, <span class="math inline">\(p\)</span> = .82).</p>
 <p>Note that we can access specific metrics from this output by storing results to an object and then referencing specific elements by name or index:</p>
-<div class="sourceCode" id="cb280"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb280-1"><a href="aod.html#cb280-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This assigns each element of results from Welch&#39;s t-test to an indexed position in the object</span></span>
-<span id="cb280-2"><a href="aod.html#cb280-2" aria-hidden="true" tabindex="-1"></a>t_rslts <span class="ot">&lt;-</span> <span class="fu">t.test</span>(comp_mgr, comp_rsci)</span>
-<span id="cb280-3"><a href="aod.html#cb280-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb280-4"><a href="aod.html#cb280-4" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>statistic <span class="co"># t-statistic</span></span></code></pre></div>
+<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="aod.html#cb282-1" aria-hidden="true" tabindex="-1"></a><span class="co"># This assigns each element of results from Welch&#39;s t-test to an indexed position in the object</span></span>
+<span id="cb282-2"><a href="aod.html#cb282-2" aria-hidden="true" tabindex="-1"></a>t_rslts <span class="ot">&lt;-</span> <span class="fu">t.test</span>(comp_mgr, comp_rsci)</span>
+<span id="cb282-3"><a href="aod.html#cb282-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb282-4"><a href="aod.html#cb282-4" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>statistic <span class="co"># t-statistic</span></span></code></pre></div>
 <pre><code>##         t 
 ## 0.2262262</code></pre>
-<div class="sourceCode" id="cb282"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb282-1"><a href="aod.html#cb282-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>parameter <span class="co"># df</span></span></code></pre></div>
+<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="aod.html#cb284-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>parameter <span class="co"># df</span></span></code></pre></div>
 <pre><code>##       df 
 ## 159.5544</code></pre>
-<div class="sourceCode" id="cb284"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb284-1"><a href="aod.html#cb284-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>p.value <span class="co"># p-value</span></span></code></pre></div>
+<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="aod.html#cb286-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>p.value <span class="co"># p-value</span></span></code></pre></div>
 <pre><code>## [1] 0.8213151</code></pre>
-<div class="sourceCode" id="cb286"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb286-1"><a href="aod.html#cb286-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>method <span class="co"># type of t-test</span></span></code></pre></div>
+<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="aod.html#cb288-1" aria-hidden="true" tabindex="-1"></a>t_rslts<span class="sc">$</span>method <span class="co"># type of t-test</span></span></code></pre></div>
 <pre><code>## [1] &quot;Welch Two Sample t-test&quot;</code></pre>
 <p>When object elements are referenced by index, the element name is displayed in the output to clarify what the metric represents:</p>
-<div class="sourceCode" id="cb288"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb288-1"><a href="aod.html#cb288-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">1</span>] <span class="co"># t-statistic</span></span></code></pre></div>
+<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="aod.html#cb290-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">1</span>] <span class="co"># t-statistic</span></span></code></pre></div>
 <pre><code>## $statistic
 ##         t 
 ## 0.2262262</code></pre>
-<div class="sourceCode" id="cb290"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb290-1"><a href="aod.html#cb290-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">2</span>] <span class="co"># df</span></span></code></pre></div>
+<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="aod.html#cb292-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">2</span>] <span class="co"># df</span></span></code></pre></div>
 <pre><code>## $parameter
 ##       df 
 ## 159.5544</code></pre>
-<div class="sourceCode" id="cb292"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb292-1"><a href="aod.html#cb292-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">3</span>] <span class="co"># p-value</span></span></code></pre></div>
+<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="aod.html#cb294-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">3</span>] <span class="co"># p-value</span></span></code></pre></div>
 <pre><code>## $p.value
 ## [1] 0.8213151</code></pre>
-<div class="sourceCode" id="cb294"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb294-1"><a href="aod.html#cb294-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">9</span>] <span class="co"># type of t-test</span></span></code></pre></div>
+<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="aod.html#cb296-1" aria-hidden="true" tabindex="-1"></a>t_rslts[<span class="dv">9</span>] <span class="co"># type of t-test</span></span></code></pre></div>
 <pre><code>## $method
 ## [1] &quot;Welch Two Sample t-test&quot;</code></pre>
 <p>Given <span class="math inline">\(df\)</span> = 159.55, you may be wondering how <span class="math inline">\(df\)</span> is calculated for Welch’s <span class="math inline">\(t\)</span>-test given that thus far, we have only discussed the basic <span class="math inline">\(df\)</span> calculation outlined in Chapter <a href="inf-stats.html#inf-stats">8</a>; namely, <span class="math inline">\(df = n - 1\)</span>. Welch’s <span class="math inline">\(t\)</span>-test uses the <strong>Welch-Satterthwaite equation</strong> for <span class="math inline">\(df\)</span> (Satterthwaite, 1946; Welch, 1947). This equation approximates <span class="math inline">\(df\)</span> for a linear combination of independent sample variances; which means that if samples are not independent, this approximation may not be valid. The Welch-Satterthwaite equation is defined by:</p>
@@ -651,11 +655,11 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 <li><strong>Medium</strong> = 0.5</li>
 <li><strong>Large</strong> = 0.8</li>
 </ul>
-<div class="sourceCode" id="cb296"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb296-1"><a href="aod.html#cb296-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb296-2"><a href="aod.html#cb296-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effsize)</span>
-<span id="cb296-3"><a href="aod.html#cb296-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb296-4"><a href="aod.html#cb296-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Cohen&#39;s d</span></span>
-<span id="cb296-5"><a href="aod.html#cb296-5" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cohen.d</span>(comp_mgr, comp_rsci)</span></code></pre></div>
+<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="aod.html#cb298-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb298-2"><a href="aod.html#cb298-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(effsize)</span>
+<span id="cb298-3"><a href="aod.html#cb298-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb298-4"><a href="aod.html#cb298-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Cohen&#39;s d</span></span>
+<span id="cb298-5"><a href="aod.html#cb298-5" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cohen.d</span>(comp_mgr, comp_rsci)</span></code></pre></div>
 <pre><code>## 
 ## Cohen&#39;s d
 ## 
@@ -667,15 +671,15 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 <p><strong>Mann-Whitney U Test</strong></p>
 <p>A popular nonparametric (distribution-free) alternative to Welch’s <span class="math inline">\(t\)</span>-test is the <strong>Mann-Whitney U Test</strong>, also referred to as the <strong>Wilcoxon Rank-Sum Test</strong>. Rather than comparing the mean between two groups, like the Student’s <span class="math inline">\(t\)</span>-test or Welch’s <span class="math inline">\(t\)</span>-test, the Mann-Whitney U test considers the entire distribution by evaluating the extent to which the <em>ranks</em> are consistent between groups (i.e., similarity in the proportion of records with each value). When distributions are similar, the medians of the two groups are compared.</p>
 <p>The <code>wilcox.test()</code> function is used to run this test in R. Let’s illustrate by examining whether engagement (an ordinal variable in our dataset) is significantly different between those who have been promoted in the past year and those who have not:</p>
-<div class="sourceCode" id="cb298"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb298-1"><a href="aod.html#cb298-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dummy-coded promotion variable</span></span>
-<span id="cb298-2"><a href="aod.html#cb298-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>promo <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>last_promo <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
-<span id="cb298-3"><a href="aod.html#cb298-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-4"><a href="aod.html#cb298-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create numeric engagement vectors for promo groups</span></span>
-<span id="cb298-5"><a href="aod.html#cb298-5" aria-hidden="true" tabindex="-1"></a>no_promo <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, promo <span class="sc">==</span> <span class="dv">0</span>, <span class="at">select =</span> engagement))</span>
-<span id="cb298-6"><a href="aod.html#cb298-6" aria-hidden="true" tabindex="-1"></a>promo <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, promo <span class="sc">==</span> <span class="dv">1</span>, <span class="at">select =</span> engagement))</span>
-<span id="cb298-7"><a href="aod.html#cb298-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-8"><a href="aod.html#cb298-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the Mann-Whitney U (aka Wilcoxon rank-sum) test</span></span>
-<span id="cb298-9"><a href="aod.html#cb298-9" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(no_promo, promo)</span></code></pre></div>
+<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="aod.html#cb300-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create dummy-coded promotion variable</span></span>
+<span id="cb300-2"><a href="aod.html#cb300-2" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>promo <span class="ot">&lt;-</span> <span class="fu">ifelse</span>(employees<span class="sc">$</span>last_promo <span class="sc">==</span> <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb300-3"><a href="aod.html#cb300-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb300-4"><a href="aod.html#cb300-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create numeric engagement vectors for promo groups</span></span>
+<span id="cb300-5"><a href="aod.html#cb300-5" aria-hidden="true" tabindex="-1"></a>no_promo <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, promo <span class="sc">==</span> <span class="dv">0</span>, <span class="at">select =</span> engagement))</span>
+<span id="cb300-6"><a href="aod.html#cb300-6" aria-hidden="true" tabindex="-1"></a>promo <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, promo <span class="sc">==</span> <span class="dv">1</span>, <span class="at">select =</span> engagement))</span>
+<span id="cb300-7"><a href="aod.html#cb300-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb300-8"><a href="aod.html#cb300-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform the Mann-Whitney U (aka Wilcoxon rank-sum) test</span></span>
+<span id="cb300-9"><a href="aod.html#cb300-9" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(no_promo, promo)</span></code></pre></div>
 <pre><code>## 
 ##  Wilcoxon rank sum test with continuity correction
 ## 
@@ -684,8 +688,8 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 ## alternative hypothesis: true location shift is not equal to 0</code></pre>
 <p>Based on these results, we fail to reject the null hypothesis, which states that there is no difference in engagement between those with and without promotions (<span class="math inline">\(W\)</span> = 196,056, <span class="math inline">\(p\)</span> = .67). Note the reference to continuity correction in the output. <strong>Continuity correction</strong> is applied when using a continuous distribution to approximate a discrete distribution. The Mann-Whitney U test we performed approximated a continuous distribution for testing differences between our ordinal (discrete) engagement data by applying this continuity correction.</p>
 <p>Just as Cohen’s <span class="math inline">\(d\)</span> is used to measure the magnitude of difference between a pair of means, <strong>Cliff’s delta</strong> can be leveraged to evaluate the size of differences between ordinal variables. Cliff’s delta measures how often a value in one distribution is higher than values in another, and this is appropriate in situations in which a nonparametric test of differences is used. This statistic can be produced using the <code>cliff.delta()</code> function from the <code>effsize</code> package in R.</p>
-<div class="sourceCode" id="cb300"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb300-1"><a href="aod.html#cb300-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Cliff&#39;s Delta</span></span>
-<span id="cb300-2"><a href="aod.html#cb300-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cliff.delta</span>(no_promo, promo)</span></code></pre></div>
+<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="aod.html#cb302-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate Cliff&#39;s Delta</span></span>
+<span id="cb302-2"><a href="aod.html#cb302-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cliff.delta</span>(no_promo, promo)</span></code></pre></div>
 <pre><code>## 
 ## Cliff&#39;s Delta
 ## 
@@ -701,65 +705,65 @@ Figure 9.7: Annual compensation distributions for managers and Research Scientis
 <p>Our DV (happiness) will be measured using a composite index derived from individual engagement, environment satisfaction, job satisfaction, and relationship satisfaction scores. Our objective is to determine if there is a significant improvement in this happiness index for the treatment group (those who are part of the flexible work pilot) relative to the pre/post difference for the control group (those not selected for the flexible work pilot).</p>
 <p>While we could simply look at the pre/post differences for the treatment group, we understand from Chapter <a href="research.html#research">4</a> that this would be a weak design that may lead to inaccurate conclusions. There could be alternative explanations for any observed increases in happiness that are unrelated to the intervention itself. For example, between time 1 and time 2, travel frequency may have decreased for everyone, which may contribute to overall happiness. By comparing pre/post differences between the treatment and control groups, we gain more confidence in isolating the effect of the flexible work benefit on happiness since alternative explanations should be reflected in any pre/post changes observed for the control group.</p>
 <p>Let’s prepare the data for this experiment. Since <code>employees</code> is a cross-sectional dataset (single point-in-time), we will generate simulated data for repeated measures (i.e., post-intervention scores).</p>
-<div class="sourceCode" id="cb302"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb302-1"><a href="aod.html#cb302-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducible results</span></span>
-<span id="cb302-2"><a href="aod.html#cb302-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
-<span id="cb302-3"><a href="aod.html#cb302-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-4"><a href="aod.html#cb302-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive happiness index from survey variables</span></span>
-<span id="cb302-5"><a href="aod.html#cb302-5" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>happiness_ind <span class="ot">&lt;-</span> (employees<span class="sc">$</span>engagement <span class="sc">+</span> employees<span class="sc">$</span>env_sat <span class="sc">+</span> employees<span class="sc">$</span>job_sat <span class="sc">+</span> employees<span class="sc">$</span>rel_sat) <span class="sc">/</span> <span class="dv">4</span></span>
-<span id="cb302-6"><a href="aod.html#cb302-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-7"><a href="aod.html#cb302-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample size of frequent travelers</span></span>
-<span id="cb302-8"><a href="aod.html#cb302-8" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">nrow</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span>, <span class="at">select =</span> employee_id))</span>
-<span id="cb302-9"><a href="aod.html#cb302-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-10"><a href="aod.html#cb302-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly assign half of frequent travelers to treatment and control groups</span></span>
-<span id="cb302-11"><a href="aod.html#cb302-11" aria-hidden="true" tabindex="-1"></a>treat_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">unlist</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span>, <span class="at">select =</span> employee_id)), <span class="fu">floor</span>(n <span class="sc">*</span> .<span class="dv">5</span>))</span>
-<span id="cb302-12"><a href="aod.html#cb302-12" aria-hidden="true" tabindex="-1"></a>ctrl_ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span> <span class="sc">&amp;</span> <span class="sc">!</span>employee_id <span class="sc">%in%</span> treat_ids, <span class="at">select =</span> employee_id))</span>
-<span id="cb302-13"><a href="aod.html#cb302-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-14"><a href="aod.html#cb302-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize dfs for pre/post metrics</span></span>
-<span id="cb302-15"><a href="aod.html#cb302-15" aria-hidden="true" tabindex="-1"></a>treat_metrics <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">pre_ind =</span> <span class="fu">length</span>(treat_ids),</span>
-<span id="cb302-16"><a href="aod.html#cb302-16" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rand_num =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(treat_ids), <span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">5</span>) <span class="sc">*</span> .<span class="dv">001</span>,</span>
-<span id="cb302-17"><a href="aod.html#cb302-17" aria-hidden="true" tabindex="-1"></a>                           <span class="at">post_ind =</span> <span class="fu">length</span>(treat_ids), </span>
-<span id="cb302-18"><a href="aod.html#cb302-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">diff =</span> <span class="fu">length</span>(treat_ids))</span>
-<span id="cb302-19"><a href="aod.html#cb302-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-20"><a href="aod.html#cb302-20" aria-hidden="true" tabindex="-1"></a>ctrl_metrics <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">pre_ind =</span> <span class="fu">length</span>(ctrl_ids), </span>
-<span id="cb302-21"><a href="aod.html#cb302-21" aria-hidden="true" tabindex="-1"></a>                          <span class="at">rand_num =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(ctrl_ids), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>) <span class="sc">*</span> .<span class="dv">001</span>, </span>
-<span id="cb302-22"><a href="aod.html#cb302-22" aria-hidden="true" tabindex="-1"></a>                          <span class="at">post_ind =</span> <span class="fu">length</span>(ctrl_ids),</span>
-<span id="cb302-23"><a href="aod.html#cb302-23" aria-hidden="true" tabindex="-1"></a>                          <span class="at">diff =</span> <span class="fu">length</span>(ctrl_ids))</span>
-<span id="cb302-24"><a href="aod.html#cb302-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-25"><a href="aod.html#cb302-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Store happiness indices for treatment and control groups</span></span>
-<span id="cb302-26"><a href="aod.html#cb302-26" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>pre_ind <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, employee_id <span class="sc">%in%</span> treat_ids, <span class="at">select =</span> happiness_ind))</span>
-<span id="cb302-27"><a href="aod.html#cb302-27" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>pre_ind <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, employee_id <span class="sc">%in%</span> ctrl_ids, <span class="at">select =</span> happiness_ind))</span>
-<span id="cb302-28"><a href="aod.html#cb302-28" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb302-29"><a href="aod.html#cb302-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create vectors with artificially inflated post-intervention happiness indices</span></span>
-<span id="cb302-30"><a href="aod.html#cb302-30" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>post_ind <span class="ot">&lt;-</span> treat_metrics<span class="sc">$</span>pre_ind <span class="sc">+</span> treat_metrics<span class="sc">$</span>rand_num</span>
-<span id="cb302-31"><a href="aod.html#cb302-31" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>post_ind <span class="ot">&lt;-</span> ctrl_metrics<span class="sc">$</span>pre_ind <span class="sc">+</span> ctrl_metrics<span class="sc">$</span>rand_num</span></code></pre></div>
+<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="aod.html#cb304-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Set seed for reproducible results</span></span>
+<span id="cb304-2"><a href="aod.html#cb304-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1234</span>)</span>
+<span id="cb304-3"><a href="aod.html#cb304-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-4"><a href="aod.html#cb304-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive happiness index from survey variables</span></span>
+<span id="cb304-5"><a href="aod.html#cb304-5" aria-hidden="true" tabindex="-1"></a>employees<span class="sc">$</span>happiness_ind <span class="ot">&lt;-</span> (employees<span class="sc">$</span>engagement <span class="sc">+</span> employees<span class="sc">$</span>env_sat <span class="sc">+</span> employees<span class="sc">$</span>job_sat <span class="sc">+</span> employees<span class="sc">$</span>rel_sat) <span class="sc">/</span> <span class="dv">4</span></span>
+<span id="cb304-6"><a href="aod.html#cb304-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-7"><a href="aod.html#cb304-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample size of frequent travelers</span></span>
+<span id="cb304-8"><a href="aod.html#cb304-8" aria-hidden="true" tabindex="-1"></a>n <span class="ot">=</span> <span class="fu">nrow</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span>, <span class="at">select =</span> employee_id))</span>
+<span id="cb304-9"><a href="aod.html#cb304-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-10"><a href="aod.html#cb304-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Randomly assign half of frequent travelers to treatment and control groups</span></span>
+<span id="cb304-11"><a href="aod.html#cb304-11" aria-hidden="true" tabindex="-1"></a>treat_ids <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">unlist</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span>, <span class="at">select =</span> employee_id)), <span class="fu">floor</span>(n <span class="sc">*</span> .<span class="dv">5</span>))</span>
+<span id="cb304-12"><a href="aod.html#cb304-12" aria-hidden="true" tabindex="-1"></a>ctrl_ids <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, business_travel <span class="sc">==</span> <span class="st">&#39;Travel_Frequently&#39;</span> <span class="sc">&amp;</span> <span class="sc">!</span>employee_id <span class="sc">%in%</span> treat_ids, <span class="at">select =</span> employee_id))</span>
+<span id="cb304-13"><a href="aod.html#cb304-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-14"><a href="aod.html#cb304-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Initialize dfs for pre/post metrics</span></span>
+<span id="cb304-15"><a href="aod.html#cb304-15" aria-hidden="true" tabindex="-1"></a>treat_metrics <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">pre_ind =</span> <span class="fu">length</span>(treat_ids),</span>
+<span id="cb304-16"><a href="aod.html#cb304-16" aria-hidden="true" tabindex="-1"></a>                           <span class="at">rand_num =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(treat_ids), <span class="at">mean =</span> <span class="dv">15</span>, <span class="at">sd =</span> <span class="dv">5</span>) <span class="sc">*</span> .<span class="dv">001</span>,</span>
+<span id="cb304-17"><a href="aod.html#cb304-17" aria-hidden="true" tabindex="-1"></a>                           <span class="at">post_ind =</span> <span class="fu">length</span>(treat_ids), </span>
+<span id="cb304-18"><a href="aod.html#cb304-18" aria-hidden="true" tabindex="-1"></a>                           <span class="at">diff =</span> <span class="fu">length</span>(treat_ids))</span>
+<span id="cb304-19"><a href="aod.html#cb304-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-20"><a href="aod.html#cb304-20" aria-hidden="true" tabindex="-1"></a>ctrl_metrics <span class="ot">=</span> <span class="fu">data.frame</span>(<span class="at">pre_ind =</span> <span class="fu">length</span>(ctrl_ids), </span>
+<span id="cb304-21"><a href="aod.html#cb304-21" aria-hidden="true" tabindex="-1"></a>                          <span class="at">rand_num =</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(ctrl_ids), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>) <span class="sc">*</span> .<span class="dv">001</span>, </span>
+<span id="cb304-22"><a href="aod.html#cb304-22" aria-hidden="true" tabindex="-1"></a>                          <span class="at">post_ind =</span> <span class="fu">length</span>(ctrl_ids),</span>
+<span id="cb304-23"><a href="aod.html#cb304-23" aria-hidden="true" tabindex="-1"></a>                          <span class="at">diff =</span> <span class="fu">length</span>(ctrl_ids))</span>
+<span id="cb304-24"><a href="aod.html#cb304-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-25"><a href="aod.html#cb304-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Store happiness indices for treatment and control groups</span></span>
+<span id="cb304-26"><a href="aod.html#cb304-26" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>pre_ind <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, employee_id <span class="sc">%in%</span> treat_ids, <span class="at">select =</span> happiness_ind))</span>
+<span id="cb304-27"><a href="aod.html#cb304-27" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>pre_ind <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, employee_id <span class="sc">%in%</span> ctrl_ids, <span class="at">select =</span> happiness_ind))</span>
+<span id="cb304-28"><a href="aod.html#cb304-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb304-29"><a href="aod.html#cb304-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Create vectors with artificially inflated post-intervention happiness indices</span></span>
+<span id="cb304-30"><a href="aod.html#cb304-30" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>post_ind <span class="ot">&lt;-</span> treat_metrics<span class="sc">$</span>pre_ind <span class="sc">+</span> treat_metrics<span class="sc">$</span>rand_num</span>
+<span id="cb304-31"><a href="aod.html#cb304-31" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>post_ind <span class="ot">&lt;-</span> ctrl_metrics<span class="sc">$</span>pre_ind <span class="sc">+</span> ctrl_metrics<span class="sc">$</span>rand_num</span></code></pre></div>
 <p>It’s important to remember that a paired samples <span class="math inline">\(t\)</span>-test requires that each of the paired measurements be obtained from the same subject. Therefore, if an employee terms between time 1 and time 2, or does not provide the survey responses needed to calculate the happiness index at both time 1 and time 2, the employee should be removed from the data since paired measurements will not be available.</p>
 <p>The variance is not assumed to be equal for a paired test; therefore, the homogeneity of variance assumption is not applicable in this context.</p>
 <p>Next, we will evaluate whether paired differences are normally distributed using the Shapiro Wilk test. While individual survey items are measured on an ordinal scale, our derived happiness index is the average of multiple ordinal items and can be considered an <em>approximately</em> continuous variable. There are <span class="math inline">\(2^p - p - 1\)</span> combinations of scores, where <span class="math inline">\(p\)</span> is the number of variables. For our happiness index, there are <span class="math inline">\(2^4 - 4 - 1 = 11\)</span> combinations.</p>
-<div class="sourceCode" id="cb303"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb303-1"><a href="aod.html#cb303-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb303-2"><a href="aod.html#cb303-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
-<span id="cb303-3"><a href="aod.html#cb303-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb303-4"><a href="aod.html#cb303-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate pre/post differences</span></span>
-<span id="cb303-5"><a href="aod.html#cb303-5" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>diff <span class="ot">&lt;-</span> treat_metrics<span class="sc">$</span>post_ind <span class="sc">-</span> treat_metrics<span class="sc">$</span>pre_ind</span>
-<span id="cb303-6"><a href="aod.html#cb303-6" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>diff <span class="ot">&lt;-</span> ctrl_metrics<span class="sc">$</span>post_ind <span class="sc">-</span> ctrl_metrics<span class="sc">$</span>pre_ind</span>
-<span id="cb303-7"><a href="aod.html#cb303-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb303-8"><a href="aod.html#cb303-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for distribution of pre/post treatment group differences</span></span>
-<span id="cb303-9"><a href="aod.html#cb303-9" aria-hidden="true" tabindex="-1"></a>p_treat <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb303-10"><a href="aod.html#cb303-10" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">aes</span>(treat_metrics<span class="sc">$</span>diff) <span class="sc">+</span> </span>
-<span id="cb303-11"><a href="aod.html#cb303-11" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Treatment Group&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Happiness Index Differences&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb303-12"><a href="aod.html#cb303-12" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb303-13"><a href="aod.html#cb303-13" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb303-14"><a href="aod.html#cb303-14" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb303-15"><a href="aod.html#cb303-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb303-16"><a href="aod.html#cb303-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for distribution of pre/post control group differences</span></span>
-<span id="cb303-17"><a href="aod.html#cb303-17" aria-hidden="true" tabindex="-1"></a>p_ctrl <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb303-18"><a href="aod.html#cb303-18" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">aes</span>(ctrl_metrics<span class="sc">$</span>diff) <span class="sc">+</span> </span>
-<span id="cb303-19"><a href="aod.html#cb303-19" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Control Group&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Happiness Index Differences&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb303-20"><a href="aod.html#cb303-20" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb303-21"><a href="aod.html#cb303-21" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb303-22"><a href="aod.html#cb303-22" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb303-23"><a href="aod.html#cb303-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb303-24"><a href="aod.html#cb303-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Display histograms side-by-side</span></span>
-<span id="cb303-25"><a href="aod.html#cb303-25" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p_treat, p_ctrl, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb305"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb305-1"><a href="aod.html#cb305-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb305-2"><a href="aod.html#cb305-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
+<span id="cb305-3"><a href="aod.html#cb305-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb305-4"><a href="aod.html#cb305-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate pre/post differences</span></span>
+<span id="cb305-5"><a href="aod.html#cb305-5" aria-hidden="true" tabindex="-1"></a>treat_metrics<span class="sc">$</span>diff <span class="ot">&lt;-</span> treat_metrics<span class="sc">$</span>post_ind <span class="sc">-</span> treat_metrics<span class="sc">$</span>pre_ind</span>
+<span id="cb305-6"><a href="aod.html#cb305-6" aria-hidden="true" tabindex="-1"></a>ctrl_metrics<span class="sc">$</span>diff <span class="ot">&lt;-</span> ctrl_metrics<span class="sc">$</span>post_ind <span class="sc">-</span> ctrl_metrics<span class="sc">$</span>pre_ind</span>
+<span id="cb305-7"><a href="aod.html#cb305-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb305-8"><a href="aod.html#cb305-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for distribution of pre/post treatment group differences</span></span>
+<span id="cb305-9"><a href="aod.html#cb305-9" aria-hidden="true" tabindex="-1"></a>p_treat <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb305-10"><a href="aod.html#cb305-10" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">aes</span>(treat_metrics<span class="sc">$</span>diff) <span class="sc">+</span> </span>
+<span id="cb305-11"><a href="aod.html#cb305-11" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Treatment Group&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Happiness Index Differences&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb305-12"><a href="aod.html#cb305-12" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb305-13"><a href="aod.html#cb305-13" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb305-14"><a href="aod.html#cb305-14" aria-hidden="true" tabindex="-1"></a>           ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb305-15"><a href="aod.html#cb305-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb305-16"><a href="aod.html#cb305-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Histogram for distribution of pre/post control group differences</span></span>
+<span id="cb305-17"><a href="aod.html#cb305-17" aria-hidden="true" tabindex="-1"></a>p_ctrl <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb305-18"><a href="aod.html#cb305-18" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">aes</span>(ctrl_metrics<span class="sc">$</span>diff) <span class="sc">+</span> </span>
+<span id="cb305-19"><a href="aod.html#cb305-19" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="st">&quot;Control Group&quot;</span>, <span class="at">x =</span> <span class="st">&quot;Happiness Index Differences&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb305-20"><a href="aod.html#cb305-20" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb305-21"><a href="aod.html#cb305-21" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb305-22"><a href="aod.html#cb305-22" aria-hidden="true" tabindex="-1"></a>          ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb305-23"><a href="aod.html#cb305-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb305-24"><a href="aod.html#cb305-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Display histograms side-by-side</span></span>
+<span id="cb305-25"><a href="aod.html#cb305-25" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(p_treat, p_ctrl, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pre-post-diff"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/pre-post-diff-1.png" alt="Pre/post differences for treatment and control groups" width="672" />
 <p class="caption">
@@ -768,14 +772,14 @@ Figure 9.8: Pre/post differences for treatment and control groups
 </div>
 <p>Based on a visual inspection, the distributions of differences appear to be roughly normal. This should not be surprising given random values were sampled from normal distributions to derive artificial post-intervention happiness indices.</p>
 <p>Let’s test for normality by performing the Shapiro-Wilk test on vectors of differences:</p>
-<div class="sourceCode" id="cb304"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb304-1"><a href="aod.html#cb304-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb304-2"><a href="aod.html#cb304-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(treat_metrics<span class="sc">$</span>diff)</span></code></pre></div>
+<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="aod.html#cb306-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb306-2"><a href="aod.html#cb306-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(treat_metrics<span class="sc">$</span>diff)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
 ## data:  treat_metrics$diff
 ## W = 0.98936, p-value = 0.3738</code></pre>
-<div class="sourceCode" id="cb306"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb306-1"><a href="aod.html#cb306-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(ctrl_metrics<span class="sc">$</span>diff)</span></code></pre></div>
+<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="aod.html#cb308-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(ctrl_metrics<span class="sc">$</span>diff)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -783,8 +787,8 @@ Figure 9.8: Pre/post differences for treatment and control groups
 ## W = 0.99096, p-value = 0.5134</code></pre>
 <p>Since <span class="math inline">\(p\)</span> &gt;= .05 for both tests, the assumption of normally distributed differences is met. Given the data generative process implemented for this example, differences would become increasingly normal as the sample size increases. We now have the greenlight to perform the paired samples <span class="math inline">\(t\)</span>-test.</p>
 <p>We can run a paired samples <span class="math inline">\(t\)</span>-test in R by passing <code>paired = TRUE</code> as an argument to the same <code>t.test()</code> function used for the independent samples <span class="math inline">\(t\)</span>-test. Since we are investigating whether the average post-intervention happiness index is significantly <em>greater</em> than the average pre-intervention happiness index, we also need the <code>alternative = "greater"</code> argument since the default two-tailed test only evaluates whether the average indices are significantly different (regardless of whether the pre- or post-intervention index is larger).</p>
-<div class="sourceCode" id="cb308"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb308-1"><a href="aod.html#cb308-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform one-tailed paired samples t-test for treatment group</span></span>
-<span id="cb308-2"><a href="aod.html#cb308-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="aod.html#cb310-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform one-tailed paired samples t-test for treatment group</span></span>
+<span id="cb310-2"><a href="aod.html#cb310-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Paired t-test
 ## 
@@ -798,8 +802,8 @@ Figure 9.8: Pre/post differences for treatment and control groups
 ##      0.01562551</code></pre>
 <p>These results indicate that the post-intervention happiness index is significantly larger than the pre-intervention happiness index. This is encouraging with respect to the potential efficacy of the flexible work pilot, but the question about whether the control group experienced a commensurate improvement over the observation period remains unanswered.</p>
 <p>Let’s run the same paired samples <span class="math inline">\(t\)</span>-test using the control group indices:</p>
-<div class="sourceCode" id="cb310"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb310-1"><a href="aod.html#cb310-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform one-tailed paired samples t-test for control group</span></span>
-<span id="cb310-2"><a href="aod.html#cb310-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(ctrl_metrics<span class="sc">$</span>post_ind, ctrl_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="aod.html#cb312-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform one-tailed paired samples t-test for control group</span></span>
+<span id="cb312-2"><a href="aod.html#cb312-2" aria-hidden="true" tabindex="-1"></a><span class="fu">t.test</span>(ctrl_metrics<span class="sc">$</span>post_ind, ctrl_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>, <span class="at">alternative =</span> <span class="st">&quot;greater&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Paired t-test
 ## 
@@ -815,8 +819,8 @@ Figure 9.8: Pre/post differences for treatment and control groups
 <p>Chapter <a href="lm.html#lm">10</a> will introduce linear regression, which is a powerful modeling tool for people analytics that helps control for multiple alternative explanations of associations with the DV in order to isolate the unique effects of each IV.</p>
 <p><strong>Difference-in-differences (DiD)</strong> estimation is an alternative quasi-experimental approach that originated from econometrics for evaluating the effects of interventions like these, but it is beyond the scope of this book. Angrist and Pischke (2009) is an excellent resource for learning about these methods.</p>
 <p>We can evaluate the magnitude of mean differences for these paired samples by passing the <code>paired = TRUE</code> argument to the same <code>cohen.d()</code> function used for independent samples:</p>
-<div class="sourceCode" id="cb312"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb312-1"><a href="aod.html#cb312-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Cohen&#39;s d</span></span>
-<span id="cb312-2"><a href="aod.html#cb312-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cohen.d</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="aod.html#cb314-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Cohen&#39;s d</span></span>
+<span id="cb314-2"><a href="aod.html#cb314-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cohen.d</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
 ## Cohen&#39;s d
 ## 
@@ -828,16 +832,16 @@ Figure 9.8: Pre/post differences for treatment and control groups
 <p><strong>Wilcoxon Signed-Rank Test</strong></p>
 <p>The <strong>Wilcoxon Signed-Rank Test</strong> is the nonparametric alternative to the paired samples <span class="math inline">\(t\)</span>-test. This distribution-free test does not require normally distributed differences.</p>
 <p>The matched Wilcoxon Signed-Rank test is performed in R using the same <code>wilcox.test()</code> function used to perform the unmatched Wilcoxon Rank-Sum test. Though we can use a paired samples <span class="math inline">\(t\)</span>-test to test differences for our flexible work benefit study since the assumption of normally distributed differences is met, let’s run a Wilcoxon Signed-Rank test for demonstrative purposes:</p>
-<div class="sourceCode" id="cb314"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb314-1"><a href="aod.html#cb314-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Wilcoxon Signed-Rank test</span></span>
-<span id="cb314-2"><a href="aod.html#cb314-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="aod.html#cb316-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Wilcoxon Signed-Rank test</span></span>
+<span id="cb316-2"><a href="aod.html#cb316-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Wilcoxon signed rank test with continuity correction
 ## 
 ## data:  treat_metrics$post_ind and treat_metrics$pre_ind
 ## V = 9591, p-value &lt; 2.2e-16
 ## alternative hypothesis: true location shift is not equal to 0</code></pre>
-<div class="sourceCode" id="cb316"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb316-1"><a href="aod.html#cb316-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Wilcoxon Signed-Rank test</span></span>
-<span id="cb316-2"><a href="aod.html#cb316-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(ctrl_metrics<span class="sc">$</span>post_ind, ctrl_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="aod.html#cb318-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Wilcoxon Signed-Rank test</span></span>
+<span id="cb318-2"><a href="aod.html#cb318-2" aria-hidden="true" tabindex="-1"></a><span class="fu">wilcox.test</span>(ctrl_metrics<span class="sc">$</span>post_ind, ctrl_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Wilcoxon signed rank test with continuity correction
 ## 
@@ -846,8 +850,8 @@ Figure 9.8: Pre/post differences for treatment and control groups
 ## alternative hypothesis: true location shift is not equal to 0</code></pre>
 <p>Consistent with results from the paired samples <span class="math inline">\(t\)</span>-tests, significantly higher post-intervention happiness indices were observed for the treatment group but not for the control group.</p>
 <p>We can evaluate the magnitude of differences for these paired samples by passing the <code>paired = TRUE</code> argument to the same <code>cliff.delta()</code> function used for independent samples:</p>
-<div class="sourceCode" id="cb318"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb318-1"><a href="aod.html#cb318-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Cliff&#39;s Delta</span></span>
-<span id="cb318-2"><a href="aod.html#cb318-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cliff.delta</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="aod.html#cb320-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run Cliff&#39;s Delta</span></span>
+<span id="cb320-2"><a href="aod.html#cb320-2" aria-hidden="true" tabindex="-1"></a>effsize<span class="sc">::</span><span class="fu">cliff.delta</span>(treat_metrics<span class="sc">$</span>post_ind, treat_metrics<span class="sc">$</span>pre_ind, <span class="at">paired =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## 
 ## Cliff&#39;s Delta
 ## 
@@ -878,47 +882,43 @@ Figure 9.8: Pre/post differences for treatment and control groups
 <p>To illustrate how to perform a one-way ANOVA, we will test the hypothesis that mean annual compensation is equal across job satisfaction levels.</p>
 <p>Each observation in <code>employees</code> represents a unique employee, and a given employee can only have one job satisfaction score and one annual compensation value. The assumption of independence is met since each record exists independent of one another and each job satisfaction group is comprised of different employees.</p>
 <p>Levene’s test (Levene, 1960) can be used to test the homogeneity of variance assumption – even with non-normal distributions. This can be performed in R using the <code>leveneTest()</code> function from the <code>car</code> package:</p>
-<div class="sourceCode" id="cb320"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb320-1"><a href="aod.html#cb320-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Levene&#39;s test for homogeneity of variance</span></span>
-<span id="cb320-2"><a href="aod.html#cb320-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">leveneTest</span>(annual_comp <span class="sc">~</span> <span class="fu">as.factor</span>(job_sat), <span class="at">data =</span> employees)</span></code></pre></div>
+<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="aod.html#cb322-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform Levene&#39;s test for homogeneity of variance</span></span>
+<span id="cb322-2"><a href="aod.html#cb322-2" aria-hidden="true" tabindex="-1"></a>car<span class="sc">::</span><span class="fu">leveneTest</span>(annual_comp <span class="sc">~</span> <span class="fu">as.factor</span>(job_sat), <span class="at">data =</span> employees)</span></code></pre></div>
 <pre><code>## Levene&#39;s Test for Homogeneity of Variance (center = median)
 ##         Df F value Pr(&gt;F)
 ## group    3  0.3293 0.8042
 ##       1466</code></pre>
 <p>The test statistic associated with Levene’s test relates to the null hypothesis that there are no significant differences in variances across the job satisfaction levels. Since <span class="math inline">\(p\)</span> &gt;= .05, we fail to reject this null hypothesis and can assume equal variances.</p>
 <p>Next, let’s test the assumption of normality. It is important to note that the assumption of normality <em>does not</em> apply to the distribution of the DV but to the distribution of residuals for each group of the IV. Residuals in the context of ANOVA represent the difference between the actual values of the continuous DV relative to its mean value for each level of the categorical IV (e.g., <span class="math inline">\(y - \bar{y}_A\)</span>, <span class="math inline">\(y - \bar{y}_B\)</span>, <span class="math inline">\(y - \bar{y}_C\)</span>). In ANOVA, we expect the residuals to be normally distributed around a mean of 0 (the balance point) when the data are normally distributed within each IV category; the more skewed the data, the larger the average distance of each DV value from the mean.</p>
-<div class="sourceCode" id="cb322"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb322-1"><a href="aod.html#cb322-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load libraries</span></span>
-<span id="cb322-2"><a href="aod.html#cb322-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb322-3"><a href="aod.html#cb322-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggpubr)</span>
-<span id="cb322-4"><a href="aod.html#cb322-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb322-5"><a href="aod.html#cb322-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to visualize distribution</span></span>
-<span id="cb322-6"><a href="aod.html#cb322-6" aria-hidden="true" tabindex="-1"></a>dist.viz <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x) {</span>
-<span id="cb322-7"><a href="aod.html#cb322-7" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb322-8"><a href="aod.html#cb322-8" aria-hidden="true" tabindex="-1"></a>viz <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
-<span id="cb322-9"><a href="aod.html#cb322-9" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">aes</span>(data) <span class="sc">+</span> </span>
-<span id="cb322-10"><a href="aod.html#cb322-10" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Job Sat = &quot;</span>, x), <span class="at">x =</span> <span class="st">&quot;Annual Compensation&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
-<span id="cb322-11"><a href="aod.html#cb322-11" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
-<span id="cb322-12"><a href="aod.html#cb322-12" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb322-13"><a href="aod.html#cb322-13" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
-<span id="cb322-14"><a href="aod.html#cb322-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb322-15"><a href="aod.html#cb322-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(viz)</span>
-<span id="cb322-16"><a href="aod.html#cb322-16" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb322-17"><a href="aod.html#cb322-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb322-18"><a href="aod.html#cb322-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce annual compensation vectors for each job satisfaction level</span></span>
-<span id="cb322-19"><a href="aod.html#cb322-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Unlist() is needed to convert the default object from subset() into a numeric vector</span></span>
-<span id="cb322-20"><a href="aod.html#cb322-20" aria-hidden="true" tabindex="-1"></a>group_1 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">1</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb322-21"><a href="aod.html#cb322-21" aria-hidden="true" tabindex="-1"></a>group_2 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">2</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb322-22"><a href="aod.html#cb322-22" aria-hidden="true" tabindex="-1"></a>group_3 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">3</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb322-23"><a href="aod.html#cb322-23" aria-hidden="true" tabindex="-1"></a>group_4 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">4</span>, <span class="at">select =</span> annual_comp))</span>
-<span id="cb322-24"><a href="aod.html#cb322-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb322-25"><a href="aod.html#cb322-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Call UDF to build annual comp histogram for each job satisfaction level</span></span>
-<span id="cb322-26"><a href="aod.html#cb322-26" aria-hidden="true" tabindex="-1"></a>viz_1 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_1, <span class="at">x =</span> <span class="dv">1</span>)</span>
-<span id="cb322-27"><a href="aod.html#cb322-27" aria-hidden="true" tabindex="-1"></a>viz_2 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_2, <span class="at">x =</span> <span class="dv">2</span>)</span>
-<span id="cb322-28"><a href="aod.html#cb322-28" aria-hidden="true" tabindex="-1"></a>viz_3 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_3, <span class="at">x =</span> <span class="dv">3</span>)</span>
-<span id="cb322-29"><a href="aod.html#cb322-29" aria-hidden="true" tabindex="-1"></a>viz_4 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_4, <span class="at">x =</span> <span class="dv">4</span>)</span>
-<span id="cb322-30"><a href="aod.html#cb322-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb322-31"><a href="aod.html#cb322-31" aria-hidden="true" tabindex="-1"></a><span class="co"># Display distribution visualizations</span></span>
-<span id="cb322-32"><a href="aod.html#cb322-32" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(viz_1, viz_2, viz_3, viz_4,</span>
-<span id="cb322-33"><a href="aod.html#cb322-33" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb324"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb324-1"><a href="aod.html#cb324-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to visualize distribution</span></span>
+<span id="cb324-2"><a href="aod.html#cb324-2" aria-hidden="true" tabindex="-1"></a>dist.viz <span class="ot">&lt;-</span> <span class="cf">function</span>(data, x) {</span>
+<span id="cb324-3"><a href="aod.html#cb324-3" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb324-4"><a href="aod.html#cb324-4" aria-hidden="true" tabindex="-1"></a>viz <span class="ot">&lt;-</span> ggplot2<span class="sc">::</span><span class="fu">ggplot</span>() <span class="sc">+</span> </span>
+<span id="cb324-5"><a href="aod.html#cb324-5" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">aes</span>(data) <span class="sc">+</span> </span>
+<span id="cb324-6"><a href="aod.html#cb324-6" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">title =</span> <span class="fu">paste</span>(<span class="st">&quot;Job Sat = &quot;</span>, x), <span class="at">x =</span> <span class="st">&quot;Annual Compensation&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Frequency&quot;</span>) <span class="sc">+</span> </span>
+<span id="cb324-7"><a href="aod.html#cb324-7" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">geom_histogram</span>(<span class="at">fill =</span> <span class="st">&quot;#414141&quot;</span>) <span class="sc">+</span></span>
+<span id="cb324-8"><a href="aod.html#cb324-8" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb324-9"><a href="aod.html#cb324-9" aria-hidden="true" tabindex="-1"></a>       ggplot2<span class="sc">::</span><span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>))</span>
+<span id="cb324-10"><a href="aod.html#cb324-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb324-11"><a href="aod.html#cb324-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(viz)</span>
+<span id="cb324-12"><a href="aod.html#cb324-12" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb324-13"><a href="aod.html#cb324-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb324-14"><a href="aod.html#cb324-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce annual compensation vectors for each job satisfaction level</span></span>
+<span id="cb324-15"><a href="aod.html#cb324-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Unlist() is needed to convert the default object from subset() into a numeric vector</span></span>
+<span id="cb324-16"><a href="aod.html#cb324-16" aria-hidden="true" tabindex="-1"></a>group_1 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">1</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb324-17"><a href="aod.html#cb324-17" aria-hidden="true" tabindex="-1"></a>group_2 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">2</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb324-18"><a href="aod.html#cb324-18" aria-hidden="true" tabindex="-1"></a>group_3 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">3</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb324-19"><a href="aod.html#cb324-19" aria-hidden="true" tabindex="-1"></a>group_4 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">subset</span>(employees, job_sat <span class="sc">==</span> <span class="dv">4</span>, <span class="at">select =</span> annual_comp))</span>
+<span id="cb324-20"><a href="aod.html#cb324-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb324-21"><a href="aod.html#cb324-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Call UDF to build annual comp histogram for each job satisfaction level</span></span>
+<span id="cb324-22"><a href="aod.html#cb324-22" aria-hidden="true" tabindex="-1"></a>viz_1 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_1, <span class="at">x =</span> <span class="dv">1</span>)</span>
+<span id="cb324-23"><a href="aod.html#cb324-23" aria-hidden="true" tabindex="-1"></a>viz_2 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_2, <span class="at">x =</span> <span class="dv">2</span>)</span>
+<span id="cb324-24"><a href="aod.html#cb324-24" aria-hidden="true" tabindex="-1"></a>viz_3 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_3, <span class="at">x =</span> <span class="dv">3</span>)</span>
+<span id="cb324-25"><a href="aod.html#cb324-25" aria-hidden="true" tabindex="-1"></a>viz_4 <span class="ot">&lt;-</span> <span class="fu">dist.viz</span>(<span class="at">data =</span> group_4, <span class="at">x =</span> <span class="dv">4</span>)</span>
+<span id="cb324-26"><a href="aod.html#cb324-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb324-27"><a href="aod.html#cb324-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Display distribution visualizations</span></span>
+<span id="cb324-28"><a href="aod.html#cb324-28" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(viz_1, viz_2, viz_3, viz_4,</span>
+<span id="cb324-29"><a href="aod.html#cb324-29" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:comp-dist"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/comp-dist-1.png" alt="Annual compensation distribution by job satisfaction level" width="672" />
 <p class="caption">
@@ -927,11 +927,11 @@ Figure 9.9: Annual compensation distribution by job satisfaction level
 </div>
 <p>As we can see, annual compensation data are not normally distributed within job satisfaction groups. Therefore, we would not expect the distribution of residuals to be normally distributed within these groups either.</p>
 <p>To test whether the assumption of normality is met, we will first produce and review a <strong>quantile-quantile (Q-Q) plot</strong>. A Q-Q plot compares two probability distributions by plotting their quantiles (data partitioned into equal-sized groups) against each other. After partitioning annual compensation into groups differentiated by job satisfaction level, we can use the <code>ggqqplot()</code> function from the <code>ggpubr</code> library to build a Q-Q plot and evaluate the distribution of residuals.</p>
-<div class="sourceCode" id="cb323"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb323-1"><a href="aod.html#cb323-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate residuals for each group</span></span>
-<span id="cb323-2"><a href="aod.html#cb323-2" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> <span class="fu">c</span>(group_1 <span class="sc">-</span> <span class="fu">mean</span>(group_1), group_2 <span class="sc">-</span> <span class="fu">mean</span>(group_2), group_3 <span class="sc">-</span> <span class="fu">mean</span>(group_3), group_4 <span class="sc">-</span> <span class="fu">mean</span>(group_4))</span>
-<span id="cb323-3"><a href="aod.html#cb323-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb323-4"><a href="aod.html#cb323-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a Q-Q plot of residuals</span></span>
-<span id="cb323-5"><a href="aod.html#cb323-5" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb325"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb325-1"><a href="aod.html#cb325-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate residuals for each group</span></span>
+<span id="cb325-2"><a href="aod.html#cb325-2" aria-hidden="true" tabindex="-1"></a>residuals <span class="ot">&lt;-</span> <span class="fu">c</span>(group_1 <span class="sc">-</span> <span class="fu">mean</span>(group_1), group_2 <span class="sc">-</span> <span class="fu">mean</span>(group_2), group_3 <span class="sc">-</span> <span class="fu">mean</span>(group_3), group_4 <span class="sc">-</span> <span class="fu">mean</span>(group_4))</span>
+<span id="cb325-3"><a href="aod.html#cb325-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb325-4"><a href="aod.html#cb325-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a Q-Q plot of residuals</span></span>
+<span id="cb325-5"><a href="aod.html#cb325-5" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(residuals)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:qq-plot"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plot-1.png" alt="Q-Q plot of annual compensation residuals" width="672" />
 <p class="caption">
@@ -940,8 +940,8 @@ Figure 9.10: Q-Q plot of annual compensation residuals
 </div>
 <p>To satisfy the assumption of normality, residuals must lie along the linear line. Based on the Q-Q plot in Figure <a href="aod.html#fig:qq-plot">9.10</a>, there is a clear departure from normality at both ends of the theoretical range.</p>
 <p>Let’s test for normality using the Shapiro-Wilk test:</p>
-<div class="sourceCode" id="cb324"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb324-1"><a href="aod.html#cb324-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
-<span id="cb324-2"><a href="aod.html#cb324-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(residuals)</span></code></pre></div>
+<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="aod.html#cb326-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute Shapiro-Wilk test of normality</span></span>
+<span id="cb326-2"><a href="aod.html#cb326-2" aria-hidden="true" tabindex="-1"></a><span class="fu">shapiro.test</span>(residuals)</span></code></pre></div>
 <pre><code>## 
 ##  Shapiro-Wilk normality test
 ## 
@@ -950,23 +950,23 @@ Figure 9.10: Q-Q plot of annual compensation residuals
 <p>Since <span class="math inline">\(p\)</span> &lt; .05, we reject the null hypothesis of normally distributed data, which indicates that the assumption of normality is violated. This should not be surprising based on the deviation from normality we observed in Figure <a href="aod.html#fig:qq-plot">9.10</a>.</p>
 <p>Because the assumption of normality is violated, we have two options. First, we can attempt to transform the data so that the residuals using the transformed values are normally distributed. If the data are resistant to transformation, we can leverage a nonparametric alternative to ANOVA.</p>
 <p>Let’s first try several common data transformations and then examine the resulting Q-Q plots:</p>
-<div class="sourceCode" id="cb326"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb326-1"><a href="aod.html#cb326-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the natural logarithm of annual comp</span></span>
-<span id="cb326-2"><a href="aod.html#cb326-2" aria-hidden="true" tabindex="-1"></a>ln.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
-<span id="cb326-3"><a href="aod.html#cb326-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb326-4"><a href="aod.html#cb326-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the log base 10 of annual comp</span></span>
-<span id="cb326-5"><a href="aod.html#cb326-5" aria-hidden="true" tabindex="-1"></a>log10.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log10</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
-<span id="cb326-6"><a href="aod.html#cb326-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb326-7"><a href="aod.html#cb326-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the square root of annual comp</span></span>
-<span id="cb326-8"><a href="aod.html#cb326-8" aria-hidden="true" tabindex="-1"></a>sqrt.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
-<span id="cb326-9"><a href="aod.html#cb326-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb326-10"><a href="aod.html#cb326-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Store Q-Q plots to viz objects</span></span>
-<span id="cb326-11"><a href="aod.html#cb326-11" aria-hidden="true" tabindex="-1"></a>ln.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(ln.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Natural Log&quot;</span>)</span>
-<span id="cb326-12"><a href="aod.html#cb326-12" aria-hidden="true" tabindex="-1"></a>log10.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(log10.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Log Base 10&quot;</span>)</span>
-<span id="cb326-13"><a href="aod.html#cb326-13" aria-hidden="true" tabindex="-1"></a>sqrt.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(sqrt.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Square Root&quot;</span>)</span>
-<span id="cb326-14"><a href="aod.html#cb326-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb326-15"><a href="aod.html#cb326-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Display Q-Q plots of residuals</span></span>
-<span id="cb326-16"><a href="aod.html#cb326-16" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(ln.viz, log10.viz, sqrt.viz,</span>
-<span id="cb326-17"><a href="aod.html#cb326-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb328"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb328-1"><a href="aod.html#cb328-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the natural logarithm of annual comp</span></span>
+<span id="cb328-2"><a href="aod.html#cb328-2" aria-hidden="true" tabindex="-1"></a>ln.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
+<span id="cb328-3"><a href="aod.html#cb328-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb328-4"><a href="aod.html#cb328-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the log base 10 of annual comp</span></span>
+<span id="cb328-5"><a href="aod.html#cb328-5" aria-hidden="true" tabindex="-1"></a>log10.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">log10</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
+<span id="cb328-6"><a href="aod.html#cb328-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb328-7"><a href="aod.html#cb328-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Build a linear model using the square root of annual comp</span></span>
+<span id="cb328-8"><a href="aod.html#cb328-8" aria-hidden="true" tabindex="-1"></a>sqrt.model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">sqrt</span>(annual_comp) <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
+<span id="cb328-9"><a href="aod.html#cb328-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb328-10"><a href="aod.html#cb328-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Store Q-Q plots to viz objects</span></span>
+<span id="cb328-11"><a href="aod.html#cb328-11" aria-hidden="true" tabindex="-1"></a>ln.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(ln.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Natural Log&quot;</span>)</span>
+<span id="cb328-12"><a href="aod.html#cb328-12" aria-hidden="true" tabindex="-1"></a>log10.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(log10.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Log Base 10&quot;</span>)</span>
+<span id="cb328-13"><a href="aod.html#cb328-13" aria-hidden="true" tabindex="-1"></a>sqrt.viz <span class="ot">&lt;-</span> ggpubr<span class="sc">::</span><span class="fu">ggqqplot</span>(<span class="fu">residuals</span>(sqrt.model)) <span class="sc">+</span> <span class="fu">ggtitle</span>(<span class="st">&quot;Square Root&quot;</span>)</span>
+<span id="cb328-14"><a href="aod.html#cb328-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb328-15"><a href="aod.html#cb328-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Display Q-Q plots of residuals</span></span>
+<span id="cb328-16"><a href="aod.html#cb328-16" aria-hidden="true" tabindex="-1"></a>ggpubr<span class="sc">::</span><span class="fu">ggarrange</span>(ln.viz, log10.viz, sqrt.viz,</span>
+<span id="cb328-17"><a href="aod.html#cb328-17" aria-hidden="true" tabindex="-1"></a>          <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">1</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:qq-plots-trans"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/qq-plots-trans-1.png" alt="Q-Q plots of transformed annual compensation residuals" width="672" />
 <p class="caption">
@@ -974,25 +974,25 @@ Figure 9.11: Q-Q plots of transformed annual compensation residuals
 </p>
 </div>
 <p>Even with these transformations, there is still a clear S-shaped curve about the residuals. Though we cannot proceed with ANOVA due to violated assumptions, let’s demonstrate the implementation steps for ANOVA. Performing ANOVA involves pairing the <code>aov()</code> function with the <code>summary()</code> function to display model output:</p>
-<div class="sourceCode" id="cb327"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb327-1"><a href="aod.html#cb327-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One-way ANOVA investigating mean differences in annual comp by job satisfaction</span></span>
-<span id="cb327-2"><a href="aod.html#cb327-2" aria-hidden="true" tabindex="-1"></a>one.way <span class="ot">&lt;-</span> <span class="fu">aov</span>(annual_comp <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
-<span id="cb327-3"><a href="aod.html#cb327-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb327-4"><a href="aod.html#cb327-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(one.way)</span></code></pre></div>
+<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="aod.html#cb329-1" aria-hidden="true" tabindex="-1"></a><span class="co"># One-way ANOVA investigating mean differences in annual comp by job satisfaction</span></span>
+<span id="cb329-2"><a href="aod.html#cb329-2" aria-hidden="true" tabindex="-1"></a>one.way <span class="ot">&lt;-</span> <span class="fu">aov</span>(annual_comp <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span>
+<span id="cb329-3"><a href="aod.html#cb329-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb329-4"><a href="aod.html#cb329-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(one.way)</span></code></pre></div>
 <pre><code>##               Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
 ## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
 ## Residuals   1468 2.613e+12 1.780e+09                   
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>The <strong>Kruskal Wallis H Test</strong> is the nonparametric alternative to a one-way ANOVA (Daniel, 1990) and an appropriate alternative for investigating median differences in annual comp by job satisfaction in our data. This test can be performed using the <code>kruskal.test()</code> function in R:</p>
-<div class="sourceCode" id="cb329"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb329-1"><a href="aod.html#cb329-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nonparametric Kruskal one-way ANOVA</span></span>
-<span id="cb329-2"><a href="aod.html#cb329-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(annual_comp <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span></code></pre></div>
+<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="aod.html#cb331-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Nonparametric Kruskal one-way ANOVA</span></span>
+<span id="cb331-2"><a href="aod.html#cb331-2" aria-hidden="true" tabindex="-1"></a><span class="fu">kruskal.test</span>(annual_comp <span class="sc">~</span> job_sat, <span class="at">data =</span> employees)</span></code></pre></div>
 <pre><code>## 
 ##  Kruskal-Wallis rank sum test
 ## 
 ## data:  annual_comp by job_sat
 ## Kruskal-Wallis chi-squared = 8.3242, df = 3, p-value = 0.03977</code></pre>
 <p>Since <span class="math inline">\(p\)</span> &lt; .05, we can conclude that there are significant differences in median compensation across the groups. However, this test does not indicate which groups are different. We can utilize the <code>pairwise.wilcox.test()</code> function to compute pairwise Wilcoxon rank-sum tests to identify where differences exist:</p>
-<div class="sourceCode" id="cb331"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb331-1"><a href="aod.html#cb331-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>job_sat, <span class="at">p.adjust.method =</span> <span class="st">&quot;BH&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="aod.html#cb333-1" aria-hidden="true" tabindex="-1"></a><span class="fu">pairwise.wilcox.test</span>(employees<span class="sc">$</span>annual_comp, employees<span class="sc">$</span>job_sat, <span class="at">p.adjust.method =</span> <span class="st">&quot;BH&quot;</span>)</span></code></pre></div>
 <pre><code>## 
 ##  Pairwise comparisons using Wilcoxon rank sum test with continuity correction 
 ## 
@@ -1007,9 +1007,9 @@ Figure 9.11: Q-Q plots of transformed annual compensation residuals
 <p>Based on the results, there are significant pairwise differences in median annual compensation for job satisfaction levels 3 and 4 relative to level 1.</p>
 <p><strong>Factorial ANOVA</strong></p>
 <p><strong>Factorial ANOVA</strong> is any ANOVA which uses two or more categorical IVs, such as a two-way or three-way ANOVA. The following output reflects the cross-tabulation of average annual compensation for each combination of two factors – job satisfaction and stock option level.</p>
-<div class="sourceCode" id="cb333"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb333-1"><a href="aod.html#cb333-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean for each IV pair</span></span>
-<span id="cb333-2"><a href="aod.html#cb333-2" aria-hidden="true" tabindex="-1"></a>combos <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(annual_comp <span class="sc">~</span> job_sat <span class="sc">+</span> stock_opt_lvl, employees, mean)</span>
-<span id="cb333-3"><a href="aod.html#cb333-3" aria-hidden="true" tabindex="-1"></a>combos</span></code></pre></div>
+<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="aod.html#cb335-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean for each IV pair</span></span>
+<span id="cb335-2"><a href="aod.html#cb335-2" aria-hidden="true" tabindex="-1"></a>combos <span class="ot">&lt;-</span> <span class="fu">aggregate</span>(annual_comp <span class="sc">~</span> job_sat <span class="sc">+</span> stock_opt_lvl, employees, mean)</span>
+<span id="cb335-3"><a href="aod.html#cb335-3" aria-hidden="true" tabindex="-1"></a>combos</span></code></pre></div>
 <pre><code>##    job_sat stock_opt_lvl annual_comp
 ## 1        1             0    141254.0
 ## 2        2             0    138753.3
@@ -1029,10 +1029,10 @@ Figure 9.11: Q-Q plots of transformed annual compensation residuals
 ## 16       4             3    127102.9</code></pre>
 <p>As we have already discussed, a difference between one or more of these contrasts may result in a decision to reject <span class="math inline">\(H_0\)</span> in ANOVA. We may also find a significant pairwise difference but a non-significant result from ANOVA since the family-wise error rate adjustment is applied in the context of multiple comparisons which reduces statistical power.</p>
 <p>Factorial ANOVA can be performed by adding variables with <code>+</code> within the same <code>aov()</code> function used for one-way ANOVA:</p>
-<div class="sourceCode" id="cb335"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb335-1"><a href="aod.html#cb335-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level</span></span>
-<span id="cb335-2"><a href="aod.html#cb335-2" aria-hidden="true" tabindex="-1"></a>factorial <span class="ot">&lt;-</span> <span class="fu">aov</span>(annual_comp <span class="sc">~</span> job_sat <span class="sc">+</span> stock_opt_lvl, <span class="at">data =</span> employees)</span>
-<span id="cb335-3"><a href="aod.html#cb335-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb335-4"><a href="aod.html#cb335-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(factorial)</span></code></pre></div>
+<div class="sourceCode" id="cb337"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb337-1"><a href="aod.html#cb337-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level</span></span>
+<span id="cb337-2"><a href="aod.html#cb337-2" aria-hidden="true" tabindex="-1"></a>factorial <span class="ot">&lt;-</span> <span class="fu">aov</span>(annual_comp <span class="sc">~</span> job_sat <span class="sc">+</span> stock_opt_lvl, <span class="at">data =</span> employees)</span>
+<span id="cb337-3"><a href="aod.html#cb337-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb337-4"><a href="aod.html#cb337-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(factorial)</span></code></pre></div>
 <pre><code>##                 Df    Sum Sq   Mean Sq F value  Pr(&gt;F)   
 ## job_sat          1 1.337e+10 1.337e+10   7.523 0.00617 **
 ## stock_opt_lvl    1 6.840e+09 6.840e+09   3.850 0.04995 * 

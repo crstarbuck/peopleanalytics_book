@@ -23,7 +23,7 @@
 <meta name="author" content="Craig Starbuck" />
 
 
-<meta name="date" content="2022-10-20" />
+<meta name="date" content="2022-10-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -167,11 +167,12 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.1.1" data-path="r-intro.html"><a href="r-intro.html#installing-r"><i class="fa fa-check"></i><b>2.1.1</b> Installing R</a></li>
 <li class="chapter" data-level="2.1.2" data-path="r-intro.html"><a href="r-intro.html#installing-r-studio"><i class="fa fa-check"></i><b>2.1.2</b> Installing R Studio</a></li>
 <li class="chapter" data-level="2.1.3" data-path="r-intro.html"><a href="r-intro.html#installing-packages"><i class="fa fa-check"></i><b>2.1.3</b> Installing Packages</a></li>
-<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.4</b> Case Sensitivity</a></li>
-<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.5</b> Help</a></li>
-<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.6</b> Objects</a></li>
-<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.7</b> Comments</a></li>
-<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.8</b> Testing Early and Often</a></li>
+<li class="chapter" data-level="2.1.4" data-path="r-intro.html"><a href="r-intro.html#loading-data"><i class="fa fa-check"></i><b>2.1.4</b> Loading data</a></li>
+<li class="chapter" data-level="2.1.5" data-path="r-intro.html"><a href="r-intro.html#case-sensitivity"><i class="fa fa-check"></i><b>2.1.5</b> Case Sensitivity</a></li>
+<li class="chapter" data-level="2.1.6" data-path="r-intro.html"><a href="r-intro.html#help"><i class="fa fa-check"></i><b>2.1.6</b> Help</a></li>
+<li class="chapter" data-level="2.1.7" data-path="r-intro.html"><a href="r-intro.html#objects"><i class="fa fa-check"></i><b>2.1.7</b> Objects</a></li>
+<li class="chapter" data-level="2.1.8" data-path="r-intro.html"><a href="r-intro.html#comments"><i class="fa fa-check"></i><b>2.1.8</b> Comments</a></li>
+<li class="chapter" data-level="2.1.9" data-path="r-intro.html"><a href="r-intro.html#testing-early-and-often"><i class="fa fa-check"></i><b>2.1.9</b> Testing Early and Often</a></li>
 </ul></li>
 <li class="chapter" data-level="2.2" data-path="r-intro.html"><a href="r-intro.html#vectors"><i class="fa fa-check"></i><b>2.2</b> Vectors</a></li>
 <li class="chapter" data-level="2.3" data-path="r-intro.html"><a href="r-intro.html#matrices"><i class="fa fa-check"></i><b>2.3</b> Matrices</a></li>
@@ -467,14 +468,17 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Exploratory factor analysis (EFA)</strong> is a variable reduction technique by which factors are extracted from data – usually as part of the development process for new survey instruments.</p>
 <p>A researcher may work with a panel of experts in a particular domain to develop an inventory of items that tap various aspects of the construct per the theoretical framework that underpins it. Based on how the items cluster together, the empirical data will be reconciled against the theoretical conception to define dimensions of the measure. Within a cluster of highly correlated items for a particular dimension, the researcher needs to decide which items are essential and which are redundant and eligible for removal. Aside from the principal clusters (or factors), remaining items also need to be evaluated for their relevance and support for the underlying theory. If items are believed to be members of the theoretical dimensions but do not cluster together with other similar items, it may be indicative of poorly written items that have different interpretations among survey takers. EFA is the empirical process that supports these objectives.</p>
 <p>To illustrate the steps for EFA, we will leverage the <code>survey_responses</code> data.</p>
-<div class="sourceCode" id="cb432"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb432-1"><a href="unsup-lrn.html#cb432-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb432-2"><a href="unsup-lrn.html#cb432-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb432-3"><a href="unsup-lrn.html#cb432-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb432-4"><a href="unsup-lrn.html#cb432-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load survey response data</span></span>
-<span id="cb432-5"><a href="unsup-lrn.html#cb432-5" aria-hidden="true" tabindex="-1"></a>survey_dat <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/survey_responses.csv&quot;</span>)</span>
-<span id="cb432-6"><a href="unsup-lrn.html#cb432-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb432-7"><a href="unsup-lrn.html#cb432-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Show dimensions of survey data</span></span>
-<span id="cb432-8"><a href="unsup-lrn.html#cb432-8" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(survey_dat)</span></code></pre></div>
+<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb434-1"><a href="unsup-lrn.html#cb434-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb434-2"><a href="unsup-lrn.html#cb434-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(peopleanalytics)</span>
+<span id="cb434-3"><a href="unsup-lrn.html#cb434-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb434-4"><a href="unsup-lrn.html#cb434-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load data</span></span>
+<span id="cb434-5"><a href="unsup-lrn.html#cb434-5" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;survey_responses&quot;</span>)</span>
+<span id="cb434-6"><a href="unsup-lrn.html#cb434-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb434-7"><a href="unsup-lrn.html#cb434-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Store data in df with curtailed name</span></span>
+<span id="cb434-8"><a href="unsup-lrn.html#cb434-8" aria-hidden="true" tabindex="-1"></a>survey_dat <span class="ot">&lt;-</span> survey_responses</span>
+<span id="cb434-9"><a href="unsup-lrn.html#cb434-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb434-10"><a href="unsup-lrn.html#cb434-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Show dimensions of survey data</span></span>
+<span id="cb434-11"><a href="unsup-lrn.html#cb434-11" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(survey_dat)</span></code></pre></div>
 <pre><code>## [1] 400  12</code></pre>
 <p>EFA is implemented via a three-step procedure:</p>
 <ol style="list-style-type: decimal">
@@ -485,11 +489,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Step 1: Factorability Assessment</strong></p>
 <p>With respect to factorability, there needs to be some correlation among variables in order for a dimension reduction technique to collapse variables into linear combinations that capture a large portion of the variance in the data. The data feature sufficient factorability if we achieve a <strong>Kaiser-Meyer-Olkin (KMO)</strong> statistic of at least <span class="math inline">\(.60\)</span> (Kaiser, 1974) and <strong>Bartlett’s Test of Sphericity</strong> reaches statistical significance (Bartlett, 1954). The KMO statistic estimates the proportion of variance that may be common variance; the lower the proportion, the greater the factorability. Bartlett’s test essentially measures the degree of redundancy in the data, where the null hypothesis states that the variables are orthogonal (uncorrelated); rejecting this null hypothesis indicates that there is sufficient correlation for dimension reduction.</p>
 <p>The <code>KMO()</code> and <code>cortest.bartlett()</code> functions from the <code>psych</code> library can be used for the KMO statistic and Bartlett’s test, respectively:</p>
-<div class="sourceCode" id="cb434"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb434-1"><a href="unsup-lrn.html#cb434-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb434-2"><a href="unsup-lrn.html#cb434-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
-<span id="cb434-3"><a href="unsup-lrn.html#cb434-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb434-4"><a href="unsup-lrn.html#cb434-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Kaiser-Meyer-Olkin (KMO) statistic</span></span>
-<span id="cb434-5"><a href="unsup-lrn.html#cb434-5" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">KMO</span>(survey_dat)</span></code></pre></div>
+<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="unsup-lrn.html#cb436-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb436-2"><a href="unsup-lrn.html#cb436-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(psych)</span>
+<span id="cb436-3"><a href="unsup-lrn.html#cb436-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb436-4"><a href="unsup-lrn.html#cb436-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Kaiser-Meyer-Olkin (KMO) statistic</span></span>
+<span id="cb436-5"><a href="unsup-lrn.html#cb436-5" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">KMO</span>(survey_dat)</span></code></pre></div>
 <pre><code>## Kaiser-Meyer-Olkin factor adequacy
 ## Call: psych::KMO(r = survey_dat)
 ## Overall MSA =  0.9
@@ -498,8 +502,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 ##    0.94    0.86    0.86    0.86    0.89    0.89    0.92    0.90    0.91    0.89 
 ##   ret_3  ldrshp 
 ##    0.90    0.93</code></pre>
-<div class="sourceCode" id="cb436"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb436-1"><a href="unsup-lrn.html#cb436-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bartlett&#39;s Test of Sphericity</span></span>
-<span id="cb436-2"><a href="unsup-lrn.html#cb436-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">cortest.bartlett</span>(<span class="fu">cor</span>(survey_dat), <span class="fu">nrow</span>(survey_dat))</span></code></pre></div>
+<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="unsup-lrn.html#cb438-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Bartlett&#39;s Test of Sphericity</span></span>
+<span id="cb438-2"><a href="unsup-lrn.html#cb438-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">cortest.bartlett</span>(<span class="fu">cor</span>(survey_dat), <span class="fu">nrow</span>(survey_dat))</span></code></pre></div>
 <pre><code>## $chisq
 ## [1] 2933.161
 ## 
@@ -512,8 +516,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p><strong>Step 2: Factor Extraction</strong></p>
 <p>For the second step, we will visually inspect a <strong>scree plot</strong> and determine how many factors are necessary to explain most of the variance in the data. A scree plot is a line plot that helps visualize the portion of the total variance explained by each factor using <strong>eigenvalues</strong>. While the linear algebraic underpinnings are out of scope for this book, it is important to understand that <strong>eigenvectors</strong> are vectors of a linear transformation which have corresponding eigenvalues <span class="math inline">\(\lambda\)</span> that represent factors by which the vectors are scaled. As a general rule, factors with <span class="math inline">\(\lambda \ge 1\)</span> are extracted when running a factor analysis.</p>
 <p>The <code>scree()</code> function from the <code>psych</code> library can be used to generate a scree plot:</p>
-<div class="sourceCode" id="cb438"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb438-1"><a href="unsup-lrn.html#cb438-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce scree plot</span></span>
-<span id="cb438-2"><a href="unsup-lrn.html#cb438-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">scree</span>(survey_dat, <span class="at">pc =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb440-1"><a href="unsup-lrn.html#cb440-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Produce scree plot</span></span>
+<span id="cb440-2"><a href="unsup-lrn.html#cb440-2" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">scree</span>(survey_dat, <span class="at">pc =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:scree-plot"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/scree-plot-1.png" alt="Scree plot showing eigenvalues by factor relative to the extraction threshold (horizontal line)" width="100%" />
 <p class="caption">
@@ -524,21 +528,21 @@ Figure 14.1: Scree plot showing eigenvalues by factor relative to the extraction
 <p>You may notice the <code>pc = FALSE</code> argument in the <code>scree()</code> function call. This relates to <strong>principal components analysis (PCA)</strong>, which is an alternative method of dimension reduction. Principal components are new independent variables that represent linear transformations of scaled (<span class="math inline">\((x - \bar{x}) / s\)</span>) versions of the observed variables. While we will focus on factor analysis and PCA in this section, which are most common in the social sciences, there are additional dimension reduction techniques one could explore (e.g., <strong>parallel analysis</strong>).</p>
 <p>While there are similarities between factor analysis and PCA, the mathematics are fundamentally different. PCA approaches dimension reduction by creating one or more index variables (linear combinations of original variables) from a larger set of measured variables; these new index variables are referred to as components. On the other hand, factor analysis can be viewed as a set of regression equations with weighted relationships that represent the measurement of a latent variable. Most variables are latent in social psychology contexts since we cannot directly measure constructs like psychological safety or belonging.</p>
 <p>To illustrate how to extract principal components, we can use base R’s <code>prcomp()</code> function:</p>
-<div class="sourceCode" id="cb439"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb439-1"><a href="unsup-lrn.html#cb439-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb439-2"><a href="unsup-lrn.html#cb439-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb439-3"><a href="unsup-lrn.html#cb439-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb439-4"><a href="unsup-lrn.html#cb439-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform PCA</span></span>
-<span id="cb439-5"><a href="unsup-lrn.html#cb439-5" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(survey_dat, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb439-6"><a href="unsup-lrn.html#cb439-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb439-7"><a href="unsup-lrn.html#cb439-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate explained variance for each principal component</span></span>
-<span id="cb439-8"><a href="unsup-lrn.html#cb439-8" aria-hidden="true" tabindex="-1"></a>pca_var <span class="ot">=</span> (pca<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="fu">sum</span>(pca<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span>)) <span class="sc">*</span> <span class="dv">100</span></span>
-<span id="cb439-9"><a href="unsup-lrn.html#cb439-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb439-10"><a href="unsup-lrn.html#cb439-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create scree plot</span></span>
-<span id="cb439-11"><a href="unsup-lrn.html#cb439-11" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">qplot</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pca_var), pca_var) <span class="sc">+</span> </span>
-<span id="cb439-12"><a href="unsup-lrn.html#cb439-12" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span> </span>
-<span id="cb439-13"><a href="unsup-lrn.html#cb439-13" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pca_var)) <span class="sc">+</span></span>
-<span id="cb439-14"><a href="unsup-lrn.html#cb439-14" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Principal Component&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variance Explained (%)&quot;</span>) <span class="sc">+</span></span>
-<span id="cb439-15"><a href="unsup-lrn.html#cb439-15" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb441"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb441-1"><a href="unsup-lrn.html#cb441-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb441-2"><a href="unsup-lrn.html#cb441-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb441-3"><a href="unsup-lrn.html#cb441-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb441-4"><a href="unsup-lrn.html#cb441-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform PCA</span></span>
+<span id="cb441-5"><a href="unsup-lrn.html#cb441-5" aria-hidden="true" tabindex="-1"></a>pca <span class="ot">&lt;-</span> <span class="fu">prcomp</span>(survey_dat, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb441-6"><a href="unsup-lrn.html#cb441-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb441-7"><a href="unsup-lrn.html#cb441-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate explained variance for each principal component</span></span>
+<span id="cb441-8"><a href="unsup-lrn.html#cb441-8" aria-hidden="true" tabindex="-1"></a>pca_var <span class="ot">=</span> (pca<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span> <span class="sc">/</span> <span class="fu">sum</span>(pca<span class="sc">$</span>sdev<span class="sc">^</span><span class="dv">2</span>)) <span class="sc">*</span> <span class="dv">100</span></span>
+<span id="cb441-9"><a href="unsup-lrn.html#cb441-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb441-10"><a href="unsup-lrn.html#cb441-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Create scree plot</span></span>
+<span id="cb441-11"><a href="unsup-lrn.html#cb441-11" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">qplot</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pca_var), pca_var) <span class="sc">+</span> </span>
+<span id="cb441-12"><a href="unsup-lrn.html#cb441-12" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">geom_line</span>() <span class="sc">+</span> </span>
+<span id="cb441-13"><a href="unsup-lrn.html#cb441-13" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(pca_var)) <span class="sc">+</span></span>
+<span id="cb441-14"><a href="unsup-lrn.html#cb441-14" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Principal Component&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Variance Explained (%)&quot;</span>) <span class="sc">+</span></span>
+<span id="cb441-15"><a href="unsup-lrn.html#cb441-15" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">theme_bw</span>()</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:pca-var-plot"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/pca-var-plot-1.png" alt="Plot showing the percent of total variance explained by 12 principal components" width="100%" />
 <p class="caption">
@@ -551,11 +555,11 @@ Figure 14.2: Plot showing the percent of total variance explained by 12 principa
 <p><strong>Step 3: Factor Rotation &amp; Interpretation</strong></p>
 <p>For the third step, we will use an oblimin method to rotate the factor matrix. The oblimin rotation is an oblique – rather than orthogonal – rotation and is selected here since it is best suited when underlying dimensions are assumed to be correlated (Hair et al., 2006).</p>
 <p>The <code>fa()</code> (factor analysis) function from the <code>psych</code> package can be used for the implementation in R. Based on the scree plot, we will specify three factors for this analysis. Note that the oblimin rotation is the default for factor analysis, while a varimax (orthogonal) rotation is the default for PCA. Many other rotations can be implemented based on the nature of data and <span class="math inline">\(n\)</span>-count.</p>
-<div class="sourceCode" id="cb440"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb440-1"><a href="unsup-lrn.html#cb440-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Principal axis factoring using 3 factors and oblimin rotation</span></span>
-<span id="cb440-2"><a href="unsup-lrn.html#cb440-2" aria-hidden="true" tabindex="-1"></a>efa.fit <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa</span>(survey_dat, <span class="at">nfactors =</span> <span class="dv">3</span>, <span class="at">rotate =</span> <span class="st">&#39;oblimin&#39;</span>)</span>
-<span id="cb440-3"><a href="unsup-lrn.html#cb440-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb440-4"><a href="unsup-lrn.html#cb440-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display factor loadings</span></span>
-<span id="cb440-5"><a href="unsup-lrn.html#cb440-5" aria-hidden="true" tabindex="-1"></a>efa.fit<span class="sc">$</span>loadings</span></code></pre></div>
+<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="unsup-lrn.html#cb442-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Principal axis factoring using 3 factors and oblimin rotation</span></span>
+<span id="cb442-2"><a href="unsup-lrn.html#cb442-2" aria-hidden="true" tabindex="-1"></a>efa.fit <span class="ot">&lt;-</span> psych<span class="sc">::</span><span class="fu">fa</span>(survey_dat, <span class="at">nfactors =</span> <span class="dv">3</span>, <span class="at">rotate =</span> <span class="st">&#39;oblimin&#39;</span>)</span>
+<span id="cb442-3"><a href="unsup-lrn.html#cb442-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb442-4"><a href="unsup-lrn.html#cb442-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Display factor loadings</span></span>
+<span id="cb442-5"><a href="unsup-lrn.html#cb442-5" aria-hidden="true" tabindex="-1"></a>efa.fit<span class="sc">$</span>loadings</span></code></pre></div>
 <pre><code>## 
 ## Loadings:
 ##         MR1    MR2    MR3   
@@ -582,7 +586,7 @@ Figure 14.2: Plot showing the percent of total variance explained by 12 principa
 <p>Loadings for the second factor <code>MR2</code> indicate that the three engagement items cluster together with discretionary effort. This makes intuitive sense, as we would expect highly engaged employees to contribute higher levels of effort towards their work.</p>
 <p>Loadings for the third factor <code>MR3</code> show that belonging, inclusion, and psychological safety cluster together. In other words, employees who feel a stronger sense of belonging and perceive the environment to be more inclusive tend to experience a more favorable climate with respect to psychological safety.</p>
 <p>We can visualize this information using the <code>fa.diagram()</code> function from the <code>psych</code> library:</p>
-<div class="sourceCode" id="cb442"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb442-1"><a href="unsup-lrn.html#cb442-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">fa.diagram</span>(efa.fit)</span></code></pre></div>
+<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb444-1"><a href="unsup-lrn.html#cb444-1" aria-hidden="true" tabindex="-1"></a>psych<span class="sc">::</span><span class="fu">fa.diagram</span>(efa.fit)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:fct-ld-diagram"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/fct-ld-diagram-1.png" alt="Diagram showing factor loadings (correlations) for each item with the respective factor" width="100%" />
 <p class="caption">
@@ -610,23 +614,23 @@ Figure 14.4: Bivariate correlations and relationship visualizations for engageme
 </ol>
 <p><strong>Step 1: Define the model.</strong></p>
 <p>Step one is defining the model within a string per the syntax required by <code>lavaan</code>:</p>
-<div class="sourceCode" id="cb443"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb443-1"><a href="unsup-lrn.html#cb443-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb443-2"><a href="unsup-lrn.html#cb443-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
-<span id="cb443-3"><a href="unsup-lrn.html#cb443-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb443-4"><a href="unsup-lrn.html#cb443-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Model specification; each line represents a separate latent factor</span></span>
-<span id="cb443-5"><a href="unsup-lrn.html#cb443-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&#39;engagement =~ eng_1 + eng_2 + eng_3</span></span>
-<span id="cb443-6"><a href="unsup-lrn.html#cb443-6" aria-hidden="true" tabindex="-1"></a><span class="st">                retention =~ ret_1 + ret_2 + ret_3&#39;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb445-1"><a href="unsup-lrn.html#cb445-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb445-2"><a href="unsup-lrn.html#cb445-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaan)</span>
+<span id="cb445-3"><a href="unsup-lrn.html#cb445-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb445-4"><a href="unsup-lrn.html#cb445-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Model specification; each line represents a separate latent factor</span></span>
+<span id="cb445-5"><a href="unsup-lrn.html#cb445-5" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">paste</span>(<span class="st">&#39;engagement =~ eng_1 + eng_2 + eng_3</span></span>
+<span id="cb445-6"><a href="unsup-lrn.html#cb445-6" aria-hidden="true" tabindex="-1"></a><span class="st">                retention =~ ret_1 + ret_2 + ret_3&#39;</span>)</span></code></pre></div>
 <p><strong>Step 2: Fit the model.</strong></p>
 <p>Step two is fitting the model to the data using the <code>cfa()</code> function from the <code>lavaan</code> package:</p>
-<div class="sourceCode" id="cb444"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb444-1"><a href="unsup-lrn.html#cb444-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
-<span id="cb444-2"><a href="unsup-lrn.html#cb444-2" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span></code></pre></div>
+<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb446-1"><a href="unsup-lrn.html#cb446-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the model</span></span>
+<span id="cb446-2"><a href="unsup-lrn.html#cb446-2" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span></code></pre></div>
 <p>We can also create what is known as a <strong>path diagram</strong> to assist with understanding the CFA model. A path diagram is a symbolic visualization of the measurement model, with circles depicting latent variables (factors), rectangles representing observed indicators (survey items), and arrows indicating paths (relationships) between variables. The measurement model (CFA) together with the structural (path) model is known as <strong>structural equation modeling (SEM)</strong>; CFA is a subset of the SEM umbrella.</p>
 <p>The <code>lavaanPlot()</code> package can be used to create and visualize path diagrams in R:</p>
-<div class="sourceCode" id="cb445"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb445-1"><a href="unsup-lrn.html#cb445-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb445-2"><a href="unsup-lrn.html#cb445-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaanPlot)</span>
-<span id="cb445-3"><a href="unsup-lrn.html#cb445-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb445-4"><a href="unsup-lrn.html#cb445-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize path diagram</span></span>
-<span id="cb445-5"><a href="unsup-lrn.html#cb445-5" aria-hidden="true" tabindex="-1"></a>lavaanPlot<span class="sc">::</span><span class="fu">lavaanPlot</span>(<span class="at">model =</span> cfa.fit, <span class="at">coefs =</span> <span class="cn">TRUE</span>, <span class="at">stand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb447"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb447-1"><a href="unsup-lrn.html#cb447-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb447-2"><a href="unsup-lrn.html#cb447-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lavaanPlot)</span>
+<span id="cb447-3"><a href="unsup-lrn.html#cb447-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb447-4"><a href="unsup-lrn.html#cb447-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Visualize path diagram</span></span>
+<span id="cb447-5"><a href="unsup-lrn.html#cb447-5" aria-hidden="true" tabindex="-1"></a>lavaanPlot<span class="sc">::</span><span class="fu">lavaanPlot</span>(<span class="at">model =</span> cfa.fit, <span class="at">coefs =</span> <span class="cn">TRUE</span>, <span class="at">stand =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:path-diagram"></span>
 <div id="htmlwidget-b7ffb5ab7faad80aaa10" style="width:100%;height:480px;" class="grViz html-widget"></div>
 <script type="application/json" data-for="htmlwidget-b7ffb5ab7faad80aaa10">{"x":{"diagram":" digraph plot { \n graph [ overlap = true, fontsize = 10 ] \n node [ shape = box ] \n node [shape = box] \n eng_1; eng_2; eng_3; ret_1; ret_2; ret_3 \n node [shape = oval] \n engagement; retention \n \n edge [ color = black ] \n  engagement->eng_1 [label = \"0.86\"] engagement->eng_2 [label = \"0.85\"] engagement->eng_3 [label = \"0.83\"] retention->ret_1 [label = \"0.81\"] retention->ret_2 [label = \"0.93\"] retention->ret_3 [label = \"0.82\"] \n}","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
@@ -637,10 +641,10 @@ Figure 14.5: Path diagram showing survey items as indicators of latent engagemen
 <p>Factor loadings are shown for each indicator of the latent variable in Figure <a href="unsup-lrn.html#fig:path-diagram">14.5</a>. All are well above the <em>absolute</em> threshold of .5.</p>
 <p><strong>Step 3: Interpret the model.</strong></p>
 <p>Step three is interpreting the output of the fitted model:</p>
-<div class="sourceCode" id="cb446"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb446-1"><a href="unsup-lrn.html#cb446-1" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span>
-<span id="cb446-2"><a href="unsup-lrn.html#cb446-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb446-3"><a href="unsup-lrn.html#cb446-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the model</span></span>
-<span id="cb446-4"><a href="unsup-lrn.html#cb446-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cfa.fit, <span class="at">fit.measures =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb448-1"><a href="unsup-lrn.html#cb448-1" aria-hidden="true" tabindex="-1"></a>cfa.fit <span class="ot">&lt;-</span> lavaan<span class="sc">::</span><span class="fu">cfa</span>(model, <span class="at">data =</span> survey_dat)</span>
+<span id="cb448-2"><a href="unsup-lrn.html#cb448-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb448-3"><a href="unsup-lrn.html#cb448-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Summarize the model</span></span>
+<span id="cb448-4"><a href="unsup-lrn.html#cb448-4" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(cfa.fit, <span class="at">fit.measures =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <pre><code>## lavaan 0.6-12 ended normally after 25 iterations
 ## 
 ##   Estimator                                         ML
@@ -750,24 +754,21 @@ Figure 14.5: Path diagram showing survey items as indicators of latent engagemen
 <p><span class="math display">\[ a^2 + b^2 = c^2, \]</span></p>
 <p>where <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> are sides of a triangle that intersect to form a right angle, and <span class="math inline">\(c\)</span> is the hypotenuse (the side opposite the right angle).</p>
 <p>Let’s implement <span class="math inline">\(K\)</span>-means clustering using numeric variables in the <code>employees</code> data. Since the scale of variables matters when comparing distances between observations and cluster centers, we will first scale the variables to have <span class="math inline">\(\bar{x} = 0\)</span> and <span class="math inline">\(s = 1\)</span> in support of a consistent, apples-to-apples comparison:</p>
-<div class="sourceCode" id="cb448"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb448-1"><a href="unsup-lrn.html#cb448-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load employee data</span></span>
-<span id="cb448-2"><a href="unsup-lrn.html#cb448-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">&quot;https://raw.githubusercontent.com/crstarbuck/peopleanalytics_book/master/data/employees.csv&quot;</span>)</span>
-<span id="cb448-3"><a href="unsup-lrn.html#cb448-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb448-4"><a href="unsup-lrn.html#cb448-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter employee data to numeric variables</span></span>
-<span id="cb448-5"><a href="unsup-lrn.html#cb448-5" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">sapply</span>(employees, is.numeric)) <span class="co"># store indices of numeric variables</span></span>
-<span id="cb448-6"><a href="unsup-lrn.html#cb448-6" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> employees[, idx] <span class="co"># filter df using indices</span></span>
-<span id="cb448-7"><a href="unsup-lrn.html#cb448-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb448-8"><a href="unsup-lrn.html#cb448-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop unimportant and sparsely populated sales variables</span></span>
-<span id="cb448-9"><a href="unsup-lrn.html#cb448-9" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(employee_id, standard_hrs, ytd_leads, ytd_sales))</span>
-<span id="cb448-10"><a href="unsup-lrn.html#cb448-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb448-11"><a href="unsup-lrn.html#cb448-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Center and scale data</span></span>
-<span id="cb448-12"><a href="unsup-lrn.html#cb448-12" aria-hidden="true" tabindex="-1"></a>employees_trans <span class="ot">&lt;-</span> <span class="fu">scale</span>(employees, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb450-1"><a href="unsup-lrn.html#cb450-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter employee data to numeric variables</span></span>
+<span id="cb450-2"><a href="unsup-lrn.html#cb450-2" aria-hidden="true" tabindex="-1"></a>idx <span class="ot">&lt;-</span> <span class="fu">which</span>(<span class="fu">sapply</span>(employees, is.numeric)) <span class="co"># store indices of numeric variables</span></span>
+<span id="cb450-3"><a href="unsup-lrn.html#cb450-3" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> employees[, idx] <span class="co"># filter df using indices</span></span>
+<span id="cb450-4"><a href="unsup-lrn.html#cb450-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb450-5"><a href="unsup-lrn.html#cb450-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Drop unimportant and sparsely populated sales variables</span></span>
+<span id="cb450-6"><a href="unsup-lrn.html#cb450-6" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">subset</span>(employees, <span class="at">select =</span> <span class="sc">-</span><span class="fu">c</span>(employee_id, standard_hrs, ytd_leads, ytd_sales))</span>
+<span id="cb450-7"><a href="unsup-lrn.html#cb450-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb450-8"><a href="unsup-lrn.html#cb450-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Center and scale data</span></span>
+<span id="cb450-9"><a href="unsup-lrn.html#cb450-9" aria-hidden="true" tabindex="-1"></a>employees_trans <span class="ot">&lt;-</span> <span class="fu">scale</span>(employees, <span class="at">center =</span> <span class="cn">TRUE</span>, <span class="at">scale =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 <p>Next, we need to define <span class="math inline">\(K\)</span>. One way to determine the optimal number of clusters is to leverage the <code>fviz_nbclust()</code> function from the <code>factoextra</code> library to visualize the sum of squared differences between observations and cluster centers against the range of clusters:</p>
-<div class="sourceCode" id="cb449"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb449-1"><a href="unsup-lrn.html#cb449-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb449-2"><a href="unsup-lrn.html#cb449-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
-<span id="cb449-3"><a href="unsup-lrn.html#cb449-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb449-4"><a href="unsup-lrn.html#cb449-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine optimal number of clusters</span></span>
-<span id="cb449-5"><a href="unsup-lrn.html#cb449-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_nbclust</span>(employees_trans, kmeans, <span class="at">method =</span> <span class="st">&quot;wss&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb451-1"><a href="unsup-lrn.html#cb451-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb451-2"><a href="unsup-lrn.html#cb451-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(factoextra)</span>
+<span id="cb451-3"><a href="unsup-lrn.html#cb451-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb451-4"><a href="unsup-lrn.html#cb451-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Determine optimal number of clusters</span></span>
+<span id="cb451-5"><a href="unsup-lrn.html#cb451-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_nbclust</span>(employees_trans, kmeans, <span class="at">method =</span> <span class="st">&quot;wss&quot;</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:kmeans-elbow-plot"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/kmeans-elbow-plot-1.png" alt="Total within sum of squares (WSS) across cluster count" width="100%" />
 <p class="caption">
@@ -777,15 +778,15 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count
 <p>When interpreting Figure <a href="unsup-lrn.html#fig:kmeans-elbow-plot">14.6</a>, we are looking for the <em>elbow</em> which marks the inflection point at which the sum of squares begins to level off. The goal is to achieve the fewest number of clusters, optimizing for subgroups that are distinctly different <em>between</em> and highly similar <em>within</em>. The elbow indicates the optimal number of clusters, as additional clusters beyond the elbow do not offer a meaningful improvement in achieving homogeneous subgroups of the observations.</p>
 <p>There is a discernible elbow at three clusters in Figure <a href="unsup-lrn.html#fig:kmeans-elbow-plot">14.6</a>. Intuitively, fewer clusters promotes action taking in people analytics since clusters need to be defined, and this becomes increasingly challenging as the number of clusters increases. With a large number of clusters, it may be difficult to meaningfully tailor career development or retention strategies, for example, to the unique needs of employees assigned to each cluster as the distinction between each subgroup becomes more opaque.</p>
 <p>We can now implement <span class="math inline">\(K\)</span>-means clustering with <span class="math inline">\(K = 3\)</span> using the <code>kmeans()</code> function in base R:</p>
-<div class="sourceCode" id="cb450"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb450-1"><a href="unsup-lrn.html#cb450-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform K-means clustering</span></span>
-<span id="cb450-2"><a href="unsup-lrn.html#cb450-2" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(employees_trans, <span class="at">centers =</span> <span class="dv">3</span>)</span></code></pre></div>
-<div class="sourceCode" id="cb451"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb451-1"><a href="unsup-lrn.html#cb451-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return n-count of clusters</span></span>
-<span id="cb451-2"><a href="unsup-lrn.html#cb451-2" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>size</span></code></pre></div>
+<div class="sourceCode" id="cb452"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb452-1"><a href="unsup-lrn.html#cb452-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform K-means clustering</span></span>
+<span id="cb452-2"><a href="unsup-lrn.html#cb452-2" aria-hidden="true" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">kmeans</span>(employees_trans, <span class="at">centers =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb453-1"><a href="unsup-lrn.html#cb453-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Return n-count of clusters</span></span>
+<span id="cb453-2"><a href="unsup-lrn.html#cb453-2" aria-hidden="true" tabindex="-1"></a>km<span class="sc">$</span>size</span></code></pre></div>
 <pre><code>## [1] 592 603 275</code></pre>
 <p>Of the 1,470 employees in our <code>employees</code> data, the <span class="math inline">\(n\)</span> distribution across the <span class="math inline">\(K = 3\)</span> clusters is 592, 603, and 275.</p>
 <p>We can calculate the mean (and other descriptives) for each variable by cluster to better understand cluster distinctions:</p>
-<div class="sourceCode" id="cb453"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb453-1"><a href="unsup-lrn.html#cb453-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean of each cluster using original data</span></span>
-<span id="cb453-2"><a href="unsup-lrn.html#cb453-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(employees, <span class="at">by =</span> <span class="fu">list</span>(<span class="at">cluster =</span> km<span class="sc">$</span>cluster), mean)</span></code></pre></div>
+<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="unsup-lrn.html#cb455-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate mean of each cluster using original data</span></span>
+<span id="cb455-2"><a href="unsup-lrn.html#cb455-2" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(employees, <span class="at">by =</span> <span class="fu">list</span>(<span class="at">cluster =</span> km<span class="sc">$</span>cluster), mean)</span></code></pre></div>
 <pre><code>##   cluster stock_opt_lvl trainings      age commute_dist   ed_lvl engagement
 ## 1       1     0.7787162  2.805743 35.31757     8.907095 2.880068   2.685811
 ## 2       2     0.7860697  2.781095 35.38474     9.646766 2.854063   2.792703
@@ -804,8 +805,8 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count
 ## 3  16.527273   8.974545   6.170909   8.621818         4.090545</code></pre>
 <p>We can see that relative to the first two clusters, the third cluster has – on average – an older demographic with more education and a higher job level. In addition, employees in the first cluster earn significantly lower compensation, on average, which may be correlated with categorical variables that were initially dropped such as <code>dept</code> or <code>job_title</code>.</p>
 <p>We can also add a new column in the <code>employees</code> data frame with the cluster assignment from <span class="math inline">\(K\)</span>-means to facilitate further analysis:</p>
-<div class="sourceCode" id="cb455"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb455-1"><a href="unsup-lrn.html#cb455-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add cluster assignment to df</span></span>
-<span id="cb455-2"><a href="unsup-lrn.html#cb455-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, <span class="at">km_cluster =</span> km<span class="sc">$</span>cluster)</span></code></pre></div>
+<div class="sourceCode" id="cb457"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb457-1"><a href="unsup-lrn.html#cb457-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Add cluster assignment to df</span></span>
+<span id="cb457-2"><a href="unsup-lrn.html#cb457-2" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, <span class="at">km_cluster =</span> km<span class="sc">$</span>cluster)</span></code></pre></div>
 <p>While <span class="math inline">\(K\)</span>-means clustering is a simple and efficient algorithm (even for large datasets), an a priori specification of <span class="math inline">\(K\)</span> is not always ideal. <span class="math inline">\(K\)</span>-means clustering will create <span class="math inline">\(K\)</span> clusters – even if they are nonsensical – so caution must be exercised. Plotting WSS against cluster count as shown in Figure <a href="unsup-lrn.html#fig:kmeans-elbow-plot">14.6</a> can be helpful in defining <span class="math inline">\(K\)</span>, but alternative clustering algorithms exist that do not require <span class="math inline">\(K\)</span> to be predefined.</p>
 </div>
 <div id="hierarchical-clustering" class="section level3 hasAnchor" number="14.2.2">
@@ -821,29 +822,29 @@ Figure 14.6: Total within sum of squares (WSS) across cluster count
 </ol>
 <p>To implement hierarchical clustering, we will leverage the same centered and scaled data used for <span class="math inline">\(K\)</span>-means clustering in the prior section. Note that the <code>km_cluster</code> column was only added to the original <code>employees</code> data; if this column was present in <code>employees_trans</code>, we would need to drop it so that the hierarchical clustering algorithm is not influenced by results of another clustering technique (<span class="math inline">\(K\)</span>-means).</p>
 <p>Since we do not know what linkage method will work best for these data, we will also develop a function that enables us to try a range of techniques and select the one that performs best. The <code>agnes()</code> function from the <code>cluster</code> library is used to implement hierarchical clustering:</p>
-<div class="sourceCode" id="cb456"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb456-1"><a href="unsup-lrn.html#cb456-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
-<span id="cb456-2"><a href="unsup-lrn.html#cb456-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
-<span id="cb456-3"><a href="unsup-lrn.html#cb456-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb456-4"><a href="unsup-lrn.html#cb456-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define linkage methods</span></span>
-<span id="cb456-5"><a href="unsup-lrn.html#cb456-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: centroid is not available for agnes() function</span></span>
-<span id="cb456-6"><a href="unsup-lrn.html#cb456-6" aria-hidden="true" tabindex="-1"></a>methods <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;complete&quot;</span>, <span class="st">&quot;single&quot;</span>, <span class="st">&quot;average&quot;</span>, <span class="st">&quot;ward&quot;</span>)</span>
-<span id="cb456-7"><a href="unsup-lrn.html#cb456-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(methods) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;complete&quot;</span>, <span class="st">&quot;single&quot;</span>, <span class="st">&quot;average&quot;</span>, <span class="st">&quot;ward&quot;</span>)</span>
-<span id="cb456-8"><a href="unsup-lrn.html#cb456-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb456-9"><a href="unsup-lrn.html#cb456-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to compute agglomerative coefficient</span></span>
-<span id="cb456-10"><a href="unsup-lrn.html#cb456-10" aria-hidden="true" tabindex="-1"></a>agg_coeff <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb456-11"><a href="unsup-lrn.html#cb456-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb456-12"><a href="unsup-lrn.html#cb456-12" aria-hidden="true" tabindex="-1"></a>  cluster<span class="sc">::</span><span class="fu">agnes</span>(employees_trans, <span class="at">method =</span> x)<span class="sc">$</span>ac</span>
-<span id="cb456-13"><a href="unsup-lrn.html#cb456-13" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb456-14"><a href="unsup-lrn.html#cb456-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb456-15"><a href="unsup-lrn.html#cb456-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute agglomerative coefficient for each linkage method</span></span>
-<span id="cb456-16"><a href="unsup-lrn.html#cb456-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(methods, agg_coeff)</span></code></pre></div>
+<div class="sourceCode" id="cb458"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb458-1"><a href="unsup-lrn.html#cb458-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load library</span></span>
+<span id="cb458-2"><a href="unsup-lrn.html#cb458-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(cluster)</span>
+<span id="cb458-3"><a href="unsup-lrn.html#cb458-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb458-4"><a href="unsup-lrn.html#cb458-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Define linkage methods</span></span>
+<span id="cb458-5"><a href="unsup-lrn.html#cb458-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Note: centroid is not available for agnes() function</span></span>
+<span id="cb458-6"><a href="unsup-lrn.html#cb458-6" aria-hidden="true" tabindex="-1"></a>methods <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;complete&quot;</span>, <span class="st">&quot;single&quot;</span>, <span class="st">&quot;average&quot;</span>, <span class="st">&quot;ward&quot;</span>)</span>
+<span id="cb458-7"><a href="unsup-lrn.html#cb458-7" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(methods) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;complete&quot;</span>, <span class="st">&quot;single&quot;</span>, <span class="st">&quot;average&quot;</span>, <span class="st">&quot;ward&quot;</span>)</span>
+<span id="cb458-8"><a href="unsup-lrn.html#cb458-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb458-9"><a href="unsup-lrn.html#cb458-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Create function to compute agglomerative coefficient</span></span>
+<span id="cb458-10"><a href="unsup-lrn.html#cb458-10" aria-hidden="true" tabindex="-1"></a>agg_coeff <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb458-11"><a href="unsup-lrn.html#cb458-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb458-12"><a href="unsup-lrn.html#cb458-12" aria-hidden="true" tabindex="-1"></a>  cluster<span class="sc">::</span><span class="fu">agnes</span>(employees_trans, <span class="at">method =</span> x)<span class="sc">$</span>ac</span>
+<span id="cb458-13"><a href="unsup-lrn.html#cb458-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb458-14"><a href="unsup-lrn.html#cb458-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb458-15"><a href="unsup-lrn.html#cb458-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute agglomerative coefficient for each linkage method</span></span>
+<span id="cb458-16"><a href="unsup-lrn.html#cb458-16" aria-hidden="true" tabindex="-1"></a><span class="fu">sapply</span>(methods, agg_coeff)</span></code></pre></div>
 <pre><code>##  complete    single   average      ward 
 ## 0.7990373 0.6248688 0.7582732 0.9571736</code></pre>
 <p>Agglomerative coefficients closer to 1 indicate stronger clustering performance. Therefore, Ward’s distance measure performs best on these data, and we will implement hierarchical clustering using this linkage option.</p>
-<div class="sourceCode" id="cb458"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb458-1"><a href="unsup-lrn.html#cb458-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s linkage method</span></span>
-<span id="cb458-2"><a href="unsup-lrn.html#cb458-2" aria-hidden="true" tabindex="-1"></a>hclust <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">agnes</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;ward&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb460"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb460-1"><a href="unsup-lrn.html#cb460-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s linkage method</span></span>
+<span id="cb460-2"><a href="unsup-lrn.html#cb460-2" aria-hidden="true" tabindex="-1"></a>hclust <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">agnes</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;ward&quot;</span>)</span></code></pre></div>
 <p>To produce a dendrogram, the <code>pltree()</code> function from the <code>cluster</code> library can be used in conjunction with the <code>hclust</code> object holding the clustering results:</p>
-<div class="sourceCode" id="cb459"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb459-1"><a href="unsup-lrn.html#cb459-1" aria-hidden="true" tabindex="-1"></a>cluster<span class="sc">::</span><span class="fu">pltree</span>(hclust, <span class="at">main =</span> <span class="st">&quot;Dendrogram&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb461"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb461-1"><a href="unsup-lrn.html#cb461-1" aria-hidden="true" tabindex="-1"></a>cluster<span class="sc">::</span><span class="fu">pltree</span>(hclust, <span class="at">main =</span> <span class="st">&quot;Dendrogram&quot;</span>)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-dendrogram"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-dendrogram-1.png" alt="Dendrogram for hierarchical clustering of employees using Ward linkage" width="100%" />
 <p class="caption">
@@ -852,11 +853,11 @@ Figure 14.7: Dendrogram for hierarchical clustering of employees using Ward link
 </div>
 <p>At the bottom of the denogram shown in Figure <a href="unsup-lrn.html#fig:hclust-dendrogram">14.7</a>, each leaf of the tree represents an individual observation. Since <span class="math inline">\(n = 1,470\)</span>, the bottom of the tree is too congested to interpret. As we move up the tree, individual observations are fused together based on the degree of similarity as defined by Ward’s linkage method.</p>
 <p>To aid in determining the optimal number of clusters, a <strong>gap statistic</strong> can be calculated, which compares the within-cluster variation for different <span class="math inline">\(K\)</span> values to reference values for a random uniform distribution with no clustering. We will use the <code>clusGap()</code> function from the <code>cluster</code> library to calculate the gap statistic, and then visualize using the <code>fviz_gap_stat()</code> function from the <code>factoextra</code> library:</p>
-<div class="sourceCode" id="cb460"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb460-1"><a href="unsup-lrn.html#cb460-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate gap statistic across 1-10 clusters</span></span>
-<span id="cb460-2"><a href="unsup-lrn.html#cb460-2" aria-hidden="true" tabindex="-1"></a>gap_stat <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">clusGap</span>(employees_trans, <span class="at">FUN =</span> hcut, <span class="at">nstart =</span> <span class="dv">25</span>, <span class="at">K.max =</span> <span class="dv">10</span>, <span class="at">B =</span> <span class="dv">50</span>)</span>
-<span id="cb460-3"><a href="unsup-lrn.html#cb460-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb460-4"><a href="unsup-lrn.html#cb460-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate plot of gap statistic against cluster count</span></span>
-<span id="cb460-5"><a href="unsup-lrn.html#cb460-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_gap_stat</span>(gap_stat)</span></code></pre></div>
+<div class="sourceCode" id="cb462"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb462-1"><a href="unsup-lrn.html#cb462-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate gap statistic across 1-10 clusters</span></span>
+<span id="cb462-2"><a href="unsup-lrn.html#cb462-2" aria-hidden="true" tabindex="-1"></a>gap_stat <span class="ot">&lt;-</span> cluster<span class="sc">::</span><span class="fu">clusGap</span>(employees_trans, <span class="at">FUN =</span> hcut, <span class="at">nstart =</span> <span class="dv">25</span>, <span class="at">K.max =</span> <span class="dv">10</span>, <span class="at">B =</span> <span class="dv">50</span>)</span>
+<span id="cb462-3"><a href="unsup-lrn.html#cb462-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb462-4"><a href="unsup-lrn.html#cb462-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate plot of gap statistic against cluster count</span></span>
+<span id="cb462-5"><a href="unsup-lrn.html#cb462-5" aria-hidden="true" tabindex="-1"></a>factoextra<span class="sc">::</span><span class="fu">fviz_gap_stat</span>(gap_stat)</span></code></pre></div>
 <div class="figure" style="text-align: center"><span style="display:block;" id="fig:hclust-gap-stat"></span>
 <img src="The_Fundamentals_of_People_Analytics_files/figure-html/hclust-gap-stat-1.png" alt="Plot of gap statistic against cluster count for hierarchical clustering" width="100%" />
 <p class="caption">
@@ -865,17 +866,17 @@ Figure 14.8: Plot of gap statistic against cluster count for hierarchical cluste
 </div>
 <p>We ideally want to select the value of <span class="math inline">\(K\)</span> that maximizes the gap statistic. In practice, however, balancing cluster parsimony with maximization of the gap statistic is not always straightforward. Figure <a href="unsup-lrn.html#fig:hclust-gap-stat">14.8</a> indicates that the gap statistic increase is fairly constant across the range of <span class="math inline">\(K = 1\)</span> to <span class="math inline">\(K = 10\)</span> clusters. In this case, we may look to select a value of <span class="math inline">\(K\)</span> based on an inflection point at which the trajectory of increase in the gap statistic begins to slow. Based on this approach, we may select <span class="math inline">\(K = 7\)</span>.</p>
 <p>We can now cut the dendrogram into 7 clusters using the <code>cutree()</code> function, and then append the cluster to each observation in our original <code>employees</code> data:</p>
-<div class="sourceCode" id="cb461"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb461-1"><a href="unsup-lrn.html#cb461-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute distance matrix</span></span>
-<span id="cb461-2"><a href="unsup-lrn.html#cb461-2" aria-hidden="true" tabindex="-1"></a>d_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;euclidean&quot;</span>)</span>
-<span id="cb461-3"><a href="unsup-lrn.html#cb461-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb461-4"><a href="unsup-lrn.html#cb461-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s method</span></span>
-<span id="cb461-5"><a href="unsup-lrn.html#cb461-5" aria-hidden="true" tabindex="-1"></a>hclust_final <span class="ot">&lt;-</span> <span class="fu">hclust</span>(d_matrix, <span class="at">method =</span> <span class="st">&quot;ward.D2&quot;</span> )</span>
-<span id="cb461-6"><a href="unsup-lrn.html#cb461-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb461-7"><a href="unsup-lrn.html#cb461-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Cut the dendrogram into 7 clusters</span></span>
-<span id="cb461-8"><a href="unsup-lrn.html#cb461-8" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cutree</span>(hclust_final, <span class="at">k =</span> <span class="dv">7</span>)</span>
-<span id="cb461-9"><a href="unsup-lrn.html#cb461-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb461-10"><a href="unsup-lrn.html#cb461-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Append cluster labels to original data</span></span>
-<span id="cb461-11"><a href="unsup-lrn.html#cb461-11" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, <span class="at">hier_cluster =</span> groups)</span></code></pre></div>
+<div class="sourceCode" id="cb463"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb463-1"><a href="unsup-lrn.html#cb463-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute distance matrix</span></span>
+<span id="cb463-2"><a href="unsup-lrn.html#cb463-2" aria-hidden="true" tabindex="-1"></a>d_matrix <span class="ot">&lt;-</span> <span class="fu">dist</span>(employees_trans, <span class="at">method =</span> <span class="st">&quot;euclidean&quot;</span>)</span>
+<span id="cb463-3"><a href="unsup-lrn.html#cb463-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb463-4"><a href="unsup-lrn.html#cb463-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Perform hierarchical clustering using Ward&#39;s method</span></span>
+<span id="cb463-5"><a href="unsup-lrn.html#cb463-5" aria-hidden="true" tabindex="-1"></a>hclust_final <span class="ot">&lt;-</span> <span class="fu">hclust</span>(d_matrix, <span class="at">method =</span> <span class="st">&quot;ward.D2&quot;</span> )</span>
+<span id="cb463-6"><a href="unsup-lrn.html#cb463-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb463-7"><a href="unsup-lrn.html#cb463-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Cut the dendrogram into 7 clusters</span></span>
+<span id="cb463-8"><a href="unsup-lrn.html#cb463-8" aria-hidden="true" tabindex="-1"></a>groups <span class="ot">&lt;-</span> <span class="fu">cutree</span>(hclust_final, <span class="at">k =</span> <span class="dv">7</span>)</span>
+<span id="cb463-9"><a href="unsup-lrn.html#cb463-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb463-10"><a href="unsup-lrn.html#cb463-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Append cluster labels to original data</span></span>
+<span id="cb463-11"><a href="unsup-lrn.html#cb463-11" aria-hidden="true" tabindex="-1"></a>employees <span class="ot">&lt;-</span> <span class="fu">cbind</span>(employees, <span class="at">hier_cluster =</span> groups)</span></code></pre></div>
 </div>
 </div>
 <div id="review-questions-12" class="section level2 hasAnchor" number="14.3">
