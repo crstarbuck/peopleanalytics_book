@@ -1,3 +1,8 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
 # Analysis of Differences {#aod}
 
   There are many statistical tests that can be used to test for differences *within* or *between* two or more groups. This chapter will cover common contexts for differences in people analytics and the tests applicable to each.
@@ -671,7 +676,7 @@ ggpubr::ggarrange(ln.viz, log10.viz, sqrt.viz,
 ```{r, message = FALSE, warning = FALSE}
 
 # One-way ANOVA investigating mean differences in annual comp by job satisfaction
-one.way <- aov(annual_comp ~ job_sat, data = employees)
+one.way <- aov(annual_comp ~ as.factor(job_sat), data = employees)
 
 summary(one.way)
 
@@ -682,7 +687,7 @@ summary(one.way)
 ```{r, message = FALSE, warning = FALSE}
 
 # Nonparametric Kruskal one-way ANOVA
-kruskal.test(annual_comp ~ job_sat, data = employees)
+kruskal.test(annual_comp ~ as.factor(job_sat), data = employees)
 
 ```
 
@@ -715,13 +720,13 @@ combos
 ```{r, message = FALSE, warning = FALSE}
 
 # Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level
-factorial <- aov(annual_comp ~ job_sat + stock_opt_lvl, data = employees)
+factorial <- aov(annual_comp ~ as.factor(job_sat) + as.factor(stock_opt_lvl), data = employees)
 
 summary(factorial)
 
 ```  
 
-  While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. These statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \@ref(fig:two-way-factorial).
+  While mean annual compensation is significantly different across job satisfaction levels, this output alone is not too helpful in understanding the nature of the differences. Statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \@ref(fig:two-way-factorial).
 
 ```{r two-way-factorial, out.width = "100%", echo = FALSE, fig.cap = 'Relationships of job satisfaction and stock option level with annual compensation', fig.align = 'center'}
 

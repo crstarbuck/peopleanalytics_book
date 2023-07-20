@@ -128,7 +128,7 @@
 \makeatother
 \subtitle{With Applications in R}
 \author{Craig Starbuck}
-\date{2022-11-28}
+\date{2023-05-30}
 
 \begin{document}
 \maketitle
@@ -6024,16 +6024,16 @@ Even with these transformations, there is still a clear S-shaped curve about the
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# One{-}way ANOVA investigating mean differences in annual comp by job satisfaction}
-\NormalTok{one.way }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ job\_sat, }\AttributeTok{data =}\NormalTok{ employees)}
+\NormalTok{one.way }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{as.factor}\NormalTok{(job\_sat), }\AttributeTok{data =}\NormalTok{ employees)}
 
 \FunctionTok{summary}\NormalTok{(one.way)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##               Df    Sum Sq   Mean Sq F value  Pr(>F)   
-## job_sat        1 1.337e+10 1.337e+10   7.508 0.00622 **
-## Residuals   1468 2.613e+12 1.780e+09                   
+##                      Df    Sum Sq   Mean Sq F value Pr(>F)  
+## as.factor(job_sat)    3 1.494e+10 4.980e+09   2.795  0.039 *
+## Residuals          1466 2.612e+12 1.782e+09                 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
@@ -6043,7 +6043,7 @@ The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Nonparametric Kruskal one{-}way ANOVA}
-\FunctionTok{kruskal.test}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ job\_sat, }\AttributeTok{data =}\NormalTok{ employees)}
+\FunctionTok{kruskal.test}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{as.factor}\NormalTok{(job\_sat), }\AttributeTok{data =}\NormalTok{ employees)}
 \end{Highlighting}
 \end{Shaded}
 
@@ -6051,7 +6051,7 @@ The \textbf{Kruskal Wallis H Test} is the nonparametric alternative to a one-way
 ## 
 ##  Kruskal-Wallis rank sum test
 ## 
-## data:  annual_comp by job_sat
+## data:  annual_comp by as.factor(job_sat)
 ## Kruskal-Wallis chi-squared = 8.3242, df = 3, p-value = 0.03977
 \end{verbatim}
 
@@ -6118,22 +6118,22 @@ Factorial ANOVA can be performed by adding variables with \texttt{+} within the 
 \begin{Shaded}
 \begin{Highlighting}[]
 \CommentTok{\# Factorial ANOVA investigating mean differences in annual comp by job satisfaction and stock option level}
-\NormalTok{factorial }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}}\NormalTok{ job\_sat }\SpecialCharTok{+}\NormalTok{ stock\_opt\_lvl, }\AttributeTok{data =}\NormalTok{ employees)}
+\NormalTok{factorial }\OtherTok{\textless{}{-}} \FunctionTok{aov}\NormalTok{(annual\_comp }\SpecialCharTok{\textasciitilde{}} \FunctionTok{as.factor}\NormalTok{(job\_sat) }\SpecialCharTok{+} \FunctionTok{as.factor}\NormalTok{(stock\_opt\_lvl), }\AttributeTok{data =}\NormalTok{ employees)}
 
 \FunctionTok{summary}\NormalTok{(factorial)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{verbatim}
-##                 Df    Sum Sq   Mean Sq F value  Pr(>F)   
-## job_sat          1 1.337e+10 1.337e+10   7.523 0.00617 **
-## stock_opt_lvl    1 6.840e+09 6.840e+09   3.850 0.04995 * 
-## Residuals     1467 2.606e+12 1.777e+09                   
+##                            Df    Sum Sq   Mean Sq F value Pr(>F)  
+## as.factor(job_sat)          3 1.494e+10 4.980e+09   2.803 0.0386 *
+## as.factor(stock_opt_lvl)    3 1.260e+10 4.201e+09   2.365 0.0694 .
+## Residuals                1463 2.599e+12 1.777e+09                 
 ## ---
 ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 \end{verbatim}
 
-While mean annual compensation is significantly different by both job satisfaction and stock option level factors, this output alone is not too helpful in understanding the nature of the differences. These statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \ref{fig:two-way-factorial}.
+While mean annual compensation is significantly different across job satisfaction levels, this output alone is not too helpful in understanding the nature of the differences. Statistical significance markers indicate that there are meaningful differences that warrant a deeper understanding. Relationships of job satisfaction and stock option level with annual compensation are illustrated more effectively in Figure \ref{fig:two-way-factorial}.
 
 \begin{figure}
 
